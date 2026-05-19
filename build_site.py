@@ -190,7 +190,9 @@ def render_post_page(post: dict) -> str:
 <title>{artist} — {title}</title>
 <style>
 body{{max-width:900px;margin:0 auto;padding:1.5rem;
-     font-family:Georgia,serif;background:#fafafa;color:#222;line-height:1.55}}
+     font-family:Georgia,serif;background:#fafafa;color:#222;line-height:1.55;
+     overflow-wrap: break-word; /* РЕШЕНИЕ 1: Базовый перенос слишком длинных слов */
+}}
 
 /* ОГРАНИЧИВАЕМ ВЫСОТУ КАРТИНКИ */
 .painting{{
@@ -212,6 +214,13 @@ h1{{font-size:1.8rem;margin:0 0 .3rem;font-weight:bold}}
 h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:#555;margin:0 0 1rem}}
 .medium,.museum,.note,.source{{margin:.3rem 0;color:#555}}
 .museum{{font-style:italic}}
+
+/* РЕШЕНИЕ 2: Принудительно разрываем длинные ссылки */
+.source a {{
+    word-break: break-all;
+    color: #0366d6;
+}}
+
 .tags{{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #ddd;display:flex;flex-wrap:wrap;gap:0.4rem}}
 .tag{{display:inline-block;background:#eee;color:#555;text-decoration:none;
      padding:.3rem .7rem;border-radius:4px;font-size:.85rem}}
@@ -221,7 +230,10 @@ time{{color:#999;font-size:.85rem}}
 
 /* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
 @media (max-width: 600px) {{
-    body {{ padding: 1rem; }}
+    body {{ 
+        padding: 1rem; 
+        overflow-x: hidden; /* РЕШЕНИЕ 3: Жестко отсекаем горизонтальный скролл */
+    }}
     h1 {{ font-size: 1.5rem; }}
     h2 {{ font-size: 1.15rem; }}
     .painting {{ margin: 1rem auto; max-height: 60vh; }} /* На мобилках делаем чуть меньше */
@@ -273,7 +285,16 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
 .card:hover{{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.15)}}
 .card-img{{width:100%;aspect-ratio:4/3;background:#ddd center/cover no-repeat}}
 .card-body{{padding:.8rem 1rem 1rem}}
-.card-artist{{font-weight:bold;font-size:1rem;line-height:1.2}}
+.card-artist{{
+    font-weight:bold;
+    font-size:1rem;
+    line-height:1.2;
+    /* Скрываем всё, что длиннее двух строк, и ставим троеточие */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}}
 .card-title{{font-style:italic;color:#666;font-size:.9rem;margin-top:.35rem;
             display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
 
@@ -289,7 +310,7 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
 }}
 </style></head><body>
 <header>
-<h1>🖼 Old Picture Art</h1>
+<h1>Old Picture Art</h1>
 <div class="subtitle">Картин в коллекции: {len(posts_sorted)}</div>
 <input type="text" class="search-box" placeholder="Поиск по художнику или картине…" id="search">
 </header>
