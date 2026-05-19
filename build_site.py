@@ -283,7 +283,7 @@ async def fetch_new_posts(client, processed_ids):
         
         # В альбомах текст прикреплён только к одной картинке. Собираем всё вместе.
         for m in group:
-            text = m.text or m.message or ""
+            text = m.raw_text or ""
             if text:
                 full_text += text + "\n"
             
