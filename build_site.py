@@ -125,17 +125,7 @@ def has_image(message) -> bool:
     return False
 
 
-def is_valid_artist_post(message):
-    """Принимаем пост, если есть фото, имя художника и название."""
-    if not has_image(message):
-        return False, None
-    text = message.text or message.message or ""
-    parsed = parse_post(text)
-    if not parsed.get("artist") or not parsed.get("title"):
-        return False, None
-    if not looks_like_artist_name(parsed["artist"]):
-        return False, None
-    return True, parsed
+
 
 
 # ---------- УТИЛИТЫ ----------
@@ -290,22 +280,35 @@ document.getElementById('search').addEventListener('input',e=>{{
 # ---------- TELEGRAM ----------
 
 async def fetch_new_posts(client, processed_ids):
-    print("📥 Сканирую канал…")
+    print("📥 Сканирую канал (только #картина@oldpictureart)…")
     groups = defaultdict(list)
     singles = []
     count = 0
+    accepted_count = 0
+    
     async for message in client.iter_messages(CHANNEL_URL):
         count += 1
-        if count % 50 == 0:
-            print(f"\r   Просмотрено: {count}", end="", flush=True)
+        
+        if count % 100 == 0:
+            print(f"   Просмотрено: {count}, принято: {accepted_count}")
+        
         if message.id in processed_ids:
             continue
+        
+        text = message.text or message.message or ""
+        
+        # Фильтр: только посты с хештегом #картина@oldpictureart
+        if "#картина@oldpictureart" not in text:
+            continue
+        
         if getattr(message, "grouped_id", None):
             groups[message.grouped_id].append(message)
         else:
             singles.append(message)
-    print(f"\r   Просмотрено: {count} сообщений")
-
+    
+    print(f"   Всего просмотрено: {count}, отфильтровано: {accepted_count}")
+    
+    # Собираем пакеты
     packets = []
     for msgs in groups.values():
         msgs.sort(key=lambda m: m.id)
@@ -313,12 +316,15 @@ async def fetch_new_posts(client, processed_ids):
         packets.append((main, msgs))
     for m in singles:
         packets.append((m, [m]))
-
+    
+    # Принимаем все с хештегом (фильтр уже сработал выше)
     accepted = []
     for main, msgs in packets:
-        ok, parsed = is_valid_artist_post(main)
-        if ok:
-            accepted.append((main, msgs, parsed))
+        text = main.text or main.message or ""
+        parsed = parse_post(text)
+        accepted.append((main, msgs, parsed))
+        accepted_count += 1
+    
     print(f"   Принято постов: {len(accepted)}")
     return accepted
 
