@@ -134,29 +134,46 @@ def save_json(path, data):
 
 # ---------- СКАЧИВАНИЕ ----------
 
-async def download_images(client, messages, post_slug):
-    def _has_image(msg):
-        if getattr(msg, "photo", None):
-            return True
-        doc = getattr(msg, "document", None)
-        if doc and getattr(doc, "mime_type", "").startswith("image/"):
-            return True
-        return False
+async def download_images(client, group, comments, post_slug):
+    images = []
+    hires = []
 
-    paths = []
-    image_msgs = [m for m in messages if _has_image(m)]
-    for i, msg in enumerate(image_msgs, 1):
-        suffix = "" if len(image_msgs) == 1 else f"-{i}"
-        filename = f"{post_slug}{suffix}.jpg"
+    # 1. Скачиваем обычные сжатые фото из самого поста
+    for i, msg in enumerate(group, 1):
+        if getattr(msg, "photo", None):
+            filename = f"{post_slug}-{i}.jpg"
+            filepath = os.path.join(IMAGES_DIR, filename)
+            if not os.path.exists(filepath):
+                await client.download_media(msg, filepath)
+            images.append(f"images/{filename}")
+
+    # 2. Собираем документы-картинки (из комментариев, и на всякий случай из поста)
+    all_docs = [m for m in group if getattr(m, "document", None) and m.document.mime_type.startswith("image/")]
+    all_docs.extend(comments)
+
+    for i, msg in enumerate(all_docs, 1):
+        ext = ".jpg"
+        # Пытаемся достать оригинальное расширение файла
+        for attr in getattr(msg.document, "attributes", []):
+            if hasattr(attr, 'file_name'):
+                ext = os.path.splitext(attr.file_name)[1].lower()
+                break
+        
+        filename = f"{post_slug}-hires-{i}{ext}"
         filepath = os.path.join(IMAGES_DIR, filename)
         if not os.path.exists(filepath):
             try:
                 await client.download_media(msg, filepath)
             except Exception as e:
-                print(f"    ⚠️ Не скачалось msg {msg.id}: {e}")
+                print(f"    ⚠️ Не скачался оригинал {msg.id}: {e}")
                 continue
-        paths.append(f"images/{filename}")
-    return paths
+        hires.append(f"images/{filename}")
+
+    # Если сжатой картинки почему-то нет, используем оригинал для показа
+    if not images and hires:
+        images = hires.copy()
+
+    return images, hires
 
 # ---------- HTML ----------
 
@@ -166,12 +183,23 @@ def render_post_page(post: dict) -> str:
     note   = h(post["note"]);   url    = post["url"]
 
     # ОБОРАЧИВАЕМ КАРТИНКУ В ССЫЛКУ <a href="..." target="_blank">
-    img_html = "\n".join(
-        f'<a href="{h(src)}" target="_blank" title="Нажмите, чтобы открыть в полном размере">'
-        f'<img src="{h(src)}" alt="{artist} — {title}" class="painting" loading="lazy">'
-        f'</a>'
-        for src in post["images"]
-    )
+    # ОБОРАЧИВАЕМ КАРТИНКУ В ССЫЛКУ <a href="..." target="_blank">
+    img_html_parts = []
+    
+    # post.get("hires", []) безопасно вернет список оригиналов (или пустой список)
+    hires_list = post.get("hires", [])
+    
+    for i, src in enumerate(post["images"]):
+        # Пытаемся взять оригинал для ссылки. Если его нет — берем обычную картинку
+        link_href = hires_list[i] if i < len(hires_list) else src
+        
+        img_html_parts.append(
+            f'<a href="{h(link_href)}" target="_blank" title="Нажмите, чтобы открыть оригинал">'
+            f'<img src="{h(src)}" alt="{artist} — {title}" class="painting" loading="lazy">'
+            f'</a>'
+        )
+        
+    img_html = "\n".join(img_html_parts)
     
     tags_html = ""
     if post["tags"]:
@@ -253,12 +281,46 @@ time{{color:#999;font-size:.85rem}}
 </article></body></html>"""
 
 def render_index(all_posts) -> str:
+    # Словарь для красивого отображения месяцев
+    MONTHS = {
+        "01": "Январь", "02": "Февраль", "03": "Март", "04": "Апрель",
+        "05": "Май", "06": "Июнь", "07": "Июль", "08": "Август",
+        "09": "Сентябрь", "10": "Октябрь", "11": "Ноябрь", "12": "Декабрь"
+    }
+
     posts_sorted = sorted(all_posts, key=lambda x: x["date"], reverse=True)
+
+    # 1. СОБИРАЕМ ДАННЫЕ ДЛЯ МЕНЮ
+    # Уникальные авторы по алфавиту
+    authors = sorted({p["artist"] for p in all_posts if p.get("artist")})
+    
+    # Группировка по годам и месяцам
+    archive = defaultdict(set)
+    for p in all_posts:
+        if p.get("date") and "-" in p["date"]:
+            year, month, _ = p["date"].split("-")
+            archive[year].add(month)
+            
+    # Сортируем годы и месяцы по убыванию (от новых к старым)
+    archive_sorted = {
+        y: sorted(list(ms), reverse=True) 
+        for y, ms in sorted(archive.items(), reverse=True)
+    }
+
+    # 2. ГЕНЕРИРУЕМ КАРТОЧКИ С DATA-АТРИБУТАМИ
     cards = []
     for p in posts_sorted:
-        cover = h(p["images"][0]) if p["images"] else ""
+        cover = h(p["images"][0]) if p.get("images") else ""
+        year, month = "", ""
+        if p.get("date") and "-" in p["date"]:
+            year, month, _ = p["date"].split("-")
+
+        # Добавляем data-атрибуты для JS-фильтрации
         cards.append(f"""
-        <a class="card" href="{h(p['filename'])}">
+        <a class="card" href="{h(p['filename'])}" 
+           data-artist="{h(p['artist'].lower())}" 
+           data-year="{year}" 
+           data-month="{month}">
           <div class="card-img" style="background-image:url('{cover}')"></div>
           <div class="card-body">
             <div class="card-artist">{h(p['artist'])}</div>
@@ -266,47 +328,78 @@ def render_index(all_posts) -> str:
           </div>
         </a>""")
 
+    # 3. ГЕНЕРИРУЕМ HTML САЙДБАРА
+    authors_html = "".join(
+        f'<li><a href="#" class="filter-link" data-type="artist" data-val="{h(a.lower())}">{h(a)}</a></li>'
+        for a in authors
+    )
+
+    archive_html = ""
+    for y, ms in archive_sorted.items():
+        archive_html += f'<li><a href="#" class="filter-link" data-type="year" data-val="{y}"><b>{y} год</b></a><ul class="month-list">'
+        for m in ms:
+            m_name = MONTHS.get(m, m)
+            archive_html += f'<li><a href="#" class="filter-link" data-type="month" data-year="{y}" data-val="{m}">{m_name}</a></li>'
+        archive_html += '</ul></li>'
+
     return f"""<!DOCTYPE html>
 <html lang="ru"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Old Picture Art — Галерея</title>
 <style>
 *{{box-sizing:border-box}}
-body{{max-width:1300px;margin:0 auto;padding:1.5rem;
+body{{max-width:1400px;margin:0 auto;padding:1.5rem;
      font-family:Georgia,serif;background:#fafafa;color:#222}}
 header{{margin-bottom:2rem;text-align:center}}
 h1{{font-size:2.2rem;margin:0 0 .5rem}}
 .subtitle{{color:#777;margin-bottom:1.5rem}}
 .search-box{{width:100%;max-width:500px;padding:.8rem 1rem;font-size:1rem;
             border:1px solid #ccc;border-radius:6px;font-family:inherit}}
-.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem}}
+
+/* НОВАЯ РАСКЛАДКА: Сайдбар + Сетка */
+.layout {{ display: flex; gap: 2rem; align-items: flex-start; }}
+
+/* САЙДБАР */
+.sidebar {{ 
+    width: 280px; flex-shrink: 0; background: #fff; padding: 1.5rem; 
+    border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,.08); 
+    position: sticky; top: 1.5rem; max-height: calc(100vh - 3rem); 
+    overflow-y: auto; 
+}}
+/* Кастомизация скроллбара в сайдбаре */
+.sidebar::-webkit-scrollbar {{ width: 6px; }}
+.sidebar::-webkit-scrollbar-thumb {{ background-color: #ccc; border-radius: 3px; }}
+
+.sidebar-section {{ margin-bottom: 2rem; }}
+.sidebar-title {{ font-size: 1.1rem; font-weight: bold; margin: 0 0 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }}
+.sidebar ul {{ list-style: none; padding: 0; margin: 0; }}
+.sidebar li {{ margin-bottom: 0.5rem; }}
+.sidebar a {{ text-decoration: none; color: #555; font-size: 0.95rem; display: block; transition: color .15s; }}
+.sidebar a:hover {{ color: #000; }}
+.sidebar a.active {{ color: #0366d6; font-weight: bold; }}
+.month-list {{ padding-left: 1.2rem !important; margin-top: 0.5rem !important; font-size: 0.95em; }}
+
+.filter-reset {{ display: none; margin-bottom: 1.5rem; color: #d73a49 !important; font-weight: bold; text-align: center; background: #ffeef0; padding: 0.6rem; border-radius: 4px; }}
+.filter-reset:hover {{ background: #ffdce0; }}
+
+/* ОСНОВНОЙ КОНТЕНТ */
+.main-content {{ flex-grow: 1; min-width: 0; }}
+.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}}
+
 .card{{background:#fff;text-decoration:none;color:inherit;border-radius:6px;
       overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.08);transition:transform .15s,box-shadow .15s}}
 .card:hover{{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.15)}}
 .card-img{{width:100%;aspect-ratio:4/3;background:#ddd center/cover no-repeat}}
 .card-body{{padding:.8rem 1rem 1rem}}
-.card-artist{{
-    font-weight:bold;
-    font-size:1rem;
-    line-height:1.2;
-    /* Скрываем всё, что длиннее двух строк, и ставим троеточие */
-    display: -webkit-box;
-    -webkit-line-clamp: 2; 
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}}
+.card-artist{{font-weight:bold;font-size:1rem;line-height:1.2;
+    display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;overflow: hidden;}}
 .card-title{{font-style:italic;color:#666;font-size:.9rem;margin-top:.35rem;
             display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
 
-/* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
-@media (max-width: 600px) {{
-    body {{ padding: 1rem 0.75rem; }}
-    h1 {{ font-size: 1.8rem; }}
-    /* Делаем сетку из 2 колонок на телефонах вместо одной широкой */
+@media (max-width: 850px) {{
+    .layout {{ flex-direction: column; gap: 1rem; }}
+    .sidebar {{ width: 100%; position: static; max-height: 350px; }}
     .grid {{ grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }}
-    .card-body {{ padding: 0.6rem 0.8rem 0.8rem; }}
-    .card-artist {{ font-size: 0.9rem; }}
-    .card-title {{ font-size: 0.8rem; }}
 }}
 </style></head><body>
 <header>
@@ -314,13 +407,91 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
 <div class="subtitle">Картин в коллекции: {len(posts_sorted)}</div>
 <input type="text" class="search-box" placeholder="Поиск по художнику или картине…" id="search">
 </header>
-<main><div class="grid" id="cards">{''.join(cards)}</div></main>
+
+<div class="layout">
+  <!-- БОКОВОЕ МЕНЮ -->
+  <aside class="sidebar">
+    <a href="#" id="reset-filter" class="filter-reset">✕ Сбросить фильтр</a>
+    
+    <div class="sidebar-section">
+      <div class="sidebar-title">Архив</div>
+      <ul>{archive_html}</ul>
+    </div>
+    
+    <div class="sidebar-section">
+      <div class="sidebar-title">Художники (А-Я)</div>
+      <ul>{authors_html}</ul>
+    </div>
+  </aside>
+
+  <!-- КАРТОЧКИ -->
+  <main class="main-content">
+    <div class="grid" id="cards">{''.join(cards)}</div>
+  </main>
+</div>
+
 <script>
-document.getElementById('search').addEventListener('input',e=>{{
-  const q=e.target.value.toLowerCase();
-  document.querySelectorAll('.card').forEach(c=>{{
-    c.style.display=c.textContent.toLowerCase().includes(q)?'':'none';
+const searchInput = document.getElementById('search');
+const cards = document.querySelectorAll('.card');
+const filterLinks = document.querySelectorAll('.filter-link');
+const resetBtn = document.getElementById('reset-filter');
+
+let activeFilter = {{ type: null, val: null, year: null }};
+
+function updateView() {{
+  const q = searchInput.value.toLowerCase();
+  
+  // 1. Показываем/скрываем карточки
+  cards.forEach(c => {{
+    let show = true;
+    
+    // Проверка текстового поиска
+    if (q && !c.textContent.toLowerCase().includes(q)) show = false;
+    
+    // Проверка бокового фильтра
+    if (show && activeFilter.type) {{
+      if (activeFilter.type === 'artist' && c.dataset.artist !== activeFilter.val) show = false;
+      if (activeFilter.type === 'year' && c.dataset.year !== activeFilter.val) show = false;
+      if (activeFilter.type === 'month' && (c.dataset.year !== activeFilter.year || c.dataset.month !== activeFilter.val)) show = false;
+    }}
+    
+    c.style.display = show ? '' : 'none';
   }});
+
+  // 2. Обновляем выделение в меню
+  filterLinks.forEach(link => {{
+    let isActive = false;
+    if (activeFilter.type === link.dataset.type) {{
+      if (activeFilter.type === 'month') {{
+        isActive = (link.dataset.val === activeFilter.val && link.dataset.year === activeFilter.year);
+      }} else {{
+        isActive = (link.dataset.val === activeFilter.val);
+      }}
+    }}
+    link.classList.toggle('active', isActive);
+  }});
+  
+  // 3. Кнопка сброса
+  resetBtn.style.display = activeFilter.type ? 'block' : 'none';
+}}
+
+// Слушатели событий
+searchInput.addEventListener('input', updateView);
+
+filterLinks.forEach(link => {{
+  link.addEventListener('click', e => {{
+    e.preventDefault();
+    activeFilter.type = link.dataset.type;
+    activeFilter.val = link.dataset.val;
+    if (activeFilter.type === 'month') activeFilter.year = link.dataset.year;
+    updateView();
+  }});
+}});
+
+resetBtn.addEventListener('click', e => {{
+  e.preventDefault();
+  activeFilter = {{ type: null, val: null, year: null }};
+  updateView();
 }});
 </script></body></html>"""
 
@@ -496,12 +667,26 @@ async def main():
 
         print(f"📝 [{i}/{len(accepted)}] {parsed['artist']} — {parsed['title'][:50]}")
 
+        # --- НОВОЕ: ИЩЕМ ФАЙЛЫ В КОММЕНТАРИЯХ ---
+        comments = []
+        if getattr(main_msg, "replies", None) and main_msg.replies.replies > 0:
+            try:
+                async for reply in client.iter_messages(CHANNEL_URL, reply_to=main_msg.id):
+                    if getattr(reply, "document", None) and reply.document.mime_type.startswith("image/"):
+                        comments.append(reply)
+            except Exception as e:
+                print(f"    ⚠️ Не удалось проверить комментарии: {e}")
+        # ----------------------------------------
+
         # Слаг для имён картинок (без расширения)
         image_slug = filename[:-5]
-        images = await download_images(client, group, image_slug)
+        
+        # Вызываем обновленную функцию (передаем comments)
+        images, hires = await download_images(client, group, comments, image_slug)
 
+        # Добавили "hires": hires в словарь поста
         post = {"id": main_msg.id, "date": date, "filename": filename,
-                "images": images, **parsed}
+                "images": images, "hires": hires, **parsed}
 
         with open(os.path.join(OUTPUT_DIR, filename), "w", encoding="utf-8") as f:
             f.write(render_post_page(post))
