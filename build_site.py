@@ -264,24 +264,28 @@ document.getElementById('search').addEventListener('input',e=>{{
 # ---------- TELEGRAM ----------
 
 async def fetch_new_posts(client, processed_ids):
-    print("📥 Сканирую канал (только #картина@oldpictureart)…")
+    print("📥 Сканирую канал…")
     groups = defaultdict(list)
     singles = []
     count = 0
-    accepted_count = 0
+    hashtag_count = 0
+    skipped_processed = 0
     
     async for message in client.iter_messages(CHANNEL_URL):
         count += 1
-        
-        if count % 100 == 0:
-            print(f"   Просмотрено: {count}, принято: {accepted_count}")
-        
-        if message.id in processed_ids:
-            continue
-        
         text = message.text or message.message or ""
         
-        # Фильтр: только посты с хештегом #картина@oldpictureart
+        if count % 50 == 0:
+            print(f"   Просмотрено: {count}, с #картина: {hashtag_count}")
+        
+        # Считаем, сколько вообще постов с хештегом
+        if "#картина@oldpictureart" in text:
+            hashtag_count += 1
+        
+        if message.id in processed_ids:
+            skipped_processed += 1
+            continue
+        
         if "#картина@oldpictureart" not in text:
             continue
         
@@ -290,9 +294,12 @@ async def fetch_new_posts(client, processed_ids):
         else:
             singles.append(message)
     
-    print(f"   Всего просмотрено: {count}, отфильтровано: {accepted_count}")
+    print(f"\n   Всего: {count}")
+    print(f"   С хештегом #картина@oldpictureart: {hashtag_count}")
+    print(f"   Уже обработано ранее: {skipped_processed}")
+    print(f"   Новых в groups: {len(groups)}")
+    print(f"   Новых singles: {len(singles)}")
     
-    # Собираем пакеты
     packets = []
     for msgs in groups.values():
         msgs.sort(key=lambda m: m.id)
@@ -301,13 +308,11 @@ async def fetch_new_posts(client, processed_ids):
     for m in singles:
         packets.append((m, [m]))
     
-    # Принимаем все с хештегом (фильтр уже сработал выше)
     accepted = []
     for main, msgs in packets:
         text = main.text or main.message or ""
         parsed = parse_post(text)
         accepted.append((main, msgs, parsed))
-        accepted_count += 1
     
     print(f"   Принято постов: {len(accepted)}")
     return accepted
