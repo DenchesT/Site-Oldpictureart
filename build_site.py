@@ -264,26 +264,46 @@ document.getElementById('search').addEventListener('input',e=>{{
 # ---------- TELEGRAM ----------
 
 async def fetch_new_posts(client, processed_ids):
-    print("📥 Сканирую канал…")
+    print("📥 Сканирую канал через поиск Telegram…")
     accepted = []
-    count = 0
-    hashtag_count = 0
     
-    async for message in client.iter_messages(CHANNEL_URL):
-        count += 1
+    # 1. Используем быстрый серверный поиск Telegram по базовому тегу.
+    # Это работает в сотни раз быстрее линейного перебора и экономит лимиты запросов.
+    async for message in client.iter_messages(CHANNEL_URL, search="#картина"):
+        
+        # 2. Сразу пропускаем, если этот пост уже обрабатывался ранее
+        if message.id in processed_ids:
+            continue
+            
         text = message.text or message.message or ""
         
-        if "#картина@oldpictureart" in text:
-            hashtag_count += 1
+        # 3. Приводим к нижнему регистру (.lower()), чтобы не пропустить #Картина или #КАРТИНА
+        if "#картина@oldpictureart" in text.lower():
             parsed = parse_post(text)
-            accepted.append((message, [message], parsed))
-        
-        if count % 50 == 0:
-            print(f"   Просмотрено: {count}, с #картина: {hashtag_count}")
+            
+            # 4. Проверяем, является ли сообщение частью альбома (медиагруппы)
+            if message.grouped_id:
+                # Запрашиваем сообщения вокруг текущего, чтобы собрать весь альбом целиком
+                # (В ТГ у сообщений из одного альбома айдишники всегда идут подряд)
+                album_messages = await client.get_messages(
+                    CHANNEL_URL, 
+                    limit=20, 
+                    offset_id=message.id + 10
+                )
+                group = [m for m in album_messages if m and m.grouped_id == message.grouped_id]
+                
+                # На случай, если само текстовое сообщение не попало в выборку get_messages
+                if message.id not in [m.id for m in group]:
+                    group.append(message)
+            else:
+                group = [message]
+                
+            accepted.append((message, group, parsed))
+            
+    print(f"   Найдено новых постов с #картина@oldpictureart: {len(accepted)}")
     
-    print(f"   Всего: {count}, с #картина: {hashtag_count}, принято: {len(accepted)}")
-    return accepted
-
+    # Разворачиваем список, чтобы старые посты обрабатывались первыми
+    return accepted[::-1]
 
 # ---------- GITHUB ----------
 
