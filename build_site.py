@@ -77,6 +77,11 @@ def parse_post(text: str) -> dict:
     if not text:
         return {}
 
+    # Защита от служебных постов (список хештегов, реклама, анонсы).
+    # Если в тексте нет фирменного длинного тире, это не картина!
+    if not SEPARATOR_RE.search(text):
+        return {}
+
     raw_tags = TAG_RE.findall(text)
     text_no_tags = TAG_RE.sub("", text).strip()
 
@@ -264,45 +269,83 @@ document.getElementById('search').addEventListener('input',e=>{{
 # ---------- TELEGRAM ----------
 
 async def fetch_new_posts(client, processed_ids):
-    print("📥 Сканирую канал через поиск Telegram…")
+    print("📥 Сканирую канал (ищу новые альбомы)…")
     accepted = []
     
-    # 1. Используем быстрый серверный поиск Telegram по базовому тегу.
-    # Это работает в сотни раз быстрее линейного перебора и экономит лимиты запросов.
-    async for message in client.iter_messages(CHANNEL_URL, search="#картина"):
+    def _process_group(group):
+        # ВАЖНО: iter_messages отдаёт посты от новых к старым (задом наперёд).
+        # Разворачиваем альбом, чтобы картинки скачивались в правильном порядке 
+        # (первая картинка из Telegram станет обложкой на сайте).
+        group.reverse()
         
-        # 2. Сразу пропускаем, если этот пост уже обрабатывался ранее
-        if message.id in processed_ids:
-            continue
-            
-        text = message.text or message.message or ""
+        full_text = ""
+        main_msg = None
         
-        # 3. Приводим к нижнему регистру (.lower()), чтобы не пропустить #Картина или #КАРТИНА
-        if "#картина@oldpictureart" in text.lower():
-            parsed = parse_post(text)
+        # В альбомах текст прикреплён только к одной картинке. Собираем всё вместе.
+        for m in group:
+            text = m.text or m.message or ""
+            if text:
+                full_text += text + "\n"
             
-            # 4. Проверяем, является ли сообщение частью альбома (медиагруппы)
-            if message.grouped_id:
-                # Запрашиваем сообщения вокруг текущего, чтобы собрать весь альбом целиком
-                # (В ТГ у сообщений из одного альбома айдишники всегда идут подряд)
-                album_messages = await client.get_messages(
-                    CHANNEL_URL, 
-                    limit=20, 
-                    offset_id=message.id + 10
-                )
-                group = [m for m in album_messages if m and m.grouped_id == message.grouped_id]
+            # Ищем наш тег (в любом регистре)
+            if "#картина" in text.lower():
+                main_msg = m
                 
-                # На случай, если само текстовое сообщение не попало в выборку get_messages
-                if message.id not in [m.id for m in group]:
-                    group.append(message)
-            else:
-                group = [message]
-                
-            accepted.append((message, group, parsed))
+        # Если тега нет — это просто левые картинки, пропускаем
+        if not main_msg or "#картина@oldpictureart" not in full_text.lower():
+            return
             
-    print(f"   Найдено новых постов с #картина@oldpictureart: {len(accepted)}")
+        # Защита от дубликатов (проверка по ID главного сообщения)
+        if main_msg.id in processed_ids:
+            return
+            
+        # Парсим текст и передаём ВЕСЬ альбом (group) для скачивания
+        # Парсим текст и передаём ВЕСЬ альбом (group) для скачивания
+        parsed = parse_post(full_text)
+        
+        # Если parse_post вернул пустой словарь (нет тире), то это не картина
+        if not parsed:
+            return
+            
+        accepted.append((main_msg, group, parsed))
+
+    # Оптимизация: не лопатим весь канал с начала времён, а читаем только новые посты
+    min_id = max(processed_ids) if processed_ids else 0
     
-    # Разворачиваем список, чтобы старые посты обрабатывались первыми
+    current_album_id = None
+    current_group = []
+    
+    # Идём по каналу. min_id ограничивает поиск
+    async for message in client.iter_messages(CHANNEL_URL, min_id=min_id):
+        # Если это часть альбома
+        if message.grouped_id:
+            if current_album_id == message.grouped_id:
+                # Продолжаем собирать текущий альбом
+                current_group.append(message)
+            else:
+                # Альбом сменился. Обрабатываем то, что накопили
+                if current_group:
+                    _process_group(current_group)
+                # Начинаем собирать новый альбом
+                current_album_id = message.grouped_id
+                current_group = [message]
+        else:
+            # Если это одиночный пост (не альбом)
+            if current_group:
+                _process_group(current_group)
+                current_group = []
+                current_album_id = None
+            
+            # Обрабатываем одиночный пост как группу из 1 элемента
+            _process_group([message])
+
+    # Не забываем обработать последний альбом, когда цикл завершился
+    if current_group:
+        _process_group(current_group)
+        
+    print(f"   Найдено новых постов: {len(accepted)}")
+    
+    # Возвращаем в хронологическом порядке (от старых к новым)
     return accepted[::-1]
 
 # ---------- GITHUB ----------
