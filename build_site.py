@@ -265,56 +265,23 @@ document.getElementById('search').addEventListener('input',e=>{{
 
 async def fetch_new_posts(client, processed_ids):
     print("📥 Сканирую канал…")
-    groups = defaultdict(list)
-    singles = []
+    accepted = []
     count = 0
     hashtag_count = 0
-    skipped_processed = 0
     
     async for message in client.iter_messages(CHANNEL_URL):
         count += 1
         text = message.text or message.message or ""
         
-        if count % 50 == 0:
-            print(f"   Просмотрено: {count}, с #картина: {hashtag_count}")
-        
-        # Считаем, сколько вообще постов с хештегом
         if "#картина@oldpictureart" in text:
             hashtag_count += 1
+            parsed = parse_post(text)
+            accepted.append((message, [message], parsed))
         
-        if message.id in processed_ids:
-            skipped_processed += 1
-            continue
-        
-        if "#картина@oldpictureart" not in text:
-            continue
-        
-        if getattr(message, "grouped_id", None):
-            groups[message.grouped_id].append(message)
-        else:
-            singles.append(message)
+        if count % 50 == 0:
+            print(f"   Просмотрено: {count}, с #картина: {hashtag_count}")
     
-    print(f"\n   Всего: {count}")
-    print(f"   С хештегом #картина@oldpictureart: {hashtag_count}")
-    print(f"   Уже обработано ранее: {skipped_processed}")
-    print(f"   Новых в groups: {len(groups)}")
-    print(f"   Новых singles: {len(singles)}")
-    
-    packets = []
-    for msgs in groups.values():
-        msgs.sort(key=lambda m: m.id)
-        main = next((m for m in msgs if (m.text or m.message)), msgs[0])
-        packets.append((main, msgs))
-    for m in singles:
-        packets.append((m, [m]))
-    
-    accepted = []
-    for main, msgs in packets:
-        text = main.text or main.message or ""
-        parsed = parse_post(text)
-        accepted.append((main, msgs, parsed))
-    
-    print(f"   Принято постов: {len(accepted)}")
+    print(f"   Всего: {count}, с #картина: {hashtag_count}, принято: {len(accepted)}")
     return accepted
 
 
