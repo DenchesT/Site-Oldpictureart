@@ -165,15 +165,20 @@ def render_post_page(post: dict) -> str:
     medium = h(post["medium"]); museum = h(post["museum"])
     note   = h(post["note"]);   url    = post["url"]
 
+    # ОБОРАЧИВАЕМ КАРТИНКУ В ССЫЛКУ <a href="..." target="_blank">
     img_html = "\n".join(
+        f'<a href="{h(src)}" target="_blank" title="Нажмите, чтобы открыть в полном размере">'
         f'<img src="{h(src)}" alt="{artist} — {title}" class="painting" loading="lazy">'
+        f'</a>'
         for src in post["images"]
     )
+    
     tags_html = ""
     if post["tags"]:
         tags_html = '<div class="tags">' + " ".join(
             f'<a href="tag-{h(t)}.html" class="tag">#{h(t)}</a>' for t in post["tags"]
         ) + "</div>"
+    
     source_html = (f'<p class="source">Источник: '
                    f'<a href="{h(url)}" target="_blank" rel="noopener">{h(url)}</a></p>'
                    if url else "")
@@ -186,9 +191,20 @@ def render_post_page(post: dict) -> str:
 <style>
 body{{max-width:900px;margin:0 auto;padding:1.5rem;
      font-family:Georgia,serif;background:#fafafa;color:#222;line-height:1.55}}
-.painting{{width:100%;max-width:800px;display:block;margin:1.5rem auto;
-          box-shadow:0 4px 20px rgba(0,0,0,.15)}}
-h1{{font-size:1.8rem;margin:0 0 .3rem}}
+
+/* ДОБАВЛЕНЫ СТИЛИ ДЛЯ КЛИКАБЕЛЬНОЙ КАРТИНКИ */
+.painting{{
+    width:100%;max-width:800px;display:block;margin:1.5rem auto;
+    box-shadow:0 4px 20px rgba(0,0,0,.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: zoom-in; /* Курсор в виде лупы */
+}}
+.painting:hover{{
+    transform: translateY(-2px) scale(1.01); /* Легкое увеличение при наведении */
+    box-shadow:0 8px 25px rgba(0,0,0,.25);
+}}
+
+h1{{font-size:1.8rem;margin:0 0 .3rem;font-weight:bold}}
 h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:#555;margin:0 0 1rem}}
 .medium,.museum,.note,.source{{margin:.3rem 0;color:#555}}
 .museum{{font-style:italic}}
