@@ -68,15 +68,16 @@ TAG_RE       = re.compile(r"#([\w]+)(?:@\w+)?")
 # Имя художника: 2–5 слов, каждое с заглавной (кириллица/латиница),
 # либо служебная частица (van/de/von/да/ле/фон/ди/del/della и т.п.) с маленькой.
 _NAME_WORD = (r"(?:[А-ЯЁA-Z][а-яёa-zA-Z'\-]+"
-              r"|van|de|von|да|ле|ла|дю|фон|ди|del|della|der|den|ten|te|af|y|и)")
-NAME_RE = re.compile(rf"^(?:{_NAME_WORD})(?:\s+{_NAME_WORD}){{1,4}}$")
+              r"|van|de|von|да|ле|ла|дю|фон|ди|del|della|der|den|ten|te|af|y|и"
+              r"|el|al|ibn|bin|ben|mac|mc|Ó|O')")
+NAME_RE = re.compile(rf"^(?:{_NAME_WORD})(?:\s+{_NAME_WORD}){{1,6}}$")
 
 
 def looks_like_artist_name(s: str) -> bool:
     s = s.strip().rstrip(".")
-    if not s or len(s) > 80:
+    if not s or len(s) > 100:
         return False
-    if "#" in s or "http" in s or "@" in s:
+    if "#" in s or "http" in s or "@" in s or "⸻" in s:
         return False
     return bool(NAME_RE.match(s))
 
