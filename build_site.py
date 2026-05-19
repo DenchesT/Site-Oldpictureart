@@ -192,28 +192,40 @@ def render_post_page(post: dict) -> str:
 body{{max-width:900px;margin:0 auto;padding:1.5rem;
      font-family:Georgia,serif;background:#fafafa;color:#222;line-height:1.55}}
 
-/* ДОБАВЛЕНЫ СТИЛИ ДЛЯ КЛИКАБЕЛЬНОЙ КАРТИНКИ */
+/* ОГРАНИЧИВАЕМ ВЫСОТУ КАРТИНКИ */
 .painting{{
-    width:100%;max-width:800px;display:block;margin:1.5rem auto;
-    box-shadow:0 4px 20px rgba(0,0,0,.15);
+    max-width: 100%;
+    max-height: 70vh; /* Картина займет максимум 70% от высоты экрана */
+    width: auto;      /* Ширина автоматически подстроится, сохранив пропорции */
+    display: block;
+    margin: 1.5rem auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,.15);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: zoom-in; /* Курсор в виде лупы */
+    cursor: zoom-in;
 }}
 .painting:hover{{
-    transform: translateY(-2px) scale(1.01); /* Легкое увеличение при наведении */
-    box-shadow:0 8px 25px rgba(0,0,0,.25);
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 8px 25px rgba(0,0,0,.25);
 }}
 
 h1{{font-size:1.8rem;margin:0 0 .3rem;font-weight:bold}}
 h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:#555;margin:0 0 1rem}}
 .medium,.museum,.note,.source{{margin:.3rem 0;color:#555}}
 .museum{{font-style:italic}}
-.tags{{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #ddd}}
+.tags{{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #ddd;display:flex;flex-wrap:wrap;gap:0.4rem}}
 .tag{{display:inline-block;background:#eee;color:#555;text-decoration:none;
-     padding:.2rem .6rem;border-radius:4px;margin:.2rem .3rem .2rem 0;font-size:.85rem}}
+     padding:.3rem .7rem;border-radius:4px;font-size:.85rem}}
 .tag:hover{{background:#ddd}}
 .back{{display:inline-block;margin-bottom:1rem;color:#666;text-decoration:none}}
 time{{color:#999;font-size:.85rem}}
+
+/* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
+@media (max-width: 600px) {{
+    body {{ padding: 1rem; }}
+    h1 {{ font-size: 1.5rem; }}
+    h2 {{ font-size: 1.15rem; }}
+    .painting {{ margin: 1rem auto; max-height: 60vh; }} /* На мобилках делаем чуть меньше */
+}}
 </style></head><body>
 <a href="index.html" class="back">← На главную</a>
 <article>
@@ -227,7 +239,6 @@ time{{color:#999;font-size:.85rem}}
 <time>{h(post['date'])}</time>
 {tags_html}
 </article></body></html>"""
-
 
 def render_index(all_posts) -> str:
     posts_sorted = sorted(all_posts, key=lambda x: x["date"], reverse=True)
@@ -254,7 +265,7 @@ body{{max-width:1300px;margin:0 auto;padding:1.5rem;
 header{{margin-bottom:2rem;text-align:center}}
 h1{{font-size:2.2rem;margin:0 0 .5rem}}
 .subtitle{{color:#777;margin-bottom:1.5rem}}
-.search-box{{width:100%;max-width:500px;padding:.7rem 1rem;font-size:1rem;
+.search-box{{width:100%;max-width:500px;padding:.8rem 1rem;font-size:1rem;
             border:1px solid #ccc;border-radius:6px;font-family:inherit}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem}}
 .card{{background:#fff;text-decoration:none;color:inherit;border-radius:6px;
@@ -262,9 +273,20 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
 .card:hover{{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.15)}}
 .card-img{{width:100%;aspect-ratio:4/3;background:#ddd center/cover no-repeat}}
 .card-body{{padding:.8rem 1rem 1rem}}
-.card-artist{{font-weight:bold;font-size:1rem}}
-.card-title{{font-style:italic;color:#666;font-size:.9rem;margin-top:.25rem;
+.card-artist{{font-weight:bold;font-size:1rem;line-height:1.2}}
+.card-title{{font-style:italic;color:#666;font-size:.9rem;margin-top:.35rem;
             display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
+
+/* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
+@media (max-width: 600px) {{
+    body {{ padding: 1rem 0.75rem; }}
+    h1 {{ font-size: 1.8rem; }}
+    /* Делаем сетку из 2 колонок на телефонах вместо одной широкой */
+    .grid {{ grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }}
+    .card-body {{ padding: 0.6rem 0.8rem 0.8rem; }}
+    .card-artist {{ font-size: 0.9rem; }}
+    .card-title {{ font-size: 0.8rem; }}
+}}
 </style></head><body>
 <header>
 <h1>🖼 Old Picture Art</h1>
