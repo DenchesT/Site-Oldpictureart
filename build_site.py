@@ -72,16 +72,6 @@ _NAME_WORD = (r"(?:[А-ЯЁA-Z][а-яёa-zA-Z'\-]+"
               r"|el|al|ibn|bin|ben|mac|mc|Ó|O')")
 NAME_RE = re.compile(rf"^(?:{_NAME_WORD})(?:\s+{_NAME_WORD}){{1,6}}$")
 
-
-def looks_like_artist_name(s: str) -> bool:
-    s = s.strip().rstrip(".")
-    if not s or len(s) > 100:
-        return False
-    if "#" in s or "http" in s or "@" in s or "⸻" in s:
-        return False
-    return bool(NAME_RE.match(s))
-
-
 def parse_post(text: str) -> dict:
     """Раскладывает текст поста по полям."""
     if not text:
@@ -115,19 +105,6 @@ def parse_post(text: str) -> dict:
         "raw":    text,
     }
 
-
-def has_image(message) -> bool:
-    if getattr(message, "photo", None):
-        return True
-    doc = getattr(message, "document", None)
-    if doc and getattr(doc, "mime_type", "").startswith("image/"):
-        return True
-    return False
-
-
-
-
-
 # ---------- УТИЛИТЫ ----------
 
 def slugify(text: str) -> str:
@@ -153,8 +130,16 @@ def save_json(path, data):
 # ---------- СКАЧИВАНИЕ ----------
 
 async def download_images(client, messages, post_slug):
+    def _has_image(msg):
+        if getattr(msg, "photo", None):
+            return True
+        doc = getattr(msg, "document", None)
+        if doc and getattr(doc, "mime_type", "").startswith("image/"):
+            return True
+        return False
+
     paths = []
-    image_msgs = [m for m in messages if has_image(m)]
+    image_msgs = [m for m in messages if _has_image(m)]
     for i, msg in enumerate(image_msgs, 1):
         suffix = "" if len(image_msgs) == 1 else f"-{i}"
         filename = f"{post_slug}{suffix}.jpg"
@@ -167,7 +152,6 @@ async def download_images(client, messages, post_slug):
                 continue
         paths.append(f"images/{filename}")
     return paths
-
 
 # ---------- HTML ----------
 
