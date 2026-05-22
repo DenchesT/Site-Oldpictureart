@@ -76,9 +76,7 @@ PROXY = (
 # ---------- ПАРСИНГ ПОСТА ----------
 
 SEPARATOR_RE = re.compile(r"\s*[⸻⸺]\s*")
-# Ссылка останавливается перед следующим http(s):// или перед # или пробелом —
-# чтобы корректно разделять две склеенные ссылки: "...phphttps://other.com/..."
-URL_RE       = re.compile(r"https?://(?:(?!https?://)[^\s#])+")
+URL_RE       = re.compile(r"https?://\S+")
 TAG_RE       = re.compile(r"#([\w]+)(?:@\w+)?")
 
 # Имя художника: 2–5 слов, каждое с заглавной (кириллица/латиница),
@@ -91,65 +89,61 @@ NAME_RE = re.compile(rf"^(?:{_NAME_WORD})(?:\s+{_NAME_WORD}){{1,6}}$")
 def parse_post(text: str) -> dict:
     """Раскладывает текст поста по полям.
 
-    Алгоритм: разбиваем на абзацы (по \n), затем:
-      • 1-й абзац — шапка через ⸻: художник / название / техника / музей.
-      • Каждый следующий абзац: если есть ⸻ — это история провенанса;
-        если нет ⸻ — это описание картины.
-    Ссылок может быть несколько подряд (склеены или нет) — все идут в urls.
+    Структура: художник ⸻ название ⸻ техника ⸻ музей [⸻ история...].
+    Всё, что идёт после музея через ⸻, считается историей провенанса.
     """
     if not text:
         return {}
 
-    # 1. Достаём теги и убираем их из текста
+    # Защита от служебных постов (список хештегов, реклама, анонсы).
+    # Если в тексте нет фирменного длинного тире, это не картина!
+    if not SEPARATOR_RE.search(text):
+        return {}
+
     raw_tags = TAG_RE.findall(text)
-    text_clean = TAG_RE.sub("", text)
+    text_no_tags = TAG_RE.sub("", text).strip()
 
-    # 2. Достаём ВСЕ ссылки и вынимаем их из текста (на их место кладём пробел)
-    urls: list[str] = []
-    def _grab_url(m):
-        urls.append(m.group(0))
-        return " "
-    text_clean = URL_RE.sub(_grab_url, text_clean).strip()
+    url_match = URL_RE.search(text_no_tags)
+    url = url_match.group(0) if url_match else ""
+    if url_match:
+        text_no_tags = (text_no_tags[:url_match.start()]
+                        + " "
+                        + text_no_tags[url_match.end():])
 
-    # 3. Делим на абзацы по переводам строк
-    paragraphs = [p.strip() for p in re.split(r"\n+", text_clean) if p.strip()]
-    if not paragraphs:
-        return {}
+    parts = [p.strip() for p in SEPARATOR_RE.split(text_no_tags) if p.strip()]
 
-    # 4. Первый абзац — это шапка через ⸻. Если в нём нет тире — это не наш формат.
-    header = paragraphs[0]
-    if not SEPARATOR_RE.search(header):
-        return {}
-    head_parts = [p.strip() for p in SEPARATOR_RE.split(header) if p.strip()]
+    artist = parts[0] if parts else ""
+    title  = parts[1] if len(parts) > 1 else ""
+    medium = parts[2] if len(parts) > 2 else ""
 
-    artist = head_parts[0] if head_parts else ""
-    title  = head_parts[1] if len(head_parts) > 1 else ""
-    medium = head_parts[2] if len(head_parts) > 2 else ""
-    museum = head_parts[3] if len(head_parts) > 3 else ""
-
-    # 5. Остальные абзацы — история (если есть ⸻) или описание (если нет ⸻)
+    # parts[3] — это музей. Он может содержать перенос строки,
+    # после которого уже начинается история провенанса.
+    museum = ""
     history_lines: list[str] = []
-    description_lines: list[str] = []
 
-    for para in paragraphs[1:]:
-        if SEPARATOR_RE.search(para):
-            history_lines.extend(p.strip() for p in SEPARATOR_RE.split(para) if p.strip())
-        else:
-            description_lines.append(para)
+    if len(parts) > 3:
+        museum_raw = parts[3]
+        museum_chunks = [l.strip() for l in museum_raw.split("\n") if l.strip()]
+        museum = museum_chunks[0] if museum_chunks else ""
+        # Всё что после первой строки внутри parts[3] — уже история
+        if len(museum_chunks) > 1:
+            history_lines.extend(museum_chunks[1:])
+
+    # parts[4], parts[5], ... — продолжение истории, разделённое ⸻
+    if len(parts) > 4:
+        history_lines.extend(parts[4:])
 
     history = " ⸻ ".join(history_lines) if history_lines else ""
-    description = "\n\n".join(description_lines) if description_lines else ""
 
     return {
-        "artist":      artist,
-        "title":       title,
-        "medium":      medium,
-        "museum":      museum,
-        "history":     history,
-        "description": description,
-        "urls":        urls,
-        "tags":        sorted(set(raw_tags)),
-        "raw":         text,
+        "artist":  artist,
+        "title":   title,
+        "medium":  medium,
+        "museum":  museum,
+        "history": history,
+        "url":     url,
+        "tags":    sorted(set(raw_tags)),
+        "raw":     text,
     }
 
 # ---------- УТИЛИТЫ ----------
@@ -255,11 +249,10 @@ async def download_images(client, group, comments, post_slug):
 def render_post_page(post: dict) -> str:
     artist = h(post["artist"]); title = h(post["title"])
     medium = h(post["medium"]); museum = h(post["museum"])
+    url    = post["url"]
 
-    # Обратная совместимость со старыми записями в posts_meta.json:
-    history     = post.get("history") or post.get("note") or ""
-    description = post.get("description") or ""
-    urls        = post.get("urls") or ([post["url"]] if post.get("url") else [])
+    # Обратная совместимость со старыми записями в posts_meta.json (поле note вместо history)
+    history = post.get("history") or post.get("note") or ""
 
     # Картинка кликается → открывается оригинал в новой вкладке
     img_html_parts = []
@@ -280,40 +273,21 @@ def render_post_page(post: dict) -> str:
             f'<a href="tag-{h(t)}.html" class="tag">#{h(t)}</a>' for t in post["tags"]
         ) + "</div>"
 
-    # Блок описания картины — отдельные параграфы, разделённые \n\n.
-    description_html = ""
-    if description:
-        paras = "".join(
-            f"<p>{h(p)}</p>" for p in description.split("\n\n") if p.strip()
-        )
-        description_html = f'<section class="description">{paras}</section>'
+    source_html = (f'<p class="source">Источник: '
+                   f'<a href="{h(url)}" target="_blank" rel="noopener">{h(url)}</a></p>'
+                   if url else "")
 
-    # Блок истории провенанса. Делим обратно по " ⸻ " чтобы каждый этап стал отдельной строкой.
+    # Блок истории провенанса. Делим обратно по " ⸻ " чтобы каждый этап стал отдельной строкой
     history_html = ""
     if history:
         parts_h = [p.strip() for p in history.split("⸻") if p.strip()]
         items = "".join(f"<li>{h(p)}</li>" for p in parts_h)
         history_html = (
             '<section class="history">'
-            '<h3>Происхождение</h3>'
+            '<h3>История картины</h3>'
             f'<ul>{items}</ul>'
             '</section>'
         )
-
-    # Блок источников — одна или несколько ссылок.
-    sources_html = ""
-    if urls:
-        if len(urls) == 1:
-            u = urls[0]
-            sources_html = (f'<p class="source">Источник: '
-                            f'<a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></p>')
-        else:
-            items = "".join(
-                f'<li><a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></li>'
-                for u in urls
-            )
-            sources_html = (f'<div class="sources"><strong>Источники:</strong>'
-                            f'<ul class="source-list">{items}</ul></div>')
 
     return f"""<!DOCTYPE html>
 <html lang="ru"><head>
@@ -331,11 +305,7 @@ h1{{font-size:1.8rem;margin:0 0 .3rem;font-weight:bold}}
 h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:#555;margin:0 0 1rem}}
 .medium,.museum,.source{{margin:.3rem 0;color:#555}}
 .museum{{font-style:italic}}
-.source a,.source-list a{{word-break:break-all;color:#0366d6}}
-
-/* Блок описания картины */
-.description{{margin:1.5rem 0;font-size:1rem;color:#333;text-align:justify}}
-.description p{{margin:.6rem 0;line-height:1.65}}
+.source a{{word-break:break-all;color:#0366d6}}
 
 /* Блок истории провенанса */
 .history{{margin:1.8rem 0;padding:1rem 1.25rem;background:#f3eedb;
@@ -343,11 +313,6 @@ h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:#555;margin:0 0
 .history h3{{margin:0 0 .6rem;font-size:1rem;color:#5a4f2a;font-weight:bold}}
 .history ul{{margin:0;padding-left:1.2rem}}
 .history li{{margin:.35rem 0;color:#4a4a4a;font-size:.95rem}}
-
-/* Несколько источников */
-.sources{{margin:1rem 0;color:#555}}
-.source-list{{margin:.3rem 0 0;padding-left:1.2rem}}
-.source-list li{{margin:.25rem 0}}
 
 .tags{{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #ddd;
      display:flex;flex-wrap:wrap;gap:.4rem}}
@@ -371,9 +336,8 @@ time{{color:#999;font-size:.85rem}}
 {img_html}
 <p class="medium">{medium}</p>
 <p class="museum">{museum}</p>
-{description_html}
 {history_html}
-{sources_html}
+{source_html}
 <time>{h(post['date'])}</time>
 {tags_html}
 </article></body></html>"""
