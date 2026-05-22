@@ -5,52 +5,37 @@
 <style>
 body{max-width:900px;margin:0 auto;padding:1.5rem;
      font-family:Georgia,serif;background:#fafafa;color:#222;line-height:1.55;
-     overflow-wrap: break-word; /* РЕШЕНИЕ 1: Базовый перенос слишком длинных слов */
-}
-
-/* ОГРАНИЧИВАЕМ ВЫСОТУ КАРТИНКИ */
-.painting{
-    max-width: 100%;
-    max-height: 70vh; /* Картина займет максимум 70% от высоты экрана */
-    width: auto;      /* Ширина автоматически подстроится, сохранив пропорции */
-    display: block;
-    margin: 1.5rem auto;
-    box-shadow: 0 4px 20px rgba(0,0,0,.15);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: zoom-in;
-}
-.painting:hover{
-    transform: translateY(-2px) scale(1.01);
-    box-shadow: 0 8px 25px rgba(0,0,0,.25);
-}
-
+     overflow-wrap:break-word}
+.painting{max-width:100%;max-height:70vh;width:auto;display:block;
+          margin:1.5rem auto;box-shadow:0 4px 20px rgba(0,0,0,.15);
+          transition:transform .2s ease,box-shadow .2s ease;cursor:zoom-in}
+.painting:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 8px 25px rgba(0,0,0,.25)}
 h1{font-size:1.8rem;margin:0 0 .3rem;font-weight:bold}
 h2{font-size:1.25rem;font-style:italic;font-weight:normal;color:#555;margin:0 0 1rem}
-.medium,.museum,.note,.source{margin:.3rem 0;color:#555}
+.medium,.museum,.source{margin:.3rem 0;color:#555}
 .museum{font-style:italic}
+.source a{word-break:break-all;color:#0366d6}
 
-/* РЕШЕНИЕ 2: Принудительно разрываем длинные ссылки */
-.source a {
-    word-break: break-all;
-    color: #0366d6;
-}
+/* Блок истории провенанса */
+.history{margin:1.8rem 0;padding:1rem 1.25rem;background:#f3eedb;
+         border-left:3px solid #b8a86a;border-radius:4px}
+.history h3{margin:0 0 .6rem;font-size:1rem;color:#5a4f2a;font-weight:bold}
+.history ul{margin:0;padding-left:1.2rem}
+.history li{margin:.35rem 0;color:#4a4a4a;font-size:.95rem}
 
-.tags{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #ddd;display:flex;flex-wrap:wrap;gap:0.4rem}
+.tags{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #ddd;
+     display:flex;flex-wrap:wrap;gap:.4rem}
 .tag{display:inline-block;background:#eee;color:#555;text-decoration:none;
      padding:.3rem .7rem;border-radius:4px;font-size:.85rem}
 .tag:hover{background:#ddd}
 .back{display:inline-block;margin-bottom:1rem;color:#666;text-decoration:none}
 time{color:#999;font-size:.85rem}
 
-/* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
 @media (max-width: 600px) {
-    body { 
-        padding: 1rem; 
-        overflow-x: hidden; /* РЕШЕНИЕ 3: Жестко отсекаем горизонтальный скролл */
-    }
-    h1 { font-size: 1.5rem; }
-    h2 { font-size: 1.15rem; }
-    .painting { margin: 1rem auto; max-height: 60vh; } /* На мобилках делаем чуть меньше */
+  body{padding:1rem;overflow-x:hidden}
+  h1{font-size:1.5rem}
+  h2{font-size:1.15rem}
+  .painting{margin:1rem auto;max-height:60vh}
 }
 </style></head><body>
 <a href="index.html" class="back">← На главную</a>
@@ -60,7 +45,13 @@ time{color:#999;font-size:.85rem}
 <a href="images/2025-04-11-альфред-сислей-hires-1.jpeg" target="_blank" title="Нажмите, чтобы открыть оригинал"><img src="images/2025-04-11-альфред-сислей-1.jpg" alt="Альфред Сислей — La gelée à Louvecienne (Мороз в Лувесьенне), 1873" class="painting" loading="lazy"></a>
 <p class="medium">Холст, масло, 46 x 61 см</p>
 <p class="museum">ГМИИ им. А.С. Пушкина, Москва.</p>
-<p class="note">В 1902 приобретена Дюран-Рюэлем на распродаже коллекции Жюля Штрауса в Париже за 9300 франков</p>
+<section class="history"><h3>История картины</h3><ul><li>В 1902 приобретена Дюран-Рюэлем на распродаже коллекции Жюля Штрауса в Париже за 9300 франков</li><li>в 1903 приобретена И.А. Морозовым у Дюран-Рюэля за 11 500 франков</li><li>с 1919 в МНЗЖ</li><li>с 1923 в ГМНЗИ</li><li>с 1948 в ГМИИ.
+
+Купленная И.А. Морозовым в 1903 году картина Сислея &quot;Мороз в Лувесьенне&quot; относится к числу первых произведений французской живописи в его собрании. Начинающий коллекционер приобрёл её по совету Дюран-Рюэля, который испытывал особую симпатию к этому художнику. Пейзаж был создан в Лувесьенне, где художник работал начиная с 1871 года. Нежный колорит и мягкий рассеянный свет картины свидетельствуют о том, что до начала 1870-х годов живописец был под сильным влиянием Камиля Коро. Морозов владел пятью произведениями Сислея, созданными до 1885 года (его поздней манеры московский собиратель не принимал).
+
+ 
+https://collection.pushkinmuseum.art/entity/OBJECT/78283?query=Мороз&amp;index=0
+http://www.newestmuseum.ru/data/authors/s/sisley_alfred/frosty_morning_at_louveciennes.php?lang=ru</li></ul></section>
 <p class="source">Источник: <a href="https://pushkinmuseum.art/data/fonds/europe_and_america/j/2001_3000/zh_3420/index.php?lang=ru" target="_blank" rel="noopener">https://pushkinmuseum.art/data/fonds/europe_and_america/j/2001_3000/zh_3420/index.php?lang=ru</a></p>
 <time>2025-04-11</time>
 <div class="tags"><a href="tag-sisley.html" class="tag">#sisley</a> <a href="tag-гмии.html" class="tag">#гмии</a> <a href="tag-картина.html" class="tag">#картина</a></div>

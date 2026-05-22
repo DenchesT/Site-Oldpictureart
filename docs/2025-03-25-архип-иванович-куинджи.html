@@ -5,52 +5,37 @@
 <style>
 body{max-width:900px;margin:0 auto;padding:1.5rem;
      font-family:Georgia,serif;background:#fafafa;color:#222;line-height:1.55;
-     overflow-wrap: break-word; /* РЕШЕНИЕ 1: Базовый перенос слишком длинных слов */
-}
-
-/* ОГРАНИЧИВАЕМ ВЫСОТУ КАРТИНКИ */
-.painting{
-    max-width: 100%;
-    max-height: 70vh; /* Картина займет максимум 70% от высоты экрана */
-    width: auto;      /* Ширина автоматически подстроится, сохранив пропорции */
-    display: block;
-    margin: 1.5rem auto;
-    box-shadow: 0 4px 20px rgba(0,0,0,.15);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: zoom-in;
-}
-.painting:hover{
-    transform: translateY(-2px) scale(1.01);
-    box-shadow: 0 8px 25px rgba(0,0,0,.25);
-}
-
+     overflow-wrap:break-word}
+.painting{max-width:100%;max-height:70vh;width:auto;display:block;
+          margin:1.5rem auto;box-shadow:0 4px 20px rgba(0,0,0,.15);
+          transition:transform .2s ease,box-shadow .2s ease;cursor:zoom-in}
+.painting:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 8px 25px rgba(0,0,0,.25)}
 h1{font-size:1.8rem;margin:0 0 .3rem;font-weight:bold}
 h2{font-size:1.25rem;font-style:italic;font-weight:normal;color:#555;margin:0 0 1rem}
-.medium,.museum,.note,.source{margin:.3rem 0;color:#555}
+.medium,.museum,.source{margin:.3rem 0;color:#555}
 .museum{font-style:italic}
+.source a{word-break:break-all;color:#0366d6}
 
-/* РЕШЕНИЕ 2: Принудительно разрываем длинные ссылки */
-.source a {
-    word-break: break-all;
-    color: #0366d6;
-}
+/* Блок истории провенанса */
+.history{margin:1.8rem 0;padding:1rem 1.25rem;background:#f3eedb;
+         border-left:3px solid #b8a86a;border-radius:4px}
+.history h3{margin:0 0 .6rem;font-size:1rem;color:#5a4f2a;font-weight:bold}
+.history ul{margin:0;padding-left:1.2rem}
+.history li{margin:.35rem 0;color:#4a4a4a;font-size:.95rem}
 
-.tags{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #ddd;display:flex;flex-wrap:wrap;gap:0.4rem}
+.tags{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #ddd;
+     display:flex;flex-wrap:wrap;gap:.4rem}
 .tag{display:inline-block;background:#eee;color:#555;text-decoration:none;
      padding:.3rem .7rem;border-radius:4px;font-size:.85rem}
 .tag:hover{background:#ddd}
 .back{display:inline-block;margin-bottom:1rem;color:#666;text-decoration:none}
 time{color:#999;font-size:.85rem}
 
-/* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
 @media (max-width: 600px) {
-    body { 
-        padding: 1rem; 
-        overflow-x: hidden; /* РЕШЕНИЕ 3: Жестко отсекаем горизонтальный скролл */
-    }
-    h1 { font-size: 1.5rem; }
-    h2 { font-size: 1.15rem; }
-    .painting { margin: 1rem auto; max-height: 60vh; } /* На мобилках делаем чуть меньше */
+  body{padding:1rem;overflow-x:hidden}
+  h1{font-size:1.5rem}
+  h2{font-size:1.15rem}
+  .painting{margin:1rem auto;max-height:60vh}
 }
 </style></head><body>
 <a href="index.html" class="back">← На главную</a>
@@ -60,7 +45,7 @@ time{color:#999;font-size:.85rem}
 <a href="images/2025-03-25-архип-иванович-куинджи-hires-1.jpg" target="_blank" title="Нажмите, чтобы открыть оригинал"><img src="images/2025-03-25-архип-иванович-куинджи-1.jpg" alt="Архип Иванович Куинджи — Берёзовая роща, 1879" class="painting" loading="lazy"></a>
 <p class="medium">Холст, масло,  97 x 181 см</p>
 <p class="museum">Государственная Третьяковская галерея, Москва. Приобретено П.М. Третьяковым у автора в 1879 г.</p>
-<p class="note">Картина Куинджи «Берёзовая роща» тоже стала открытием седьмой передвижной выставки 1879 года. Она вызвала громкий скандал, потому что вдруг, нежданно-негаданно, в одной из тогдашних газет появилась анонимная статья, где Куинджи обвиняли в шарлатанских трюках, недостойных художника, высказывались насмешки по поводу восторженной публики. Неожиданно выяснилось, что автором этой скандальной статьи, этого злостного памфлета на Куинджи был один из передвижников, а именно – Михаил Клодт. Клодт, как и Куинджи, был пейзажистом, поэтому он испытывал зависть к своему более успешному товарищу, и это побудило его написать эту статью, причём без подписи. Тем не менее его авторство выяснилось, и это шокировало участников «Товарищества». Многие в открытую высказали это Клодту, Куинджи потребовал, чтобы Клодта исключили из состава «Товарищества». Это решение не было принято, поэтому сам Куинджи вышел из состава передвижников, но вслед за этим вынужден был уйти и Клодт, столкнувшись с полным неприятием своего поступка со стороны других передвижников.</p>
+<section class="history"><h3>История картины</h3><ul><li>Картина Куинджи «Берёзовая роща» тоже стала открытием седьмой передвижной выставки 1879 года. Она вызвала громкий скандал, потому что вдруг, нежданно-негаданно, в одной из тогдашних газет появилась анонимная статья, где Куинджи обвиняли в шарлатанских трюках, недостойных художника, высказывались насмешки по поводу восторженной публики. Неожиданно выяснилось, что автором этой скандальной статьи, этого злостного памфлета на Куинджи был один из передвижников, а именно – Михаил Клодт. Клодт, как и Куинджи, был пейзажистом, поэтому он испытывал зависть к своему более успешному товарищу, и это побудило его написать эту статью, причём без подписи. Тем не менее его авторство выяснилось, и это шокировало участников «Товарищества». Многие в открытую высказали это Клодту, Куинджи потребовал, чтобы Клодта исключили из состава «Товарищества». Это решение не было принято, поэтому сам Куинджи вышел из состава передвижников, но вслед за этим вынужден был уйти и Клодт, столкнувшись с полным неприятием своего поступка со стороны других передвижников.</li></ul></section>
 <p class="source">Источник: <a href="https://my.tretyakov.ru/app/masterpiece/8418/" target="_blank" rel="noopener">https://my.tretyakov.ru/app/masterpiece/8418/</a></p>
 <time>2025-03-25</time>
 <div class="tags"><a href="tag-гтг.html" class="tag">#гтг</a> <a href="tag-картина.html" class="tag">#картина</a> <a href="tag-куинджи.html" class="tag">#куинджи</a></div>

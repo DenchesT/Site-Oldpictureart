@@ -12,80 +12,79 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
 .search-box{width:100%;max-width:500px;padding:.8rem 1rem;font-size:1rem;
             border:1px solid #ccc;border-radius:6px;font-family:inherit}
 
-/* НОВАЯ РАСКЛАДКА: Сайдбар + Сетка */
-.layout { display: flex; gap: 2rem; align-items: flex-start; }
+.layout{display:flex;gap:2rem;align-items:flex-start}
+.sidebar{width:280px;flex-shrink:0;background:#fff;padding:1.5rem;
+        border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,.08);
+        position:sticky;top:1.5rem;max-height:calc(100vh - 3rem);overflow-y:auto}
+.sidebar::-webkit-scrollbar{width:6px}
+.sidebar::-webkit-scrollbar-thumb{background-color:#ccc;border-radius:3px}
+.sidebar-section{margin-bottom:2rem}
+.sidebar-title{font-size:1.1rem;font-weight:bold;margin:0 0 1rem;
+              border-bottom:1px solid #eee;padding-bottom:.5rem}
+.sidebar ul{list-style:none;padding:0;margin:0}
+.sidebar li{margin-bottom:.5rem}
+.sidebar a{text-decoration:none;color:#555;font-size:.95rem;display:block;transition:color .15s}
+.sidebar a:hover{color:#000}
+.sidebar a.active{color:#0366d6;font-weight:bold}
+.month-list{padding-left:1.2rem !important;margin-top:.5rem !important;font-size:.95em}
 
-/* САЙДБАР */
-.sidebar { 
-    width: 280px; flex-shrink: 0; background: #fff; padding: 1.5rem; 
-    border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,.08); 
-    position: sticky; top: 1.5rem; max-height: calc(100vh - 3rem); 
-    overflow-y: auto; 
-}
-/* Кастомизация скроллбара в сайдбаре */
-.sidebar::-webkit-scrollbar { width: 6px; }
-.sidebar::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 3px; }
+.filter-reset{display:none;margin-bottom:1.5rem;color:#d73a49 !important;
+             font-weight:bold;text-align:center;background:#ffeef0;
+             padding:.6rem;border-radius:4px}
+.filter-reset:hover{background:#ffdce0}
 
-.sidebar-section { margin-bottom: 2rem; }
-.sidebar-title { font-size: 1.1rem; font-weight: bold; margin: 0 0 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
-.sidebar ul { list-style: none; padding: 0; margin: 0; }
-.sidebar li { margin-bottom: 0.5rem; }
-.sidebar a { text-decoration: none; color: #555; font-size: 0.95rem; display: block; transition: color .15s; }
-.sidebar a:hover { color: #000; }
-.sidebar a.active { color: #0366d6; font-weight: bold; }
-.month-list { padding-left: 1.2rem !important; margin-top: 0.5rem !important; font-size: 0.95em; }
-
-.filter-reset { display: none; margin-bottom: 1.5rem; color: #d73a49 !important; font-weight: bold; text-align: center; background: #ffeef0; padding: 0.6rem; border-radius: 4px; }
-.filter-reset:hover { background: #ffdce0; }
-
-/* ОСНОВНОЙ КОНТЕНТ */
-.main-content { flex-grow: 1; min-width: 0; }
+.main-content{flex-grow:1;min-width:0}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}
-
 .card{background:#fff;text-decoration:none;color:inherit;border-radius:6px;
       overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.08);transition:transform .15s,box-shadow .15s}
 .card:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.15)}
 .card-img{width:100%;aspect-ratio:4/3;background:#ddd center/cover no-repeat}
 .card-body{padding:.8rem 1rem 1rem}
 .card-artist{font-weight:bold;font-size:1rem;line-height:1.2;
-    display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;overflow: hidden;}
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card-title{font-style:italic;color:#666;font-size:.9rem;margin-top:.35rem;
             display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
 @media (max-width: 850px) {
-    .layout { flex-direction: column; gap: 1rem; }
-    .sidebar { width: 100%; position: static; max-height: 350px; }
-    .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+    .layout{flex-direction:column;gap:1rem}
+    .sidebar{width:100%;position:static;max-height:350px}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem}
 }
 </style></head><body>
 <header>
 <h1>Old Picture Art</h1>
-<div class="subtitle">Картин в коллекции: 73</div>
+<div class="subtitle">Картин в коллекции: 74</div>
 <input type="text" class="search-box" placeholder="Поиск по художнику или картине…" id="search">
 </header>
 
 <div class="layout">
-  <!-- БОКОВОЕ МЕНЮ -->
   <aside class="sidebar">
     <a href="#" id="reset-filter" class="filter-reset">✕ Сбросить фильтр</a>
-    
     <div class="sidebar-section">
       <div class="sidebar-title">Архив</div>
       <ul><li><a href="#" class="filter-link" data-type="year" data-val="2026"><b>2026 год</b></a><ul class="month-list"><li><a href="#" class="filter-link" data-type="month" data-year="2026" data-val="05">Май</a></li><li><a href="#" class="filter-link" data-type="month" data-year="2026" data-val="04">Апрель</a></li><li><a href="#" class="filter-link" data-type="month" data-year="2026" data-val="03">Март</a></li><li><a href="#" class="filter-link" data-type="month" data-year="2026" data-val="02">Февраль</a></li><li><a href="#" class="filter-link" data-type="month" data-year="2026" data-val="01">Январь</a></li></ul></li><li><a href="#" class="filter-link" data-type="year" data-val="2025"><b>2025 год</b></a><ul class="month-list"><li><a href="#" class="filter-link" data-type="month" data-year="2025" data-val="12">Декабрь</a></li><li><a href="#" class="filter-link" data-type="month" data-year="2025" data-val="11">Ноябрь</a></li><li><a href="#" class="filter-link" data-type="month" data-year="2025" data-val="10">Октябрь</a></li><li><a href="#" class="filter-link" data-type="month" data-year="2025" data-val="09">Сентябрь</a></li><li><a href="#" class="filter-link" data-type="month" data-year="2025" data-val="08">Август</a></li><li><a href="#" class="filter-link" data-type="month" data-year="2025" data-val="07">Июль</a></li><li><a href="#" class="filter-link" data-type="month" data-year="2025" data-val="06">Июнь</a></li><li><a href="#" class="filter-link" data-type="month" data-year="2025" data-val="05">Май</a></li><li><a href="#" class="filter-link" data-type="month" data-year="2025" data-val="04">Апрель</a></li><li><a href="#" class="filter-link" data-type="month" data-year="2025" data-val="03">Март</a></li><li><a href="#" class="filter-link" data-type="month" data-year="2025" data-val="02">Февраль</a></li></ul></li></ul>
     </div>
-    
     <div class="sidebar-section">
       <div class="sidebar-title">Художники (А-Я)</div>
       <ul><li><a href="#" class="filter-link" data-type="artist" data-val="аксели галлен-каллела">Аксели Галлен-Каллела</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="александр жан-батист брюн">Александр Жан-Батист Брюн</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="александр иванович морозов">Александр Иванович Морозов</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="альберт бирштадт">Альберт Бирштадт</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="альфред сислей">Альфред Сислей</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="анонимные художники, феликс огюстен милиус, александр-огюст розе, альфред адольф ленгле, огюст русслен, огюст александр хирш, эмиль-анри лапорт, огюст ренуар, поль милье, леонс-люсьен кордье, альбер дарье">Анонимные художники, Феликс Огюстен Милиус, Александр-Огюст Розе, Альфред Адольф Ленгле, Огюст Русслен, Огюст Александр Хирш, Эмиль-Анри Лапорт, Огюст Ренуар, Поль Милье, Леонс-Люсьен Кордье, Альбер Дарье</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="анри жан гийом мартен">Анри Жан Гийом Мартен</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="анри мари раймон де тулуз-лотрек-монфа">Анри Мари Раймон де Тулуз-Лотрек-Монфа</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="архип иванович куинджи">Архип Иванович Куинджи</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="аурелиано де беруэте">Аурелиано де Беруэте</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="борис михайлович кустодиев">Борис Михайлович Кустодиев</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="валентин александрович серов">Валентин Александрович Серов</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="вигго юхансен">Вигго Юхансен</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="винсент виллем ван гог">Винсент Виллем ван Гог</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="геркулес сегерс">Геркулес Сегерс</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="гюстав кайботт">Гюстав Кайботт</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="джон гловер">Джон Гловер</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="джон сингер сарджент">Джон Сингер Сарджент</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="жакоб абраам камиль писсарро">Жакоб Абраам Камиль Писсарро</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="жан батист эдуар детай">Жан Батист Эдуар Детай</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="жан дезире гюстав курбе">Жан Дезире Гюстав Курбе</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="жан луи форен">Жан Луи Форен</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="жан фредерик базиль">Жан Фредерик Базиль</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="жан-батист арман гийомен">Жан-Батист Арман Гийомен</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="жан-франсуа милле">Жан-Франсуа Милле</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="игорь эммануилович грабарь">Игорь Эммануилович Грабарь</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="илер-жермен-эдгар де га (эдгар дега)">Илер-Жермен-Эдгар де Га (Эдгар Дега)</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="илья ефимович репин">Илья Ефимович Репин</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="иньяс-анри-жан-теодор фантен-латур">Иньяс-Анри-Жан-Теодор Фантен-Латур</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="исаак ильич левитан">Исаак Ильич Левитан</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="йохан фредерик фриц таулов">Йохан Фредерик Фриц Таулов</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="карл павлович брюллов">Карл Павлович Брюллов</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="каспар давид фридрих">Каспар Давид Фридрих</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="констан тройон">Констан Тройон</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="константин аполлонович савицкий">Константин Аполлонович Савицкий</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="константин фёдорович юон">Константин Фёдорович Юон</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="луиджи алоис-франсуа-жозеф луар">Луиджи Алоис-Франсуа-Жозеф Луар</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="макс либерман">Макс Либерман</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="никола пуссен">Никола Пуссен</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="николай александрович тархов">Николай Александрович Тархов</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="николай дмитриевич кузнецов">Николай Дмитриевич Кузнецов</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="николай егорович сверчков">Николай Егорович Сверчков</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="поль сезар эллё">Поль Сезар Эллё</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="пьер огюст ренуар">Пьер Огюст Ренуар</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="рокуэлл кент">Рокуэлл Кент</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="станислав юлианович жуковский">Станислав Юлианович Жуковский</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="станислас анри руар">Станислас Анри Руар</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="фердинан виктор эжен делакруа">Фердинан Виктор Эжен Делакруа</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="фердинанд ходлер">Фердинанд Ходлер</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="франц теодор макс слефогт">Франц Теодор Макс Слефогт</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="франц фон штук">Франц фон Штук</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="фредерик чайльд гассам">Фредерик Чайльд Гассам</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="фрэнсис кэмпбелл буало каделл">Фрэнсис Кэмпбелл Буало Каделл</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="ханс даль">Ханс Даль</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="эдуард мане">Эдуард Мане</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="эжен луи буден">Эжен Луи Буден</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="эмильен мюло-дюриваж">Эмильен Мюло-Дюриваж</a></li><li><a href="#" class="filter-link" data-type="artist" data-val="ялмар эйлиф эммануэл петерссен">Ялмар Эйлиф Эммануэл Петерссен</a></li></ul>
     </div>
   </aside>
 
-  <!-- КАРТОЧКИ -->
   <main class="main-content">
     <div class="grid" id="cards">
-        <a class="card" href="2026-05-15-николай-егорович-сверчков.html" 
-           data-artist="николай егорович сверчков" 
-           data-year="2026" 
+        <a class="card" href="2026-05-22-эдуард-мане.html"
+           data-artist="эдуард мане"
+           data-year="2026"
+           data-month="05">
+          <div class="card-img" style="background-image:url('images/2026-05-22-эдуард-мане-1.jpg')"></div>
+          <div class="card-body">
+            <div class="card-artist">Эдуард Мане</div>
+            <div class="card-title">Le Chien Minnay (Собака Минней), 1879</div>
+          </div>
+        </a>
+        <a class="card" href="2026-05-15-николай-егорович-сверчков.html"
+           data-artist="николай егорович сверчков"
+           data-year="2026"
            data-month="05">
           <div class="card-img" style="background-image:url('images/2026-05-15-николай-егорович-сверчков-1.jpg')"></div>
           <div class="card-body">
@@ -93,9 +92,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Зимний пейзаж с санями, запряженными лошадьми, 1868</div>
           </div>
         </a>
-        <a class="card" href="2026-04-30-аксели-галлен-каллела.html" 
-           data-artist="аксели галлен-каллела" 
-           data-year="2026" 
+        <a class="card" href="2026-04-30-аксели-галлен-каллела.html"
+           data-artist="аксели галлен-каллела"
+           data-year="2026"
            data-month="04">
           <div class="card-img" style="background-image:url('images/2026-04-30-аксели-галлен-каллела-1.jpg')"></div>
           <div class="card-body">
@@ -103,9 +102,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Ruovesi (Озеро Руовеси), 1896</div>
           </div>
         </a>
-        <a class="card" href="2026-04-16-винсент-виллем-ван-гог.html" 
-           data-artist="винсент виллем ван гог" 
-           data-year="2026" 
+        <a class="card" href="2026-04-16-винсент-виллем-ван-гог.html"
+           data-artist="винсент виллем ван гог"
+           data-year="2026"
            data-month="04">
           <div class="card-img" style="background-image:url('images/2026-04-16-винсент-виллем-ван-гог-1.jpg')"></div>
           <div class="card-body">
@@ -113,9 +112,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Bloembedden in Holland (Цветники в Голландии), 1883</div>
           </div>
         </a>
-        <a class="card" href="2026-04-04-жакоб-абраам-камиль-писсарро.html" 
-           data-artist="жакоб абраам камиль писсарро" 
-           data-year="2026" 
+        <a class="card" href="2026-04-04-жакоб-абраам-камиль-писсарро.html"
+           data-artist="жакоб абраам камиль писсарро"
+           data-year="2026"
            data-month="04">
           <div class="card-img" style="background-image:url('images/2026-04-04-жакоб-абраам-камиль-писсарро-1.jpg')"></div>
           <div class="card-body">
@@ -123,9 +122,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">La Maison Rouge (Красный дом), 1873</div>
           </div>
         </a>
-        <a class="card" href="2026-03-26-альфред-сислей.html" 
-           data-artist="альфред сислей" 
-           data-year="2026" 
+        <a class="card" href="2026-03-26-альфред-сислей.html"
+           data-artist="альфред сислей"
+           data-year="2026"
            data-month="03">
           <div class="card-img" style="background-image:url('images/2026-03-26-альфред-сислей-1.jpg')"></div>
           <div class="card-body">
@@ -133,9 +132,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">La Prairie (Луг), 1875</div>
           </div>
         </a>
-        <a class="card" href="2026-03-22-жан-батист-арман-гийомен.html" 
-           data-artist="жан-батист арман гийомен" 
-           data-year="2026" 
+        <a class="card" href="2026-03-22-жан-батист-арман-гийомен.html"
+           data-artist="жан-батист арман гийомен"
+           data-year="2026"
            data-month="03">
           <div class="card-img" style="background-image:url('images/2026-03-22-жан-батист-арман-гийомен-1.jpg')"></div>
           <div class="card-body">
@@ -143,9 +142,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Paysage de neige à Crozant (Снежный пейзаж в Крозанте), 1895</div>
           </div>
         </a>
-        <a class="card" href="2026-03-16-анонимные-художники-феликс-огюстен-милиус-александр-огюст-ро.html" 
-           data-artist="анонимные художники, феликс огюстен милиус, александр-огюст розе, альфред адольф ленгле, огюст русслен, огюст александр хирш, эмиль-анри лапорт, огюст ренуар, поль милье, леонс-люсьен кордье, альбер дарье" 
-           data-year="2026" 
+        <a class="card" href="2026-03-16-анонимные-художники-феликс-огюстен-милиус-александр-огюст-ро.html"
+           data-artist="анонимные художники, феликс огюстен милиус, александр-огюст розе, альфред адольф ленгле, огюст русслен, огюст александр хирш, эмиль-анри лапорт, огюст ренуар, поль милье, леонс-люсьен кордье, альбер дарье"
+           data-year="2026"
            data-month="03">
           <div class="card-img" style="background-image:url('images/2026-03-16-анонимные-художники-феликс-огюстен-милиус-александр-огюст-ро-1.jpg')"></div>
           <div class="card-body">
@@ -153,9 +152,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Quarante-trois portraits de peintres de l&#x27;atelier Gleyre (Сорок три портрета художников мастерской Глейра), между 1856 и 1868 годами</div>
           </div>
         </a>
-        <a class="card" href="2026-03-10-станислав-юлианович-жуковский.html" 
-           data-artist="станислав юлианович жуковский" 
-           data-year="2026" 
+        <a class="card" href="2026-03-10-станислав-юлианович-жуковский.html"
+           data-artist="станислав юлианович жуковский"
+           data-year="2026"
            data-month="03">
           <div class="card-img" style="background-image:url('images/2026-03-10-станислав-юлианович-жуковский-1.jpg')"></div>
           <div class="card-body">
@@ -163,9 +162,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Былое. Комната старого дома, 1912</div>
           </div>
         </a>
-        <a class="card" href="2026-02-16-аурелиано-де-беруэте.html" 
-           data-artist="аурелиано де беруэте" 
-           data-year="2026" 
+        <a class="card" href="2026-02-16-аурелиано-де-беруэте.html"
+           data-artist="аурелиано де беруэте"
+           data-year="2026"
            data-month="02">
           <div class="card-img" style="background-image:url('images/2026-02-16-аурелиано-де-беруэте-1.jpg')"></div>
           <div class="card-body">
@@ -173,9 +172,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Paisaje de Torrelodones (Пейзаж Торрелодонес), 1891</div>
           </div>
         </a>
-        <a class="card" href="2026-02-11-альфред-сислей.html" 
-           data-artist="альфред сислей" 
-           data-year="2026" 
+        <a class="card" href="2026-02-11-альфред-сислей.html"
+           data-artist="альфред сислей"
+           data-year="2026"
            data-month="02">
           <div class="card-img" style="background-image:url('images/2026-02-11-альфред-сислей-1.jpg')"></div>
           <div class="card-body">
@@ -183,9 +182,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Nature morte, pommes et raisins (Натюрморт, яблоки и виноград), 1880-81</div>
           </div>
         </a>
-        <a class="card" href="2026-02-04-жан-батист-эдуар-детай.html" 
-           data-artist="жан батист эдуар детай" 
-           data-year="2026" 
+        <a class="card" href="2026-02-04-жан-батист-эдуар-детай.html"
+           data-artist="жан батист эдуар детай"
+           data-year="2026"
            data-month="02">
           <div class="card-img" style="background-image:url('images/2026-02-04-жан-батист-эдуар-детай-1.jpg')"></div>
           <div class="card-body">
@@ -193,9 +192,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Inauguration de l&#x27;Opéra de Paris, 5 janvier 1875 (Открытие Парижской оперы, 5 января 1875 года), 1878</div>
           </div>
         </a>
-        <a class="card" href="2026-01-16-эдуард-мане.html" 
-           data-artist="эдуард мане" 
-           data-year="2026" 
+        <a class="card" href="2026-01-16-эдуард-мане.html"
+           data-artist="эдуард мане"
+           data-year="2026"
            data-month="01">
           <div class="card-img" style="background-image:url('images/2026-01-16-эдуард-мане-1.jpg')"></div>
           <div class="card-body">
@@ -203,9 +202,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Le Suicidé (Самоубийство), 1877</div>
           </div>
         </a>
-        <a class="card" href="2026-01-07-борис-михайлович-кустодиев.html" 
-           data-artist="борис михайлович кустодиев" 
-           data-year="2026" 
+        <a class="card" href="2026-01-07-борис-михайлович-кустодиев.html"
+           data-artist="борис михайлович кустодиев"
+           data-year="2026"
            data-month="01">
           <div class="card-img" style="background-image:url('images/2026-01-07-борис-михайлович-кустодиев-1.jpg')"></div>
           <div class="card-body">
@@ -213,9 +212,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Крещенское водосвятие, 1921</div>
           </div>
         </a>
-        <a class="card" href="2025-12-31-вигго-юхансен.html" 
-           data-artist="вигго юхансен" 
-           data-year="2025" 
+        <a class="card" href="2025-12-31-вигго-юхансен.html"
+           data-artist="вигго юхансен"
+           data-year="2025"
            data-month="12">
           <div class="card-img" style="background-image:url('images/2025-12-31-вигго-юхансен-1.jpg')"></div>
           <div class="card-body">
@@ -223,9 +222,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Glade jul (Счастливого Рождества), 1891</div>
           </div>
         </a>
-        <a class="card" href="2025-12-24-жан-франсуа-милле.html" 
-           data-artist="жан-франсуа милле" 
-           data-year="2025" 
+        <a class="card" href="2025-12-24-жан-франсуа-милле.html"
+           data-artist="жан-франсуа милле"
+           data-year="2025"
            data-month="12">
           <div class="card-img" style="background-image:url('images/2025-12-24-жан-франсуа-милле-1.jpg')"></div>
           <div class="card-body">
@@ -233,9 +232,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Falaises de Gréville (Скалы Гревиля), 1871</div>
           </div>
         </a>
-        <a class="card" href="2025-12-16-джон-сингер-сарджент.html" 
-           data-artist="джон сингер сарджент" 
-           data-year="2025" 
+        <a class="card" href="2025-12-16-джон-сингер-сарджент.html"
+           data-artist="джон сингер сарджент"
+           data-year="2025"
            data-month="12">
           <div class="card-img" style="background-image:url('images/2025-12-16-джон-сингер-сарджент-1.jpg')"></div>
           <div class="card-body">
@@ -243,9 +242,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Claude Monet Painting by the Edge of a Wood (Картина Клода Моне «На опушке леса»), 1885</div>
           </div>
         </a>
-        <a class="card" href="2025-12-10-ялмар-эйлиф-эммануэл-петерссен.html" 
-           data-artist="ялмар эйлиф эммануэл петерссен" 
-           data-year="2025" 
+        <a class="card" href="2025-12-10-ялмар-эйлиф-эммануэл-петерссен.html"
+           data-artist="ялмар эйлиф эммануэл петерссен"
+           data-year="2025"
            data-month="12">
           <div class="card-img" style="background-image:url('images/2025-12-10-ялмар-эйлиф-эммануэл-петерссен-1.jpg')"></div>
           <div class="card-body">
@@ -253,9 +252,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Måneopgang over klitterne (Восход луны над дюнами), 1883</div>
           </div>
         </a>
-        <a class="card" href="2025-12-06-карл-павлович-брюллов.html" 
-           data-artist="карл павлович брюллов" 
-           data-year="2025" 
+        <a class="card" href="2025-12-06-карл-павлович-брюллов.html"
+           data-artist="карл павлович брюллов"
+           data-year="2025"
            data-month="12">
           <div class="card-img" style="background-image:url('images/2025-12-06-карл-павлович-брюллов-1.jpg')"></div>
           <div class="card-body">
@@ -263,9 +262,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Вид форта Пику на острове Мадейра (Неоконченная картина), 1849–1850</div>
           </div>
         </a>
-        <a class="card" href="2025-12-01-станислас-анри-руар.html" 
-           data-artist="станислас анри руар" 
-           data-year="2025" 
+        <a class="card" href="2025-12-01-станислас-анри-руар.html"
+           data-artist="станислас анри руар"
+           data-year="2025"
            data-month="12">
           <div class="card-img" style="background-image:url('images/2025-12-01-станислас-анри-руар-1.jpg')"></div>
           <div class="card-body">
@@ -273,9 +272,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">La Terrasse au bord de la Seine à Melun (Терраса на берегу Сены в Мелуне), 1874</div>
           </div>
         </a>
-        <a class="card" href="2025-11-26-исаак-ильич-левитан.html" 
-           data-artist="исаак ильич левитан" 
-           data-year="2025" 
+        <a class="card" href="2025-11-26-исаак-ильич-левитан.html"
+           data-artist="исаак ильич левитан"
+           data-year="2025"
            data-month="11">
           <div class="card-img" style="background-image:url('images/2025-11-26-исаак-ильич-левитан-1.jpg')"></div>
           <div class="card-body">
@@ -283,9 +282,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Иллюминация Кремля, 1896</div>
           </div>
         </a>
-        <a class="card" href="2025-11-22-эжен-луи-буден.html" 
-           data-artist="эжен луи буден" 
-           data-year="2025" 
+        <a class="card" href="2025-11-22-эжен-луи-буден.html"
+           data-artist="эжен луи буден"
+           data-year="2025"
            data-month="11">
           <div class="card-img" style="background-image:url('images/2025-11-22-эжен-луи-буден-1.jpg')"></div>
           <div class="card-body">
@@ -293,9 +292,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Le Clocher de Sainte-Catherine, Honfleur (Колокольня Святой Екатерины, Онфлёр), 1897</div>
           </div>
         </a>
-        <a class="card" href="2025-11-17-жан-луи-форен.html" 
-           data-artist="жан луи форен" 
-           data-year="2025" 
+        <a class="card" href="2025-11-17-жан-луи-форен.html"
+           data-artist="жан луи форен"
+           data-year="2025"
            data-month="11">
           <div class="card-img" style="background-image:url('images/2025-11-17-жан-луи-форен-1.jpg')"></div>
           <div class="card-body">
@@ -303,9 +302,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Aux Courses à Longchamp (На скачках в Лоншане), 1891</div>
           </div>
         </a>
-        <a class="card" href="2025-11-09-эмильен-мюло-дюриваж.html" 
-           data-artist="эмильен мюло-дюриваж" 
-           data-year="2025" 
+        <a class="card" href="2025-11-09-эмильен-мюло-дюриваж.html"
+           data-artist="эмильен мюло-дюриваж"
+           data-year="2025"
            data-month="11">
           <div class="card-img" style="background-image:url('images/2025-11-09-эмильен-мюло-дюриваж-1.jpg')"></div>
           <div class="card-body">
@@ -313,9 +312,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Paysage du Cotentin, près des bords de l&#x27;Ouve (Пейзаж в Котантене на берегу реки Уве), XIX в.</div>
           </div>
         </a>
-        <a class="card" href="2025-11-07-фрэнсис-кэмпбелл-буало-каделл.html" 
-           data-artist="фрэнсис кэмпбелл буало каделл" 
-           data-year="2025" 
+        <a class="card" href="2025-11-07-фрэнсис-кэмпбелл-буало-каделл.html"
+           data-artist="фрэнсис кэмпбелл буало каделл"
+           data-year="2025"
            data-month="11">
           <div class="card-img" style="background-image:url('images/2025-11-07-фрэнсис-кэмпбелл-буало-каделл-1.jpg')"></div>
           <div class="card-body">
@@ -323,9 +322,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Florian&#x27;s café, Venice (Кафе Флориан, Венеция), 1910</div>
           </div>
         </a>
-        <a class="card" href="2025-11-04-иньяс-анри-жан-теодор-фантен-латур.html" 
-           data-artist="иньяс-анри-жан-теодор фантен-латур" 
-           data-year="2025" 
+        <a class="card" href="2025-11-04-иньяс-анри-жан-теодор-фантен-латур.html"
+           data-artist="иньяс-анри-жан-теодор фантен-латур"
+           data-year="2025"
            data-month="11">
           <div class="card-img" style="background-image:url('images/2025-11-04-иньяс-анри-жан-теодор-фантен-латур-1.jpg')"></div>
           <div class="card-body">
@@ -333,9 +332,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879</div>
           </div>
         </a>
-        <a class="card" href="2025-10-16-гюстав-кайботт.html" 
-           data-artist="гюстав кайботт" 
-           data-year="2025" 
+        <a class="card" href="2025-10-16-гюстав-кайботт.html"
+           data-artist="гюстав кайботт"
+           data-year="2025"
            data-month="10">
           <div class="card-img" style="background-image:url('images/2025-10-16-гюстав-кайботт-1.jpg')"></div>
           <div class="card-body">
@@ -343,9 +342,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Jeune homme à sa fenêtre (Молодой человек у окна), 1876</div>
           </div>
         </a>
-        <a class="card" href="2025-10-11-рокуэлл-кент.html" 
-           data-artist="рокуэлл кент" 
-           data-year="2025" 
+        <a class="card" href="2025-10-11-рокуэлл-кент.html"
+           data-artist="рокуэлл кент"
+           data-year="2025"
            data-month="10">
           <div class="card-img" style="background-image:url('images/2025-10-11-рокуэлл-кент-1.jpg')"></div>
           <div class="card-body">
@@ -353,9 +352,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Cranberrying, Monhegan (Сбор клюквы, Монхиган),1907</div>
           </div>
         </a>
-        <a class="card" href="2025-10-06-поль-сезар-эллё.html" 
-           data-artist="поль сезар эллё" 
-           data-year="2025" 
+        <a class="card" href="2025-10-06-поль-сезар-эллё.html"
+           data-artist="поль сезар эллё"
+           data-year="2025"
            data-month="10">
           <div class="card-img" style="background-image:url('images/2025-10-06-поль-сезар-эллё-1.jpg')"></div>
           <div class="card-body">
@@ -363,9 +362,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Le Grand Pavois (Гранд Павуа), 1901</div>
           </div>
         </a>
-        <a class="card" href="2025-10-02-жан-батист-арман-гийомен.html" 
-           data-artist="жан-батист арман гийомен" 
-           data-year="2025" 
+        <a class="card" href="2025-10-02-жан-батист-арман-гийомен.html"
+           data-artist="жан-батист арман гийомен"
+           data-year="2025"
            data-month="10">
           <div class="card-img" style="background-image:url('images/2025-10-02-жан-батист-арман-гийомен-1.jpg')"></div>
           <div class="card-body">
@@ -373,9 +372,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Vue du Puy-de-Dôme (Вид на Пюи-де-Дом), 1899</div>
           </div>
         </a>
-        <a class="card" href="2025-09-24-константин-аполлонович-савицкий.html" 
-           data-artist="константин аполлонович савицкий" 
-           data-year="2025" 
+        <a class="card" href="2025-09-24-константин-аполлонович-савицкий.html"
+           data-artist="константин аполлонович савицкий"
+           data-year="2025"
            data-month="09">
           <div class="card-img" style="background-image:url('images/2025-09-24-константин-аполлонович-савицкий-1.jpg')"></div>
           <div class="card-body">
@@ -383,9 +382,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">У мирового суда, XIX век</div>
           </div>
         </a>
-        <a class="card" href="2025-09-17-анри-мари-раймон-де-тулуз-лотрек-монфа.html" 
-           data-artist="анри мари раймон де тулуз-лотрек-монфа" 
-           data-year="2025" 
+        <a class="card" href="2025-09-17-анри-мари-раймон-де-тулуз-лотрек-монфа.html"
+           data-artist="анри мари раймон де тулуз-лотрек-монфа"
+           data-year="2025"
            data-month="09">
           <div class="card-img" style="background-image:url('images/2025-09-17-анри-мари-раймон-де-тулуз-лотрек-монфа-1.jpg')"></div>
           <div class="card-body">
@@ -393,9 +392,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888</div>
           </div>
         </a>
-        <a class="card" href="2025-09-02-жакоб-абраам-камиль-писсарро.html" 
-           data-artist="жакоб абраам камиль писсарро" 
-           data-year="2025" 
+        <a class="card" href="2025-09-02-жакоб-абраам-камиль-писсарро.html"
+           data-artist="жакоб абраам камиль писсарро"
+           data-year="2025"
            data-month="09">
           <div class="card-img" style="background-image:url('images/2025-09-02-жакоб-абраам-камиль-писсарро-1.jpg')"></div>
           <div class="card-body">
@@ -403,9 +402,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Une Crique a Saint-Thomas (Antilles) (Бухта на острове Сент-Томас (Антильские острова)), 1856</div>
           </div>
         </a>
-        <a class="card" href="2025-08-21-альфред-сислей.html" 
-           data-artist="альфред сислей" 
-           data-year="2025" 
+        <a class="card" href="2025-08-21-альфред-сислей.html"
+           data-artist="альфред сислей"
+           data-year="2025"
            data-month="08">
           <div class="card-img" style="background-image:url('images/2025-08-21-альфред-сислей-1.jpg')"></div>
           <div class="card-body">
@@ -413,9 +412,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Landscape at Louveciennes (Пейзаж в Лувесьене), 1873</div>
           </div>
         </a>
-        <a class="card" href="2025-08-07-илер-жермен-эдгар-де-га-эдгар-дега.html" 
-           data-artist="илер-жермен-эдгар де га (эдгар дега)" 
-           data-year="2025" 
+        <a class="card" href="2025-08-07-илер-жермен-эдгар-де-га-эдгар-дега.html"
+           data-artist="илер-жермен-эдгар де га (эдгар дега)"
+           data-year="2025"
            data-month="08">
           <div class="card-img" style="background-image:url('images/2025-08-07-илер-жермен-эдгар-де-га-эдгар-дега-1.jpg')"></div>
           <div class="card-body">
@@ -423,9 +422,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Salle de billard au Ménil-Hubert (Бильярдная в Мениль-Юбер), 1892</div>
           </div>
         </a>
-        <a class="card" href="2025-08-01-илер-жермен-эдгар-де-га-эдгар-дега.html" 
-           data-artist="илер-жермен-эдгар де га (эдгар дега)" 
-           data-year="2025" 
+        <a class="card" href="2025-08-01-илер-жермен-эдгар-де-га-эдгар-дега.html"
+           data-artist="илер-жермен-эдгар де га (эдгар дега)"
+           data-year="2025"
            data-month="08">
           <div class="card-img" style="background-image:url('images/2025-08-01-илер-жермен-эдгар-де-га-эдгар-дега-1.jpg')"></div>
           <div class="card-body">
@@ -433,9 +432,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Jockey blessé (Раненый жокей), 1896-1898</div>
           </div>
         </a>
-        <a class="card" href="2025-07-24-йохан-фредерик-фриц-таулов.html" 
-           data-artist="йохан фредерик фриц таулов" 
-           data-year="2025" 
+        <a class="card" href="2025-07-24-йохан-фредерик-фриц-таулов.html"
+           data-artist="йохан фредерик фриц таулов"
+           data-year="2025"
            data-month="07">
           <div class="card-img" style="background-image:url('images/2025-07-24-йохан-фредерик-фриц-таулов-1.jpg')"></div>
           <div class="card-body">
@@ -443,9 +442,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">A Stream in Springtime (Ручей в весеннее время), 1901</div>
           </div>
         </a>
-        <a class="card" href="2025-07-21-жан-фредерик-базиль.html" 
-           data-artist="жан фредерик базиль" 
-           data-year="2025" 
+        <a class="card" href="2025-07-21-жан-фредерик-базиль.html"
+           data-artist="жан фредерик базиль"
+           data-year="2025"
            data-month="07">
           <div class="card-img" style="background-image:url('images/2025-07-21-жан-фредерик-базиль-1.jpg')"></div>
           <div class="card-body">
@@ -453,9 +452,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Paysage au bord du Lez (Пейзаж на берегу Лез), 1870</div>
           </div>
         </a>
-        <a class="card" href="2025-07-15-констан-тройон.html" 
-           data-artist="констан тройон" 
-           data-year="2025" 
+        <a class="card" href="2025-07-15-констан-тройон.html"
+           data-artist="констан тройон"
+           data-year="2025"
            data-month="07">
           <div class="card-img" style="background-image:url('images/2025-07-15-констан-тройон-1.jpg')"></div>
           <div class="card-body">
@@ -463,9 +462,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Le Marais (Болото), 1840</div>
           </div>
         </a>
-        <a class="card" href="2025-07-12-фердинанд-ходлер.html" 
-           data-artist="фердинанд ходлер" 
-           data-year="2025" 
+        <a class="card" href="2025-07-12-фердинанд-ходлер.html"
+           data-artist="фердинанд ходлер"
+           data-year="2025"
            data-month="07">
           <div class="card-img" style="background-image:url('images/2025-07-12-фердинанд-ходлер-1.jpg')"></div>
           <div class="card-body">
@@ -473,9 +472,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Die Strasse nach Evordes (Дорога в Эвордес), 1890</div>
           </div>
         </a>
-        <a class="card" href="2025-07-09-каспар-давид-фридрих.html" 
-           data-artist="каспар давид фридрих" 
-           data-year="2025" 
+        <a class="card" href="2025-07-09-каспар-давид-фридрих.html"
+           data-artist="каспар давид фридрих"
+           data-year="2025"
            data-month="07">
           <div class="card-img" style="background-image:url('images/2025-07-09-каспар-давид-фридрих-1.jpg')"></div>
           <div class="card-body">
@@ -483,9 +482,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Ansicht der Ostküste Rügens mit einem Schäfer (Вид на восточный берег острова Рюген с пастухом), 1805–06</div>
           </div>
         </a>
-        <a class="card" href="2025-07-03-альберт-бирштадт.html" 
-           data-artist="альберт бирштадт" 
-           data-year="2025" 
+        <a class="card" href="2025-07-03-альберт-бирштадт.html"
+           data-artist="альберт бирштадт"
+           data-year="2025"
            data-month="07">
           <div class="card-img" style="background-image:url('images/2025-07-03-альберт-бирштадт-1.jpg')"></div>
           <div class="card-body">
@@ -493,9 +492,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">A River Landscape, Westphalia (Речной пейзаж, Вестфалия), 1855</div>
           </div>
         </a>
-        <a class="card" href="2025-06-27-альфред-сислей.html" 
-           data-artist="альфред сислей" 
-           data-year="2025" 
+        <a class="card" href="2025-06-27-альфред-сислей.html"
+           data-artist="альфред сислей"
+           data-year="2025"
            data-month="06">
           <div class="card-img" style="background-image:url('images/2025-06-27-альфред-сислей-1.jpg')"></div>
           <div class="card-body">
@@ -503,9 +502,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Le Pont de Moret (Мост в Морэ), 1893</div>
           </div>
         </a>
-        <a class="card" href="2025-06-21-жан-луи-форен.html" 
-           data-artist="жан луи форен" 
-           data-year="2025" 
+        <a class="card" href="2025-06-21-жан-луи-форен.html"
+           data-artist="жан луи форен"
+           data-year="2025"
            data-month="06">
           <div class="card-img" style="background-image:url('images/2025-06-21-жан-луи-форен-1.jpg')"></div>
           <div class="card-body">
@@ -513,9 +512,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Les courses (Скачки), 1888</div>
           </div>
         </a>
-        <a class="card" href="2025-06-18-фердинан-виктор-эжен-делакруа.html" 
-           data-artist="фердинан виктор эжен делакруа" 
-           data-year="2025" 
+        <a class="card" href="2025-06-18-фердинан-виктор-эжен-делакруа.html"
+           data-artist="фердинан виктор эжен делакруа"
+           data-year="2025"
            data-month="06">
           <div class="card-img" style="background-image:url('images/2025-06-18-фердинан-виктор-эжен-делакруа-1.jpg')"></div>
           <div class="card-body">
@@ -523,9 +522,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Bouquet de fleurs (Ваза с цветами), 1833</div>
           </div>
         </a>
-        <a class="card" href="2025-06-14-валентин-александрович-серов.html" 
-           data-artist="валентин александрович серов" 
-           data-year="2025" 
+        <a class="card" href="2025-06-14-валентин-александрович-серов.html"
+           data-artist="валентин александрович серов"
+           data-year="2025"
            data-month="06">
           <div class="card-img" style="background-image:url('images/2025-06-14-валентин-александрович-серов-1.jpg')"></div>
           <div class="card-body">
@@ -533,9 +532,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Солдатушки, бравы ребятушки, где же ваша слава?, 1905</div>
           </div>
         </a>
-        <a class="card" href="2025-06-10-жан-дезире-гюстав-курбе.html" 
-           data-artist="жан дезире гюстав курбе" 
-           data-year="2025" 
+        <a class="card" href="2025-06-10-жан-дезире-гюстав-курбе.html"
+           data-artist="жан дезире гюстав курбе"
+           data-year="2025"
            data-month="06">
           <div class="card-img" style="background-image:url('images/2025-06-10-жан-дезире-гюстав-курбе-1.jpg')"></div>
           <div class="card-body">
@@ -543,9 +542,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">La Rencontre ou Bonjour Monsieur Courbet (Встреча или Здравствуйте, мистер Курбе), 1854</div>
           </div>
         </a>
-        <a class="card" href="2025-06-07-альфред-сислей.html" 
-           data-artist="альфред сислей" 
-           data-year="2025" 
+        <a class="card" href="2025-06-07-альфред-сислей.html"
+           data-artist="альфред сислей"
+           data-year="2025"
            data-month="06">
           <div class="card-img" style="background-image:url('images/2025-06-07-альфред-сислей-1.jpg')"></div>
           <div class="card-body">
@@ -553,9 +552,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Rue Eugène Moussoir à Moret: L&#x27;hiver (Улица Эжена Муссуара в Море: Зима), 1891</div>
           </div>
         </a>
-        <a class="card" href="2025-06-05-йохан-фредерик-фриц-таулов.html" 
-           data-artist="йохан фредерик фриц таулов" 
-           data-year="2025" 
+        <a class="card" href="2025-06-05-йохан-фредерик-фриц-таулов.html"
+           data-artist="йохан фредерик фриц таулов"
+           data-year="2025"
            data-month="06">
           <div class="card-img" style="background-image:url('images/2025-06-05-йохан-фредерик-фриц-таулов-1.jpg')"></div>
           <div class="card-body">
@@ -563,9 +562,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Горная речка, между 1887 и 1890 годами</div>
           </div>
         </a>
-        <a class="card" href="2025-06-02-франц-теодор-макс-слефогт.html" 
-           data-artist="франц теодор макс слефогт" 
-           data-year="2025" 
+        <a class="card" href="2025-06-02-франц-теодор-макс-слефогт.html"
+           data-artist="франц теодор макс слефогт"
+           data-year="2025"
            data-month="06">
           <div class="card-img" style="background-image:url('images/2025-06-02-франц-теодор-макс-слефогт-1.jpg')"></div>
           <div class="card-body">
@@ -573,9 +572,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Unter den Linden (Унтер-ден-Линден), 1913</div>
           </div>
         </a>
-        <a class="card" href="2025-05-31-ханс-даль.html" 
-           data-artist="ханс даль" 
-           data-year="2025" 
+        <a class="card" href="2025-05-31-ханс-даль.html"
+           data-artist="ханс даль"
+           data-year="2025"
            data-month="05">
           <div class="card-img" style="background-image:url('images/2025-05-31-ханс-даль-1.jpg')"></div>
           <div class="card-body">
@@ -583,9 +582,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Норвежский фьорд с козами, 1910-е</div>
           </div>
         </a>
-        <a class="card" href="2025-05-25-игорь-эммануилович-грабарь.html" 
-           data-artist="игорь эммануилович грабарь" 
-           data-year="2025" 
+        <a class="card" href="2025-05-25-игорь-эммануилович-грабарь.html"
+           data-artist="игорь эммануилович грабарь"
+           data-year="2025"
            data-month="05">
           <div class="card-img" style="background-image:url('images/2025-05-25-игорь-эммануилович-грабарь-1.jpg')"></div>
           <div class="card-body">
@@ -593,9 +592,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Весенний пейзаж. Апрель, 1939</div>
           </div>
         </a>
-        <a class="card" href="2025-05-23-геркулес-сегерс.html" 
-           data-artist="геркулес сегерс" 
-           data-year="2025" 
+        <a class="card" href="2025-05-23-геркулес-сегерс.html"
+           data-artist="геркулес сегерс"
+           data-year="2025"
            data-month="05">
           <div class="card-img" style="background-image:url('images/2025-05-23-геркулес-сегерс-1.jpg')"></div>
           <div class="card-body">
@@ -603,9 +602,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Woodland Path (Лесная тропа), около 1618-20</div>
           </div>
         </a>
-        <a class="card" href="2025-05-17-анри-жан-гийом-мартен.html" 
-           data-artist="анри жан гийом мартен" 
-           data-year="2025" 
+        <a class="card" href="2025-05-17-анри-жан-гийом-мартен.html"
+           data-artist="анри жан гийом мартен"
+           data-year="2025"
            data-month="05">
           <div class="card-img" style="background-image:url('images/2025-05-17-анри-жан-гийом-мартен-1.jpg')"></div>
           <div class="card-body">
@@ -613,9 +612,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Le paysan et la bergère (Крестьянин и пастушка), 1903</div>
           </div>
         </a>
-        <a class="card" href="2025-05-09-константин-фёдорович-юон.html" 
-           data-artist="константин фёдорович юон" 
-           data-year="2025" 
+        <a class="card" href="2025-05-09-константин-фёдорович-юон.html"
+           data-artist="константин фёдорович юон"
+           data-year="2025"
            data-month="05">
           <div class="card-img" style="background-image:url('images/2025-05-09-константин-фёдорович-юон-1.jpg')"></div>
           <div class="card-body">
@@ -623,9 +622,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Парад на Красной площади 7 ноября 1941 года, 1949</div>
           </div>
         </a>
-        <a class="card" href="2025-05-06-джон-гловер.html" 
-           data-artist="джон гловер" 
-           data-year="2025" 
+        <a class="card" href="2025-05-06-джон-гловер.html"
+           data-artist="джон гловер"
+           data-year="2025"
            data-month="05">
           <div class="card-img" style="background-image:url('images/2025-05-06-джон-гловер-1.jpg')"></div>
           <div class="card-body">
@@ -633,9 +632,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">A view of the artist&#x27;s house and garden, in Mills Plains, Van Diemen&#x27;s Land (Вид на дом и сад художника в Миллс-Плейнс, Земля Ван-Димена), 1835</div>
           </div>
         </a>
-        <a class="card" href="2025-05-04-макс-либерман.html" 
-           data-artist="макс либерман" 
-           data-year="2025" 
+        <a class="card" href="2025-05-04-макс-либерман.html"
+           data-artist="макс либерман"
+           data-year="2025"
            data-month="05">
           <div class="card-img" style="background-image:url('images/2025-05-04-макс-либерман-1.jpg')"></div>
           <div class="card-body">
@@ -643,9 +642,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Die Kartoffelernte (Собирание картофеля), 1875</div>
           </div>
         </a>
-        <a class="card" href="2025-04-28-луиджи-алоис-франсуа-жозеф-луар.html" 
-           data-artist="луиджи алоис-франсуа-жозеф луар" 
-           data-year="2025" 
+        <a class="card" href="2025-04-28-луиджи-алоис-франсуа-жозеф-луар.html"
+           data-artist="луиджи алоис-франсуа-жозеф луар"
+           data-year="2025"
            data-month="04">
           <div class="card-img" style="background-image:url('images/2025-04-28-луиджи-алоис-франсуа-жозеф-луар-1.jpg')"></div>
           <div class="card-body">
@@ -653,9 +652,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Smoke on the Paris Circuit Line (Дым окружной парижской железной дороги), 1885</div>
           </div>
         </a>
-        <a class="card" href="2025-04-24-илья-ефимович-репин.html" 
-           data-artist="илья ефимович репин" 
-           data-year="2025" 
+        <a class="card" href="2025-04-24-илья-ефимович-репин.html"
+           data-artist="илья ефимович репин"
+           data-year="2025"
            data-month="04">
           <div class="card-img" style="background-image:url('images/2025-04-24-илья-ефимович-репин-1.jpg')"></div>
           <div class="card-body">
@@ -663,9 +662,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Летний пейзаж (В.А.Репина на мостике в Абрамцеве), 1879</div>
           </div>
         </a>
-        <a class="card" href="2025-04-23-жан-дезире-гюстав-курбе.html" 
-           data-artist="жан дезире гюстав курбе" 
-           data-year="2025" 
+        <a class="card" href="2025-04-23-жан-дезире-гюстав-курбе.html"
+           data-artist="жан дезире гюстав курбе"
+           data-year="2025"
            data-month="04">
           <div class="card-img" style="background-image:url('images/2025-04-23-жан-дезире-гюстав-курбе-1.jpg')"></div>
           <div class="card-body">
@@ -673,9 +672,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Dorfausgang im Winter (Окраина деревни зимой), 1868</div>
           </div>
         </a>
-        <a class="card" href="2025-04-19-франц-фон-штук.html" 
-           data-artist="франц фон штук" 
-           data-year="2025" 
+        <a class="card" href="2025-04-19-франц-фон-штук.html"
+           data-artist="франц фон штук"
+           data-year="2025"
            data-month="04">
           <div class="card-img" style="background-image:url('images/2025-04-19-франц-фон-штук-1.jpg')"></div>
           <div class="card-body">
@@ -683,9 +682,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Sternschnuppen (Franz und Mary Stuck) (Падающие звёзды), 1912</div>
           </div>
         </a>
-        <a class="card" href="2025-04-17-илер-жермен-эдгар-де-га-эдгар-дега.html" 
-           data-artist="илер-жермен-эдгар де га (эдгар дега)" 
-           data-year="2025" 
+        <a class="card" href="2025-04-17-илер-жермен-эдгар-де-га-эдгар-дега.html"
+           data-artist="илер-жермен-эдгар де га (эдгар дега)"
+           data-year="2025"
            data-month="04">
           <div class="card-img" style="background-image:url('images/2025-04-17-илер-жермен-эдгар-де-га-эдгар-дега-1.jpg')"></div>
           <div class="card-body">
@@ -693,9 +692,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Paysage Avec Fumée de Cheminées (Пейзаж с дымовыми трубами), 1890-1893</div>
           </div>
         </a>
-        <a class="card" href="2025-04-15-жан-фредерик-базиль.html" 
-           data-artist="жан фредерик базиль" 
-           data-year="2025" 
+        <a class="card" href="2025-04-15-жан-фредерик-базиль.html"
+           data-artist="жан фредерик базиль"
+           data-year="2025"
            data-month="04">
           <div class="card-img" style="background-image:url('images/2025-04-15-жан-фредерик-базиль-1.jpg')"></div>
           <div class="card-body">
@@ -703,9 +702,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">L’atelier de la rue de Furstenberg (Мастерская художника на улице Фюрстенберг), 1865</div>
           </div>
         </a>
-        <a class="card" href="2025-04-13-александр-жан-батист-брюн.html" 
-           data-artist="александр жан-батист брюн" 
-           data-year="2025" 
+        <a class="card" href="2025-04-13-александр-жан-батист-брюн.html"
+           data-artist="александр жан-батист брюн"
+           data-year="2025"
            data-month="04">
           <div class="card-img" style="background-image:url('images/2025-04-13-александр-жан-батист-брюн-1.jpg')"></div>
           <div class="card-body">
@@ -713,9 +712,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Vue du Salon Carré au Louvre (Вид на Салон Карре в Лувре), 1880</div>
           </div>
         </a>
-        <a class="card" href="2025-04-11-альфред-сислей.html" 
-           data-artist="альфред сислей" 
-           data-year="2025" 
+        <a class="card" href="2025-04-11-альфред-сислей.html"
+           data-artist="альфред сислей"
+           data-year="2025"
            data-month="04">
           <div class="card-img" style="background-image:url('images/2025-04-11-альфред-сислей-1.jpg')"></div>
           <div class="card-body">
@@ -723,9 +722,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">La gelée à Louvecienne (Мороз в Лувесьенне), 1873</div>
           </div>
         </a>
-        <a class="card" href="2025-03-29-никола-пуссен.html" 
-           data-artist="никола пуссен" 
-           data-year="2025" 
+        <a class="card" href="2025-03-29-никола-пуссен.html"
+           data-artist="никола пуссен"
+           data-year="2025"
            data-month="03">
           <div class="card-img" style="background-image:url('images/2025-03-29-никола-пуссен-1.jpg')"></div>
           <div class="card-body">
@@ -733,9 +732,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660</div>
           </div>
         </a>
-        <a class="card" href="2025-03-25-архип-иванович-куинджи.html" 
-           data-artist="архип иванович куинджи" 
-           data-year="2025" 
+        <a class="card" href="2025-03-25-архип-иванович-куинджи.html"
+           data-artist="архип иванович куинджи"
+           data-year="2025"
            data-month="03">
           <div class="card-img" style="background-image:url('images/2025-03-25-архип-иванович-куинджи-1.jpg')"></div>
           <div class="card-body">
@@ -743,9 +742,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Берёзовая роща, 1879</div>
           </div>
         </a>
-        <a class="card" href="2025-03-22-гюстав-кайботт.html" 
-           data-artist="гюстав кайботт" 
-           data-year="2025" 
+        <a class="card" href="2025-03-22-гюстав-кайботт.html"
+           data-artist="гюстав кайботт"
+           data-year="2025"
            data-month="03">
           <div class="card-img" style="background-image:url('images/2025-03-22-гюстав-кайботт-1.jpg')"></div>
           <div class="card-body">
@@ -753,9 +752,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Chemin montant (Восходящая дорога), 1881</div>
           </div>
         </a>
-        <a class="card" href="2025-03-17-фредерик-чайльд-гассам.html" 
-           data-artist="фредерик чайльд гассам" 
-           data-year="2025" 
+        <a class="card" href="2025-03-17-фредерик-чайльд-гассам.html"
+           data-artist="фредерик чайльд гассам"
+           data-year="2025"
            data-month="03">
           <div class="card-img" style="background-image:url('images/2025-03-17-фредерик-чайльд-гассам-1.jpg')"></div>
           <div class="card-body">
@@ -763,9 +762,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Union Square in Spring (Юнион-сквер весной), 1896</div>
           </div>
         </a>
-        <a class="card" href="2025-03-14-николай-дмитриевич-кузнецов.html" 
-           data-artist="николай дмитриевич кузнецов" 
-           data-year="2025" 
+        <a class="card" href="2025-03-14-николай-дмитриевич-кузнецов.html"
+           data-artist="николай дмитриевич кузнецов"
+           data-year="2025"
            data-month="03">
           <div class="card-img" style="background-image:url('images/2025-03-14-николай-дмитриевич-кузнецов-1.jpg')"></div>
           <div class="card-body">
@@ -773,9 +772,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">В праздник, 1879</div>
           </div>
         </a>
-        <a class="card" href="2025-03-12-александр-иванович-морозов.html" 
-           data-artist="александр иванович морозов" 
-           data-year="2025" 
+        <a class="card" href="2025-03-12-александр-иванович-морозов.html"
+           data-artist="александр иванович морозов"
+           data-year="2025"
            data-month="03">
           <div class="card-img" style="background-image:url('images/2025-03-12-александр-иванович-морозов-1.jpg')"></div>
           <div class="card-body">
@@ -783,9 +782,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Выход из церкви в Пскове, 1864</div>
           </div>
         </a>
-        <a class="card" href="2025-03-06-николай-александрович-тархов.html" 
-           data-artist="николай александрович тархов" 
-           data-year="2025" 
+        <a class="card" href="2025-03-06-николай-александрович-тархов.html"
+           data-artist="николай александрович тархов"
+           data-year="2025"
            data-month="03">
           <div class="card-img" style="background-image:url('images/2025-03-06-николай-александрович-тархов-1.jpg')"></div>
           <div class="card-body">
@@ -793,9 +792,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Козы на солнце, 1904</div>
           </div>
         </a>
-        <a class="card" href="2025-02-18-каспар-давид-фридрих.html" 
-           data-artist="каспар давид фридрих" 
-           data-year="2025" 
+        <a class="card" href="2025-02-18-каспар-давид-фридрих.html"
+           data-artist="каспар давид фридрих"
+           data-year="2025"
            data-month="02">
           <div class="card-img" style="background-image:url('images/2025-02-18-каспар-давид-фридрих-1.jpg')"></div>
           <div class="card-body">
@@ -803,9 +802,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
             <div class="card-title">Morgennebel im Gebirge (Утренний туман в горах), 1808</div>
           </div>
         </a>
-        <a class="card" href="2025-02-14-пьер-огюст-ренуар.html" 
-           data-artist="пьер огюст ренуар" 
-           data-year="2025" 
+        <a class="card" href="2025-02-14-пьер-огюст-ренуар.html"
+           data-artist="пьер огюст ренуар"
+           data-year="2025"
            data-month="02">
           <div class="card-img" style="background-image:url('images/2025-02-14-пьер-огюст-ренуар-1.jpg')"></div>
           <div class="card-body">
@@ -821,30 +820,20 @@ const searchInput = document.getElementById('search');
 const cards = document.querySelectorAll('.card');
 const filterLinks = document.querySelectorAll('.filter-link');
 const resetBtn = document.getElementById('reset-filter');
-
 let activeFilter = { type: null, val: null, year: null };
 
 function updateView() {
   const q = searchInput.value.toLowerCase();
-  
-  // 1. Показываем/скрываем карточки
   cards.forEach(c => {
     let show = true;
-    
-    // Проверка текстового поиска
     if (q && !c.textContent.toLowerCase().includes(q)) show = false;
-    
-    // Проверка бокового фильтра
     if (show && activeFilter.type) {
       if (activeFilter.type === 'artist' && c.dataset.artist !== activeFilter.val) show = false;
       if (activeFilter.type === 'year' && c.dataset.year !== activeFilter.val) show = false;
       if (activeFilter.type === 'month' && (c.dataset.year !== activeFilter.year || c.dataset.month !== activeFilter.val)) show = false;
     }
-    
     c.style.display = show ? '' : 'none';
   });
-
-  // 2. Обновляем выделение в меню
   filterLinks.forEach(link => {
     let isActive = false;
     if (activeFilter.type === link.dataset.type) {
@@ -856,14 +845,10 @@ function updateView() {
     }
     link.classList.toggle('active', isActive);
   });
-  
-  // 3. Кнопка сброса
   resetBtn.style.display = activeFilter.type ? 'block' : 'none';
 }
 
-// Слушатели событий
 searchInput.addEventListener('input', updateView);
-
 filterLinks.forEach(link => {
   link.addEventListener('click', e => {
     e.preventDefault();
@@ -873,7 +858,6 @@ filterLinks.forEach(link => {
     updateView();
   });
 });
-
 resetBtn.addEventListener('click', e => {
   e.preventDefault();
   activeFilter = { type: null, val: null, year: null };

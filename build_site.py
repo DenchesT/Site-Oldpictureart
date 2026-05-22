@@ -2,7 +2,9 @@
 Сборка сайта-галереи из Telegram-канала Old Picture Art.
 
 Формат поста в канале:
-  Художник ⸻ Название, год ⸻ Материал, размеры ⸻ Музей[ссылка]#теги@oldpictureart
+  Художник ⸻ Название, год ⸻ Материал, размеры ⸻ Музей[, доп. примечания]
+  [⸻ История картины (опционально, через ⸻)]
+  [ссылка]#теги@oldpictureart
 """
 import asyncio
 import os
@@ -16,6 +18,13 @@ from collections import defaultdict
 from html import escape as h
 
 from telethon import TelegramClient, connection
+
+# Pillow — для сжатия больших файлов (опционально, если установлен).
+try:
+    from PIL import Image
+    PIL_AVAILABLE = True
+except ImportError:
+    PIL_AVAILABLE = False
 
 
 # ---------- Чтение .env без внешних зависимостей ----------
@@ -51,6 +60,11 @@ IMAGES_DIR     = "docs/images"
 META_FILE      = "posts_meta.json"
 PROCESSED_FILE = "processed_ids.json"
 
+# Лимиты для сжатия больших картинок (GitHub: soft-limit 50MB, hard-limit 100MB).
+MAX_IMAGE_SIZE_MB    = 25      # Файлы больше этого размера будут сжаты.
+MAX_IMAGE_DIMENSION  = 2800    # Картинка ужимается до этой стороны (по большей).
+JPEG_QUALITY         = 88
+
 PROXY = (
     '138.226.236.46',
     8443,
@@ -73,7 +87,11 @@ _NAME_WORD = (r"(?:[А-ЯЁA-Z][а-яёa-zA-Z'\-]+"
 NAME_RE = re.compile(rf"^(?:{_NAME_WORD})(?:\s+{_NAME_WORD}){{1,6}}$")
 
 def parse_post(text: str) -> dict:
-    """Раскладывает текст поста по полям."""
+    """Раскладывает текст поста по полям.
+
+    Структура: художник ⸻ название ⸻ техника ⸻ музей [⸻ история...].
+    Всё, что идёт после музея через ⸻, считается историей провенанса.
+    """
     if not text:
         return {}
 
@@ -94,20 +112,38 @@ def parse_post(text: str) -> dict:
 
     parts = [p.strip() for p in SEPARATOR_RE.split(text_no_tags) if p.strip()]
 
-    museum_raw = parts[3] if len(parts) > 3 else ""
-    museum_lines = [l.strip() for l in museum_raw.split("\n") if l.strip()]
-    museum = museum_lines[0] if museum_lines else ""
-    note   = " ".join(museum_lines[1:]) if len(museum_lines) > 1 else ""
+    artist = parts[0] if parts else ""
+    title  = parts[1] if len(parts) > 1 else ""
+    medium = parts[2] if len(parts) > 2 else ""
+
+    # parts[3] — это музей. Он может содержать перенос строки,
+    # после которого уже начинается история провенанса.
+    museum = ""
+    history_lines: list[str] = []
+
+    if len(parts) > 3:
+        museum_raw = parts[3]
+        museum_chunks = [l.strip() for l in museum_raw.split("\n") if l.strip()]
+        museum = museum_chunks[0] if museum_chunks else ""
+        # Всё что после первой строки внутри parts[3] — уже история
+        if len(museum_chunks) > 1:
+            history_lines.extend(museum_chunks[1:])
+
+    # parts[4], parts[5], ... — продолжение истории, разделённое ⸻
+    if len(parts) > 4:
+        history_lines.extend(parts[4:])
+
+    history = " ⸻ ".join(history_lines) if history_lines else ""
 
     return {
-        "artist": parts[0] if parts else "",
-        "title":  parts[1] if len(parts) > 1 else "",
-        "medium": parts[2] if len(parts) > 2 else "",
-        "museum": museum,
-        "note":   note,
-        "url":    url,
-        "tags":   sorted(set(raw_tags)),
-        "raw":    text,
+        "artist":  artist,
+        "title":   title,
+        "medium":  medium,
+        "museum":  museum,
+        "history": history,
+        "url":     url,
+        "tags":    sorted(set(raw_tags)),
+        "raw":     text,
     }
 
 # ---------- УТИЛИТЫ ----------
@@ -130,6 +166,36 @@ def load_json(path, default):
 def save_json(path, data):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def compress_if_huge(filepath: str) -> str:
+    """Если файл больше MAX_IMAGE_SIZE_MB, сжимает его (через Pillow).
+    Возвращает фактический путь к файлу (может измениться на .jpg)."""
+    if not PIL_AVAILABLE or not os.path.exists(filepath):
+        return filepath
+    try:
+        size_mb = os.path.getsize(filepath) / 1024 / 1024
+    except OSError:
+        return filepath
+    if size_mb < MAX_IMAGE_SIZE_MB:
+        return filepath
+    try:
+        img = Image.open(filepath)
+        if img.mode in ("RGBA", "P", "LA"):
+            img = img.convert("RGB")
+        img.thumbnail((MAX_IMAGE_DIMENSION, MAX_IMAGE_DIMENSION), Image.LANCZOS)
+        base, ext = os.path.splitext(filepath)
+        new_path = base + ".jpg" if ext.lower() not in (".jpg", ".jpeg") else filepath
+        if new_path != filepath:
+            try: os.remove(filepath)
+            except OSError: pass
+        img.save(new_path, "JPEG", quality=JPEG_QUALITY, optimize=True)
+        new_mb = os.path.getsize(new_path) / 1024 / 1024
+        print(f"    🗜  Сжато: {size_mb:.1f}MB → {new_mb:.1f}MB ({os.path.basename(new_path)})")
+        return new_path
+    except Exception as e:
+        print(f"    ⚠️ Не удалось сжать {filepath}: {e}")
+        return filepath
 
 
 # ---------- СКАЧИВАНИЕ ----------
@@ -158,7 +224,7 @@ async def download_images(client, group, comments, post_slug):
             if hasattr(attr, 'file_name'):
                 ext = os.path.splitext(attr.file_name)[1].lower()
                 break
-        
+
         filename = f"{post_slug}-hires-{i}{ext}"
         filepath = os.path.join(IMAGES_DIR, filename)
         if not os.path.exists(filepath):
@@ -167,7 +233,10 @@ async def download_images(client, group, comments, post_slug):
             except Exception as e:
                 print(f"    ⚠️ Не скачался оригинал {msg.id}: {e}")
                 continue
-        hires.append(f"images/{filename}")
+
+        # Сжимаем, если файл получился слишком большим для GitHub
+        filepath = compress_if_huge(filepath)
+        hires.append(f"images/{os.path.basename(filepath)}")
 
     # Если сжатой картинки почему-то нет, используем оригинал для показа
     if not images and hires:
@@ -180,37 +249,45 @@ async def download_images(client, group, comments, post_slug):
 def render_post_page(post: dict) -> str:
     artist = h(post["artist"]); title = h(post["title"])
     medium = h(post["medium"]); museum = h(post["museum"])
-    note   = h(post["note"]);   url    = post["url"]
+    url    = post["url"]
 
-    # ОБОРАЧИВАЕМ КАРТИНКУ В ССЫЛКУ <a href="..." target="_blank">
-    # ОБОРАЧИВАЕМ КАРТИНКУ В ССЫЛКУ <a href="..." target="_blank">
+    # Обратная совместимость со старыми записями в posts_meta.json (поле note вместо history)
+    history = post.get("history") or post.get("note") or ""
+
+    # Картинка кликается → открывается оригинал в новой вкладке
     img_html_parts = []
-    
-    # post.get("hires", []) безопасно вернет список оригиналов (или пустой список)
     hires_list = post.get("hires", [])
-    
+
     for i, src in enumerate(post["images"]):
-        # Пытаемся взять оригинал для ссылки. Если его нет — берем обычную картинку
         link_href = hires_list[i] if i < len(hires_list) else src
-        
         img_html_parts.append(
             f'<a href="{h(link_href)}" target="_blank" title="Нажмите, чтобы открыть оригинал">'
             f'<img src="{h(src)}" alt="{artist} — {title}" class="painting" loading="lazy">'
             f'</a>'
         )
-        
     img_html = "\n".join(img_html_parts)
-    
+
     tags_html = ""
     if post["tags"]:
         tags_html = '<div class="tags">' + " ".join(
             f'<a href="tag-{h(t)}.html" class="tag">#{h(t)}</a>' for t in post["tags"]
         ) + "</div>"
-    
+
     source_html = (f'<p class="source">Источник: '
                    f'<a href="{h(url)}" target="_blank" rel="noopener">{h(url)}</a></p>'
                    if url else "")
-    note_html = f'<p class="note">{note}</p>' if note else ""
+
+    # Блок истории провенанса. Делим обратно по " ⸻ " чтобы каждый этап стал отдельной строкой
+    history_html = ""
+    if history:
+        parts_h = [p.strip() for p in history.split("⸻") if p.strip()]
+        items = "".join(f"<li>{h(p)}</li>" for p in parts_h)
+        history_html = (
+            '<section class="history">'
+            '<h3>История картины</h3>'
+            f'<ul>{items}</ul>'
+            '</section>'
+        )
 
     return f"""<!DOCTYPE html>
 <html lang="ru"><head>
@@ -219,52 +296,37 @@ def render_post_page(post: dict) -> str:
 <style>
 body{{max-width:900px;margin:0 auto;padding:1.5rem;
      font-family:Georgia,serif;background:#fafafa;color:#222;line-height:1.55;
-     overflow-wrap: break-word; /* РЕШЕНИЕ 1: Базовый перенос слишком длинных слов */
-}}
-
-/* ОГРАНИЧИВАЕМ ВЫСОТУ КАРТИНКИ */
-.painting{{
-    max-width: 100%;
-    max-height: 70vh; /* Картина займет максимум 70% от высоты экрана */
-    width: auto;      /* Ширина автоматически подстроится, сохранив пропорции */
-    display: block;
-    margin: 1.5rem auto;
-    box-shadow: 0 4px 20px rgba(0,0,0,.15);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: zoom-in;
-}}
-.painting:hover{{
-    transform: translateY(-2px) scale(1.01);
-    box-shadow: 0 8px 25px rgba(0,0,0,.25);
-}}
-
+     overflow-wrap:break-word}}
+.painting{{max-width:100%;max-height:70vh;width:auto;display:block;
+          margin:1.5rem auto;box-shadow:0 4px 20px rgba(0,0,0,.15);
+          transition:transform .2s ease,box-shadow .2s ease;cursor:zoom-in}}
+.painting:hover{{transform:translateY(-2px) scale(1.01);box-shadow:0 8px 25px rgba(0,0,0,.25)}}
 h1{{font-size:1.8rem;margin:0 0 .3rem;font-weight:bold}}
 h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:#555;margin:0 0 1rem}}
-.medium,.museum,.note,.source{{margin:.3rem 0;color:#555}}
+.medium,.museum,.source{{margin:.3rem 0;color:#555}}
 .museum{{font-style:italic}}
+.source a{{word-break:break-all;color:#0366d6}}
 
-/* РЕШЕНИЕ 2: Принудительно разрываем длинные ссылки */
-.source a {{
-    word-break: break-all;
-    color: #0366d6;
-}}
+/* Блок истории провенанса */
+.history{{margin:1.8rem 0;padding:1rem 1.25rem;background:#f3eedb;
+         border-left:3px solid #b8a86a;border-radius:4px}}
+.history h3{{margin:0 0 .6rem;font-size:1rem;color:#5a4f2a;font-weight:bold}}
+.history ul{{margin:0;padding-left:1.2rem}}
+.history li{{margin:.35rem 0;color:#4a4a4a;font-size:.95rem}}
 
-.tags{{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #ddd;display:flex;flex-wrap:wrap;gap:0.4rem}}
+.tags{{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #ddd;
+     display:flex;flex-wrap:wrap;gap:.4rem}}
 .tag{{display:inline-block;background:#eee;color:#555;text-decoration:none;
      padding:.3rem .7rem;border-radius:4px;font-size:.85rem}}
 .tag:hover{{background:#ddd}}
 .back{{display:inline-block;margin-bottom:1rem;color:#666;text-decoration:none}}
 time{{color:#999;font-size:.85rem}}
 
-/* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
 @media (max-width: 600px) {{
-    body {{ 
-        padding: 1rem; 
-        overflow-x: hidden; /* РЕШЕНИЕ 3: Жестко отсекаем горизонтальный скролл */
-    }}
-    h1 {{ font-size: 1.5rem; }}
-    h2 {{ font-size: 1.15rem; }}
-    .painting {{ margin: 1rem auto; max-height: 60vh; }} /* На мобилках делаем чуть меньше */
+  body{{padding:1rem;overflow-x:hidden}}
+  h1{{font-size:1.5rem}}
+  h2{{font-size:1.15rem}}
+  .painting{{margin:1rem auto;max-height:60vh}}
 }}
 </style></head><body>
 <a href="index.html" class="back">← На главную</a>
@@ -274,7 +336,7 @@ time{{color:#999;font-size:.85rem}}
 {img_html}
 <p class="medium">{medium}</p>
 <p class="museum">{museum}</p>
-{note_html}
+{history_html}
 {source_html}
 <time>{h(post['date'])}</time>
 {tags_html}
@@ -293,17 +355,16 @@ def render_index(all_posts) -> str:
     # 1. СОБИРАЕМ ДАННЫЕ ДЛЯ МЕНЮ
     # Уникальные авторы по алфавиту
     authors = sorted({p["artist"] for p in all_posts if p.get("artist")})
-    
+
     # Группировка по годам и месяцам
     archive = defaultdict(set)
     for p in all_posts:
         if p.get("date") and "-" in p["date"]:
             year, month, _ = p["date"].split("-")
             archive[year].add(month)
-            
-    # Сортируем годы и месяцы по убыванию (от новых к старым)
+
     archive_sorted = {
-        y: sorted(list(ms), reverse=True) 
+        y: sorted(list(ms), reverse=True)
         for y, ms in sorted(archive.items(), reverse=True)
     }
 
@@ -315,11 +376,10 @@ def render_index(all_posts) -> str:
         if p.get("date") and "-" in p["date"]:
             year, month, _ = p["date"].split("-")
 
-        # Добавляем data-атрибуты для JS-фильтрации
         cards.append(f"""
-        <a class="card" href="{h(p['filename'])}" 
-           data-artist="{h(p['artist'].lower())}" 
-           data-year="{year}" 
+        <a class="card" href="{h(p['filename'])}"
+           data-artist="{h(p['artist'].lower())}"
+           data-year="{year}"
            data-month="{month}">
           <div class="card-img" style="background-image:url('{cover}')"></div>
           <div class="card-body">
@@ -356,50 +416,43 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
 .search-box{{width:100%;max-width:500px;padding:.8rem 1rem;font-size:1rem;
             border:1px solid #ccc;border-radius:6px;font-family:inherit}}
 
-/* НОВАЯ РАСКЛАДКА: Сайдбар + Сетка */
-.layout {{ display: flex; gap: 2rem; align-items: flex-start; }}
+.layout{{display:flex;gap:2rem;align-items:flex-start}}
+.sidebar{{width:280px;flex-shrink:0;background:#fff;padding:1.5rem;
+        border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,.08);
+        position:sticky;top:1.5rem;max-height:calc(100vh - 3rem);overflow-y:auto}}
+.sidebar::-webkit-scrollbar{{width:6px}}
+.sidebar::-webkit-scrollbar-thumb{{background-color:#ccc;border-radius:3px}}
+.sidebar-section{{margin-bottom:2rem}}
+.sidebar-title{{font-size:1.1rem;font-weight:bold;margin:0 0 1rem;
+              border-bottom:1px solid #eee;padding-bottom:.5rem}}
+.sidebar ul{{list-style:none;padding:0;margin:0}}
+.sidebar li{{margin-bottom:.5rem}}
+.sidebar a{{text-decoration:none;color:#555;font-size:.95rem;display:block;transition:color .15s}}
+.sidebar a:hover{{color:#000}}
+.sidebar a.active{{color:#0366d6;font-weight:bold}}
+.month-list{{padding-left:1.2rem !important;margin-top:.5rem !important;font-size:.95em}}
 
-/* САЙДБАР */
-.sidebar {{ 
-    width: 280px; flex-shrink: 0; background: #fff; padding: 1.5rem; 
-    border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,.08); 
-    position: sticky; top: 1.5rem; max-height: calc(100vh - 3rem); 
-    overflow-y: auto; 
-}}
-/* Кастомизация скроллбара в сайдбаре */
-.sidebar::-webkit-scrollbar {{ width: 6px; }}
-.sidebar::-webkit-scrollbar-thumb {{ background-color: #ccc; border-radius: 3px; }}
+.filter-reset{{display:none;margin-bottom:1.5rem;color:#d73a49 !important;
+             font-weight:bold;text-align:center;background:#ffeef0;
+             padding:.6rem;border-radius:4px}}
+.filter-reset:hover{{background:#ffdce0}}
 
-.sidebar-section {{ margin-bottom: 2rem; }}
-.sidebar-title {{ font-size: 1.1rem; font-weight: bold; margin: 0 0 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }}
-.sidebar ul {{ list-style: none; padding: 0; margin: 0; }}
-.sidebar li {{ margin-bottom: 0.5rem; }}
-.sidebar a {{ text-decoration: none; color: #555; font-size: 0.95rem; display: block; transition: color .15s; }}
-.sidebar a:hover {{ color: #000; }}
-.sidebar a.active {{ color: #0366d6; font-weight: bold; }}
-.month-list {{ padding-left: 1.2rem !important; margin-top: 0.5rem !important; font-size: 0.95em; }}
-
-.filter-reset {{ display: none; margin-bottom: 1.5rem; color: #d73a49 !important; font-weight: bold; text-align: center; background: #ffeef0; padding: 0.6rem; border-radius: 4px; }}
-.filter-reset:hover {{ background: #ffdce0; }}
-
-/* ОСНОВНОЙ КОНТЕНТ */
-.main-content {{ flex-grow: 1; min-width: 0; }}
+.main-content{{flex-grow:1;min-width:0}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}}
-
 .card{{background:#fff;text-decoration:none;color:inherit;border-radius:6px;
       overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.08);transition:transform .15s,box-shadow .15s}}
 .card:hover{{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.15)}}
 .card-img{{width:100%;aspect-ratio:4/3;background:#ddd center/cover no-repeat}}
 .card-body{{padding:.8rem 1rem 1rem}}
 .card-artist{{font-weight:bold;font-size:1rem;line-height:1.2;
-    display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;overflow: hidden;}}
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
 .card-title{{font-style:italic;color:#666;font-size:.9rem;margin-top:.35rem;
             display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
 
 @media (max-width: 850px) {{
-    .layout {{ flex-direction: column; gap: 1rem; }}
-    .sidebar {{ width: 100%; position: static; max-height: 350px; }}
-    .grid {{ grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }}
+    .layout{{flex-direction:column;gap:1rem}}
+    .sidebar{{width:100%;position:static;max-height:350px}}
+    .grid{{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem}}
 }}
 </style></head><body>
 <header>
@@ -409,22 +462,18 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
 </header>
 
 <div class="layout">
-  <!-- БОКОВОЕ МЕНЮ -->
   <aside class="sidebar">
     <a href="#" id="reset-filter" class="filter-reset">✕ Сбросить фильтр</a>
-    
     <div class="sidebar-section">
       <div class="sidebar-title">Архив</div>
       <ul>{archive_html}</ul>
     </div>
-    
     <div class="sidebar-section">
       <div class="sidebar-title">Художники (А-Я)</div>
       <ul>{authors_html}</ul>
     </div>
   </aside>
 
-  <!-- КАРТОЧКИ -->
   <main class="main-content">
     <div class="grid" id="cards">{''.join(cards)}</div>
   </main>
@@ -435,30 +484,20 @@ const searchInput = document.getElementById('search');
 const cards = document.querySelectorAll('.card');
 const filterLinks = document.querySelectorAll('.filter-link');
 const resetBtn = document.getElementById('reset-filter');
-
 let activeFilter = {{ type: null, val: null, year: null }};
 
 function updateView() {{
   const q = searchInput.value.toLowerCase();
-  
-  // 1. Показываем/скрываем карточки
   cards.forEach(c => {{
     let show = true;
-    
-    // Проверка текстового поиска
     if (q && !c.textContent.toLowerCase().includes(q)) show = false;
-    
-    // Проверка бокового фильтра
     if (show && activeFilter.type) {{
       if (activeFilter.type === 'artist' && c.dataset.artist !== activeFilter.val) show = false;
       if (activeFilter.type === 'year' && c.dataset.year !== activeFilter.val) show = false;
       if (activeFilter.type === 'month' && (c.dataset.year !== activeFilter.year || c.dataset.month !== activeFilter.val)) show = false;
     }}
-    
     c.style.display = show ? '' : 'none';
   }});
-
-  // 2. Обновляем выделение в меню
   filterLinks.forEach(link => {{
     let isActive = false;
     if (activeFilter.type === link.dataset.type) {{
@@ -470,14 +509,10 @@ function updateView() {{
     }}
     link.classList.toggle('active', isActive);
   }});
-  
-  // 3. Кнопка сброса
   resetBtn.style.display = activeFilter.type ? 'block' : 'none';
 }}
 
-// Слушатели событий
 searchInput.addEventListener('input', updateView);
-
 filterLinks.forEach(link => {{
   link.addEventListener('click', e => {{
     e.preventDefault();
@@ -487,7 +522,6 @@ filterLinks.forEach(link => {{
     updateView();
   }});
 }});
-
 resetBtn.addEventListener('click', e => {{
   e.preventDefault();
   activeFilter = {{ type: null, val: null, year: null }};
@@ -501,81 +535,56 @@ resetBtn.addEventListener('click', e => {{
 async def fetch_new_posts(client, processed_ids):
     print("📥 Сканирую канал (ищу новые альбомы)…")
     accepted = []
-    
+
     def _process_group(group):
-        # ВАЖНО: iter_messages отдаёт посты от новых к старым (задом наперёд).
-        # Разворачиваем альбом, чтобы картинки скачивались в правильном порядке 
-        # (первая картинка из Telegram станет обложкой на сайте).
+        # iter_messages отдаёт посты от новых к старым (задом наперёд).
+        # Разворачиваем альбом, чтобы первая картинка стала обложкой на сайте.
         group.reverse()
-        
+
         full_text = ""
         main_msg = None
-        
-        # В альбомах текст прикреплён только к одной картинке. Собираем всё вместе.
         for m in group:
             text = m.raw_text or ""
             if text:
                 full_text += text + "\n"
-            
-            # Ищем наш тег (в любом регистре)
             if "#картина" in text.lower():
                 main_msg = m
-                
-        # Если тега нет — это просто левые картинки, пропускаем
+
         if not main_msg or "#картина@oldpictureart" not in full_text.lower():
             return
-            
-        # Защита от дубликатов (проверка по ID главного сообщения)
         if main_msg.id in processed_ids:
             return
-            
-        # Парсим текст и передаём ВЕСЬ альбом (group) для скачивания
-        # Парсим текст и передаём ВЕСЬ альбом (group) для скачивания
+
         parsed = parse_post(full_text)
-        
-        # Если parse_post вернул пустой словарь (нет тире), то это не картина
         if not parsed:
             return
-            
         accepted.append((main_msg, group, parsed))
 
-    # Оптимизация: не лопатим весь канал с начала времён, а читаем только новые посты
     min_id = max(processed_ids) if processed_ids else 0
-    
+
     current_album_id = None
     current_group = []
-    
-    # Идём по каналу. min_id ограничивает поиск
+
     async for message in client.iter_messages(CHANNEL_URL, min_id=min_id):
-        # Если это часть альбома
         if message.grouped_id:
             if current_album_id == message.grouped_id:
-                # Продолжаем собирать текущий альбом
                 current_group.append(message)
             else:
-                # Альбом сменился. Обрабатываем то, что накопили
                 if current_group:
                     _process_group(current_group)
-                # Начинаем собирать новый альбом
                 current_album_id = message.grouped_id
                 current_group = [message]
         else:
-            # Если это одиночный пост (не альбом)
             if current_group:
                 _process_group(current_group)
                 current_group = []
                 current_album_id = None
-            
-            # Обрабатываем одиночный пост как группу из 1 элемента
             _process_group([message])
 
-    # Не забываем обработать последний альбом, когда цикл завершился
     if current_group:
         _process_group(current_group)
-        
+
     print(f"   Найдено новых постов: {len(accepted)}")
-    
-    # Возвращаем в хронологическом порядке (от старых к новым)
     return accepted[::-1]
 
 # ---------- GITHUB ----------
@@ -583,8 +592,6 @@ async def fetch_new_posts(client, processed_ids):
 def push_to_github():
     print("\n📤 Отправляю на GitHub…")
     try:
-        # docs/ уже в нужном месте — GitHub Pages читает прямо оттуда.
-        # Просто коммитим всё что изменилось.
         subprocess.run(["git", "add", "."], check=False)
         status = subprocess.run(["git", "status", "--porcelain"],
                                 capture_output=True, text=True)
@@ -609,7 +616,6 @@ def rebuild_reset():
         print("   Отмена.")
         sys.exit(0)
 
-    # Удаляем все .html в docs/ (включая index.html и страницы постов)
     if os.path.isdir(OUTPUT_DIR):
         removed = 0
         for name in os.listdir(OUTPUT_DIR):
@@ -618,7 +624,6 @@ def rebuild_reset():
                 removed += 1
         print(f"   Удалено html-файлов: {removed}")
 
-    # Сбрасываем состояние
     for fn in (PROCESSED_FILE, META_FILE):
         if os.path.exists(fn):
             os.remove(fn)
@@ -633,10 +638,13 @@ async def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     os.makedirs(IMAGES_DIR, exist_ok=True)
 
-    # .nojekyll нужен GitHub Pages, чтобы не пытаться обрабатывать сайт через Jekyll
     nojekyll = os.path.join(OUTPUT_DIR, ".nojekyll")
     if not os.path.exists(nojekyll):
         open(nojekyll, "w").close()
+
+    if not PIL_AVAILABLE:
+        print("ℹ️  Pillow не установлен — крупные оригиналы не будут автоматически сжиматься.")
+        print("    Если нужны hires-картинки: pip install Pillow")
 
     processed_ids = set(load_json(PROCESSED_FILE, []))
     all_posts     = load_json(META_FILE, [])
@@ -655,8 +663,6 @@ async def main():
         date = main_msg.date.strftime("%Y-%m-%d")
         artist_slug = slugify(parsed["artist"])
 
-        # Имя файла как у тебя: 2025-02-14-пьер-огюст-ренуар.html
-        # Если такое имя уже есть — добавляем -2, -3 и т.д.
         base = f"{date}-{artist_slug}"
         filename = f"{base}.html"
         n = 2
@@ -667,7 +673,7 @@ async def main():
 
         print(f"📝 [{i}/{len(accepted)}] {parsed['artist']} — {parsed['title'][:50]}")
 
-        # --- НОВОЕ: ИЩЕМ ФАЙЛЫ В КОММЕНТАРИЯХ ---
+        # Ищем картинки-документы в комментариях
         comments = []
         if getattr(main_msg, "replies", None) and main_msg.replies.replies > 0:
             try:
@@ -676,15 +682,10 @@ async def main():
                         comments.append(reply)
             except Exception as e:
                 print(f"    ⚠️ Не удалось проверить комментарии: {e}")
-        # ----------------------------------------
 
-        # Слаг для имён картинок (без расширения)
         image_slug = filename[:-5]
-        
-        # Вызываем обновленную функцию (передаем comments)
         images, hires = await download_images(client, group, comments, image_slug)
 
-        # Добавили "hires": hires в словарь поста
         post = {"id": main_msg.id, "date": date, "filename": filename,
                 "images": images, "hires": hires, **parsed}
 
