@@ -1,10 +1,13 @@
 """
 Сборка сайта-галереи из Telegram-канала Old Picture Art.
 
-Формат поста в канале:
-  Художник ⸻ Название, год ⸻ Материал, размеры ⸻ Музей[, доп. примечания]
-  [⸻ История картины (опционально, через ⸻)]
-  [ссылка]#теги@oldpictureart
+НОВАЯ СТРУКТУРА ПОСТА:
+  Художник ⸻ Название ⸻ Техника ⸻ Музей ⸻ [Происхождение] ⸻ [Описание] ⸻ [Ссылки] ⸻ #хештеги
+
+Всё через ⸻. Переводы строк — только для красоты, на парсинг не влияют.
+Блоков может быть 4 (минимум: только шапка) или больше. Происхождение и описание
+определяются эвристикой по содержимому: если в блоке много годов и есть маркеры
+владения («собрание», «поступила», и т.п.) — это происхождение, иначе описание.
 """
 import asyncio
 import os
@@ -30,7 +33,6 @@ except ImportError:
 # ---------- Чтение .env без внешних зависимостей ----------
 
 def load_dotenv(path: str = ".env") -> None:
-    """Подгружает .env в os.environ. Не перезаписывает уже заданные переменные."""
     if not os.path.exists(path):
         return
     with open(path, "r", encoding="utf-8") as f:
@@ -55,14 +57,13 @@ except KeyError as e:
                      f"Пример .env:\nAPI_ID=12345\nAPI_HASH=abcdef0123456789...")
 
 CHANNEL_URL    = "https://t.me/oldpictureart"
-OUTPUT_DIR     = "docs"            # GitHub Pages раздаёт из этой папки
+OUTPUT_DIR     = "docs"
 IMAGES_DIR     = "docs/images"
 META_FILE      = "posts_meta.json"
 PROCESSED_FILE = "processed_ids.json"
 
-# Лимиты для сжатия больших картинок (GitHub: soft-limit 50MB, hard-limit 100MB).
-MAX_IMAGE_SIZE_MB    = 25      # Файлы больше этого размера будут сжаты.
-MAX_IMAGE_DIMENSION  = 2800    # Картинка ужимается до этой стороны (по большей).
+MAX_IMAGE_SIZE_MB    = 25
+MAX_IMAGE_DIMENSION  = 2800
 JPEG_QUALITY         = 88
 
 PROXY = (
@@ -76,82 +77,92 @@ PROXY = (
 # ---------- ПАРСИНГ ПОСТА ----------
 
 SEPARATOR_RE = re.compile(r"\s*[⸻⸺]\s*")
-URL_RE       = re.compile(r"https?://\S+")
-TAG_RE       = re.compile(r"#([\w]+)(?:@\w+)?")
+# URL: останавливаемся перед следующим https://, пробелом, ⸻ или ⸺.
+# Якоря страниц (#fragment) ОСТАЮТСЯ частью URL, не путаем с тегами.
+URL_RE = re.compile(r"https?://(?:(?!https?://)[^\s⸻⸺])+")
+# Теги только в формате #name@username (как у канала), чтобы не путать с якорями
+# вроде #infos-principales.
+TAG_RE = re.compile(r"#(\w+)@\w+")
 
-# Имя художника: 2–5 слов, каждое с заглавной (кириллица/латиница),
-# либо служебная частица (van/de/von/да/ле/фон/ди/del/della и т.п.) с маленькой.
-_NAME_WORD = (r"(?:[А-ЯЁA-Z][а-яёa-zA-Z'\-]+"
-              r"|van|de|von|да|ле|ла|дю|фон|ди|del|della|der|den|ten|te|af|y|и"
-              r"|el|al|ibn|bin|ben|mac|mc|Ó|O')")
-NAME_RE = re.compile(rf"^(?:{_NAME_WORD})(?:\s+{_NAME_WORD}){{1,6}}$")
+# Эвристика происхождения: даты и характерные слова владения.
+PROVENANCE_MARKERS = [
+    "до ", "с 1", "с 2", "поступил", "поступла", "собрание", "коллекци",
+    "приобрет", "продан", "продаж", "галере", "бывш", "передан",
+    "находил", "хранил", "наследств",
+    "bequest", "acquired", "purchased", "donated", "gift of", "private",
+]
+
+def looks_like_provenance(s: str) -> bool:
+    years = len(re.findall(r"\b1[5-9]\d{2}\b|\b20\d{2}\b", s))
+    text_lo = s.lower()
+    has_marker = any(m in text_lo for m in PROVENANCE_MARKERS)
+    return years >= 2 and has_marker
+
 
 def parse_post(text: str) -> dict:
-    """Раскладывает текст поста по полям.
-
-    Структура: художник ⸻ название ⸻ техника ⸻ музей [⸻ история...].
-    Всё, что идёт после музея через ⸻, считается историей провенанса.
-    """
+    """Раскладывает текст поста по полям. Возвращает {} если структура не та."""
     if not text:
         return {}
 
-    # Защита от служебных постов (список хештегов, реклама, анонсы).
-    # Если в тексте нет фирменного длинного тире, это не картина!
-    if not SEPARATOR_RE.search(text):
+    # 1. Сначала вынимаем URL (с якорями) — чтобы теги не съели #fragment в URL
+    urls: list[str] = []
+    def _grab(m):
+        urls.append(m.group(0))
+        return " "
+    text_clean = URL_RE.sub(_grab, text)
+
+    # 2. Теперь вынимаем теги канала вида #name@username
+    raw_tags = TAG_RE.findall(text_clean)
+    text_clean = TAG_RE.sub("", text_clean)
+
+    # 3. Переводы строк больше не несут структуру — заменяем на пробел
+    text_clean = re.sub(r"\s*\n\s*", " ", text_clean)
+
+    # 4. Делим по ⸻ на блоки
+    parts = [p.strip() for p in SEPARATOR_RE.split(text_clean) if p.strip()]
+
+    # Минимум 4 блока — это шапка картины
+    if len(parts) < 4:
         return {}
 
-    raw_tags = TAG_RE.findall(text)
-    text_no_tags = TAG_RE.sub("", text).strip()
+    artist, title, medium, museum = parts[0], parts[1], parts[2], parts[3]
+    extras = parts[4:]
 
-    url_match = URL_RE.search(text_no_tags)
-    url = url_match.group(0) if url_match else ""
-    if url_match:
-        text_no_tags = (text_no_tags[:url_match.start()]
-                        + " "
-                        + text_no_tags[url_match.end():])
+    history = ""
+    description = ""
 
-    parts = [p.strip() for p in SEPARATOR_RE.split(text_no_tags) if p.strip()]
-
-    artist = parts[0] if parts else ""
-    title  = parts[1] if len(parts) > 1 else ""
-    medium = parts[2] if len(parts) > 2 else ""
-
-    # parts[3] — это музей. Он может содержать перенос строки,
-    # после которого уже начинается история провенанса.
-    museum = ""
-    history_lines: list[str] = []
-
-    if len(parts) > 3:
-        museum_raw = parts[3]
-        museum_chunks = [l.strip() for l in museum_raw.split("\n") if l.strip()]
-        museum = museum_chunks[0] if museum_chunks else ""
-        # Всё что после первой строки внутри parts[3] — уже история
-        if len(museum_chunks) > 1:
-            history_lines.extend(museum_chunks[1:])
-
-    # parts[4], parts[5], ... — продолжение истории, разделённое ⸻
-    if len(parts) > 4:
-        history_lines.extend(parts[4:])
-
-    history = " ⸻ ".join(history_lines) if history_lines else ""
+    if len(extras) == 1:
+        # Один блок — это либо происхождение, либо описание
+        if looks_like_provenance(extras[0]):
+            history = extras[0]
+        else:
+            description = extras[0]
+    elif len(extras) >= 2:
+        # Первый блок — это происхождение (если подходит), остальные — описание
+        if looks_like_provenance(extras[0]):
+            history = extras[0]
+            description = "\n\n".join(extras[1:])
+        else:
+            description = "\n\n".join(extras)
 
     return {
-        "artist":  artist,
-        "title":   title,
-        "medium":  medium,
-        "museum":  museum,
-        "history": history,
-        "url":     url,
-        "tags":    sorted(set(raw_tags)),
-        "raw":     text,
+        "artist":      artist,
+        "title":       title,
+        "medium":      medium,
+        "museum":      museum,
+        "history":     history,
+        "description": description,
+        "urls":        urls,
+        "tags":        sorted(set(raw_tags)),
+        "raw":         text,
     }
+
 
 # ---------- УТИЛИТЫ ----------
 
 def slugify(text: str) -> str:
     """Имя для URL. Оставляем кириллицу — GitHub Pages с ней работает."""
     t = text.lower()
-    # Убираем всё кроме букв, цифр, пробелов и дефисов (\w в Python работает с юникодом)
     t = re.sub(r"[^\w\s-]", "", t, flags=re.UNICODE)
     t = re.sub(r"\s+", "-", t).strip("-")
     return (t[:60] or "post")
@@ -169,8 +180,7 @@ def save_json(path, data):
 
 
 def compress_if_huge(filepath: str) -> str:
-    """Если файл больше MAX_IMAGE_SIZE_MB, сжимает его (через Pillow).
-    Возвращает фактический путь к файлу (может измениться на .jpg)."""
+    """Сжимает картинку через Pillow если она больше MAX_IMAGE_SIZE_MB."""
     if not PIL_AVAILABLE or not os.path.exists(filepath):
         return filepath
     try:
@@ -204,7 +214,6 @@ async def download_images(client, group, comments, post_slug):
     images = []
     hires = []
 
-    # 1. Скачиваем обычные сжатые фото из самого поста
     for i, msg in enumerate(group, 1):
         if getattr(msg, "photo", None):
             filename = f"{post_slug}-{i}.jpg"
@@ -213,15 +222,14 @@ async def download_images(client, group, comments, post_slug):
                 await client.download_media(msg, filepath)
             images.append(f"images/{filename}")
 
-    # 2. Собираем документы-картинки (из комментариев, и на всякий случай из поста)
-    all_docs = [m for m in group if getattr(m, "document", None) and m.document.mime_type.startswith("image/")]
+    all_docs = [m for m in group if getattr(m, "document", None)
+                and m.document.mime_type.startswith("image/")]
     all_docs.extend(comments)
 
     for i, msg in enumerate(all_docs, 1):
         ext = ".jpg"
-        # Пытаемся достать оригинальное расширение файла
         for attr in getattr(msg.document, "attributes", []):
-            if hasattr(attr, 'file_name'):
+            if hasattr(attr, "file_name"):
                 ext = os.path.splitext(attr.file_name)[1].lower()
                 break
 
@@ -234,30 +242,28 @@ async def download_images(client, group, comments, post_slug):
                 print(f"    ⚠️ Не скачался оригинал {msg.id}: {e}")
                 continue
 
-        # Сжимаем, если файл получился слишком большим для GitHub
         filepath = compress_if_huge(filepath)
         hires.append(f"images/{os.path.basename(filepath)}")
 
-    # Если сжатой картинки почему-то нет, используем оригинал для показа
     if not images and hires:
         images = hires.copy()
 
     return images, hires
+
 
 # ---------- HTML ----------
 
 def render_post_page(post: dict) -> str:
     artist = h(post["artist"]); title = h(post["title"])
     medium = h(post["medium"]); museum = h(post["museum"])
-    url    = post["url"]
 
-    # Обратная совместимость со старыми записями в posts_meta.json (поле note вместо history)
-    history = post.get("history") or post.get("note") or ""
+    # Обратная совместимость со старыми meta
+    history     = post.get("history") or post.get("note") or ""
+    description = post.get("description") or ""
+    urls        = post.get("urls") or ([post["url"]] if post.get("url") else [])
 
-    # Картинка кликается → открывается оригинал в новой вкладке
     img_html_parts = []
     hires_list = post.get("hires", [])
-
     for i, src in enumerate(post["images"]):
         link_href = hires_list[i] if i < len(hires_list) else src
         img_html_parts.append(
@@ -273,21 +279,36 @@ def render_post_page(post: dict) -> str:
             f'<a href="tag-{h(t)}.html" class="tag">#{h(t)}</a>' for t in post["tags"]
         ) + "</div>"
 
-    source_html = (f'<p class="source">Источник: '
-                   f'<a href="{h(url)}" target="_blank" rel="noopener">{h(url)}</a></p>'
-                   if url else "")
+    # Описание — параграфы через \n\n
+    description_html = ""
+    if description:
+        paras = "".join(f"<p>{h(p)}</p>" for p in description.split("\n\n") if p.strip())
+        description_html = f'<section class="description">{paras}</section>'
 
-    # Блок истории провенанса. Делим обратно по " ⸻ " чтобы каждый этап стал отдельной строкой
+    # Происхождение — один абзац (текст уже сплошной, не разделён ⸻ на этапы)
     history_html = ""
     if history:
-        parts_h = [p.strip() for p in history.split("⸻") if p.strip()]
-        items = "".join(f"<li>{h(p)}</li>" for p in parts_h)
         history_html = (
             '<section class="history">'
-            '<h3>История картины</h3>'
-            f'<ul>{items}</ul>'
+            '<h3>Происхождение</h3>'
+            f'<p>{h(history)}</p>'
             '</section>'
         )
+
+    # Источники
+    sources_html = ""
+    if urls:
+        if len(urls) == 1:
+            u = urls[0]
+            sources_html = (f'<p class="source">Источник: '
+                            f'<a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></p>')
+        else:
+            items = "".join(
+                f'<li><a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></li>'
+                for u in urls
+            )
+            sources_html = (f'<div class="sources"><strong>Источники:</strong>'
+                            f'<ul class="source-list">{items}</ul></div>')
 
     return f"""<!DOCTYPE html>
 <html lang="ru"><head>
@@ -305,14 +326,19 @@ h1{{font-size:1.8rem;margin:0 0 .3rem;font-weight:bold}}
 h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:#555;margin:0 0 1rem}}
 .medium,.museum,.source{{margin:.3rem 0;color:#555}}
 .museum{{font-style:italic}}
-.source a{{word-break:break-all;color:#0366d6}}
+.source a,.source-list a{{word-break:break-all;color:#0366d6}}
 
-/* Блок истории провенанса */
+.description{{margin:1.5rem 0;font-size:1rem;color:#333;text-align:justify}}
+.description p{{margin:.6rem 0;line-height:1.65}}
+
 .history{{margin:1.8rem 0;padding:1rem 1.25rem;background:#f3eedb;
          border-left:3px solid #b8a86a;border-radius:4px}}
 .history h3{{margin:0 0 .6rem;font-size:1rem;color:#5a4f2a;font-weight:bold}}
-.history ul{{margin:0;padding-left:1.2rem}}
-.history li{{margin:.35rem 0;color:#4a4a4a;font-size:.95rem}}
+.history p{{margin:0;color:#4a4a4a;font-size:.95rem;line-height:1.6}}
+
+.sources{{margin:1rem 0;color:#555}}
+.source-list{{margin:.3rem 0 0;padding-left:1.2rem}}
+.source-list li{{margin:.25rem 0}}
 
 .tags{{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #ddd;
      display:flex;flex-wrap:wrap;gap:.4rem}}
@@ -336,14 +362,15 @@ time{{color:#999;font-size:.85rem}}
 {img_html}
 <p class="medium">{medium}</p>
 <p class="museum">{museum}</p>
+{description_html}
 {history_html}
-{source_html}
+{sources_html}
 <time>{h(post['date'])}</time>
 {tags_html}
 </article></body></html>"""
 
+
 def render_index(all_posts) -> str:
-    # Словарь для красивого отображения месяцев
     MONTHS = {
         "01": "Январь", "02": "Февраль", "03": "Март", "04": "Апрель",
         "05": "Май", "06": "Июнь", "07": "Июль", "08": "Август",
@@ -352,11 +379,8 @@ def render_index(all_posts) -> str:
 
     posts_sorted = sorted(all_posts, key=lambda x: x["date"], reverse=True)
 
-    # 1. СОБИРАЕМ ДАННЫЕ ДЛЯ МЕНЮ
-    # Уникальные авторы по алфавиту
     authors = sorted({p["artist"] for p in all_posts if p.get("artist")})
 
-    # Группировка по годам и месяцам
     archive = defaultdict(set)
     for p in all_posts:
         if p.get("date") and "-" in p["date"]:
@@ -368,7 +392,6 @@ def render_index(all_posts) -> str:
         for y, ms in sorted(archive.items(), reverse=True)
     }
 
-    # 2. ГЕНЕРИРУЕМ КАРТОЧКИ С DATA-АТРИБУТАМИ
     cards = []
     for p in posts_sorted:
         cover = h(p["images"][0]) if p.get("images") else ""
@@ -388,7 +411,6 @@ def render_index(all_posts) -> str:
           </div>
         </a>""")
 
-    # 3. ГЕНЕРИРУЕМ HTML САЙДБАРА
     authors_html = "".join(
         f'<li><a href="#" class="filter-link" data-type="artist" data-val="{h(a.lower())}">{h(a)}</a></li>'
         for a in authors
@@ -535,10 +557,12 @@ resetBtn.addEventListener('click', e => {{
 async def fetch_new_posts(client, processed_ids):
     print("📥 Сканирую канал (ищу новые альбомы)…")
     accepted = []
+    stats = {"total": 0, "no_kartina_tag": 0, "no_main_msg": 0,
+             "already_seen": 0, "parse_failed": 0}
+    samples_failed = []
 
     def _process_group(group):
-        # iter_messages отдаёт посты от новых к старым (задом наперёд).
-        # Разворачиваем альбом, чтобы первая картинка стала обложкой на сайте.
+        stats["total"] += 1
         group.reverse()
 
         full_text = ""
@@ -550,13 +574,20 @@ async def fetch_new_posts(client, processed_ids):
             if "#картина" in text.lower():
                 main_msg = m
 
-        if not main_msg or "#картина@oldpictureart" not in full_text.lower():
+        if not main_msg:
+            stats["no_main_msg"] += 1
+            return
+        if "#картина@oldpictureart" not in full_text.lower():
+            stats["no_kartina_tag"] += 1
             return
         if main_msg.id in processed_ids:
+            stats["already_seen"] += 1
             return
 
         parsed = parse_post(full_text)
         if not parsed:
+            stats["parse_failed"] += 1
+            samples_failed.append(full_text[:500])
             return
         accepted.append((main_msg, group, parsed))
 
@@ -585,7 +616,21 @@ async def fetch_new_posts(client, processed_ids):
         _process_group(current_group)
 
     print(f"   Найдено новых постов: {len(accepted)}")
+    print(f"   ─── Статистика ───")
+    print(f"   Всего проверено:           {stats['total']}")
+    print(f"   Уже обработаны:            {stats['already_seen']}")
+    print(f"   Не картина (нет тега):     {stats['no_main_msg'] + stats['no_kartina_tag']}")
+    print(f"   Парсер не справился:       {stats['parse_failed']}")
+
+    if samples_failed:
+        with open("rejected_posts.txt", "w", encoding="utf-8") as f:
+            f.write(f"# Отбракованные посты — {datetime.now():%Y-%m-%d %H:%M}\n\n")
+            for i, s in enumerate(samples_failed, 1):
+                f.write(f"--- #{i} ---\n{s}\n\n")
+        print(f"   📋 Подробности в rejected_posts.txt ({len(samples_failed)} шт.)")
+
     return accepted[::-1]
+
 
 # ---------- GITHUB ----------
 
@@ -608,7 +653,6 @@ def push_to_github():
 # ---------- MAIN ----------
 
 def rebuild_reset():
-    """Полная перегенерация: чистит html и состояние, картинки в docs/images/ оставляет."""
     print("⚠️  Режим --rebuild: удалю старые html-страницы и историю обработки.")
     print("   Папка docs/images/ НЕ трогается — уже скачанные картинки сохранятся.")
     answer = input("   Продолжить? [y/N]: ").strip().lower()
@@ -671,9 +715,8 @@ async def main():
             filename = f"{base}-{n}.html"
             n += 1
 
-        print(f"📝 [{i}/{len(accepted)}] {parsed['artist']} — {parsed['title'][:50]}")
+        print(f"📝 [{i}/{len(accepted)}] {parsed['artist'][:40]} — {parsed['title'][:50]}")
 
-        # Ищем картинки-документы в комментариях
         comments = []
         if getattr(main_msg, "replies", None) and main_msg.replies.replies > 0:
             try:
