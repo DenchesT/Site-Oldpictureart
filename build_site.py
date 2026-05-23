@@ -66,6 +66,11 @@ MAX_IMAGE_SIZE_MB    = 25
 MAX_IMAGE_DIMENSION  = 2800
 JPEG_QUALITY         = 88
 
+# Миниатюры для карточек на главной — грузятся ленью, экономят трафик в разы.
+THUMB_DIR        = "docs/images/thumbs"
+THUMB_DIMENSION  = 600
+THUMB_QUALITY    = 78
+
 PROXY = (
     '138.226.236.46',
     8443,
@@ -208,19 +213,51 @@ def compress_if_huge(filepath: str) -> str:
         return filepath
 
 
+def make_thumbnail(src_path: str, slug: str, idx: int) -> str:
+    """Создаёт миниатюру THUMB_DIMENSION px для главной. Возвращает относительный путь."""
+    if not PIL_AVAILABLE:
+        return ""
+    if not os.path.exists(src_path):
+        return ""
+    os.makedirs(THUMB_DIR, exist_ok=True)
+    suffix = "" if idx == 1 else f"-{idx}"
+    thumb_name = f"{slug}{suffix}.jpg"
+    thumb_path = os.path.join(THUMB_DIR, thumb_name)
+    # Уже есть — пропускаем
+    if os.path.exists(thumb_path):
+        return f"images/thumbs/{thumb_name}"
+    try:
+        img = Image.open(src_path)
+        if img.mode in ("RGBA", "P", "LA"):
+            img = img.convert("RGB")
+        img.thumbnail((THUMB_DIMENSION, THUMB_DIMENSION), Image.LANCZOS)
+        img.save(thumb_path, "JPEG", quality=THUMB_QUALITY, optimize=True)
+        return f"images/thumbs/{thumb_name}"
+    except Exception as e:
+        print(f"    ⚠️ Не удалось создать миниатюру: {e}")
+        return ""
+
+
 # ---------- СКАЧИВАНИЕ ----------
 
 async def download_images(client, group, comments, post_slug):
     images = []
     hires = []
+    thumbs = []
 
-    for i, msg in enumerate(group, 1):
+    photo_idx = 0
+    for msg in group:
         if getattr(msg, "photo", None):
-            filename = f"{post_slug}-{i}.jpg"
+            photo_idx += 1
+            filename = f"{post_slug}-{photo_idx}.jpg"
             filepath = os.path.join(IMAGES_DIR, filename)
             if not os.path.exists(filepath):
                 await client.download_media(msg, filepath)
             images.append(f"images/{filename}")
+            # Сразу делаем миниатюру для главной
+            thumb = make_thumbnail(filepath, post_slug, photo_idx)
+            if thumb:
+                thumbs.append(thumb)
 
     all_docs = [m for m in group if getattr(m, "document", None)
                 and m.document.mime_type.startswith("image/")]
@@ -245,10 +282,17 @@ async def download_images(client, group, comments, post_slug):
         filepath = compress_if_huge(filepath)
         hires.append(f"images/{os.path.basename(filepath)}")
 
+    # Если у поста только hires (нет сжатого фото из Telegram) — делаем миниатюру из hires
     if not images and hires:
         images = hires.copy()
+        if PIL_AVAILABLE and not thumbs:
+            for i, hires_rel in enumerate(hires, 1):
+                hires_abs = os.path.join(OUTPUT_DIR, hires_rel)
+                thumb = make_thumbnail(hires_abs, post_slug, i)
+                if thumb:
+                    thumbs.append(thumb)
 
-    return images, hires
+    return images, hires, thumbs
 
 
 # ---------- HTML ----------
@@ -394,7 +438,14 @@ def render_index(all_posts) -> str:
 
     cards = []
     for p in posts_sorted:
-        cover = h(p["images"][0]) if p.get("images") else ""
+        # Обложка: предпочитаем миниатюру, иначе обычную картинку
+        cover = ""
+        if p.get("thumbs"):
+            cover = p["thumbs"][0]
+        elif p.get("images"):
+            cover = p["images"][0]
+        cover = h(cover)
+
         year, month = "", ""
         if p.get("date") and "-" in p["date"]:
             year, month, _ = p["date"].split("-")
@@ -404,7 +455,7 @@ def render_index(all_posts) -> str:
            data-artist="{h(p['artist'].lower())}"
            data-year="{year}"
            data-month="{month}">
-          <div class="card-img" style="background-image:url('{cover}')"></div>
+          <div class="card-img"><img src="{cover}" alt="" loading="lazy" decoding="async"></div>
           <div class="card-body">
             <div class="card-artist">{h(p['artist'])}</div>
             <div class="card-title">{h(p['title'])}</div>
@@ -464,7 +515,8 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
 .card{{background:#fff;text-decoration:none;color:inherit;border-radius:6px;
       overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.08);transition:transform .15s,box-shadow .15s}}
 .card:hover{{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.15)}}
-.card-img{{width:100%;aspect-ratio:4/3;background:#ddd center/cover no-repeat}}
+.card-img{{width:100%;aspect-ratio:4/3;background:#ddd;overflow:hidden}}
+.card-img img{{width:100%;height:100%;object-fit:cover;display:block}}
 .card-body{{padding:.8rem 1rem 1rem}}
 .card-artist{{font-weight:bold;font-size:1rem;line-height:1.2;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
@@ -727,10 +779,10 @@ async def main():
                 print(f"    ⚠️ Не удалось проверить комментарии: {e}")
 
         image_slug = filename[:-5]
-        images, hires = await download_images(client, group, comments, image_slug)
+        images, hires, thumbs = await download_images(client, group, comments, image_slug)
 
         post = {"id": main_msg.id, "date": date, "filename": filename,
-                "images": images, "hires": hires, **parsed}
+                "images": images, "hires": hires, "thumbs": thumbs, **parsed}
 
         with open(os.path.join(OUTPUT_DIR, filename), "w", encoding="utf-8") as f:
             f.write(render_post_page(post))
@@ -739,6 +791,22 @@ async def main():
         processed_ids.update(m.id for m in group)
 
     await client.disconnect()
+
+    # ─── Постобработка: создаём миниатюры для старых постов, у которых их ещё нет ───
+    if PIL_AVAILABLE:
+        missing = [p for p in all_posts if not p.get("thumbs") and p.get("images")]
+        if missing:
+            print(f"\n🖼  Создаю миниатюры для {len(missing)} существующих постов…")
+            for p in missing:
+                slug = p["filename"][:-5]  # имя без .html
+                thumbs = []
+                for i, img_rel in enumerate(p["images"], 1):
+                    img_abs = os.path.join(OUTPUT_DIR, img_rel)
+                    thumb = make_thumbnail(img_abs, slug, i)
+                    if thumb:
+                        thumbs.append(thumb)
+                p["thumbs"] = thumbs
+            print("   ✅ Миниатюры готовы")
 
     save_json(META_FILE, all_posts)
     save_json(PROCESSED_FILE, sorted(processed_ids))
