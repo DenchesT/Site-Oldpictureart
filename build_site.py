@@ -194,8 +194,8 @@ def parse_medium_details(medium_text: str) -> dict:
                 if part not in dictionary["techniques"]:
                     dictionary["techniques"].append(part)
                     logger.info(f"➕ Новая техника: {part}")
-    save_dictionary(dictionary)
-    return {"material": material, "techniques": techniques, "size": size}
+        save_dictionary(dictionary)
+        return {"material": material, "techniques": techniques, "size": size}
 
     # ---------- ПАРСИНГ ПОСТА ----------
 
