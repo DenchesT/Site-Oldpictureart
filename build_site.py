@@ -59,14 +59,6 @@ load_dotenv()
 
 
 # ==================== НАСТРОЙКИ ====================
-# Было:
-try:
-    API_ID  = int(os.environ["API_ID"])
-    API_HASH = os.environ["API_HASH"]
-except KeyError as e:
-    raise SystemExit(f"❌ В .env не найдена переменная {e}. "
-                     f"Пример .env:\nAPI_ID=12345\nAPI_HASH=abcdef0123456789...")
-
 try:
     API_ID = int(os.environ["API_ID"])
     API_HASH = os.environ["API_HASH"]
@@ -97,9 +89,9 @@ THUMB_DIMENSION  = 600
 THUMB_QUALITY    = 78
 
 PROXY = (
-    '138.226.237.34',
-    8443,
-    '5a76b164eadb451a845bfae212bf864973616D73756E672E636F6D'
+    '62.113.59.20',
+    443,
+    '3f71a99978cf97e115dc89cc80aeca1f706574726f766963682e7275'
 )
 # ===================================================
 
@@ -828,7 +820,6 @@ async def main():
         accepted = await fetch_new_posts(client, processed_ids)
     except Exception as e:
         print(f"\n❌ Ошибка при сканировании канала: {e}")
-        print("💡 Напоминание: Бот должен быть добавлен АДМИНИСТРАТОРОМ в канал для чтения истории!")
         await client.disconnect()
         return
 
