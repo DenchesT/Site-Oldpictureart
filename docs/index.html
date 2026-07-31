@@ -26,7 +26,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
 .sidebar-content.collapsed{max-height:0!important}
 .sidebar ul{list-style:none;padding:0;margin:0}
 .sidebar li{margin-bottom:.35rem}
-.sidebar a{text-decoration:none;color:var(--link);font-size:.88rem;display:block;transition:color .15s;padding:2px 4px;border-radius:3px}
+.sidebar a{text-decoration:none;color:var(--link);font-size:.88rem;display:block;transition:color .15s;padding:2px 4px;border-radius:3px;word-break:break-word;overflow-wrap:break-word;hyphens:auto}
 .sidebar a:hover,.sidebar a:active{color:var(--active);background:var(--border)}
 .sidebar a.active{color:var(--active);font-weight:bold;background:var(--border)}
 .month-list{padding-left:1.2rem!important;margin-top:.3rem!important;font-size:.9em}
@@ -39,8 +39,9 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
 .card-img img{width:100%;height:100%;object-fit:cover;display:block}
 .card-body{padding:.9rem 1.1rem}
 .card-artist{font-weight:bold;font-size:1rem;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card-title{font-style:italic;color:var(--muted);font-size:.9rem;margin-top:.35rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card-info{font-size:.8rem;color:var(--muted);margin-top:.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-title{font-style:italic;color:var(--muted);margin-top:.3rem;font-size:.85rem;word-break:break-word}
+.card-info{font-size:.8rem;color:var(--muted);margin-top:.3rem;word-break:break-word;overflow-wrap:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-museum{font-size:.75rem;color:var(--muted);margin-top:.2rem;word-break:break-word;overflow-wrap:break-word}
 .theme-toggle{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);font-size:.9rem;box-shadow:0 2px 8px var(--shadow);z-index:1000}
 .random-btn{display:inline-block;padding:.5rem 1.5rem;background:var(--active);color:#fff;text-decoration:none;border-radius:20px;font-size:.9rem;transition:opacity .2s;margin-bottom:1rem}
 .random-btn:active{opacity:.8}
@@ -112,7 +113,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title" onclick="toggleSection(this)">🏛 Музеи</div>
-      <div class="sidebar-content"><ul><li><a href="#" class="filter-link" data-type="museum" data-val="skagens-museum-скаген">Skagens Museum, Скаген</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="базельский-художественный-музей-базель">Базельский художественный музей, Базель</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="британская-галерея-тейт-лондон">Британская галерея Тейт, Лондон</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="винтертурский-художественный-музей-винтертур">Винтертурский художественный музей, Винтертур</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="гим-москва">ГИМ, Москва</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="гмии-им-ас-пушкина-москва">ГМИИ им. А.С. Пушкина, Москва</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="грм-санкт-петербург">ГРМ, Санкт-Петербург</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="государственная-третьяковская-галерея-москва">Государственная Третьяковская галерея, Москва</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="государственный-музей-тюрингии-хайдексбург">Государственный музей Тюрингии, Хайдексбург</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="государственный-музей-истории-религии-санкт-петербург">Государственный музей истории религии, Санкт-Петер</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="государственный-художественный-музей-платтсбурга-галерея-рок">Государственный художественный музей Платтсбурга, </a></li><li><a href="#" class="filter-link" data-type="museum" data-val="гётеборгский-художественный-музей-гётеборг">Гётеборгский художественный музей, Гётеборг</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="институт-искусств-миннеаполиса-миннеаполис">Институт искусств Миннеаполиса, Миннеаполис</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="институт-искусств-стерлинга-и-франсин-кларк-уильямстаун">Институт искусств Стерлинга и Франсин Кларк, Уилья</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="коллекции-версальского-дворца-версаль">Коллекции Версальского дворца, Версаль</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="королевский-музей-изящных-искусств-брюссель">Королевский музей изящных искусств, Брюссель</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="лувр-париж-в-запаснике">Лувр, Париж (в запаснике)</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="малый-дворец-музей-изящных-искусств-города-парижа-париж">Малый дворец, музей изящных искусств города Парижа</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="метрополитен-музей-нью-йорк">Метрополитен-музей, Нью-Йорк</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-барберини-потсдам">Музей Барберини, Потсдам</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-вальрафа-рихарца-и-фонд-корбо-кёльн">Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-гетти-лос-анджелес">Музей Гетти, Лос-Анджелес</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-кунстпаласт-дюссельдорф">Музей Кунстпаласт, Дюссельдорф</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-леопольда-вена">Музей Леопольда, Вена</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-фабра-монпелье">Музей Фабра, Монпелье</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-эжена-будена-онфлёр">Музей Эжена Будена, Онфлёр</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-дорсе-париж">Музей д’Орсе, Париж</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-изящных-искусств-гент">Музей изящных искусств, Гент</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-искусств-охара-курасики">Музей искусств Охара, Курасики</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-современного-искусства-андре-мальро-гавр">Музей современного искусства Андре Мальро, Гавр</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="национальная-галерея-шотландии-эдинбург">Национальная галерея Шотландии, Эдинбург</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="национальная-галерея-искусств-вашингтон">Национальная галерея искусств, Вашингтон</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="национальная-галерея-искусства-вашингтон">Национальная галерея искусства, Вашингтон</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="национальный-музей-прадо-мадрид">Национальный музей Прадо, Мадрид</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="национальный-музей-западного-искусства-токио">Национальный музей западного искусства, Токио</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="национальный-художественный-музей-республики-беларусь-минск">Национальный художественный музей Республики Белар</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="отдел-личных-коллекций-гмии-им-ас-пушкина-москва">Отдел личных коллекций, ГМИИ им. А.С. Пушкина, Мос</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="пермская-государственная-художественная-галерея-пермь">Пермская государственная художественная галерея, П</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="портлендский-художественный-музей-портленд">Портлендский художественный музей, Портленд</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="собрание-фонда-эмиля-бюрле-цюрих">Собрание Фонда Эмиля Бюрле, Цюрих</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="собрание-хиршпрунга-копенгаген">Собрание Хиршпрунга, Копенгаген</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="старая-национальная-галерея-берлин">Старая национальная галерея, Берлин</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="художественная-галерея-южной-австралии-аделаида">Художественная галерея Южной Австралии, Аделаида</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="художественный-музей-колледжа-смит-нортхемптон">Художественный музей колледжа Смит, Нортхемптон</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="частная-коллекция">Частная коллекция</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="частная-коллекция-монте-карло">Частная коллекция, Монте-Карло</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="частная-коллекция-сша">Частная коллекция, США</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="частная-коллекция-франция">Частная коллекция, Франция</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="частная-коллекция-швейцария">Частная коллекция, Швейцария</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="частное-собрание">Частное собрание</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="чикагский-институт-искусств-чикаго">Чикагский институт искусств, Чикаго</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="штеделевский-художественный-институт-франкфурт-на-майне">Штеделевский художественный институт, Франкфурт-на</a></li></ul></div>
+      <div class="sidebar-content"><ul><li><a href="#" class="filter-link" data-type="museum" data-val="skagens-museum-скаген">Skagens Museum, Скаген</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="базельский-художественный-музей-базель">Базельский художественный музей, Базель</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="британская-галерея-тейт-лондон">Британская галерея Тейт, Лондон</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="винтертурский-художественный-музей-винтертур">Винтертурский художественный музей, Винтертур</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="гим-москва">ГИМ, Москва</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="гмии-им-ас-пушкина-москва">ГМИИ им. А.С. Пушкина, Москва</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="грм-санкт-петербург">ГРМ, Санкт-Петербург</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="государственная-третьяковская-галерея-москва">Государственная Третьяковская галерея, Москва</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="государственный-музей-тюрингии-хайдексбург">Государственный музей Тюрингии, Хайдексбург</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="государственный-музей-истории-религии-санкт-петербург">Государственный музей истории религии, Санкт-Петербург</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="государственный-художественный-музей-платтсбурга-галерея-рок">Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="гётеборгский-художественный-музей-гётеборг">Гётеборгский художественный музей, Гётеборг</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="институт-искусств-миннеаполиса-миннеаполис">Институт искусств Миннеаполиса, Миннеаполис</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="институт-искусств-стерлинга-и-франсин-кларк-уильямстаун">Институт искусств Стерлинга и Франсин Кларк, Уильямстаун</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="коллекции-версальского-дворца-версаль">Коллекции Версальского дворца, Версаль</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="королевский-музей-изящных-искусств-брюссель">Королевский музей изящных искусств, Брюссель</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="лувр-париж-в-запаснике">Лувр, Париж (в запаснике)</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="малый-дворец-музей-изящных-искусств-города-парижа-париж">Малый дворец, музей изящных искусств города Парижа, Париж</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="метрополитен-музей-нью-йорк">Метрополитен-музей, Нью-Йорк</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-барберини-потсдам">Музей Барберини, Потсдам</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-вальрафа-рихарца-и-фонд-корбо-кёльн">Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-гетти-лос-анджелес">Музей Гетти, Лос-Анджелес</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-кунстпаласт-дюссельдорф">Музей Кунстпаласт, Дюссельдорф</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-леопольда-вена">Музей Леопольда, Вена</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-фабра-монпелье">Музей Фабра, Монпелье</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-эжена-будена-онфлёр">Музей Эжена Будена, Онфлёр</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-дорсе-париж">Музей д’Орсе, Париж</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-изящных-искусств-гент">Музей изящных искусств, Гент</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-искусств-охара-курасики">Музей искусств Охара, Курасики</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="музей-современного-искусства-андре-мальро-гавр">Музей современного искусства Андре Мальро, Гавр</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="национальная-галерея-шотландии-эдинбург">Национальная галерея Шотландии, Эдинбург</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="национальная-галерея-искусств-вашингтон">Национальная галерея искусств, Вашингтон</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="национальная-галерея-искусства-вашингтон">Национальная галерея искусства, Вашингтон</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="национальный-музей-прадо-мадрид">Национальный музей Прадо, Мадрид</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="национальный-музей-западного-искусства-токио">Национальный музей западного искусства, Токио</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="национальный-художественный-музей-республики-беларусь-минск">Национальный художественный музей Республики Беларусь, Минск</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="отдел-личных-коллекций-гмии-им-ас-пушкина-москва">Отдел личных коллекций, ГМИИ им. А.С. Пушкина, Москва</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="пермская-государственная-художественная-галерея-пермь">Пермская государственная художественная галерея, Пермь</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="портлендский-художественный-музей-портленд">Портлендский художественный музей, Портленд</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="собрание-фонда-эмиля-бюрле-цюрих">Собрание Фонда Эмиля Бюрле, Цюрих</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="собрание-хиршпрунга-копенгаген">Собрание Хиршпрунга, Копенгаген</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="старая-национальная-галерея-берлин">Старая национальная галерея, Берлин</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="художественная-галерея-южной-австралии-аделаида">Художественная галерея Южной Австралии, Аделаида</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="художественный-музей-колледжа-смит-нортхемптон">Художественный музей колледжа Смит, Нортхемптон</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="частная-коллекция">Частная коллекция</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="частная-коллекция-монте-карло">Частная коллекция, Монте-Карло</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="частная-коллекция-сша">Частная коллекция, США</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="частная-коллекция-франция">Частная коллекция, Франция</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="частная-коллекция-швейцария">Частная коллекция, Швейцария</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="чикагский-институт-искусств-чикаго">Чикагский институт искусств, Чикаго</a></li><li><a href="#" class="filter-link" data-type="museum" data-val="штеделевский-художественный-институт-франкфурт-на-майне">Штеделевский художественный институт, Франкфурт-на-Майне</a></li></ul></div>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title" onclick="toggleSection(this)">📄 Материал</div>
@@ -136,6 +137,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Владимир Егорович Маковский</div>
             <div class="card-title">Освящение публичного дома (эскиз), 1900</div>
+            <div class="card-museum">Государственный музей истории религии, Санкт-Петербург</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -150,6 +152,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Андерс Леонард Цорн</div>
             <div class="card-title">Impressions de Londres (Впечатления от Лондона), 1890</div>
+            <div class="card-museum">Гётеборгский художественный музей, Гётеборг</div>
             <div class="card-info">Бумага акварель и гуашь</div>
           </div>
         </a>
@@ -164,6 +167,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Рудольф фон Альт</div>
             <div class="card-title">Die alte Fichte in Bad Gastein (Старая ель в Бад-Гастайне), 1899</div>
+            <div class="card-museum">Музей Леопольда, Вена</div>
             <div class="card-info">Бумага акварель и гуашь</div>
           </div>
         </a>
@@ -178,6 +182,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Эдуард Мане</div>
             <div class="card-title">Le Chien Minnay (Собака Минней), 1879</div>
+            <div class="card-museum">Частная коллекция</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -192,6 +197,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Николай Егорович Сверчков</div>
             <div class="card-title">Зимний пейзаж с санями, запряженными лошадьми, 1868</div>
+            <div class="card-museum">Музей изящных искусств, Гент</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -206,6 +212,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Аксели Галлен-Каллела</div>
             <div class="card-title">Ruovesi (Озеро Руовеси), 1896</div>
+            <div class="card-museum">ГМИИ им. А.С. Пушкина, Москва</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -220,6 +227,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Винсент Виллем ван Гог</div>
             <div class="card-title">Bloembedden in Holland (Цветники в Голландии), 1883</div>
+            <div class="card-museum">Национальная галерея искусства, Вашингтон</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -234,6 +242,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Жакоб Абраам Камиль Писсарро</div>
             <div class="card-title">La Maison Rouge (Красный дом), 1873</div>
+            <div class="card-museum">Портлендский художественный музей, Портленд</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -248,6 +257,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Альфред Сислей</div>
             <div class="card-title">La Prairie (Луг), 1875</div>
+            <div class="card-museum">Национальная галерея искусств, Вашингтон</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -262,6 +272,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Жан-Батист Арман Гийомен</div>
             <div class="card-title">Paysage de neige à Crozant (Снежный пейзаж в Крозанте), 1895</div>
+            <div class="card-museum">Музей современного искусства Андре Мальро, Гавр</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -276,6 +287,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Анонимные художники, Феликс Огюстен Милиус, Александр-Огюст Розе, Альфред Адольф Ленгле, Огюст Русслен, Огюст Александр Хирш, Эмиль-Анри Лапорт, Огюст Ренуар, Поль Милье, Леонс-Люсьен Кордье, Альбер Дарье</div>
             <div class="card-title">Quarante-trois portraits de peintres de l&#x27;atelier Gleyre (Сорок три портрета художников мастерской Глейра), между 1856 и 1868 годами</div>
+            <div class="card-museum">Малый дворец, музей изящных искусств города Парижа, Париж</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -290,6 +302,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Станислав Юлианович Жуковский</div>
             <div class="card-title">Былое. Комната старого дома, 1912</div>
+            <div class="card-museum">Национальный художественный музей Республики Беларусь, Минск</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -304,6 +317,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Аурелиано де Беруэте</div>
             <div class="card-title">Paisaje de Torrelodones (Пейзаж Торрелодонес), 1891</div>
+            <div class="card-museum">Национальный музей Прадо, Мадрид</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -318,6 +332,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Альфред Сислей</div>
             <div class="card-title">Nature morte, pommes et raisins (Натюрморт, яблоки и виноград), 1880-81</div>
+            <div class="card-museum">Институт искусств Стерлинга и Франсин Кларк, Уильямстаун</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -332,6 +347,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Жан Батист Эдуар Детай</div>
             <div class="card-title">Inauguration de l&#x27;Opéra de Paris, 5 janvier 1875 (Открытие Парижской оперы, 5 января 1875 года), 1878</div>
+            <div class="card-museum">Коллекции Версальского дворца, Версаль</div>
             <div class="card-info">Холст размывка бистром и китайской тушью</div>
           </div>
         </a>
@@ -346,6 +362,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Эдуард Мане</div>
             <div class="card-title">Le Suicidé (Самоубийство), 1877</div>
+            <div class="card-museum">Собрание Фонда Эмиля Бюрле, Цюрих</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -360,6 +377,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Борис Михайлович Кустодиев</div>
             <div class="card-title">Крещенское водосвятие, 1921</div>
+            <div class="card-museum">Частная коллекция</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -374,6 +392,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Вигго Юхансен</div>
             <div class="card-title">Glade jul (Счастливого Рождества), 1891</div>
+            <div class="card-museum">Собрание Хиршпрунга, Копенгаген</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -388,6 +407,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Жан-Франсуа Милле</div>
             <div class="card-title">Falaises de Gréville (Скалы Гревиля), 1871</div>
+            <div class="card-museum">Музей искусств Охара, Курасики</div>
             <div class="card-info">Бумага пастель</div>
           </div>
         </a>
@@ -402,6 +422,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Джон Сингер Сарджент</div>
             <div class="card-title">Claude Monet Painting by the Edge of a Wood (Картина Клода Моне «На опушке леса»), 1885</div>
+            <div class="card-museum">Британская галерея Тейт, Лондон</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -416,6 +437,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Ялмар Эйлиф Эммануэл Петерссен</div>
             <div class="card-title">Måneopgang over klitterne (Восход луны над дюнами), 1883</div>
+            <div class="card-museum">Skagens Museum, Скаген</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -430,6 +452,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Карл Павлович Брюллов</div>
             <div class="card-title">Вид форта Пику на острове Мадейра (Неоконченная картина), 1849–1850</div>
+            <div class="card-museum">Государственная Третьяковская галерея, Москва</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -444,6 +467,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Станислас Анри Руар</div>
             <div class="card-title">La Terrasse au bord de la Seine à Melun (Терраса на берегу Сены в Мелуне), 1874</div>
+            <div class="card-museum">Музей д’Орсе, Париж</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -458,6 +482,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Исаак Ильич Левитан</div>
             <div class="card-title">Иллюминация Кремля, 1896</div>
+            <div class="card-museum">Частная коллекция, США</div>
             <div class="card-info">Доска масло</div>
           </div>
         </a>
@@ -472,6 +497,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Эжен Луи Буден</div>
             <div class="card-title">Le Clocher de Sainte-Catherine, Honfleur (Колокольня Святой Екатерины, Онфлёр), 1897</div>
+            <div class="card-museum">Музей Эжена Будена, Онфлёр</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -486,6 +512,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Жан Луи Форен</div>
             <div class="card-title">Aux Courses à Longchamp (На скачках в Лоншане), 1891</div>
+            <div class="card-museum">Национальная галерея искусства, Вашингтон</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -500,6 +527,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Эмильен Мюло-Дюриваж</div>
             <div class="card-title">Paysage du Cotentin, près des bords de l&#x27;Ouve (Пейзаж в Котантене на берегу реки Уве), XIX в.</div>
+            <div class="card-museum">Частная коллекция</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -507,13 +535,14 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
            data-artist="фрэнсис кэмпбелл буало каделл"
            data-year="2025"
            data-month="11"
-           data-museum="частное-собрание"
+           data-museum="частная-коллекция"
            data-material="холст"
            data-techniques="масло">
           <div class="card-img"><img src="images/thumbs/2025-11-07-фрэнсис-кэмпбелл-буало-каделл.jpg" alt="" loading="lazy" decoding="async"></div>
           <div class="card-body">
             <div class="card-artist">Фрэнсис Кэмпбелл Буало Каделл</div>
             <div class="card-title">Florian&#x27;s café, Venice (Кафе Флориан, Венеция), 1910</div>
+            <div class="card-museum">Частная коллекция</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -528,6 +557,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Иньяс-Анри-Жан-Теодор Фантен-Латур</div>
             <div class="card-title">La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879</div>
+            <div class="card-museum">Королевский музей изящных искусств, Брюссель</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -542,6 +572,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Гюстав Кайботт</div>
             <div class="card-title">Jeune homme à sa fenêtre (Молодой человек у окна), 1876</div>
+            <div class="card-museum">Музей Гетти, Лос-Анджелес</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -556,6 +587,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Рокуэлл Кент</div>
             <div class="card-title">Cranberrying, Monhegan (Сбор клюквы, Монхиган),1907</div>
+            <div class="card-museum">Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -570,6 +602,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Поль Сезар Эллё</div>
             <div class="card-title">Le Grand Pavois (Гранд Павуа), 1901</div>
+            <div class="card-museum">Частная коллекция</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -584,6 +617,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Жан-Батист Арман Гийомен</div>
             <div class="card-title">Vue du Puy-de-Dôme (Вид на Пюи-де-Дом), 1899</div>
+            <div class="card-museum">Музей Барберини, Потсдам</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -598,6 +632,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Константин Аполлонович Савицкий</div>
             <div class="card-title">У мирового суда, XIX век</div>
+            <div class="card-museum">Пермская государственная художественная галерея, Пермь</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -612,6 +647,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Анри Мари Раймон де Тулуз-Лотрек-Монфа</div>
             <div class="card-title">Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888</div>
+            <div class="card-museum">Частная коллекция, Монте-Карло</div>
             <div class="card-info">Холст </div>
           </div>
         </a>
@@ -626,6 +662,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Жакоб Абраам Камиль Писсарро</div>
             <div class="card-title">Une Crique a Saint-Thomas (Antilles) (Бухта на острове Сент-Томас (Антильские острова)), 1856</div>
+            <div class="card-museum">Национальная галерея искусства, Вашингтон</div>
             <div class="card-info">Академическая доска масло</div>
           </div>
         </a>
@@ -640,6 +677,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Альфред Сислей</div>
             <div class="card-title">Landscape at Louveciennes (Пейзаж в Лувесьене), 1873</div>
+            <div class="card-museum">Национальный музей западного искусства, Токио</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -654,6 +692,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Илер-Жермен-Эдгар де Га (Эдгар Дега)</div>
             <div class="card-title">Salle de billard au Ménil-Hubert (Бильярдная в Мениль-Юбер), 1892</div>
+            <div class="card-museum">Музей д’Орсе, Париж</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -668,6 +707,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Илер-Жермен-Эдгар де Га (Эдгар Дега)</div>
             <div class="card-title">Jockey blessé (Раненый жокей), 1896-1898</div>
+            <div class="card-museum">Базельский художественный музей, Базель</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -682,6 +722,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Йохан Фредерик Фриц Таулов</div>
             <div class="card-title">A Stream in Springtime (Ручей в весеннее время), 1901</div>
+            <div class="card-museum">Частная коллекция</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -696,6 +737,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Жан Фредерик Базиль</div>
             <div class="card-title">Paysage au bord du Lez (Пейзаж на берегу Лез), 1870</div>
+            <div class="card-museum">Институт искусств Миннеаполиса, Миннеаполис</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -710,6 +752,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Констан Тройон</div>
             <div class="card-title">Le Marais (Болото), 1840</div>
+            <div class="card-museum">Чикагский институт искусств, Чикаго</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -724,6 +767,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Фердинанд Ходлер</div>
             <div class="card-title">Die Strasse nach Evordes (Дорога в Эвордес), 1890</div>
+            <div class="card-museum">Винтертурский художественный музей, Винтертур</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -738,6 +782,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Каспар Давид Фридрих</div>
             <div class="card-title">Ansicht der Ostküste Rügens mit einem Schäfer (Вид на восточный берег острова Рюген с пастухом), 1805–06</div>
+            <div class="card-museum">Метрополитен-музей, Нью-Йорк</div>
             <div class="card-info">Тонированная рифлёная бумага тушь-сепия, акварель-сепия</div>
           </div>
         </a>
@@ -752,6 +797,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Альберт Бирштадт</div>
             <div class="card-title">A River Landscape, Westphalia (Речной пейзаж, Вестфалия), 1855</div>
+            <div class="card-museum">Частная коллекция</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -766,6 +812,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Альфред Сислей</div>
             <div class="card-title">Le Pont de Moret (Мост в Морэ), 1893</div>
+            <div class="card-museum">Музей д’Орсе, Париж</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -780,6 +827,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Жан Луи Форен</div>
             <div class="card-title">Les courses (Скачки), 1888</div>
+            <div class="card-museum">ГМИИ им. А.С. Пушкина, Москва</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -794,6 +842,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Фердинан Виктор Эжен Делакруа</div>
             <div class="card-title">Bouquet de fleurs (Ваза с цветами), 1833</div>
+            <div class="card-museum">Национальная галерея Шотландии, Эдинбург</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -808,6 +857,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Валентин Александрович Серов</div>
             <div class="card-title">Солдатушки, бравы ребятушки, где же ваша слава?, 1905</div>
+            <div class="card-museum">ГРМ, Санкт-Петербург</div>
             <div class="card-info">Картон темпера, графит</div>
           </div>
         </a>
@@ -822,6 +872,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Жан Дезире Гюстав Курбе</div>
             <div class="card-title">La Rencontre ou Bonjour Monsieur Courbet (Встреча или Здравствуйте, мистер Курбе), 1854</div>
+            <div class="card-museum">Музей Фабра, Монпелье</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -836,6 +887,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Альфред Сислей</div>
             <div class="card-title">Rue Eugène Moussoir à Moret: L&#x27;hiver (Улица Эжена Муссуара в Море: Зима), 1891</div>
+            <div class="card-museum">Метрополитен-музей, Нью-Йорк</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -850,6 +902,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Йохан Фредерик Фриц Таулов</div>
             <div class="card-title">Горная речка, между 1887 и 1890 годами</div>
+            <div class="card-museum">ГМИИ им. А.С. Пушкина, Москва</div>
             <div class="card-info">Холст пастель</div>
           </div>
         </a>
@@ -864,6 +917,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Франц Теодор Макс Слефогт</div>
             <div class="card-title">Unter den Linden (Унтер-ден-Линден), 1913</div>
+            <div class="card-museum">Старая национальная галерея, Берлин</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -871,13 +925,14 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
            data-artist="ханс даль"
            data-year="2025"
            data-month="05"
-           data-museum="частное-собрание"
+           data-museum="частная-коллекция"
            data-material="холст"
            data-techniques="масло">
           <div class="card-img"><img src="images/thumbs/2025-05-31-ханс-даль.jpg" alt="" loading="lazy" decoding="async"></div>
           <div class="card-body">
             <div class="card-artist">Ханс Даль</div>
             <div class="card-title">Норвежский фьорд с козами, 1910-е</div>
+            <div class="card-museum">Частная коллекция</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -885,13 +940,14 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
            data-artist="игорь эммануилович грабарь"
            data-year="2025"
            data-month="05"
-           data-museum="частное-собрание"
+           data-museum="частная-коллекция"
            data-material="холст"
            data-techniques="масло">
           <div class="card-img"><img src="images/thumbs/2025-05-25-игорь-эммануилович-грабарь.jpg" alt="" loading="lazy" decoding="async"></div>
           <div class="card-body">
             <div class="card-artist">Игорь Эммануилович Грабарь</div>
             <div class="card-title">Весенний пейзаж. Апрель, 1939</div>
+            <div class="card-museum">Частная коллекция</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -906,6 +962,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Геркулес Сегерс</div>
             <div class="card-title">Woodland Path (Лесная тропа), около 1618-20</div>
+            <div class="card-museum">Частная коллекция</div>
             <div class="card-info">Холст закреплённый на доске масло</div>
           </div>
         </a>
@@ -920,6 +977,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Анри Жан Гийом Мартен</div>
             <div class="card-title">Le paysan et la bergère (Крестьянин и пастушка), 1903</div>
+            <div class="card-museum">Частная коллекция, Франция</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -934,6 +992,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Константин Фёдорович Юон</div>
             <div class="card-title">Парад на Красной площади 7 ноября 1941 года, 1949</div>
+            <div class="card-museum">ГИМ, Москва</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -948,6 +1007,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Джон Гловер</div>
             <div class="card-title">A view of the artist&#x27;s house and garden, in Mills Plains, Van Diemen&#x27;s Land (Вид на дом и сад художника в Миллс-Плейнс, Земля Ван-Димена), 1835</div>
+            <div class="card-museum">Художественная галерея Южной Австралии, Аделаида</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -962,6 +1022,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Макс Либерман</div>
             <div class="card-title">Die Kartoffelernte (Собирание картофеля), 1875</div>
+            <div class="card-museum">Музей Кунстпаласт, Дюссельдорф</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -976,6 +1037,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Луиджи Алоис-Франсуа-Жозеф Луар</div>
             <div class="card-title">Smoke on the Paris Circuit Line (Дым окружной парижской железной дороги), 1885</div>
+            <div class="card-museum">ГМИИ им. А.С. Пушкина, Москва</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -990,6 +1052,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Илья Ефимович Репин</div>
             <div class="card-title">Летний пейзаж (В.А.Репина на мостике в Абрамцеве), 1879</div>
+            <div class="card-museum">Отдел личных коллекций, ГМИИ им. А.С. Пушкина, Москва</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -1004,6 +1067,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Жан Дезире Гюстав Курбе</div>
             <div class="card-title">Dorfausgang im Winter (Окраина деревни зимой), 1868</div>
+            <div class="card-museum">Штеделевский художественный институт, Франкфурт-на-Майне</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -1018,6 +1082,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Франц фон Штук</div>
             <div class="card-title">Sternschnuppen (Franz und Mary Stuck) (Падающие звёзды), 1912</div>
+            <div class="card-museum">Частная коллекция, Швейцария</div>
             <div class="card-info">Дерево масло</div>
           </div>
         </a>
@@ -1032,6 +1097,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Илер-Жермен-Эдгар де Га (Эдгар Дега)</div>
             <div class="card-title">Paysage Avec Fumée de Cheminées (Пейзаж с дымовыми трубами), 1890-1893</div>
+            <div class="card-museum">Чикагский институт искусств, Чикаго</div>
             <div class="card-info">Текстурированная кремовая бумага наклеенная на картон пастель, монотипия</div>
           </div>
         </a>
@@ -1046,6 +1112,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Жан Фредерик Базиль</div>
             <div class="card-title">L’atelier de la rue de Furstenberg (Мастерская художника на улице Фюрстенберг), 1865</div>
+            <div class="card-museum">Музей Фабра, Монпелье</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -1060,6 +1127,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Александр Жан-Батист Брюн</div>
             <div class="card-title">Vue du Salon Carré au Louvre (Вид на Салон Карре в Лувре), 1880</div>
+            <div class="card-museum">Лувр, Париж (в запаснике)</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -1074,6 +1142,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Альфред Сислей</div>
             <div class="card-title">La gelée à Louvecienne (Мороз в Лувесьенне), 1873</div>
+            <div class="card-museum">ГМИИ им. А.С. Пушкина, Москва</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -1088,6 +1157,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Никола Пуссен</div>
             <div class="card-title">Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660</div>
+            <div class="card-museum">ГМИИ им. А.С. Пушкина, Москва</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -1102,6 +1172,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Архип Иванович Куинджи</div>
             <div class="card-title">Берёзовая роща, 1879</div>
+            <div class="card-museum">Государственная Третьяковская галерея, Москва</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -1116,6 +1187,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Гюстав Кайботт</div>
             <div class="card-title">Chemin montant (Восходящая дорога), 1881</div>
+            <div class="card-museum">Частная коллекция</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -1130,6 +1202,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Фредерик Чайльд Гассам</div>
             <div class="card-title">Union Square in Spring (Юнион-сквер весной), 1896</div>
+            <div class="card-museum">Художественный музей колледжа Смит, Нортхемптон</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -1144,6 +1217,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Николай Дмитриевич Кузнецов</div>
             <div class="card-title">В праздник, 1879</div>
+            <div class="card-museum">Государственная Третьяковская галерея, Москва</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -1158,6 +1232,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Александр Иванович Морозов</div>
             <div class="card-title">Выход из церкви в Пскове, 1864</div>
+            <div class="card-museum">Государственная Третьяковская галерея, Москва</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -1172,6 +1247,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Николай Александрович Тархов</div>
             <div class="card-title">Козы на солнце, 1904</div>
+            <div class="card-museum">Государственная Третьяковская галерея, Москва</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -1186,6 +1262,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Каспар Давид Фридрих</div>
             <div class="card-title">Morgennebel im Gebirge (Утренний туман в горах), 1808</div>
+            <div class="card-museum">Государственный музей Тюрингии, Хайдексбург</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a>
@@ -1200,6 +1277,7 @@ h1{font-size:2.2rem;margin:0 0 .5rem}
           <div class="card-body">
             <div class="card-artist">Пьер Огюст Ренуар</div>
             <div class="card-title">Les Fiancés (Пара), около 1868</div>
+            <div class="card-museum">Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн</div>
             <div class="card-info">Холст масло</div>
           </div>
         </a></div>

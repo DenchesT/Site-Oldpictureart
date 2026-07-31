@@ -463,7 +463,10 @@ h1{{font-size:1.8rem;margin:0 0 .3rem;line-height:1.2}}
 h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:var(--muted);margin:0 0 1rem}}
 .medium-details{{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;margin:1rem 0;padding:.8rem;background:var(--card-bg);border-radius:6px;font-size:.9rem;color:var(--muted);border:1px solid var(--border)}}
 .museum{{font-style:italic;color:var(--muted);margin:.3rem 0}}
-.source a,.source-list a{{color:var(--link);word-break:break-all}}
+.source a,.source-list a{{color:var(--link);word-break:break-all;overflow-wrap:break-word;hyphens:auto}}
+.source{{max-width:100%;overflow:hidden}}
+.source-list{{max-width:100%}}
+.source-list li{{word-break:break-all;overflow-wrap:break-word}}
 .description{{margin:1.5rem 0;text-align:justify}}
 .description p{{margin:.6rem 0;line-height:1.65}}
 .history{{margin:1.8rem 0;padding:1rem 1.25rem;background:var(--history-bg);border-left:3px solid var(--history-border);border-radius:4px}}
@@ -679,6 +682,7 @@ def render_index(all_posts) -> str:
           <div class="card-body">
             <div class="card-artist">{h(p['artist'])}</div>
             <div class="card-title">{h(p['title'])}</div>
+            <div class="card-museum">{h(p.get('museum', ''))}</div>
             <div class="card-info">{h(p.get('material', ''))} {h(', '.join(p.get('techniques', [])[:2]))}</div>
           </div>
         </a>""")
@@ -689,8 +693,8 @@ def render_index(all_posts) -> str:
     )
     
     museums_html = "".join(
-        f'<li><a href="#" class="filter-link" data-type="museum" data-val="{h(slugify(m))}">{h(m[:50])}</a></li>'
-        for m in museums if m
+    f'<li><a href="#" class="filter-link" data-type="museum" data-val="{h(slugify(m))}">{h(m)}</a></li>'
+    for m in museums if m
     )
     
     materials_html = "".join(
@@ -741,7 +745,7 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
 .sidebar-content.collapsed{{max-height:0!important}}
 .sidebar ul{{list-style:none;padding:0;margin:0}}
 .sidebar li{{margin-bottom:.35rem}}
-.sidebar a{{text-decoration:none;color:var(--link);font-size:.88rem;display:block;transition:color .15s;padding:2px 4px;border-radius:3px}}
+.sidebar a{{text-decoration:none;color:var(--link);font-size:.88rem;display:block;transition:color .15s;padding:2px 4px;border-radius:3px;word-break:break-word;overflow-wrap:break-word;hyphens:auto}}
 .sidebar a:hover,.sidebar a:active{{color:var(--active);background:var(--border)}}
 .sidebar a.active{{color:var(--active);font-weight:bold;background:var(--border)}}
 .month-list{{padding-left:1.2rem!important;margin-top:.3rem!important;font-size:.9em}}
@@ -754,8 +758,9 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
 .card-img img{{width:100%;height:100%;object-fit:cover;display:block}}
 .card-body{{padding:.9rem 1.1rem}}
 .card-artist{{font-weight:bold;font-size:1rem;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
-.card-title{{font-style:italic;color:var(--muted);font-size:.9rem;margin-top:.35rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
-.card-info{{font-size:.8rem;color:var(--muted);margin-top:.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+.card-title{{font-style:italic;color:var(--muted);margin-top:.3rem;font-size:.85rem;word-break:break-word}}
+.card-info{{font-size:.8rem;color:var(--muted);margin-top:.3rem;word-break:break-word;overflow-wrap:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
+.card-museum{{font-size:.75rem;color:var(--muted);margin-top:.2rem;word-break:break-word;overflow-wrap:break-word}}
 .theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);font-size:.9rem;box-shadow:0 2px 8px var(--shadow);z-index:1000}}
 .random-btn{{display:inline-block;padding:.5rem 1.5rem;background:var(--active);color:#fff;text-decoration:none;border-radius:20px;font-size:.9rem;transition:opacity .2s;margin-bottom:1rem}}
 .random-btn:active{{opacity:.8}}

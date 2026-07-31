@@ -16,7 +16,10 @@ h1{font-size:1.8rem;margin:0 0 .3rem;line-height:1.2}
 h2{font-size:1.25rem;font-style:italic;font-weight:normal;color:var(--muted);margin:0 0 1rem}
 .medium-details{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;margin:1rem 0;padding:.8rem;background:var(--card-bg);border-radius:6px;font-size:.9rem;color:var(--muted);border:1px solid var(--border)}
 .museum{font-style:italic;color:var(--muted);margin:.3rem 0}
-.source a,.source-list a{color:var(--link);word-break:break-all}
+.source a,.source-list a{color:var(--link);word-break:break-all;overflow-wrap:break-word;hyphens:auto}
+.source{max-width:100%;overflow:hidden}
+.source-list{max-width:100%}
+.source-list li{word-break:break-all;overflow-wrap:break-word}
 .description{margin:1.5rem 0;text-align:justify}
 .description p{margin:.6rem 0;line-height:1.65}
 .history{margin:1.8rem 0;padding:1rem 1.25rem;background:var(--history-bg);border-left:3px solid var(--history-border);border-radius:4px}
