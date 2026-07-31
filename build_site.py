@@ -425,12 +425,16 @@ def render_post_page(post: dict) -> str:
         paras = "".join(f"<p>{h(p)}</p>" for p in description.split("\n\n") if p.strip())
         description_html = f'<section class="description">{paras}</section>'
 
-    history = post.get("history") or post.get("note") or ""
-    history_steps = [s.strip() for s in re.split(r"⸻|\n", history) if s.strip()] if isinstance(history, str) else history
+        history = post.get("history") or post.get("note") or ""
+    if isinstance(history, str):
+        history_steps = [s.strip() for s in re.split(r"⸻|\n", history) if s.strip()]
+    else:
+        history_steps = history
+
     history_html = ""
     if history_steps:
-        items = "".join(f"<li>{h(step)}</li>" for step in history_steps)
-        history_html = f'<section class="history"><h3>Происхождение</h3><ul>{items}</ul></section>'
+        items_str = "".join(f"<li>{h(step)}</li>" for step in history_steps)
+        history_html = '<section class="history"><h3>Происхождение</h3><ul>' + items_str + '</ul></section>'
 
     sources_html = ""
     if urls:
