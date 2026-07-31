@@ -5,22 +5,36 @@ import sys
 import json
 import shutil
 import subprocess
+import logging
+import random
 from datetime import datetime
 from collections import defaultdict
 from html import escape as h
+from pathlib import Path
+
+# Настройка логирования
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('parser.log', encoding='utf-8'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # Список библиотек, которые нужны для работы скрипта
 REQUIRED_PACKAGES = ["telethon", "Pillow", "TelethonFakeTLS"]
 
 def auto_update_modules():
-    print("🔄 Проверка и автообновление модулей...")
+    logger.info("Проверка и автообновление модулей...")
     try:
         subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "pip", "--quiet"])
         cmd = [sys.executable, "-m", "pip", "install", "--upgrade"] + REQUIRED_PACKAGES + ["--quiet"]
         subprocess.check_call(cmd)
-        print("✅ Все необходимые модули актуальны!\n")
+        logger.info("Все необходимые модули актуальны!")
     except Exception as e:
-        print(f"⚠️ Ошибка при автообновлении: {e}\n")
+        logger.warning(f"Ошибка при автообновлении: {e}")
 
 auto_update_modules()
 
@@ -65,7 +79,7 @@ except KeyError as e:
         "PHONE=+79991234567"
     )
 
-print(f"👤 Использую пользовательский аккаунт {PHONE}")
+logger.info(f"Использую пользовательский аккаунт {PHONE}")
 
 CHANNEL_URL    = "https://t.me/oldpictureart"
 OUTPUT_DIR     = "docs"
@@ -93,20 +107,12 @@ PROXY_LIST = [
         'port': 8443,
         'secret': '5a76b164eadb451a845bfae212bf864973616D73756E672E636F6D'
     },
-    # Добавляйте новые прокси сюда:
-    # {
-    #     'server': 'IP_адрес',
-    #     'port': порт,
-    #     'secret': 'секретный_ключ'
-    # },
 ]
-
 async def connect_with_proxy(api_id, api_hash, phone, proxy_list):
     """Пробует подключиться с разными прокси по очереди."""
     
-    # Перебираем прокси из списка
     for i, proxy_config in enumerate(proxy_list, 1):
-        print(f"🔍 Пробую прокси #{i}: {proxy_config['server']}:{proxy_config['port']}...")
+        logger.info(f"Пробую прокси #{i}: {proxy_config['server']}:{proxy_config['port']}")
         
         proxy = (
             proxy_config['server'],
@@ -123,13 +129,13 @@ async def connect_with_proxy(api_id, api_hash, phone, proxy_list):
                 proxy=proxy,
             )
             await client.start(phone=phone)
-            print(f"✅ Подключено через прокси #{i}: {proxy_config['server']}")
+            logger.info(f"Подключено через прокси #{i}: {proxy_config['server']}")
             return client
         except Exception as e:
-            print(f"❌ Прокси #{i} не работает: {str(e)[:100]}")
+            logger.error(f"Прокси #{i} не работает: {str(e)[:100]}")
             continue
     
-    raise SystemExit("❌ Все прокси не работают! Добавьте новые или проверьте подключение к интернету.")
+    raise SystemExit("Все прокси не работают!")
 
 # ===================================================
 
@@ -213,7 +219,6 @@ def parse_post(text: str) -> dict:
         "raw":         text,
     }
 
-
 # ---------- УТИЛИТЫ ----------
 
 def slugify(text: str) -> str:
@@ -255,10 +260,10 @@ def compress_if_huge(filepath: str) -> str:
             except OSError: pass
         img.save(new_path, "JPEG", quality=JPEG_QUALITY, optimize=True)
         new_mb = os.path.getsize(new_path) / 1024 / 1024
-        print(f"    🗜  Сжато: {size_mb:.1f}MB → {new_mb:.1f}MB ({os.path.basename(new_path)})")
+        logger.info(f"Сжато: {size_mb:.1f}MB → {new_mb:.1f}MB ({os.path.basename(new_path)})")
         return new_path
     except Exception as e:
-        print(f"    ⚠️ Не удалось сжать {filepath}: {e}")
+        logger.warning(f"Не удалось сжать {filepath}: {e}")
         return filepath
 
 
@@ -281,11 +286,24 @@ def make_thumbnail(src_path: str, slug: str, idx: int) -> str:
         img.save(thumb_path, "JPEG", quality=THUMB_QUALITY, optimize=True)
         return f"images/thumbs/{thumb_name}"
     except Exception as e:
-        print(f"    ⚠️ Не удалось создать миниатюру: {e}")
+        logger.warning(f"Не удалось создать миниатюру: {e}")
         return ""
 
 
-# ---------- СКАЧИВАНИЕ ----------
+async def download_with_retry(client, msg, filepath, max_retries=3):
+    """Скачивает файл с повторными попытками."""
+    for attempt in range(max_retries):
+        try:
+            await client.download_media(msg, filepath)
+            return True
+        except Exception as e:
+            if attempt < max_retries - 1:
+                logger.warning(f"Попытка {attempt + 1} не удалась: {e}. Повтор через 5 сек...")
+                await asyncio.sleep(5)
+            else:
+                raise
+    return False
+
 
 async def download_images(client, group, comments, post_slug):
     images = []
@@ -299,7 +317,7 @@ async def download_images(client, group, comments, post_slug):
             filename = f"{post_slug}-{photo_idx}.jpg"
             filepath = os.path.join(IMAGES_DIR, filename)
             if not os.path.exists(filepath):
-                await client.download_media(msg, filepath)
+                await download_with_retry(client, msg, filepath)
             images.append(f"images/{filename}")
             thumb = make_thumbnail(filepath, post_slug, photo_idx)
             if thumb:
@@ -320,9 +338,9 @@ async def download_images(client, group, comments, post_slug):
         filepath = os.path.join(IMAGES_DIR, filename)
         if not os.path.exists(filepath):
             try:
-                await client.download_media(msg, filepath)
+                await download_with_retry(client, msg, filepath)
             except Exception as e:
-                print(f"    ⚠️ Не скачался оригинал {msg.id}: {e}")
+                logger.error(f"Не скачался оригинал {msg.id}: {e}")
                 continue
 
         filepath = compress_if_huge(filepath)
@@ -338,7 +356,6 @@ async def download_images(client, group, comments, post_slug):
                     thumbs.append(thumb)
 
     return images, hires, thumbs
-
 
 # ---------- HTML ----------
 
@@ -402,60 +419,99 @@ def render_post_page(post: dict) -> str:
                             f'<ul class="source-list">{items}</ul></div>')
 
     return f"""<!DOCTYPE html>
-<html lang="ru"><head>
+<html lang="ru" data-theme="light"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{artist} — {title}</title>
 <style>
+:root {{
+  --bg: #fafafa; --text: #222; --card-bg: #fff; --tag-bg: #eee;
+  --tag-text: #555; --border: #ddd; --muted: #555; --link: #0366d6;
+  --shadow: rgba(0,0,0,.15); --history-bg: #f3eedb; --history-border: #b8a86a;
+}}
+[data-theme="dark"] {{
+  --bg: #1a1a2e; --text: #e0e0e0; --card-bg: #16213e; --tag-bg: #0f3460;
+  --tag-text: #e0e0e0; --border: #333; --muted: #aaa; --link: #64b5f6;
+  --shadow: rgba(0,0,0,.5); --history-bg: #2d2d1a; --history-border: #8b7a2e;
+}}
 body{{max-width:900px;margin:0 auto;padding:1.5rem;
-     font-family:Georgia,serif;background:#fafafa;color:#222;line-height:1.55;
-     overflow-wrap:break-word}}
+     font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.55;
+     overflow-wrap:break-word;transition:background .3s,color .3s}}
 .painting{{max-width:100%;max-height:70vh;width:auto;display:block;
-          margin:1.5rem auto;box-shadow:0 4px 20px rgba(0,0,0,.15);
-          transition:transform .2s ease,box-shadow .2s ease;cursor:zoom-in}}
-.painting:hover{{transform:translateY(-2px) scale(1.01);box-shadow:0 8px 25px rgba(0,0,0,.25)}}
+          margin:1.5rem auto;box-shadow:0 4px 20px var(--shadow);
+          transition:transform .2s ease,box-shadow .2s ease;cursor:zoom-in;border-radius:4px}}
+.painting:hover{{transform:translateY(-2px) scale(1.01);box-shadow:0 8px 25px var(--shadow)}}
 h1{{font-size:1.8rem;margin:0 0 .3rem;font-weight:bold}}
-h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:#555;margin:0 0 1rem}}
-.medium,.museum,.source{{margin:.3rem 0;color:#555}}
+h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:var(--muted);margin:0 0 1rem}}
+.medium,.museum,.source{{margin:.3rem 0;color:var(--muted)}}
 .museum{{font-style:italic}}
-.source a,.source-list a{{word-break:break-all;color:#0366d6}}
-.description{{margin:1.5rem 0;font-size:1rem;color:#333;text-align:justify}}
+.source a,.source-list a{{word-break:break-all;color:var(--link)}}
+.description{{margin:1.5rem 0;font-size:1rem;color:var(--text);text-align:justify}}
 .description p{{margin:.6rem 0;line-height:1.65}}
-.history{{margin:1.8rem 0;padding:1rem 1.25rem;background:#f3eedb;
-         border-left:3px solid #b8a86a;border-radius:4px}}
+.history{{margin:1.8rem 0;padding:1rem 1.25rem;background:var(--history-bg);
+         border-left:3px solid var(--history-border);border-radius:4px}}
 .history h3{{margin:0 0 .6rem;font-size:1rem;color:#5a4f2a;font-weight:bold}}
 .history ul{{margin:0;padding-left:1.2rem}}
 .history li{{margin:.4rem 0;color:#4a4a4a;font-size:.95rem;line-height:1.5}}
-.sources{{margin:1rem 0;color:#555}}
+.sources{{margin:1rem 0;color:var(--muted)}}
 .source-list{{margin:.3rem 0 0;padding-left:1.2rem}}
 .source-list li{{margin:.25rem 0}}
-.tags{{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #ddd;
+.tags{{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);
      display:flex;flex-wrap:wrap;gap:.4rem}}
-.tag{{display:inline-block;background:#eee;color:#555;text-decoration:none;
-     padding:.3rem .7rem;border-radius:4px;font-size:.85rem}}
-.tag:hover{{background:#ddd}}
-.back{{display:inline-block;margin-bottom:1rem;color:#666;text-decoration:none}}
-time{{color:#999;font-size:.85rem}}
+.tag{{display:inline-block;background:var(--tag-bg);color:var(--tag-text);text-decoration:none;
+     padding:.3rem .7rem;border-radius:4px;font-size:.85rem;transition:background .2s}}
+.tag:hover{{background:var(--link);color:#fff}}
+.back{{display:inline-block;margin-bottom:1rem;color:var(--link);text-decoration:none}}
+time{{color:var(--muted);font-size:.85rem}}
+.theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);
+              padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);font-size:.9rem;
+              box-shadow:0 2px 8px var(--shadow);z-index:1000;transition:all .2s}}
+.theme-toggle:hover{{transform:scale(1.05)}}
+.random-btn{{display:inline-block;margin-left:1rem;padding:.3rem 1rem;background:var(--link);color:#fff;
+            text-decoration:none;border-radius:4px;font-size:.9rem;transition:opacity .2s}}
+.random-btn:hover{{opacity:.8}}
 @media (max-width: 600px) {{
   body{{padding:1rem;overflow-x:hidden}}
   h1{{font-size:1.5rem}}
   h2{{font-size:1.15rem}}
   .painting{{margin:1rem auto;max-height:60vh}}
+  .theme-toggle{{top:.5rem;right:.5rem;padding:.3rem .8rem;font-size:.8rem}}
 }}
 </style></head><body>
+<button class="theme-toggle" onclick="toggleTheme()" title="Переключить тему">🌓</button>
 <a href="index.html" class="back">← На главную</a>
+<a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная картина</a>
 <article>
 <h1>{artist}</h1>
 <h2>{title}</h2>
 {img_html}
-<p class="medium">{medium}</p>
-<p class="museum">{museum}</p>
+<p class="medium">🎨 {medium}</p>
+<p class="museum">🏛 {museum}</p>
 {description_html}
 {history_html}
 {sources_html}
 <time>{h(post['date'])}</time>
 {tags_html}
-</article></body></html>"""
-
+</article>
+<script>
+function toggleTheme() {{
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+}}
+(() => {{
+  const saved = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+}})();
+function goRandom() {{
+  const posts = JSON.parse(localStorage.getItem('allPosts') || '[]');
+  if (posts.length > 0) {{
+    const random = posts[Math.floor(Math.random() * posts.length)];
+    window.location.href = random;
+  }}
+}}
+</script></body></html>"""
 
 def surname_key(full_name: str) -> str:
     first = full_name.split(",")[0].strip()
@@ -464,6 +520,51 @@ def surname_key(full_name: str) -> str:
         return full_name.lower()
     return words[-1].lower()
 
+
+def render_tag_page(tag: str, posts: list) -> str:
+    """Генерирует страницу для отдельного тега."""
+    cards = []
+    for p in sorted(posts, key=lambda x: x["date"], reverse=True):
+        cover = ""
+        if p.get("thumbs"):
+            cover = p["thumbs"][0]
+        elif p.get("images"):
+            cover = p["images"][0]
+        cover = h(cover)
+        
+        cards.append(f"""
+        <a class="card" href="{h(p['filename'])}">
+          <div class="card-img"><img src="{cover}" alt="" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-artist">{h(p['artist'])}</div>
+            <div class="card-title">{h(p['title'])}</div>
+          </div>
+        </a>""")
+    
+    return f"""<!DOCTYPE html>
+<html lang="ru" data-theme="light"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>#{h(tag)} — Old Picture Art</title>
+<style>
+:root{{--bg:#fafafa;--text:#222;--card-bg:#fff;--border:#ddd}}
+[data-theme="dark"]{{--bg:#1a1a2e;--text:#e0e0e0;--card-bg:#16213e;--border:#333}}
+*{{box-sizing:border-box}}
+body{{max-width:1200px;margin:0 auto;padding:1.5rem;font-family:Georgia,serif;background:var(--bg);color:var(--text)}}
+h1{{text-align:center;margin-bottom:2rem}}
+.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}}
+.card{{background:var(--card-bg);text-decoration:none;color:var(--text);border-radius:6px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.1);transition:transform .15s}}
+.card:hover{{transform:translateY(-3px)}}
+.card-img{{width:100%;aspect-ratio:4/3;overflow:hidden}}
+.card-img img{{width:100%;height:100%;object-fit:cover}}
+.card-body{{padding:.8rem 1rem}}
+.card-artist{{font-weight:bold}}
+.card-title{{font-style:italic;color:#666;margin-top:.3rem}}
+.back{{display:inline-block;margin-bottom:1rem;color:#0366d6;text-decoration:none}}
+</style></head><body>
+<a href="index.html" class="back">← На главную</a>
+<h1>#{h(tag)} ({len(posts)})</h1>
+<div class="grid">{''.join(cards)}</div>
+</body></html>"""
 
 def render_index(all_posts) -> str:
     MONTHS = {
@@ -474,10 +575,23 @@ def render_index(all_posts) -> str:
 
     posts_sorted = sorted(all_posts, key=lambda x: x["date"], reverse=True)
 
+    # Собираем всех авторов
     authors = sorted(
         {p["artist"] for p in all_posts if p.get("artist")},
         key=surname_key
     )
+    
+    # Собираем музеи и техники для фильтров
+    museums = sorted({p.get("museum", "") for p in all_posts if p.get("museum")})
+    techniques = set()
+    for p in all_posts:
+        if p.get("medium"):
+            # Извлекаем первые слова техники (масло, холст, акварель и т.д.)
+            words = p["medium"].lower().split(",")[0].strip().split()
+            for w in words[:2]:
+                if len(w) > 3:
+                    techniques.add(w)
+    techniques = sorted(techniques)
 
     archive = defaultdict(set)
     for p in all_posts:
@@ -503,21 +617,38 @@ def render_index(all_posts) -> str:
         if p.get("date") and "-" in p["date"]:
             year, month, _ = p["date"].split("-")
 
+        museum_slug = slugify(p.get("museum", ""))
+        medium_words = p.get("medium", "").lower().split(",")[0].strip().split()
+        medium_slugs = " ".join([slugify(w) for w in medium_words[:2]])
+
         cards.append(f"""
         <a class="card" href="{h(p['filename'])}"
            data-artist="{h(p['artist'].lower())}"
            data-year="{year}"
-           data-month="{month}">
+           data-month="{month}"
+           data-museum="{h(museum_slug)}"
+           data-medium="{h(medium_slugs)}">
           <div class="card-img"><img src="{cover}" alt="" loading="lazy" decoding="async"></div>
           <div class="card-body">
             <div class="card-artist">{h(p['artist'])}</div>
             <div class="card-title">{h(p['title'])}</div>
+            <div class="card-museum">{h(p.get('museum', ''))}</div>
           </div>
         </a>""")
 
     authors_html = "".join(
         f'<li><a href="#" class="filter-link" data-type="artist" data-val="{h(a.lower())}">{h(a)}</a></li>'
         for a in authors
+    )
+    
+    museums_html = "".join(
+        f'<li><a href="#" class="filter-link" data-type="museum" data-val="{h(slugify(m))}">{h(m[:50])}</a></li>'
+        for m in museums if m
+    )
+    
+    techniques_html = "".join(
+        f'<li><a href="#" class="filter-link" data-type="medium" data-val="{h(t)}">{h(t)}</a></li>'
+        for t in techniques
     )
 
     archive_html = ""
@@ -528,90 +659,172 @@ def render_index(all_posts) -> str:
             archive_html += f'<li><a href="#" class="filter-link" data-type="month" data-year="{y}" data-val="{m}">{m_name}</a></li>'
         archive_html += '</ul></li>'
 
+    # Сохраняем список всех файлов для случайной картины
+    all_filenames = json.dumps([p["filename"] for p in posts_sorted])
+
     return f"""<!DOCTYPE html>
-<html lang="ru"><head>
+<html lang="ru" data-theme="light"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Old Picture Art — Галерея</title>
 <style>
+:root {{
+  --bg: #fafafa; --text: #222; --card-bg: #fff; --sidebar-bg: #fff;
+  --border: #ddd; --muted: #777; --link: #555; --active: #0366d6;
+  --shadow: rgba(0,0,0,.08); --reset-bg: #ffeef0; --reset-text: #d73a49;
+  --header-bg: #fafafa; --input-border: #ccc;
+}}
+[data-theme="dark"] {{
+  --bg: #1a1a2e; --text: #e0e0e0; --card-bg: #16213e; --sidebar-bg: #0f3460;
+  --border: #333; --muted: #aaa; --link: #64b5f6; --active: #90caf9;
+  --shadow: rgba(0,0,0,.3); --reset-bg: #3d1a1a; --reset-text: #ef9a9a;
+  --header-bg: #1a1a2e; --input-border: #444;
+}}
 *{{box-sizing:border-box}}
 body{{max-width:1400px;margin:0 auto;padding:1.5rem;
-     font-family:Georgia,serif;background:#fafafa;color:#222}}
-header{{margin-bottom:2rem;text-align:center}}
+     font-family:Georgia,serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s}}
+header{{margin-bottom:2rem;text-align:center;position:relative}}
 h1{{font-size:2.2rem;margin:0 0 .5rem}}
-.subtitle{{color:#777;margin-bottom:1.5rem}}
+.subtitle{{color:var(--muted);margin-bottom:1.5rem}}
 .search-box{{width:100%;max-width:500px;padding:.8rem 1rem;font-size:1rem;
-            border:1px solid #ccc;border-radius:6px;font-family:inherit}}
+            border:1px solid var(--input-border);border-radius:6px;font-family:inherit;
+            background:var(--card-bg);color:var(--text)}}
 .layout{{display:flex;gap:2rem;align-items:flex-start}}
-.sidebar{{width:280px;flex-shrink:0;background:#fff;padding:1.5rem;
-        border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,.08);
-        position:sticky;top:1.5rem;max-height:calc(100vh - 3rem);overflow-y:auto}}
+.sidebar{{width:300px;flex-shrink:0;background:var(--sidebar-bg);padding:1.5rem;
+        border-radius:6px;box-shadow:0 2px 6px var(--shadow);
+        position:sticky;top:1.5rem;max-height:calc(100vh - 3rem);overflow-y:auto;
+        border:1px solid var(--border)}}
 .sidebar::-webkit-scrollbar{{width:6px}}
 .sidebar::-webkit-scrollbar-thumb{{background-color:#ccc;border-radius:3px}}
-.sidebar-section{{margin-bottom:2rem}}
-.sidebar-title{{font-size:1.1rem;font-weight:bold;margin:0 0 1rem;
-              border-bottom:1px solid #eee;padding-bottom:.5rem}}
+.sidebar-section{{margin-bottom:1.5rem}}
+.sidebar-title{{font-size:1rem;font-weight:bold;margin:0 0 .8rem;
+              border-bottom:1px solid var(--border);padding-bottom:.5rem;cursor:pointer;
+              display:flex;justify-content:space-between;align-items:center}}
+.sidebar-title::after{{content:'▼';font-size:.7rem;transition:transform .2s}}
+.sidebar-title.collapsed::after{{transform:rotate(-90deg)}}
+.sidebar-content{{overflow:hidden;transition:max-height .3s ease}}
+.sidebar-content.collapsed{{max-height:0 !important}}
 .sidebar ul{{list-style:none;padding:0;margin:0}}
-.sidebar li{{margin-bottom:.5rem}}
-.sidebar a{{text-decoration:none;color:#555;font-size:.95rem;display:block;transition:color .15s}}
-.sidebar a:hover{{color:#000}}
-.sidebar a.active{{color:#0366d6;font-weight:bold}}
-.month-list{{padding-left:1.2rem !important;margin-top:.5rem !important;font-size:.95em}}
-.filter-reset{{display:none;margin-bottom:1.5rem;color:#d73a49 !important;
-             font-weight:bold;text-align:center;background:#ffeef0;
+.sidebar li{{margin-bottom:.4rem}}
+.sidebar a{{text-decoration:none;color:var(--link);font-size:.9rem;display:block;transition:color .15s;padding:2px 4px;border-radius:3px}}
+.sidebar a:hover{{color:var(--active);background:var(--border)}}
+.sidebar a.active{{color:var(--active);font-weight:bold;background:var(--border)}}
+.month-list{{padding-left:1.2rem !important;margin-top:.3rem !important;font-size:.9em}}
+.filter-reset{{display:none;margin-bottom:1rem;color:var(--reset-text) !important;
+             font-weight:bold;text-align:center;background:var(--reset-bg);
              padding:.6rem;border-radius:4px}}
-.filter-reset:hover{{background:#ffdce0}}
+.filter-reset:hover{{opacity:.8}}
 .main-content{{flex-grow:1;min-width:0}}
-.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}}
-.card{{background:#fff;text-decoration:none;color:inherit;border-radius:6px;
-      overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.08);transition:transform .15s,box-shadow .15s}}
-.card:hover{{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.15)}}
-.card-img{{width:100%;aspect-ratio:4/3;background:#ddd;overflow:hidden}}
+.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.5rem}}
+.card{{background:var(--card-bg);text-decoration:none;color:var(--text);border-radius:8px;
+      overflow:hidden;box-shadow:0 2px 8px var(--shadow);transition:transform .15s,box-shadow .15s;
+      border:1px solid var(--border)}}
+.card:hover{{transform:translateY(-4px);box-shadow:0 8px 25px var(--shadow)}}
+.card-img{{width:100%;aspect-ratio:4/3;background:var(--border);overflow:hidden}}
 .card-img img{{width:100%;height:100%;object-fit:cover;display:block}}
-.card-body{{padding:.8rem 1rem 1rem}}
+.card-body{{padding:.9rem 1.1rem}}
 .card-artist{{font-weight:bold;font-size:1rem;line-height:1.2;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
-.card-title{{font-style:italic;color:#666;font-size:.9rem;margin-top:.35rem;
+.card-title{{font-style:italic;color:var(--muted);font-size:.9rem;margin-top:.35rem;
             display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
-@media (max-width: 850px) {{
+.card-museum{{font-size:.8rem;color:var(--muted);margin-top:.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+.theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);
+              padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);font-size:.9rem;
+              box-shadow:0 2px 8px var(--shadow);z-index:1000;transition:all .2s}}
+.theme-toggle:hover{{transform:scale(1.05)}}
+.random-btn{{display:inline-block;padding:.5rem 1.5rem;background:var(--active);color:#fff;
+            text-decoration:none;border-radius:20px;font-size:.9rem;transition:opacity .2s;margin-bottom:1rem}}
+.random-btn:hover{{opacity:.8}}
+@media (max-width: 900px) {{
     .layout{{flex-direction:column;gap:1rem}}
-    .sidebar{{width:100%;position:static;max-height:350px}}
-    .grid{{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem}}
+    .sidebar{{width:100%;position:static;max-height:300px}}
+    .grid{{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem}}
+    .theme-toggle{{top:.5rem;right:.5rem;padding:.3rem .8rem;font-size:.8rem}}
 }}
 </style></head><body>
+<button class="theme-toggle" onclick="toggleTheme()" title="Переключить тему">🌓 Тема</button>
 <header>
-<h1>Old Picture Art</h1>
-<div class="subtitle">Картин в коллекции: {len(posts_sorted)}</div>
-<input type="text" class="search-box" placeholder="Поиск по художнику или картине…" id="search">
+<h1>🎨 Old Picture Art</h1>
+<div class="subtitle">Картин в коллекции: <strong>{len(posts_sorted)}</strong></div>
+<a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная картина</a>
+<input type="text" class="search-box" placeholder="🔍 Поиск по художнику или картине…" id="search">
 </header>
+
 <div class="layout">
   <aside class="sidebar">
-    <a href="#" id="reset-filter" class="filter-reset">✕ Сбросить фильтр</a>
+    <a href="#" id="reset-filter" class="filter-reset">✕ Сбросить все фильтры</a>
     <div class="sidebar-section">
-      <div class="sidebar-title">Архив</div>
-      <ul>{archive_html}</ul>
+      <div class="sidebar-title" onclick="toggleSection(this)">📅 Архив</div>
+      <div class="sidebar-content"><ul>{archive_html}</ul></div>
     </div>
     <div class="sidebar-section">
-      <div class="sidebar-title">Художники (по фамилии)</div>
-      <ul>{authors_html}</ul>
+      <div class="sidebar-title" onclick="toggleSection(this)">👨‍🎨 Художники</div>
+      <div class="sidebar-content"><ul>{authors_html}</ul></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title" onclick="toggleSection(this)">🏛 Музеи</div>
+      <div class="sidebar-content"><ul>{museums_html}</ul></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title" onclick="toggleSection(this)">🎨 Техника</div>
+      <div class="sidebar-content"><ul>{techniques_html}</ul></div>
     </div>
   </aside>
+
   <main class="main-content">
     <div class="grid" id="cards">{''.join(cards)}</div>
   </main>
 </div>
+
 <script>
+const ALL_POSTS = {all_filenames};
+
+function toggleTheme() {{
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+}}
+
+(() => {{
+  const saved = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  localStorage.setItem('allPosts', JSON.stringify(ALL_POSTS));
+}})();
+
+function goRandom() {{
+  if (ALL_POSTS.length > 0) {{
+    const random = ALL_POSTS[Math.floor(Math.random() * ALL_POSTS.length)];
+    window.location.href = random;
+  }}
+}}
+
+function toggleSection(titleEl) {{
+  titleEl.classList.toggle('collapsed');
+  titleEl.nextElementSibling.classList.toggle('collapsed');
+}}
+
 const searchInput = document.getElementById('search');
 const cards = document.querySelectorAll('.card');
 const filterLinks = document.querySelectorAll('.filter-link');
 const resetBtn = document.getElementById('reset-filter');
 let activeFilter = {{ type: null, val: null, year: null }};
+
 function updateView() {{
   const q = searchInput.value.toLowerCase();
   cards.forEach(c => {{
     let show = true;
-    if (q && !c.textContent.toLowerCase().includes(q)) show = false;
+    if (q) {{
+      const text = (c.querySelector('.card-artist')?.textContent || '') + ' ' +
+                   (c.querySelector('.card-title')?.textContent || '');
+      if (!text.toLowerCase().includes(q)) show = false;
+    }}
     if (show && activeFilter.type) {{
       if (activeFilter.type === 'artist' && c.dataset.artist !== activeFilter.val) show = false;
+      if (activeFilter.type === 'museum' && c.dataset.museum !== activeFilter.val) show = false;
+      if (activeFilter.type === 'medium') {{
+        if (!c.dataset.medium.includes(activeFilter.val)) show = false;
+      }}
       if (activeFilter.type === 'year' && c.dataset.year !== activeFilter.val) show = false;
       if (activeFilter.type === 'month' && (c.dataset.year !== activeFilter.year || c.dataset.month !== activeFilter.val)) show = false;
     }}
@@ -630,6 +843,7 @@ function updateView() {{
   }});
   resetBtn.style.display = activeFilter.type ? 'block' : 'none';
 }}
+
 searchInput.addEventListener('input', updateView);
 filterLinks.forEach(link => {{
   link.addEventListener('click', e => {{
@@ -643,15 +857,23 @@ filterLinks.forEach(link => {{
 resetBtn.addEventListener('click', e => {{
   e.preventDefault();
   activeFilter = {{ type: null, val: null, year: null }};
+  searchInput.value = '';
   updateView();
 }});
-</script></body></html>"""
 
+// Сворачиваем все секции кроме первой
+document.querySelectorAll('.sidebar-title').forEach((title, i) => {{
+  if (i > 0) {{
+    title.classList.add('collapsed');
+    title.nextElementSibling.classList.add('collapsed');
+  }}
+}});
+</script></body></html>"""
 
 # ---------- TELEGRAM ----------
 
 async def fetch_new_posts(client, processed_ids):
-    print("📥 Сканирую канал (ищу новые альбомы)…")
+    logger.info("Сканирую канал (ищу новые альбомы)...")
     accepted = []
     stats = {"total": 0, "no_kartina_tag": 0, "no_main_msg": 0,
              "already_seen": 0, "parse_failed": 0}
@@ -711,45 +933,108 @@ async def fetch_new_posts(client, processed_ids):
     if current_group:
         _process_group(current_group)
 
-    print(f"   Найдено новых постов: {len(accepted)}")
-    print(f"   ─── Статистика ───")
-    print(f"   Всего проверено:           {stats['total']}")
-    print(f"   Уже обработаны:            {stats['already_seen']}")
-    print(f"   Не картина (нет тега):     {stats['no_main_msg'] + stats['no_kartina_tag']}")
-    print(f"   Парсер не справился:       {stats['parse_failed']}")
+    logger.info(f"Найдено новых постов: {len(accepted)}")
+    logger.info(f"Статистика: всего={stats['total']}, обработано={stats['already_seen']}, "
+                f"не картина={stats['no_main_msg'] + stats['no_kartina_tag']}, "
+                f"ошибки парсера={stats['parse_failed']}")
 
     if samples_failed:
         with open("rejected_posts.txt", "w", encoding="utf-8") as f:
             f.write(f"# Отбракованные посты — {datetime.now():%Y-%m-%d %H:%M}\n\n")
             for i, s in enumerate(samples_failed, 1):
                 f.write(f"--- #{i} ---\n{s}\n\n")
-        print(f"   📋 Подробности в rejected_posts.txt ({len(samples_failed)} шт.)")
+        logger.info(f"Подробности в rejected_posts.txt ({len(samples_failed)} шт.)")
 
     return accepted[::-1]
+
+
+# ---------- ГЕНЕРАЦИЯ СТРАНИЦ ТЕГОВ ----------
+
+def generate_tag_pages(all_posts):
+    """Создаёт страницы для каждого тега."""
+    logger.info("Генерация страниц тегов...")
+    
+    tags_posts = defaultdict(list)
+    for post in all_posts:
+        for tag in post.get("tags", []):
+            tags_posts[tag].append(post)
+    
+    count = 0
+    for tag, posts in tags_posts.items():
+        tag_html = render_tag_page(tag, posts)
+        filepath = os.path.join(OUTPUT_DIR, f"tag-{tag}.html")
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(tag_html)
+        count += 1
+    
+    logger.info(f"Сгенерировано {count} страниц тегов")
+    return tags_posts
+
+
+# ---------- SITEMAP ----------
+
+def generate_sitemap(all_posts):
+    """Создаёт sitemap.xml для поисковиков."""
+    logger.info("Генерация sitemap.xml...")
+    
+    base_url = "https://denchest.github.io/Site-Oldpictureart"
+    
+    urls = []
+    # Главная страница
+    urls.append(f"  <url><loc>{base_url}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>")
+    
+    # Страницы картин
+    for post in all_posts:
+        urls.append(
+            f"  <url><loc>{base_url}/{post['filename']}</loc>"
+            f"<lastmod>{post['date']}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>"
+        )
+    
+    # Страницы тегов
+    all_tags = set()
+    for post in all_posts:
+        for tag in post.get("tags", []):
+            all_tags.add(tag)
+    
+    for tag in all_tags:
+        urls.append(
+            f"  <url><loc>{base_url}/tag-{tag}.html</loc>"
+            f"<changefreq>weekly</changefreq><priority>0.5</priority></url>"
+        )
+    
+    sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    sitemap += "\n".join(urls)
+    sitemap += '\n</urlset>'
+    
+    with open(os.path.join(OUTPUT_DIR, "sitemap.xml"), "w", encoding="utf-8") as f:
+        f.write(sitemap)
+    
+    logger.info(f"Sitemap сгенерирован ({len(urls)} URL)")
 
 
 # ---------- GITHUB ----------
 
 def push_to_github():
-    print("\n📤 Отправляю на GitHub…")
+    logger.info("Отправка на GitHub...")
     try:
         subprocess.run(["git", "add", "."], check=False)
         status = subprocess.run(["git", "status", "--porcelain"],
                                 capture_output=True, text=True)
         if not status.stdout.strip():
-            print("   ℹ️ Нет изменений."); return
+            logger.info("Нет изменений для отправки")
+            return
         subprocess.run(["git", "commit", "-m",
                         f"Авто-обновление: {datetime.now():%Y-%m-%d %H:%M}"], check=False)
         subprocess.run(["git", "push"], check=False)
-        print("   ✅ Готово")
+        logger.info("Отправлено на GitHub")
     except Exception as e:
-        print(f"   ❌ Ошибка: {e}")
+        logger.error(f"Ошибка отправки: {e}")
 
-
-# ---------- MAIN ----------
+        # ---------- MAIN ----------
 
 def rebuild_reset():
-    print("⚠️  Режим --rebuild: удалю старые html-страницы и историю обработки.")
+    logger.warning("Режим --rebuild: удаление старых html-страниц и истории обработки.")
     print("   Папка docs/images/ НЕ трогается — уже скачанные картинки сохранятся.")
     answer = input("   Продолжить? [y/N]: ").strip().lower()
     if answer not in ("y", "yes", "д", "да"):
@@ -759,15 +1044,15 @@ def rebuild_reset():
     if os.path.isdir(OUTPUT_DIR):
         removed = 0
         for name in os.listdir(OUTPUT_DIR):
-            if name.endswith(".html"):
+            if name.endswith(".html") or name.endswith(".xml"):
                 os.remove(os.path.join(OUTPUT_DIR, name))
                 removed += 1
-        print(f"   Удалено html-файлов: {removed}")
+        logger.info(f"Удалено html/xml файлов: {removed}")
 
     for fn in (PROCESSED_FILE, META_FILE):
         if os.path.exists(fn):
             os.remove(fn)
-            print(f"   Удалён {fn}")
+            logger.info(f"Удалён {fn}")
 
 
 async def main():
@@ -783,12 +1068,12 @@ async def main():
         open(nojekyll, "w").close()
 
     if not PIL_AVAILABLE:
-        print("ℹ️  Pillow не установлен — крупные оригиналы не будут автоматически сжиматься.")
+        logger.warning("Pillow не установлен — крупные оригиналы не будут автоматически сжиматься.")
 
     processed_ids = set(load_json(PROCESSED_FILE, []))
     all_posts     = load_json(META_FILE, [])
 
-    print("👤 Подключаюсь к Telegram как пользователь...")
+    logger.info("Подключение к Telegram как пользователь...")
     
     # Используем функцию с перебором прокси
     client = await connect_with_proxy(API_ID, API_HASH, PHONE, PROXY_LIST)
@@ -796,7 +1081,7 @@ async def main():
     try:
         accepted = await fetch_new_posts(client, processed_ids)
     except Exception as e:
-        print(f"\n❌ Ошибка при сканировании канала: {e}")
+        logger.error(f"Ошибка при сканировании канала: {e}")
         await client.disconnect()
         return
 
@@ -812,7 +1097,7 @@ async def main():
             filename = f"{base}-{n}.html"
             n += 1
 
-        print(f"📝 [{i}/{len(accepted)}] {parsed['artist'][:40]} — {parsed['title'][:50]}")
+        logger.info(f"[{i}/{len(accepted)}] {parsed['artist'][:40]} — {parsed['title'][:50]}")
 
         comments = []
         if getattr(main_msg, "replies", None) and main_msg.replies.replies > 0:
@@ -821,7 +1106,7 @@ async def main():
                     if getattr(reply, "document", None) and reply.document.mime_type.startswith("image/"):
                         comments.append(reply)
             except Exception as e:
-                print(f"    ⚠️ Не удалось проверить комментарии: {e}")
+                logger.warning(f"Не удалось проверить комментарии: {e}")
 
         image_slug = filename[:-5]
         images, hires, thumbs = await download_images(client, group, comments, image_slug)
@@ -836,11 +1121,13 @@ async def main():
         processed_ids.update(m.id for m in group)
 
     await client.disconnect()
+    logger.info("Отключено от Telegram")
 
+    # Постобработка: создаём миниатюры для старых постов
     if PIL_AVAILABLE:
         missing = [p for p in all_posts if not p.get("thumbs") and p.get("images")]
         if missing:
-            print(f"\n🖼  Создаю миниатюры для {len(missing)} существующих постов…")
+            logger.info(f"Создание миниатюр для {len(missing)} существующих постов...")
             for p in missing:
                 slug = p["filename"][:-5]
                 thumbs = []
@@ -850,17 +1137,35 @@ async def main():
                     if thumb:
                         thumbs.append(thumb)
                 p["thumbs"] = thumbs
-            print("   ✅ Миниатюры готовы")
+            logger.info("Миниатюры готовы")
 
+    # Сохраняем данные
     save_json(META_FILE, all_posts)
     save_json(PROCESSED_FILE, sorted(processed_ids))
 
+    # Генерируем страницы тегов
+    generate_tag_pages(all_posts)
+    
+    # Генерируем sitemap
+    generate_sitemap(all_posts)
+
+    # Генерируем главную страницу
     with open(os.path.join(OUTPUT_DIR, "index.html"), "w", encoding="utf-8") as f:
         f.write(render_index(all_posts))
 
-    print(f"\n✨ Новых постов: {len(accepted)}. Всего на сайте: {len(all_posts)}")
+    # Файл 404.html
+    with open(os.path.join(OUTPUT_DIR, "404.html"), "w", encoding="utf-8") as f:
+        f.write("""<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8">
+<meta http-equiv="refresh" content="0;url=index.html"><title>Перенаправление...</title></head><body></body></html>""")
+
+    logger.info(f"Новых постов: {len(accepted)}. Всего на сайте: {len(all_posts)}")
     push_to_github()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("Прервано пользователем")
+    except Exception as e:
+        logger.error(f"Критическая ошибка: {e}", exc_info=True)
