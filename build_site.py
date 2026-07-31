@@ -10,29 +10,23 @@ from collections import defaultdict
 from html import escape as h
 
 # Список библиотек, которые нужны для работы скрипта
-REQUIRED_PACKAGES = ["telethon", "Pillow"]
+REQUIRED_PACKAGES = ["telethon", "Pillow", "TelethonFakeTLS"]
 
 def auto_update_modules():
     print("🔄 Проверка и автообновление модулей...")
     try:
-        # Скрытно (--quiet) обновляем сам pip
         subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "pip", "--quiet"])
-        
-        # Обновляем нужные библиотеки
         cmd = [sys.executable, "-m", "pip", "install", "--upgrade"] + REQUIRED_PACKAGES + ["--quiet"]
         subprocess.check_call(cmd)
-        
         print("✅ Все необходимые модули актуальны!\n")
     except Exception as e:
         print(f"⚠️ Ошибка при автообновлении: {e}\n")
 
-# Запускаем обновление до того, как код начнет работать
 auto_update_modules()
 
 from telethon import TelegramClient, connection
-import TelethonFakeTLS 
+import TelethonFakeTLS
 
-# Pillow — для сжатия больших файлов (опционально, если установлен).
 try:
     from PIL import Image
     PIL_AVAILABLE = True
@@ -40,7 +34,7 @@ except ImportError:
     PIL_AVAILABLE = False
 
 
-# ---------- Чтение .env без внешних зависимостей ----------
+# ---------- Чтение .env ----------
 
 def load_dotenv(path: str = ".env") -> None:
     if not os.path.exists(path):
@@ -72,7 +66,7 @@ except KeyError as e:
     )
 
 print(f"👤 Использую пользовательский аккаунт {PHONE}")
-    
+
 CHANNEL_URL    = "https://t.me/oldpictureart"
 OUTPUT_DIR     = "docs"
 IMAGES_DIR     = "docs/images"
@@ -83,30 +77,69 @@ MAX_IMAGE_SIZE_MB    = 25
 MAX_IMAGE_DIMENSION  = 2800
 JPEG_QUALITY         = 88
 
-# Миниатюры для карточек на главной — грузятся ленью, экономят трафик в разы.
 THUMB_DIR        = "docs/images/thumbs"
 THUMB_DIMENSION  = 600
 THUMB_QUALITY    = 78
 
-PROXY = (
-    '62.113.59.20',
-    443,
-    '3f71a99978cf97e115dc89cc80aeca1f706574726f766963682e7275'
-)
+# ==================== НАСТРОЙКИ ПРОКСИ ====================
+PROXY_LIST = [
+    {
+        'server': '62.113.59.20',
+        'port': 443,
+        'secret': '3f71a99978cf97e115dc89cc80aeca1f706574726f766963682e7275'
+    },
+    {
+        'server': '138.226.237.34',
+        'port': 8443,
+        'secret': '5a76b164eadb451a845bfae212bf864973616D73756E672E636F6D'
+    },
+    # Добавляйте новые прокси сюда:
+    # {
+    #     'server': 'IP_адрес',
+    #     'port': порт,
+    #     'secret': 'секретный_ключ'
+    # },
+]
+
+async def connect_with_proxy(api_id, api_hash, phone, proxy_list):
+    """Пробует подключиться с разными прокси по очереди."""
+    
+    # Перебираем прокси из списка
+    for i, proxy_config in enumerate(proxy_list, 1):
+        print(f"🔍 Пробую прокси #{i}: {proxy_config['server']}:{proxy_config['port']}...")
+        
+        proxy = (
+            proxy_config['server'],
+            proxy_config['port'],
+            proxy_config['secret']
+        )
+        
+        try:
+            client = TelegramClient(
+                f"user_session_proxy_{i}",
+                api_id=api_id,
+                api_hash=api_hash,
+                connection=TelethonFakeTLS.ConnectionTcpMTProxyFakeTLS,
+                proxy=proxy,
+            )
+            await client.start(phone=phone)
+            print(f"✅ Подключено через прокси #{i}: {proxy_config['server']}")
+            return client
+        except Exception as e:
+            print(f"❌ Прокси #{i} не работает: {str(e)[:100]}")
+            continue
+    
+    raise SystemExit("❌ Все прокси не работают! Добавьте новые или проверьте подключение к интернету.")
+
 # ===================================================
 
 
 # ---------- ПАРСИНГ ПОСТА ----------
 
 SEPARATOR_RE = re.compile(r"\s*[⸻⸺]\s*")
-# URL: останавливаемся перед следующим https://, пробелом, ⸻ или ⸺.
-# Якоря страниц (#fragment) ОСТАЮТСЯ частью URL, не путаем с тегами.
 URL_RE = re.compile(r"https?://(?:(?!https?://)[^\s⸻⸺])+")
-# Теги только в формате #name@username (как у канала), чтобы не путать с якорями
-# вроде #infos-principales.
 TAG_RE = re.compile(r"#(\w+)@\w+")
 
-# Эвристика происхождения: даты и характерные слова владения.
 PROVENANCE_MARKERS = [
     "до ", "с 1", "с 2", "поступил", "поступла", "собрание", "коллекци",
     "приобрет", "продан", "продаж", "галере", "бывш", "передан",
@@ -122,41 +155,31 @@ def looks_like_provenance(s: str) -> bool:
 
 
 def _split_steps(block: str) -> list[str]:
-    """Разбивает блок происхождения на этапы по переводам строк."""
     return [line.strip() for line in block.split("\n") if line.strip()]
 
 
 def _clean_desc(block: str) -> str:
-    """Описание: одиночные переводы строк внутри абзаца схлопываем в пробелы."""
     return re.sub(r"\s*\n\s*", " ", block).strip()
 
 
 def parse_post(text: str) -> dict:
-    """Раскладывает текст поста по полям. Возвращает {} если структура не та."""
     if not text:
         return {}
 
-    # 1. Сначала вынимаем URL (с якорями) — чтобы теги не съели #fragment в URL
     urls: list[str] = []
     def _grab(m):
         urls.append(m.group(0))
         return " "
     text_clean = URL_RE.sub(_grab, text)
 
-    # 2. Теперь вынимаем теги канала вида #name@username
     raw_tags = TAG_RE.findall(text_clean)
     text_clean = TAG_RE.sub("", text_clean)
 
-    # 3. Делим по ⸻ на блоки. Переводы строк НЕ схлопываем —
-    #    SEPARATOR_RE сам убирает \n вокруг ⸻, а \n внутри блока происхождения
-    #    нам нужны как разделители этапов владения.
     parts = [p.strip() for p in SEPARATOR_RE.split(text_clean) if p.strip()]
 
-    # Минимум 4 блока — это шапка картины
     if len(parts) < 4:
         return {}
 
-    # В шапке переводов строк быть не должно — на всякий случай схлопываем
     artist = re.sub(r"\s+", " ", parts[0])
     title  = re.sub(r"\s+", " ", parts[1])
     medium = re.sub(r"\s+", " ", parts[2])
@@ -167,13 +190,11 @@ def parse_post(text: str) -> dict:
     description = ""
 
     if len(extras) == 1:
-        # Один блок — это либо происхождение, либо описание
         if looks_like_provenance(extras[0]):
             history_steps = _split_steps(extras[0])
         else:
             description = _clean_desc(extras[0])
     elif len(extras) >= 2:
-        # Первый блок — это происхождение (если подходит), остальные — описание
         if looks_like_provenance(extras[0]):
             history_steps = _split_steps(extras[0])
             description = "\n\n".join(_clean_desc(e) for e in extras[1:])
@@ -185,7 +206,7 @@ def parse_post(text: str) -> dict:
         "title":       title,
         "medium":      medium,
         "museum":      museum,
-        "history":     history_steps,   # теперь список этапов
+        "history":     history_steps,
         "description": description,
         "urls":        urls,
         "tags":        sorted(set(raw_tags)),
@@ -196,7 +217,6 @@ def parse_post(text: str) -> dict:
 # ---------- УТИЛИТЫ ----------
 
 def slugify(text: str) -> str:
-    """Имя для URL. Оставляем кириллицу — GitHub Pages с ней работает."""
     t = text.lower()
     t = re.sub(r"[^\w\s-]", "", t, flags=re.UNICODE)
     t = re.sub(r"\s+", "-", t).strip("-")
@@ -215,7 +235,6 @@ def save_json(path, data):
 
 
 def compress_if_huge(filepath: str) -> str:
-    """Сжимает картинку через Pillow если она больше MAX_IMAGE_SIZE_MB."""
     if not PIL_AVAILABLE or not os.path.exists(filepath):
         return filepath
     try:
@@ -244,7 +263,6 @@ def compress_if_huge(filepath: str) -> str:
 
 
 def make_thumbnail(src_path: str, slug: str, idx: int) -> str:
-    """Создаёт миниатюру THUMB_DIMENSION px для главной. Возвращает относительный путь."""
     if not PIL_AVAILABLE:
         return ""
     if not os.path.exists(src_path):
@@ -253,7 +271,6 @@ def make_thumbnail(src_path: str, slug: str, idx: int) -> str:
     suffix = "" if idx == 1 else f"-{idx}"
     thumb_name = f"{slug}{suffix}.jpg"
     thumb_path = os.path.join(THUMB_DIR, thumb_name)
-    # Уже есть — пропускаем
     if os.path.exists(thumb_path):
         return f"images/thumbs/{thumb_name}"
     try:
@@ -284,7 +301,6 @@ async def download_images(client, group, comments, post_slug):
             if not os.path.exists(filepath):
                 await client.download_media(msg, filepath)
             images.append(f"images/{filename}")
-            # Сразу делаем миниатюру для главной
             thumb = make_thumbnail(filepath, post_slug, photo_idx)
             if thumb:
                 thumbs.append(thumb)
@@ -312,7 +328,6 @@ async def download_images(client, group, comments, post_slug):
         filepath = compress_if_huge(filepath)
         hires.append(f"images/{os.path.basename(filepath)}")
 
-    # Если у поста только hires (нет сжатого фото из Telegram) — делаем миниатюру из hires
     if not images and hires:
         images = hires.copy()
         if PIL_AVAILABLE and not thumbs:
@@ -331,7 +346,6 @@ def render_post_page(post: dict) -> str:
     artist = h(post["artist"]); title = h(post["title"])
     medium = h(post["medium"]); museum = h(post["museum"])
 
-    # Обратная совместимость со старыми meta
     description = post.get("description") or ""
     urls        = post.get("urls") or ([post["url"]] if post.get("url") else [])
 
@@ -352,14 +366,11 @@ def render_post_page(post: dict) -> str:
             f'<a href="tag-{h(t)}.html" class="tag">#{h(t)}</a>' for t in post["tags"]
         ) + "</div>"
 
-    # Описание — параграфы через \n\n
     description_html = ""
     if description:
         paras = "".join(f"<p>{h(p)}</p>" for p in description.split("\n\n") if p.strip())
         description_html = f'<section class="description">{paras}</section>'
 
-    # Происхождение — список этапов владения.
-    # history может быть списком (новый формат) или строкой (старые записи).
     history = post.get("history") or post.get("note") or ""
     if isinstance(history, str):
         history_steps = [s.strip() for s in re.split(r"⸻|\n", history) if s.strip()]
@@ -376,7 +387,6 @@ def render_post_page(post: dict) -> str:
             '</section>'
         )
 
-    # Источники
     sources_html = ""
     if urls:
         if len(urls) == 1:
@@ -408,20 +418,16 @@ h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:#555;margin:0 0
 .medium,.museum,.source{{margin:.3rem 0;color:#555}}
 .museum{{font-style:italic}}
 .source a,.source-list a{{word-break:break-all;color:#0366d6}}
-
 .description{{margin:1.5rem 0;font-size:1rem;color:#333;text-align:justify}}
 .description p{{margin:.6rem 0;line-height:1.65}}
-
 .history{{margin:1.8rem 0;padding:1rem 1.25rem;background:#f3eedb;
          border-left:3px solid #b8a86a;border-radius:4px}}
 .history h3{{margin:0 0 .6rem;font-size:1rem;color:#5a4f2a;font-weight:bold}}
 .history ul{{margin:0;padding-left:1.2rem}}
 .history li{{margin:.4rem 0;color:#4a4a4a;font-size:.95rem;line-height:1.5}}
-
 .sources{{margin:1rem 0;color:#555}}
 .source-list{{margin:.3rem 0 0;padding-left:1.2rem}}
 .source-list li{{margin:.25rem 0}}
-
 .tags{{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #ddd;
      display:flex;flex-wrap:wrap;gap:.4rem}}
 .tag{{display:inline-block;background:#eee;color:#555;text-decoration:none;
@@ -429,7 +435,6 @@ h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:#555;margin:0 0
 .tag:hover{{background:#ddd}}
 .back{{display:inline-block;margin-bottom:1rem;color:#666;text-decoration:none}}
 time{{color:#999;font-size:.85rem}}
-
 @media (max-width: 600px) {{
   body{{padding:1rem;overflow-x:hidden}}
   h1{{font-size:1.5rem}}
@@ -453,9 +458,6 @@ time{{color:#999;font-size:.85rem}}
 
 
 def surname_key(full_name: str) -> str:
-    """Ключ сортировки по фамилии (последнее слово имени).
-    «Аксели Галлен-Каллела» → «галлен-каллела», «Винсент ван Гог» → «гог»."""
-    # Если перечислено несколько авторов через запятую — берём первого
     first = full_name.split(",")[0].strip()
     words = first.split()
     if not words:
@@ -472,7 +474,6 @@ def render_index(all_posts) -> str:
 
     posts_sorted = sorted(all_posts, key=lambda x: x["date"], reverse=True)
 
-    # Авторы — сортируем по ФАМИЛИИ (последнее слово), а не по имени
     authors = sorted(
         {p["artist"] for p in all_posts if p.get("artist")},
         key=surname_key
@@ -491,7 +492,6 @@ def render_index(all_posts) -> str:
 
     cards = []
     for p in posts_sorted:
-        # Обложка: предпочитаем миниатюру, иначе обычную картинку
         cover = ""
         if p.get("thumbs"):
             cover = p["thumbs"][0]
@@ -541,7 +541,6 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
 .subtitle{{color:#777;margin-bottom:1.5rem}}
 .search-box{{width:100%;max-width:500px;padding:.8rem 1rem;font-size:1rem;
             border:1px solid #ccc;border-radius:6px;font-family:inherit}}
-
 .layout{{display:flex;gap:2rem;align-items:flex-start}}
 .sidebar{{width:280px;flex-shrink:0;background:#fff;padding:1.5rem;
         border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,.08);
@@ -557,12 +556,10 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
 .sidebar a:hover{{color:#000}}
 .sidebar a.active{{color:#0366d6;font-weight:bold}}
 .month-list{{padding-left:1.2rem !important;margin-top:.5rem !important;font-size:.95em}}
-
 .filter-reset{{display:none;margin-bottom:1.5rem;color:#d73a49 !important;
              font-weight:bold;text-align:center;background:#ffeef0;
              padding:.6rem;border-radius:4px}}
 .filter-reset:hover{{background:#ffdce0}}
-
 .main-content{{flex-grow:1;min-width:0}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}}
 .card{{background:#fff;text-decoration:none;color:inherit;border-radius:6px;
@@ -575,7 +572,6 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
 .card-title{{font-style:italic;color:#666;font-size:.9rem;margin-top:.35rem;
             display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
-
 @media (max-width: 850px) {{
     .layout{{flex-direction:column;gap:1rem}}
     .sidebar{{width:100%;position:static;max-height:350px}}
@@ -587,7 +583,6 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
 <div class="subtitle">Картин в коллекции: {len(posts_sorted)}</div>
 <input type="text" class="search-box" placeholder="Поиск по художнику или картине…" id="search">
 </header>
-
 <div class="layout">
   <aside class="sidebar">
     <a href="#" id="reset-filter" class="filter-reset">✕ Сбросить фильтр</a>
@@ -600,19 +595,16 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
       <ul>{authors_html}</ul>
     </div>
   </aside>
-
   <main class="main-content">
     <div class="grid" id="cards">{''.join(cards)}</div>
   </main>
 </div>
-
 <script>
 const searchInput = document.getElementById('search');
 const cards = document.querySelectorAll('.card');
 const filterLinks = document.querySelectorAll('.filter-link');
 const resetBtn = document.getElementById('reset-filter');
 let activeFilter = {{ type: null, val: null, year: null }};
-
 function updateView() {{
   const q = searchInput.value.toLowerCase();
   cards.forEach(c => {{
@@ -638,7 +630,6 @@ function updateView() {{
   }});
   resetBtn.style.display = activeFilter.type ? 'block' : 'none';
 }}
-
 searchInput.addEventListener('input', updateView);
 filterLinks.forEach(link => {{
   link.addEventListener('click', e => {{
@@ -797,24 +788,10 @@ async def main():
     processed_ids = set(load_json(PROCESSED_FILE, []))
     all_posts     = load_json(META_FILE, [])
 
-    api_id = API_ID
-    api_hash = API_HASH
-    phone = PHONE
-
     print("👤 Подключаюсь к Telegram как пользователь...")
-
-    client = TelegramClient(
-        "user_session",
-        api_id=api_id,
-        api_hash=api_hash,
-        connection=TelethonFakeTLS.ConnectionTcpMTProxyFakeTLS,
-        proxy=PROXY,
-    )
-
-    try:
-        await client.start(phone=phone)
-    except Exception as e:
-        raise SystemExit(f"❌ Ошибка авторизации: {e}")
+    
+    # Используем функцию с перебором прокси
+    client = await connect_with_proxy(API_ID, API_HASH, PHONE, PROXY_LIST)
 
     try:
         accepted = await fetch_new_posts(client, processed_ids)
@@ -860,7 +837,6 @@ async def main():
 
     await client.disconnect()
 
-    # Постобработка: создаём миниатюры для старых постов
     if PIL_AVAILABLE:
         missing = [p for p in all_posts if not p.get("thumbs") and p.get("images")]
         if missing:
