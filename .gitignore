@@ -1,3 +1,4 @@
+# Пересоздаем .gitignore без index.html
 @"
 # Секреты и конфигурации
 .env
@@ -29,7 +30,6 @@ __pycache__/
 # Выходные данные
 output/
 posts/
-index.html
 
 # Файлы сессии Telegram (защита)
 *.session
