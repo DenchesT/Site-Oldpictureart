@@ -818,9 +818,17 @@ async def fetch_new_posts(client, processed_ids):
         if main_msg.id in processed_ids:
             stats["already_seen"] += 1
             return
-        parsed = parse_post(full_text)
-        if not parsed:
+        
+        try:
+            parsed = parse_post(full_text)
+            if not parsed:
+                stats["parse_failed"] += 1
+                samples_failed.append(full_text[:500])
+                return
+            accepted.append((main_msg, group, parsed))
+        except Exception as e:
             stats["parse_failed"] += 1
+            logger.error(f"Ошибка парсинга поста {main_msg.id}: {e}")
             samples_failed.append(full_text[:500])
             return
         accepted.append((main_msg, group, parsed))
