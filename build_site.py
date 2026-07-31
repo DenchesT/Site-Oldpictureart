@@ -425,7 +425,7 @@ def render_post_page(post: dict) -> str:
         paras = "".join(f"<p>{h(p)}</p>" for p in description.split("\n\n") if p.strip())
         description_html = f'<section class="description">{paras}</section>'
 
-        history = post.get("history") or post.get("note") or ""
+    history = post.get("history") or post.get("note") or ""
     if isinstance(history, str):
         history_steps = [s.strip() for s in re.split(r"⸻|\n", history) if s.strip()]
     else:
