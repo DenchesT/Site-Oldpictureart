@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Жакоб Абраам Камиль Писсарро — La Maison Rouge (Красный дом), 1873</title>
+<style>
+:root{--bg:#fafafa;--text:#222;--card-bg:#fff;--tag-bg:#eee;--tag-text:#555;--border:#ddd;--muted:#555;--link:#0366d6;--shadow:rgba(0,0,0,.15);--history-bg:#f3eedb;--history-border:#b8a86a}
+[data-theme="dark"]{--bg:#1a1a2e;--text:#e0e0e0;--card-bg:#16213e;--tag-bg:#0f3460;--tag-text:#e0e0e0;--border:#333;--muted:#aaa;--link:#64b5f6;--shadow:rgba(0,0,0,.5);--history-bg:#2d2d1a;--history-border:#8b7a2e}
+body{max-width:900px;margin:0 auto;padding:1.5rem;font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.55;transition:background .3s,color .3s}
+.painting{max-width:100%;max-height:70vh;display:block;margin:1.5rem auto;box-shadow:0 4px 20px var(--shadow);border-radius:4px;transition:transform .2s;cursor:zoom-in}
+.painting:hover{transform:translateY(-2px) scale(1.01)}
+h1{font-size:1.8rem;margin:0 0 .3rem}
+h2{font-size:1.25rem;font-style:italic;font-weight:normal;color:var(--muted);margin:0 0 1rem}
+.medium-details{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;margin:1rem 0;padding:.8rem;background:var(--card-bg);border-radius:6px;font-size:.9rem;color:var(--muted)}
+.museum{font-style:italic;color:var(--muted);margin:.3rem 0}
+.source a,.source-list a{color:var(--link)}
+.description{margin:1.5rem 0;text-align:justify}
+.description p{margin:.6rem 0;line-height:1.65}
+.history{margin:1.8rem 0;padding:1rem 1.25rem;background:var(--history-bg);border-left:3px solid var(--history-border);border-radius:4px}
+.history h3{margin:0 0 .6rem;font-size:1rem;color:#5a4f2a}
+.history ul{margin:0;padding-left:1.2rem}
+.history li{margin:.4rem 0;color:#4a4a4a;font-size:.95rem;line-height:1.5}
+.tags{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:.4rem}
+.tag{display:inline-block;background:var(--tag-bg);color:var(--tag-text);text-decoration:none;padding:.3rem .7rem;border-radius:4px;font-size:.85rem;transition:background .2s}
+.tag:hover{background:var(--link);color:#fff}
+.back{display:inline-block;margin-bottom:1rem;color:var(--link);text-decoration:none}
+time{color:var(--muted);font-size:.85rem}
+.theme-toggle{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);z-index:1000}
+.random-btn{display:inline-block;margin-left:1rem;padding:.3rem 1rem;background:var(--link);color:#fff;text-decoration:none;border-radius:4px;font-size:.9rem}
+@media(max-width:600px){body{padding:1rem}h1{font-size:1.5rem}h2{font-size:1.15rem}.painting{margin:1rem auto;max-height:60vh}}
+</style></head><body>
+<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+<a href="index.html" class="back">← На главную</a>
+<a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная</a>
+<article>
+<h1>Жакоб Абраам Камиль Писсарро</h1>
+<h2>La Maison Rouge (Красный дом), 1873</h2>
+<a href="images/2026-04-04-жакоб-абраам-камиль-писсарро-hires-1.jpg" target="_blank" title="Открыть оригинал"><img src="images/2026-04-04-жакоб-абраам-камиль-писсарро-1.jpg" alt="Жакоб Абраам Камиль Писсарро — La Maison Rouge (Красный дом), 1873" class="painting" loading="lazy"></a>
+<div class="medium-details"><span class="material">📄 Холст</span> <span class="techniques">🖌 масло</span> <span class="size">📏 58,09 x 71,12 см</span></div>
+<p class="museum">🏛 Портлендский художественный музей, Портленд</p>
+<section class="description"><p>Завещание Winslow B. Ayer</p></section>
+
+<p class="source">Источник: <a href="http://www.portlandartmuseum.us/mwebcgi/mweb.exe?request=record;id=8018;type=101" target="_blank" rel="noopener">http://www.portlandartmuseum.us/mwebcgi/mweb.exe?request=record;id=8018;type=101</a></p>
+<time>2026-04-04</time>
+<div class="tags"><a href="tag-pam.html" class="tag">#pam</a> <a href="tag-pissarro.html" class="tag">#pissarro</a> <a href="tag-картина.html" class="tag">#картина</a></div>
+</article>
+<script>
+function toggleTheme(){const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}
+(()=>{const s=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',s)})();
+function goRandom(){const p=JSON.parse(localStorage.getItem('allPosts')||'[]');if(p.length)window.location.href=p[Math.floor(Math.random()*p.length)]}
+</script></body></html>

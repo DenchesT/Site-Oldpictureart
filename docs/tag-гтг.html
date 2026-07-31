@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>#гтг — Old Picture Art</title>
+<style>
+:root{--bg:#fafafa;--text:#222;--card-bg:#fff;--border:#ddd}
+[data-theme="dark"]{--bg:#1a1a2e;--text:#e0e0e0;--card-bg:#16213e;--border:#333}
+*{box-sizing:border-box}
+body{max-width:1200px;margin:0 auto;padding:1.5rem;font-family:Georgia,serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s}
+h1{text-align:center;margin-bottom:2rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}
+.card{background:var(--card-bg);text-decoration:none;color:var(--text);border-radius:6px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.1);transition:transform .15s;border:1px solid var(--border)}
+.card:hover{transform:translateY(-3px)}
+.card-img{width:100%;aspect-ratio:4/3;overflow:hidden}
+.card-img img{width:100%;height:100%;object-fit:cover}
+.card-body{padding:.8rem 1rem}
+.card-artist{font-weight:bold}
+.card-title{font-style:italic;color:#666;margin-top:.3rem}
+.back{display:inline-block;margin-bottom:1rem;color:#0366d6;text-decoration:none}
+.theme-toggle{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);z-index:1000}
+</style></head><body>
+<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+<a href="index.html" class="back">← На главную</a>
+<h1>#гтг (5)</h1>
+<div class="grid">
+        <a class="card" href="2025-12-06-карл-павлович-брюллов.html">
+          <div class="card-img"><img src="images/thumbs/2025-12-06-карл-павлович-брюллов.jpg" alt="" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-artist">Карл Павлович Брюллов</div>
+            <div class="card-title">Вид форта Пику на острове Мадейра (Неоконченная картина), 1849–1850</div>
+          </div>
+        </a>
+        <a class="card" href="2025-03-25-архип-иванович-куинджи.html">
+          <div class="card-img"><img src="images/thumbs/2025-03-25-архип-иванович-куинджи.jpg" alt="" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-artist">Архип Иванович Куинджи</div>
+            <div class="card-title">Берёзовая роща, 1879</div>
+          </div>
+        </a>
+        <a class="card" href="2025-03-14-николай-дмитриевич-кузнецов.html">
+          <div class="card-img"><img src="images/thumbs/2025-03-14-николай-дмитриевич-кузнецов.jpg" alt="" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-artist">Николай Дмитриевич Кузнецов</div>
+            <div class="card-title">В праздник, 1879</div>
+          </div>
+        </a>
+        <a class="card" href="2025-03-12-александр-иванович-морозов.html">
+          <div class="card-img"><img src="images/thumbs/2025-03-12-александр-иванович-морозов.jpg" alt="" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-artist">Александр Иванович Морозов</div>
+            <div class="card-title">Выход из церкви в Пскове, 1864</div>
+          </div>
+        </a>
+        <a class="card" href="2025-03-06-николай-александрович-тархов.html">
+          <div class="card-img"><img src="images/thumbs/2025-03-06-николай-александрович-тархов.jpg" alt="" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-artist">Николай Александрович Тархов</div>
+            <div class="card-title">Козы на солнце, 1904</div>
+          </div>
+        </a></div>
+<script>
+function toggleTheme(){const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}
+(()=>{const s=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',s)})();
+</script></body></html>
