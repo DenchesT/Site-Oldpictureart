@@ -1,25 +1,51 @@
 <!DOCTYPE html>
 <html lang="ru" data-theme="light"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
+<meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
 <title>#toulouse_lautrec — Old Picture Art</title>
 <style>
-:root{--bg:#fafafa;--text:#222;--card-bg:#fff;--border:#ddd}
-[data-theme="dark"]{--bg:#1a1a2e;--text:#e0e0e0;--card-bg:#16213e;--border:#333}
+:root{--bg:#fafafa;--text:#222;--card-bg:#fff;--border:#ddd;--muted:#666}
+[data-theme="dark"]{--bg:#1a1a2e;--text:#e0e0e0;--card-bg:#16213e;--border:#333;--muted:#aaa}
 *{box-sizing:border-box}
-body{max-width:1200px;margin:0 auto;padding:1.5rem;font-family:Georgia,serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s}
-h1{text-align:center;margin-bottom:2rem}
+body{max-width:1200px;margin:0 auto;padding:1.5rem;font-family:Georgia,serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s;-webkit-tap-highlight-color:transparent}
+h1{text-align:center;margin-bottom:2rem;font-size:1.8rem}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}
 .card{background:var(--card-bg);text-decoration:none;color:var(--text);border-radius:6px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.1);transition:transform .15s;border:1px solid var(--border)}
-.card:hover{transform:translateY(-3px)}
-.card-img{width:100%;aspect-ratio:4/3;overflow:hidden}
-.card-img img{width:100%;height:100%;object-fit:cover}
+.card:active{transform:scale(.98)}
+.card-img{width:100%;aspect-ratio:4/3;overflow:hidden;background:var(--border)}
+.card-img img{width:100%;height:100%;object-fit:cover;display:block}
 .card-body{padding:.8rem 1rem}
-.card-artist{font-weight:bold}
-.card-title{font-style:italic;color:#666;margin-top:.3rem}
-.back{display:inline-block;margin-bottom:1rem;color:#0366d6;text-decoration:none}
-.theme-toggle{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);z-index:1000}
+.card-artist{font-weight:bold;font-size:.95rem}
+.card-title{font-style:italic;color:var(--muted);margin-top:.3rem;font-size:.85rem}
+.back{display:inline-block;margin-bottom:1rem;color:#0366d6;text-decoration:none;font-size:.95rem}
+.theme-toggle{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);z-index:1000;font-size:.9rem;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.scroll-top{position:fixed;bottom:1.5rem;right:1.5rem;width:44px;height:44px;background:var(--link,#0366d6);color:#fff;border:none;border-radius:50%;font-size:1.3rem;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.2);z-index:999;display:none;align-items:center;justify-content:center}
+.scroll-top.visible{display:flex}
+@media(max-width:768px){
+  body{padding:.8rem}
+  h1{font-size:1.3rem}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.8rem}
+  .card-body{padding:.6rem}
+  .card-artist{font-size:.85rem}
+  .card-title{font-size:.75rem}
+  .theme-toggle{top:.5rem;right:.5rem;padding:.4rem .8rem;font-size:.75rem}
+  .scroll-top{width:40px;height:40px;font-size:1.1rem;bottom:1rem;right:1rem}
+}
+@media(max-width:480px){
+  body{padding:.5rem}
+  h1{font-size:1.1rem;margin-bottom:1.2rem}
+  .grid{grid-template-columns:repeat(2,1fr);gap:.5rem}
+  .card-img{aspect-ratio:1/1}
+  .card-body{padding:.4rem .5rem}
+  .card-artist{font-size:.78rem}
+  .card-title{font-size:.7rem}
+  .theme-toggle{top:.3rem;right:.3rem;padding:.3rem .6rem;font-size:.7rem}
+  .scroll-top{width:36px;height:36px;font-size:1rem;bottom:.8rem;right:.8rem}
+}
 </style></head><body>
 <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Наверх">↑</button>
 <a href="index.html" class="back">← На главную</a>
 <h1>#toulouse_lautrec (1)</h1>
 <div class="grid">
@@ -33,4 +59,5 @@ h1{text-align:center;margin-bottom:2rem}
 <script>
 function toggleTheme(){const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}
 (()=>{const s=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',s)})();
+window.addEventListener('scroll',function(){const b=document.querySelector('.scroll-top');if(b)b.classList.toggle('visible',window.scrollY>400)});
 </script></body></html>
