@@ -1,14 +1,3 @@
-"""
-Сборка сайта-галереи из Telegram-канала Old Picture Art.
-
-НОВАЯ СТРУКТУРА ПОСТА:
-  Художник ⸻ Название ⸻ Техника ⸻ Музей ⸻ [Происхождение] ⸻ [Описание] ⸻ [Ссылки] ⸻ #хештеги
-
-Всё через ⸻. Переводы строк — только для красоты, на парсинг не влияют.
-Блоков может быть 4 (минимум: только шапка) или больше. Происхождение и описание
-определяются эвристикой по содержимому: если в блоке много годов и есть маркеры
-владения («собрание», «поступила», и т.п.) — это происхождение, иначе описание.
-"""
 import asyncio
 import os
 import re
@@ -20,7 +9,28 @@ from datetime import datetime
 from collections import defaultdict
 from html import escape as h
 
+# Список библиотек, которые нужны для работы скрипта
+REQUIRED_PACKAGES = ["telethon", "Pillow"]
+
+def auto_update_modules():
+    print("🔄 Проверка и автообновление модулей...")
+    try:
+        # Скрытно (--quiet) обновляем сам pip
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "pip", "--quiet"])
+        
+        # Обновляем нужные библиотеки
+        cmd = [sys.executable, "-m", "pip", "install", "--upgrade"] + REQUIRED_PACKAGES + ["--quiet"]
+        subprocess.check_call(cmd)
+        
+        print("✅ Все необходимые модули актуальны!\n")
+    except Exception as e:
+        print(f"⚠️ Ошибка при автообновлении: {e}\n")
+
+# Запускаем обновление до того, как код начнет работать
+auto_update_modules()
+
 from telethon import TelegramClient, connection
+import TelethonFakeTLS 
 
 # Pillow — для сжатия больших файлов (опционально, если установлен).
 try:
@@ -49,6 +59,7 @@ load_dotenv()
 
 
 # ==================== НАСТРОЙКИ ====================
+# Было:
 try:
     API_ID  = int(os.environ["API_ID"])
     API_HASH = os.environ["API_HASH"]
@@ -56,6 +67,20 @@ except KeyError as e:
     raise SystemExit(f"❌ В .env не найдена переменная {e}. "
                      f"Пример .env:\nAPI_ID=12345\nAPI_HASH=abcdef0123456789...")
 
+try:
+    API_ID = int(os.environ["API_ID"])
+    API_HASH = os.environ["API_HASH"]
+    PHONE = os.environ["PHONE"]
+except KeyError as e:
+    raise SystemExit(
+        "❌ В .env должны быть:\n"
+        "API_ID=...\n"
+        "API_HASH=...\n"
+        "PHONE=+79991234567"
+    )
+
+print(f"👤 Использую пользовательский аккаунт {PHONE}")
+    
 CHANNEL_URL    = "https://t.me/oldpictureart"
 OUTPUT_DIR     = "docs"
 IMAGES_DIR     = "docs/images"
@@ -72,9 +97,9 @@ THUMB_DIMENSION  = 600
 THUMB_QUALITY    = 78
 
 PROXY = (
-    '138.226.236.46',
+    '138.226.237.34',
     8443,
-    'ee5a76b164eadb451a845bfae212bf8649706574726f766963682e7275'
+    '5a76b164eadb451a845bfae212bf864973616D73756E672E636F6D'
 )
 # ===================================================
 
@@ -104,6 +129,16 @@ def looks_like_provenance(s: str) -> bool:
     return years >= 2 and has_marker
 
 
+def _split_steps(block: str) -> list[str]:
+    """Разбивает блок происхождения на этапы по переводам строк."""
+    return [line.strip() for line in block.split("\n") if line.strip()]
+
+
+def _clean_desc(block: str) -> str:
+    """Описание: одиночные переводы строк внутри абзаца схлопываем в пробелы."""
+    return re.sub(r"\s*\n\s*", " ", block).strip()
+
+
 def parse_post(text: str) -> dict:
     """Раскладывает текст поста по полям. Возвращает {} если структура не та."""
     if not text:
@@ -120,42 +155,45 @@ def parse_post(text: str) -> dict:
     raw_tags = TAG_RE.findall(text_clean)
     text_clean = TAG_RE.sub("", text_clean)
 
-    # 3. Переводы строк больше не несут структуру — заменяем на пробел
-    text_clean = re.sub(r"\s*\n\s*", " ", text_clean)
-
-    # 4. Делим по ⸻ на блоки
+    # 3. Делим по ⸻ на блоки. Переводы строк НЕ схлопываем —
+    #    SEPARATOR_RE сам убирает \n вокруг ⸻, а \n внутри блока происхождения
+    #    нам нужны как разделители этапов владения.
     parts = [p.strip() for p in SEPARATOR_RE.split(text_clean) if p.strip()]
 
     # Минимум 4 блока — это шапка картины
     if len(parts) < 4:
         return {}
 
-    artist, title, medium, museum = parts[0], parts[1], parts[2], parts[3]
+    # В шапке переводов строк быть не должно — на всякий случай схлопываем
+    artist = re.sub(r"\s+", " ", parts[0])
+    title  = re.sub(r"\s+", " ", parts[1])
+    medium = re.sub(r"\s+", " ", parts[2])
+    museum = re.sub(r"\s+", " ", parts[3])
     extras = parts[4:]
 
-    history = ""
+    history_steps: list[str] = []
     description = ""
 
     if len(extras) == 1:
         # Один блок — это либо происхождение, либо описание
         if looks_like_provenance(extras[0]):
-            history = extras[0]
+            history_steps = _split_steps(extras[0])
         else:
-            description = extras[0]
+            description = _clean_desc(extras[0])
     elif len(extras) >= 2:
         # Первый блок — это происхождение (если подходит), остальные — описание
         if looks_like_provenance(extras[0]):
-            history = extras[0]
-            description = "\n\n".join(extras[1:])
+            history_steps = _split_steps(extras[0])
+            description = "\n\n".join(_clean_desc(e) for e in extras[1:])
         else:
-            description = "\n\n".join(extras)
+            description = "\n\n".join(_clean_desc(e) for e in extras)
 
     return {
         "artist":      artist,
         "title":       title,
         "medium":      medium,
         "museum":      museum,
-        "history":     history,
+        "history":     history_steps,   # теперь список этапов
         "description": description,
         "urls":        urls,
         "tags":        sorted(set(raw_tags)),
@@ -302,7 +340,6 @@ def render_post_page(post: dict) -> str:
     medium = h(post["medium"]); museum = h(post["museum"])
 
     # Обратная совместимость со старыми meta
-    history     = post.get("history") or post.get("note") or ""
     description = post.get("description") or ""
     urls        = post.get("urls") or ([post["url"]] if post.get("url") else [])
 
@@ -329,13 +366,21 @@ def render_post_page(post: dict) -> str:
         paras = "".join(f"<p>{h(p)}</p>" for p in description.split("\n\n") if p.strip())
         description_html = f'<section class="description">{paras}</section>'
 
-    # Происхождение — один абзац (текст уже сплошной, не разделён ⸻ на этапы)
+    # Происхождение — список этапов владения.
+    # history может быть списком (новый формат) или строкой (старые записи).
+    history = post.get("history") or post.get("note") or ""
+    if isinstance(history, str):
+        history_steps = [s.strip() for s in re.split(r"⸻|\n", history) if s.strip()]
+    else:
+        history_steps = history
+
     history_html = ""
-    if history:
+    if history_steps:
+        items = "".join(f"<li>{h(step)}</li>" for step in history_steps)
         history_html = (
             '<section class="history">'
             '<h3>Происхождение</h3>'
-            f'<p>{h(history)}</p>'
+            f'<ul>{items}</ul>'
             '</section>'
         )
 
@@ -378,7 +423,8 @@ h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:#555;margin:0 0
 .history{{margin:1.8rem 0;padding:1rem 1.25rem;background:#f3eedb;
          border-left:3px solid #b8a86a;border-radius:4px}}
 .history h3{{margin:0 0 .6rem;font-size:1rem;color:#5a4f2a;font-weight:bold}}
-.history p{{margin:0;color:#4a4a4a;font-size:.95rem;line-height:1.6}}
+.history ul{{margin:0;padding-left:1.2rem}}
+.history li{{margin:.4rem 0;color:#4a4a4a;font-size:.95rem;line-height:1.5}}
 
 .sources{{margin:1rem 0;color:#555}}
 .source-list{{margin:.3rem 0 0;padding-left:1.2rem}}
@@ -414,6 +460,17 @@ time{{color:#999;font-size:.85rem}}
 </article></body></html>"""
 
 
+def surname_key(full_name: str) -> str:
+    """Ключ сортировки по фамилии (последнее слово имени).
+    «Аксели Галлен-Каллела» → «галлен-каллела», «Винсент ван Гог» → «гог»."""
+    # Если перечислено несколько авторов через запятую — берём первого
+    first = full_name.split(",")[0].strip()
+    words = first.split()
+    if not words:
+        return full_name.lower()
+    return words[-1].lower()
+
+
 def render_index(all_posts) -> str:
     MONTHS = {
         "01": "Январь", "02": "Февраль", "03": "Март", "04": "Апрель",
@@ -423,7 +480,11 @@ def render_index(all_posts) -> str:
 
     posts_sorted = sorted(all_posts, key=lambda x: x["date"], reverse=True)
 
-    authors = sorted({p["artist"] for p in all_posts if p.get("artist")})
+    # Авторы — сортируем по ФАМИЛИИ (последнее слово), а не по имени
+    authors = sorted(
+        {p["artist"] for p in all_posts if p.get("artist")},
+        key=surname_key
+    )
 
     archive = defaultdict(set)
     for p in all_posts:
@@ -543,7 +604,7 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
       <ul>{archive_html}</ul>
     </div>
     <div class="sidebar-section">
-      <div class="sidebar-title">Художники (А-Я)</div>
+      <div class="sidebar-title">Художники (по фамилии)</div>
       <ul>{authors_html}</ul>
     </div>
   </aside>
@@ -740,20 +801,36 @@ async def main():
 
     if not PIL_AVAILABLE:
         print("ℹ️  Pillow не установлен — крупные оригиналы не будут автоматически сжиматься.")
-        print("    Если нужны hires-картинки: pip install Pillow")
 
     processed_ids = set(load_json(PROCESSED_FILE, []))
     all_posts     = load_json(META_FILE, [])
 
-    print("📡 Подключаюсь к Telegram…")
+    api_id = API_ID
+    api_hash = API_HASH
+    phone = PHONE
+
+    print("👤 Подключаюсь к Telegram как пользователь...")
+
     client = TelegramClient(
-        "my_session", api_id=API_ID, api_hash=API_HASH,
-        connection=connection.ConnectionTcpMTProxyRandomizedIntermediate,
+        "user_session",
+        api_id=api_id,
+        api_hash=api_hash,
+        connection=TelethonFakeTLS.ConnectionTcpMTProxyFakeTLS,
         proxy=PROXY,
     )
-    await client.start()
 
-    accepted = await fetch_new_posts(client, processed_ids)
+    try:
+        await client.start(phone=phone)
+    except Exception as e:
+        raise SystemExit(f"❌ Ошибка авторизации: {e}")
+
+    try:
+        accepted = await fetch_new_posts(client, processed_ids)
+    except Exception as e:
+        print(f"\n❌ Ошибка при сканировании канала: {e}")
+        print("💡 Напоминание: Бот должен быть добавлен АДМИНИСТРАТОРОМ в канал для чтения истории!")
+        await client.disconnect()
+        return
 
     for i, (main_msg, group, parsed) in enumerate(accepted, 1):
         date = main_msg.date.strftime("%Y-%m-%d")
@@ -792,13 +869,13 @@ async def main():
 
     await client.disconnect()
 
-    # ─── Постобработка: создаём миниатюры для старых постов, у которых их ещё нет ───
+    # Постобработка: создаём миниатюры для старых постов
     if PIL_AVAILABLE:
         missing = [p for p in all_posts if not p.get("thumbs") and p.get("images")]
         if missing:
             print(f"\n🖼  Создаю миниатюры для {len(missing)} существующих постов…")
             for p in missing:
-                slug = p["filename"][:-5]  # имя без .html
+                slug = p["filename"][:-5]
                 thumbs = []
                 for i, img_rel in enumerate(p["images"], 1):
                     img_abs = os.path.join(OUTPUT_DIR, img_rel)
