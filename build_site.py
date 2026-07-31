@@ -23,7 +23,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Список библиотек, которые нужны для работы скрипта
+# Список библиотек
 REQUIRED_PACKAGES = ["telethon", "Pillow", "TelethonFakeTLS"]
 
 def auto_update_modules():
@@ -47,9 +47,6 @@ try:
 except ImportError:
     PIL_AVAILABLE = False
 
-
-# ---------- Чтение .env ----------
-
 def load_dotenv(path: str = ".env") -> None:
     if not os.path.exists(path):
         return
@@ -65,19 +62,12 @@ def load_dotenv(path: str = ".env") -> None:
 
 load_dotenv()
 
-
-# ==================== НАСТРОЙКИ ====================
 try:
     API_ID = int(os.environ["API_ID"])
     API_HASH = os.environ["API_HASH"]
     PHONE = os.environ["PHONE"]
 except KeyError as e:
-    raise SystemExit(
-        "❌ В .env должны быть:\n"
-        "API_ID=...\n"
-        "API_HASH=...\n"
-        "PHONE=+79991234567"
-    )
+    raise SystemExit("❌ В .env должны быть:\nAPI_ID=...\nAPI_HASH=...\nPHONE=+79991234567")
 
 logger.info(f"Использую пользовательский аккаунт {PHONE}")
 
@@ -86,6 +76,7 @@ OUTPUT_DIR     = "docs"
 IMAGES_DIR     = "docs/images"
 META_FILE      = "posts_meta.json"
 PROCESSED_FILE = "processed_ids.json"
+DICTIONARY_FILE = "medium_dictionary.json"
 
 MAX_IMAGE_SIZE_MB    = 25
 MAX_IMAGE_DIMENSION  = 2800
@@ -95,52 +86,118 @@ THUMB_DIR        = "docs/images/thumbs"
 THUMB_DIMENSION  = 600
 THUMB_QUALITY    = 78
 
-# ==================== НАСТРОЙКИ ПРОКСИ ====================
 PROXY_LIST = [
-    {
-        'server': '62.113.59.20',
-        'port': 443,
-        'secret': '3f71a99978cf97e115dc89cc80aeca1f706574726f766963682e7275'
-    },
-    {
-        'server': '138.226.237.34',
-        'port': 8443,
-        'secret': '5a76b164eadb451a845bfae212bf864973616D73756E672E636F6D'
-    },
+    {'server': '62.113.59.20', 'port': 443, 'secret': '3f71a99978cf97e115dc89cc80aeca1f706574726f766963682e7275'},
+    {'server': '138.226.237.34', 'port': 8443, 'secret': '5a76b164eadb451a845bfae212bf864973616D73756E672E636F6D'},
 ]
+
 async def connect_with_proxy(api_id, api_hash, phone, proxy_list):
-    """Пробует подключиться с разными прокси по очереди."""
-    
     for i, proxy_config in enumerate(proxy_list, 1):
         logger.info(f"Пробую прокси #{i}: {proxy_config['server']}:{proxy_config['port']}")
-        
-        proxy = (
-            proxy_config['server'],
-            proxy_config['port'],
-            proxy_config['secret']
-        )
-        
+        proxy = (proxy_config['server'], proxy_config['port'], proxy_config['secret'])
         try:
-            client = TelegramClient(
-                f"user_session_proxy_{i}",
-                api_id=api_id,
-                api_hash=api_hash,
-                connection=TelethonFakeTLS.ConnectionTcpMTProxyFakeTLS,
-                proxy=proxy,
-            )
+            client = TelegramClient(f"user_session_proxy_{i}", api_id=api_id, api_hash=api_hash,
+                                    connection=TelethonFakeTLS.ConnectionTcpMTProxyFakeTLS, proxy=proxy)
             await client.start(phone=phone)
             logger.info(f"Подключено через прокси #{i}: {proxy_config['server']}")
             return client
         except Exception as e:
             logger.error(f"Прокси #{i} не работает: {str(e)[:100]}")
-            continue
-    
     raise SystemExit("Все прокси не работают!")
 
-# ===================================================
+def load_dictionary():
+    default_dict = {
+        "materials": ["холст", "бумага", "картон", "дерево", "доска", "металл", "стекло",
+            "тонированная бумага", "рифлёная бумага", "тонированная рифлёная бумага",
+            "пергамент", "шёлк", "ткань", "медь", "цинк", "алюминий", "дуб", "сосна",
+            "фанера", "оргалит", "двп", "дсп", "наждачная бумага", "крафт-бумага",
+            "ватман", "калька", "береста", "кожа", "кость", "слоновая кость",
+            "перламутр", "мрамор", "гранит", "известняк", "гипс", "терракота", "майолика"],
+        "techniques": ["масло", "акварель", "гуашь", "темпера", "пастель", "уголь",
+            "карандаш", "графит", "тушь", "сепия", "сангина", "мел", "акрил", "чернила",
+            "белила", "лак", "золото", "серебро", "бронза", "эмаль", "керамика", "фарфор",
+            "гобелен", "мозаика", "литография", "офорт", "гравюра", "ксилография",
+            "шелкография", "тушь-сепия", "акварель-сепия", "белая гуашь", "чёрный мел",
+            "итальянский карандаш", "свинцовый карандаш", "серебряный штифт", "соус",
+            "бистр", "лавис", "акватинта", "меццо-тинто", "сухая игла", "монотипия",
+            "резцовая гравюра", "пунктир"],
+        "unknown_words": []
+    }
+    if os.path.exists(DICTIONARY_FILE):
+        with open(DICTIONARY_FILE, "r", encoding="utf-8") as f:
+            saved_dict = json.load(f)
+            for key in default_dict:
+                if key not in saved_dict:
+                    saved_dict[key] = default_dict[key]
+            return saved_dict
+    return default_dict
 
+def save_dictionary(dictionary):
+    with open(DICTIONARY_FILE, "w", encoding="utf-8") as f:
+        json.dump(dictionary, f, ensure_ascii=False, indent=2)
 
-# ---------- ПАРСИНГ ПОСТА ----------
+def parse_medium_details(medium_text: str) -> dict:
+    if not medium_text:
+        return {"material": "", "techniques": [], "size": ""}
+    dictionary = load_dictionary()
+    text = medium_text.strip().rstrip(".")
+    size_patterns = [
+        r'(\d+[,.]?\d*\s*[xх×]\s*\d+[,.]?\d*\s*(?:см|mm|мм|m|м)?)',
+        r'(\d+[,.]?\d*\s*(?:см|mm|мм|m|м)\s*[xх×]\s*\d+[,.]?\d*\s*(?:см|mm|мм|m|м)?)',
+        r'(\d+[,.]?\d*\s*[xх×]\s*\d+[,.]?\d*)',
+    ]
+    size = ""
+    for pattern in size_patterns:
+        size_match = re.search(pattern, text, re.IGNORECASE)
+        if size_match:
+            size = size_match.group(1).strip()
+            text = text.replace(size_match.group(0), "").strip().rstrip(",.").strip()
+            break
+    parts = [p.strip() for p in text.split(",") if p.strip()]
+    material = ""
+    techniques = []
+    size_words = re.compile(r'^\d+[,.]?\d*\s*(?:[xх×]|см|mm|мм|m|м)')
+    for part in parts:
+        part_lower = part.lower().strip()
+        if size_words.match(part) or re.match(r'^\d+[,.]?\d*$', part):
+            continue
+        if re.search(r'\d+[,.]?\d*\s*[xх×]\s*\d+', part):
+            continue
+        found_material = False
+        for mat in dictionary["materials"]:
+            if mat in part_lower:
+                if not material:
+                    material = part
+                found_material = True
+                break
+        if found_material:
+            continue
+        found_technique = False
+        for tech in dictionary["techniques"]:
+            if tech in part_lower:
+                techniques.append(part)
+                found_technique = True
+                break
+        if found_technique:
+            continue
+        if len(part) > 2 and not re.search(r'\d{3,}', part):
+            material_keywords = ["бумаг", "холст", "картон", "дерев", "доск", "металл",
+                               "стекл", "ткань", "шёлк", "кож", "кость", "камень"]
+            if any(kw in part_lower for kw in material_keywords):
+                if not material:
+                    material = part
+                if part not in dictionary["materials"]:
+                    dictionary["materials"].append(part)
+                    logger.info(f"➕ Новый материал: {part}")
+            else:
+                techniques.append(part)
+                if part not in dictionary["techniques"]:
+                    dictionary["techniques"].append(part)
+                    logger.info(f"➕ Новая техника: {part}")
+    save_dictionary(dictionary)
+    return {"material": material, "techniques": techniques, "size": size}
+
+    # ---------- ПАРСИНГ ПОСТА ----------
 
 SEPARATOR_RE = re.compile(r"\s*[⸻⸺]\s*")
 URL_RE = re.compile(r"https?://(?:(?!https?://)[^\s⸻⸺])+")
@@ -159,14 +216,11 @@ def looks_like_provenance(s: str) -> bool:
     has_marker = any(m in text_lo for m in PROVENANCE_MARKERS)
     return years >= 2 and has_marker
 
-
 def _split_steps(block: str) -> list[str]:
     return [line.strip() for line in block.split("\n") if line.strip()]
 
-
 def _clean_desc(block: str) -> str:
     return re.sub(r"\s*\n\s*", " ", block).strip()
-
 
 def parse_post(text: str) -> dict:
     if not text:
@@ -207,10 +261,15 @@ def parse_post(text: str) -> dict:
         else:
             description = "\n\n".join(_clean_desc(e) for e in extras)
 
+    medium_details = parse_medium_details(medium)
+
     return {
         "artist":      artist,
         "title":       title,
         "medium":      medium,
+        "material":    medium_details["material"],
+        "techniques":  medium_details["techniques"],
+        "size":        medium_details["size"],
         "museum":      museum,
         "history":     history_steps,
         "description": description,
@@ -227,7 +286,6 @@ def slugify(text: str) -> str:
     t = re.sub(r"\s+", "-", t).strip("-")
     return (t[:60] or "post")
 
-
 def load_json(path, default):
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
@@ -237,7 +295,6 @@ def load_json(path, default):
 def save_json(path, data):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-
 
 def compress_if_huge(filepath: str) -> str:
     if not PIL_AVAILABLE or not os.path.exists(filepath):
@@ -260,17 +317,14 @@ def compress_if_huge(filepath: str) -> str:
             except OSError: pass
         img.save(new_path, "JPEG", quality=JPEG_QUALITY, optimize=True)
         new_mb = os.path.getsize(new_path) / 1024 / 1024
-        logger.info(f"Сжато: {size_mb:.1f}MB → {new_mb:.1f}MB ({os.path.basename(new_path)})")
+        logger.info(f"Сжато: {size_mb:.1f}MB → {new_mb:.1f}MB")
         return new_path
     except Exception as e:
         logger.warning(f"Не удалось сжать {filepath}: {e}")
         return filepath
 
-
 def make_thumbnail(src_path: str, slug: str, idx: int) -> str:
-    if not PIL_AVAILABLE:
-        return ""
-    if not os.path.exists(src_path):
+    if not PIL_AVAILABLE or not os.path.exists(src_path):
         return ""
     os.makedirs(THUMB_DIR, exist_ok=True)
     suffix = "" if idx == 1 else f"-{idx}"
@@ -289,27 +343,21 @@ def make_thumbnail(src_path: str, slug: str, idx: int) -> str:
         logger.warning(f"Не удалось создать миниатюру: {e}")
         return ""
 
-
 async def download_with_retry(client, msg, filepath, max_retries=3):
-    """Скачивает файл с повторными попытками."""
     for attempt in range(max_retries):
         try:
             await client.download_media(msg, filepath)
             return True
         except Exception as e:
             if attempt < max_retries - 1:
-                logger.warning(f"Попытка {attempt + 1} не удалась: {e}. Повтор через 5 сек...")
+                logger.warning(f"Попытка {attempt + 1} не удалась. Повтор...")
                 await asyncio.sleep(5)
             else:
                 raise
     return False
 
-
 async def download_images(client, group, comments, post_slug):
-    images = []
-    hires = []
-    thumbs = []
-
+    images, hires, thumbs = [], [], []
     photo_idx = 0
     for msg in group:
         if getattr(msg, "photo", None):
@@ -323,8 +371,7 @@ async def download_images(client, group, comments, post_slug):
             if thumb:
                 thumbs.append(thumb)
 
-    all_docs = [m for m in group if getattr(m, "document", None)
-                and m.document.mime_type.startswith("image/")]
+    all_docs = [m for m in group if getattr(m, "document", None) and m.document.mime_type.startswith("image/")]
     all_docs.extend(comments)
 
     for i, msg in enumerate(all_docs, 1):
@@ -333,7 +380,6 @@ async def download_images(client, group, comments, post_slug):
             if hasattr(attr, "file_name"):
                 ext = os.path.splitext(attr.file_name)[1].lower()
                 break
-
         filename = f"{post_slug}-hires-{i}{ext}"
         filepath = os.path.join(IMAGES_DIR, filename)
         if not os.path.exists(filepath):
@@ -342,7 +388,6 @@ async def download_images(client, group, comments, post_slug):
             except Exception as e:
                 logger.error(f"Не скачался оригинал {msg.id}: {e}")
                 continue
-
         filepath = compress_if_huge(filepath)
         hires.append(f"images/{os.path.basename(filepath)}")
 
@@ -354,7 +399,6 @@ async def download_images(client, group, comments, post_slug):
                 thumb = make_thumbnail(hires_abs, post_slug, i)
                 if thumb:
                     thumbs.append(thumb)
-
     return images, hires, thumbs
 
 # ---------- HTML ----------
@@ -364,18 +408,24 @@ def render_post_page(post: dict) -> str:
     medium = h(post["medium"]); museum = h(post["museum"])
 
     description = post.get("description") or ""
-    urls        = post.get("urls") or ([post["url"]] if post.get("url") else [])
+    urls = post.get("urls") or ([post["url"]] if post.get("url") else [])
 
     img_html_parts = []
     hires_list = post.get("hires", [])
     for i, src in enumerate(post["images"]):
         link_href = hires_list[i] if i < len(hires_list) else src
         img_html_parts.append(
-            f'<a href="{h(link_href)}" target="_blank" title="Нажмите, чтобы открыть оригинал">'
+            f'<a href="{h(link_href)}" target="_blank" title="Открыть оригинал">'
             f'<img src="{h(src)}" alt="{artist} — {title}" class="painting" loading="lazy">'
             f'</a>'
         )
     img_html = "\n".join(img_html_parts)
+
+    # Детали техники
+    material_html = f'<span class="material">📄 {h(post.get("material", ""))}</span>' if post.get("material") else ""
+    techniques_html = f'<span class="techniques">🖌 {h(", ".join(post.get("techniques", [])))}</span>' if post.get("techniques") else ""
+    size_html = f'<span class="size">📏 {h(post.get("size", ""))}</span>' if post.get("size") else ""
+    medium_details_html = f'<div class="medium-details">{material_html} {techniques_html} {size_html}</div>'
 
     tags_html = ""
     if post["tags"]:
@@ -389,102 +439,59 @@ def render_post_page(post: dict) -> str:
         description_html = f'<section class="description">{paras}</section>'
 
     history = post.get("history") or post.get("note") or ""
-    if isinstance(history, str):
-        history_steps = [s.strip() for s in re.split(r"⸻|\n", history) if s.strip()]
-    else:
-        history_steps = history
-
+    history_steps = [s.strip() for s in re.split(r"⸻|\n", history) if s.strip()] if isinstance(history, str) else history
     history_html = ""
     if history_steps:
         items = "".join(f"<li>{h(step)}</li>" for step in history_steps)
-        history_html = (
-            '<section class="history">'
-            '<h3>Происхождение</h3>'
-            f'<ul>{items}</ul>'
-            '</section>'
-        )
+        history_html = '<section class="history"><h3>Происхождение</h3><ul>{items}</ul></section>'
 
     sources_html = ""
     if urls:
         if len(urls) == 1:
             u = urls[0]
-            sources_html = (f'<p class="source">Источник: '
-                            f'<a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></p>')
+            sources_html = f'<p class="source">Источник: <a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></p>'
         else:
-            items = "".join(
-                f'<li><a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></li>'
-                for u in urls
-            )
-            sources_html = (f'<div class="sources"><strong>Источники:</strong>'
-                            f'<ul class="source-list">{items}</ul></div>')
+            items = "".join(f'<li><a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></li>' for u in urls)
+            sources_html = f'<div class="sources"><strong>Источники:</strong><ul class="source-list">{items}</ul></div>'
 
     return f"""<!DOCTYPE html>
 <html lang="ru" data-theme="light"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{artist} — {title}</title>
 <style>
-:root {{
-  --bg: #fafafa; --text: #222; --card-bg: #fff; --tag-bg: #eee;
-  --tag-text: #555; --border: #ddd; --muted: #555; --link: #0366d6;
-  --shadow: rgba(0,0,0,.15); --history-bg: #f3eedb; --history-border: #b8a86a;
-}}
-[data-theme="dark"] {{
-  --bg: #1a1a2e; --text: #e0e0e0; --card-bg: #16213e; --tag-bg: #0f3460;
-  --tag-text: #e0e0e0; --border: #333; --muted: #aaa; --link: #64b5f6;
-  --shadow: rgba(0,0,0,.5); --history-bg: #2d2d1a; --history-border: #8b7a2e;
-}}
-body{{max-width:900px;margin:0 auto;padding:1.5rem;
-     font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.55;
-     overflow-wrap:break-word;transition:background .3s,color .3s}}
-.painting{{max-width:100%;max-height:70vh;width:auto;display:block;
-          margin:1.5rem auto;box-shadow:0 4px 20px var(--shadow);
-          transition:transform .2s ease,box-shadow .2s ease;cursor:zoom-in;border-radius:4px}}
-.painting:hover{{transform:translateY(-2px) scale(1.01);box-shadow:0 8px 25px var(--shadow)}}
-h1{{font-size:1.8rem;margin:0 0 .3rem;font-weight:bold}}
+:root{{--bg:#fafafa;--text:#222;--card-bg:#fff;--tag-bg:#eee;--tag-text:#555;--border:#ddd;--muted:#555;--link:#0366d6;--shadow:rgba(0,0,0,.15);--history-bg:#f3eedb;--history-border:#b8a86a}}
+[data-theme="dark"]{{--bg:#1a1a2e;--text:#e0e0e0;--card-bg:#16213e;--tag-bg:#0f3460;--tag-text:#e0e0e0;--border:#333;--muted:#aaa;--link:#64b5f6;--shadow:rgba(0,0,0,.5);--history-bg:#2d2d1a;--history-border:#8b7a2e}}
+body{{max-width:900px;margin:0 auto;padding:1.5rem;font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.55;transition:background .3s,color .3s}}
+.painting{{max-width:100%;max-height:70vh;display:block;margin:1.5rem auto;box-shadow:0 4px 20px var(--shadow);border-radius:4px;transition:transform .2s;cursor:zoom-in}}
+.painting:hover{{transform:translateY(-2px) scale(1.01)}}
+h1{{font-size:1.8rem;margin:0 0 .3rem}}
 h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:var(--muted);margin:0 0 1rem}}
-.medium,.museum,.source{{margin:.3rem 0;color:var(--muted)}}
-.museum{{font-style:italic}}
-.source a,.source-list a{{word-break:break-all;color:var(--link)}}
-.description{{margin:1.5rem 0;font-size:1rem;color:var(--text);text-align:justify}}
+.medium-details{{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;margin:1rem 0;padding:.8rem;background:var(--card-bg);border-radius:6px;font-size:.9rem;color:var(--muted)}}
+.museum{{font-style:italic;color:var(--muted);margin:.3rem 0}}
+.source a,.source-list a{{color:var(--link)}}
+.description{{margin:1.5rem 0;text-align:justify}}
 .description p{{margin:.6rem 0;line-height:1.65}}
-.history{{margin:1.8rem 0;padding:1rem 1.25rem;background:var(--history-bg);
-         border-left:3px solid var(--history-border);border-radius:4px}}
-.history h3{{margin:0 0 .6rem;font-size:1rem;color:#5a4f2a;font-weight:bold}}
+.history{{margin:1.8rem 0;padding:1rem 1.25rem;background:var(--history-bg);border-left:3px solid var(--history-border);border-radius:4px}}
+.history h3{{margin:0 0 .6rem;font-size:1rem;color:#5a4f2a}}
 .history ul{{margin:0;padding-left:1.2rem}}
 .history li{{margin:.4rem 0;color:#4a4a4a;font-size:.95rem;line-height:1.5}}
-.sources{{margin:1rem 0;color:var(--muted)}}
-.source-list{{margin:.3rem 0 0;padding-left:1.2rem}}
-.source-list li{{margin:.25rem 0}}
-.tags{{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);
-     display:flex;flex-wrap:wrap;gap:.4rem}}
-.tag{{display:inline-block;background:var(--tag-bg);color:var(--tag-text);text-decoration:none;
-     padding:.3rem .7rem;border-radius:4px;font-size:.85rem;transition:background .2s}}
+.tags{{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:.4rem}}
+.tag{{display:inline-block;background:var(--tag-bg);color:var(--tag-text);text-decoration:none;padding:.3rem .7rem;border-radius:4px;font-size:.85rem;transition:background .2s}}
 .tag:hover{{background:var(--link);color:#fff}}
 .back{{display:inline-block;margin-bottom:1rem;color:var(--link);text-decoration:none}}
 time{{color:var(--muted);font-size:.85rem}}
-.theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);
-              padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);font-size:.9rem;
-              box-shadow:0 2px 8px var(--shadow);z-index:1000;transition:all .2s}}
-.theme-toggle:hover{{transform:scale(1.05)}}
-.random-btn{{display:inline-block;margin-left:1rem;padding:.3rem 1rem;background:var(--link);color:#fff;
-            text-decoration:none;border-radius:4px;font-size:.9rem;transition:opacity .2s}}
-.random-btn:hover{{opacity:.8}}
-@media (max-width: 600px) {{
-  body{{padding:1rem;overflow-x:hidden}}
-  h1{{font-size:1.5rem}}
-  h2{{font-size:1.15rem}}
-  .painting{{margin:1rem auto;max-height:60vh}}
-  .theme-toggle{{top:.5rem;right:.5rem;padding:.3rem .8rem;font-size:.8rem}}
-}}
+.theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);z-index:1000}}
+.random-btn{{display:inline-block;margin-left:1rem;padding:.3rem 1rem;background:var(--link);color:#fff;text-decoration:none;border-radius:4px;font-size:.9rem}}
+@media(max-width:600px){{body{{padding:1rem}}h1{{font-size:1.5rem}}h2{{font-size:1.15rem}}.painting{{margin:1rem auto;max-height:60vh}}}}
 </style></head><body>
-<button class="theme-toggle" onclick="toggleTheme()" title="Переключить тему">🌓</button>
+<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
 <a href="index.html" class="back">← На главную</a>
-<a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная картина</a>
+<a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная</a>
 <article>
 <h1>{artist}</h1>
 <h2>{title}</h2>
 {img_html}
-<p class="medium">🎨 {medium}</p>
+{medium_details_html}
 <p class="museum">🏛 {museum}</p>
 {description_html}
 {history_html}
@@ -493,24 +500,9 @@ time{{color:var(--muted);font-size:.85rem}}
 {tags_html}
 </article>
 <script>
-function toggleTheme() {{
-  const html = document.documentElement;
-  const current = html.getAttribute('data-theme');
-  const next = current === 'light' ? 'dark' : 'light';
-  html.setAttribute('data-theme', next);
-  localStorage.setItem('theme', next);
-}}
-(() => {{
-  const saved = localStorage.getItem('theme') || 'light';
-  document.documentElement.setAttribute('data-theme', saved);
-}})();
-function goRandom() {{
-  const posts = JSON.parse(localStorage.getItem('allPosts') || '[]');
-  if (posts.length > 0) {{
-    const random = posts[Math.floor(Math.random() * posts.length)];
-    window.location.href = random;
-  }}
-}}
+function toggleTheme(){{const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}}
+(()=>{{const s=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',s)}})();
+function goRandom(){{const p=JSON.parse(localStorage.getItem('allPosts')||'[]');if(p.length)window.location.href=p[Math.floor(Math.random()*p.length)]}}
 </script></body></html>"""
 
 def surname_key(full_name: str) -> str:
@@ -549,10 +541,10 @@ def render_tag_page(tag: str, posts: list) -> str:
 :root{{--bg:#fafafa;--text:#222;--card-bg:#fff;--border:#ddd}}
 [data-theme="dark"]{{--bg:#1a1a2e;--text:#e0e0e0;--card-bg:#16213e;--border:#333}}
 *{{box-sizing:border-box}}
-body{{max-width:1200px;margin:0 auto;padding:1.5rem;font-family:Georgia,serif;background:var(--bg);color:var(--text)}}
+body{{max-width:1200px;margin:0 auto;padding:1.5rem;font-family:Georgia,serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s}}
 h1{{text-align:center;margin-bottom:2rem}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}}
-.card{{background:var(--card-bg);text-decoration:none;color:var(--text);border-radius:6px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.1);transition:transform .15s}}
+.card{{background:var(--card-bg);text-decoration:none;color:var(--text);border-radius:6px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.1);transition:transform .15s;border:1px solid var(--border)}}
 .card:hover{{transform:translateY(-3px)}}
 .card-img{{width:100%;aspect-ratio:4/3;overflow:hidden}}
 .card-img img{{width:100%;height:100%;object-fit:cover}}
@@ -560,11 +552,17 @@ h1{{text-align:center;margin-bottom:2rem}}
 .card-artist{{font-weight:bold}}
 .card-title{{font-style:italic;color:#666;margin-top:.3rem}}
 .back{{display:inline-block;margin-bottom:1rem;color:#0366d6;text-decoration:none}}
+.theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);z-index:1000}}
 </style></head><body>
+<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
 <a href="index.html" class="back">← На главную</a>
 <h1>#{h(tag)} ({len(posts)})</h1>
 <div class="grid">{''.join(cards)}</div>
-</body></html>"""
+<script>
+function toggleTheme(){{const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}}
+(()=>{{const s=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',s)}})();
+</script></body></html>"""
+
 
 def render_index(all_posts) -> str:
     MONTHS = {
@@ -575,35 +573,35 @@ def render_index(all_posts) -> str:
 
     posts_sorted = sorted(all_posts, key=lambda x: x["date"], reverse=True)
 
-    # Собираем всех авторов
-    authors = sorted(
-        {p["artist"] for p in all_posts if p.get("artist")},
-        key=surname_key
-    )
+    # Авторы
+    authors = sorted({p["artist"] for p in all_posts if p.get("artist")}, key=surname_key)
     
-    # Собираем музеи и техники для фильтров
+    # Музеи, материалы, техники
     museums = sorted({p.get("museum", "") for p in all_posts if p.get("museum")})
-    techniques = set()
+    
+    materials_set = set()
+    techniques_set = set()
     for p in all_posts:
-        if p.get("medium"):
-            # Извлекаем первые слова техники (масло, холст, акварель и т.д.)
-            words = p["medium"].lower().split(",")[0].strip().split()
-            for w in words[:2]:
-                if len(w) > 3:
-                    techniques.add(w)
-    techniques = sorted(techniques)
+        material = p.get("material", "")
+        if material:
+            materials_set.add(material)
+        for tech in p.get("techniques", []):
+            if tech and len(tech) > 2:
+                techniques_set.add(tech)
+    
+    materials = sorted(materials_set)
+    techniques = sorted(techniques_set)
 
+    # Архив
     archive = defaultdict(set)
     for p in all_posts:
         if p.get("date") and "-" in p["date"]:
             year, month, _ = p["date"].split("-")
             archive[year].add(month)
 
-    archive_sorted = {
-        y: sorted(list(ms), reverse=True)
-        for y, ms in sorted(archive.items(), reverse=True)
-    }
+    archive_sorted = {y: sorted(list(ms), reverse=True) for y, ms in sorted(archive.items(), reverse=True)}
 
+    # Карточки
     cards = []
     for p in posts_sorted:
         cover = ""
@@ -618,8 +616,8 @@ def render_index(all_posts) -> str:
             year, month, _ = p["date"].split("-")
 
         museum_slug = slugify(p.get("museum", ""))
-        medium_words = p.get("medium", "").lower().split(",")[0].strip().split()
-        medium_slugs = " ".join([slugify(w) for w in medium_words[:2]])
+        material_slug = slugify(p.get("material", ""))
+        techniques_slugs = " ".join([slugify(t) for t in p.get("techniques", [])])
 
         cards.append(f"""
         <a class="card" href="{h(p['filename'])}"
@@ -627,15 +625,17 @@ def render_index(all_posts) -> str:
            data-year="{year}"
            data-month="{month}"
            data-museum="{h(museum_slug)}"
-           data-medium="{h(medium_slugs)}">
+           data-material="{h(material_slug)}"
+           data-techniques="{h(techniques_slugs)}">
           <div class="card-img"><img src="{cover}" alt="" loading="lazy" decoding="async"></div>
           <div class="card-body">
             <div class="card-artist">{h(p['artist'])}</div>
             <div class="card-title">{h(p['title'])}</div>
-            <div class="card-museum">{h(p.get('museum', ''))}</div>
+            <div class="card-info">{h(p.get('material', ''))} {h(', '.join(p.get('techniques', [])[:2]))}</div>
           </div>
         </a>""")
 
+    # HTML для фильтров
     authors_html = "".join(
         f'<li><a href="#" class="filter-link" data-type="artist" data-val="{h(a.lower())}">{h(a)}</a></li>'
         for a in authors
@@ -646,8 +646,13 @@ def render_index(all_posts) -> str:
         for m in museums if m
     )
     
+    materials_html = "".join(
+        f'<li><a href="#" class="filter-link" data-type="material" data-val="{h(slugify(m))}">{h(m)}</a></li>'
+        for m in materials
+    )
+    
     techniques_html = "".join(
-        f'<li><a href="#" class="filter-link" data-type="medium" data-val="{h(t)}">{h(t)}</a></li>'
+        f'<li><a href="#" class="filter-link" data-type="technique" data-val="{h(slugify(t))}">{h(t)}</a></li>'
         for t in techniques
     )
 
@@ -659,7 +664,6 @@ def render_index(all_posts) -> str:
             archive_html += f'<li><a href="#" class="filter-link" data-type="month" data-year="{y}" data-val="{m}">{m_name}</a></li>'
         archive_html += '</ul></li>'
 
-    # Сохраняем список всех файлов для случайной картины
     all_filenames = json.dumps([p["filename"] for p in posts_sorted])
 
     return f"""<!DOCTYPE html>
@@ -667,88 +671,54 @@ def render_index(all_posts) -> str:
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Old Picture Art — Галерея</title>
 <style>
-:root {{
-  --bg: #fafafa; --text: #222; --card-bg: #fff; --sidebar-bg: #fff;
-  --border: #ddd; --muted: #777; --link: #555; --active: #0366d6;
-  --shadow: rgba(0,0,0,.08); --reset-bg: #ffeef0; --reset-text: #d73a49;
-  --header-bg: #fafafa; --input-border: #ccc;
-}}
-[data-theme="dark"] {{
-  --bg: #1a1a2e; --text: #e0e0e0; --card-bg: #16213e; --sidebar-bg: #0f3460;
-  --border: #333; --muted: #aaa; --link: #64b5f6; --active: #90caf9;
-  --shadow: rgba(0,0,0,.3); --reset-bg: #3d1a1a; --reset-text: #ef9a9a;
-  --header-bg: #1a1a2e; --input-border: #444;
-}}
+:root{{--bg:#fafafa;--text:#222;--card-bg:#fff;--sidebar-bg:#fff;--border:#ddd;--muted:#777;--link:#555;--active:#0366d6;--shadow:rgba(0,0,0,.08);--reset-bg:#ffeef0;--reset-text:#d73a49;--input-border:#ccc}}
+[data-theme="dark"]{{--bg:#1a1a2e;--text:#e0e0e0;--card-bg:#16213e;--sidebar-bg:#0f3460;--border:#333;--muted:#aaa;--link:#64b5f6;--active:#90caf9;--shadow:rgba(0,0,0,.3);--reset-bg:#3d1a1a;--reset-text:#ef9a9a;--input-border:#444}}
 *{{box-sizing:border-box}}
-body{{max-width:1400px;margin:0 auto;padding:1.5rem;
-     font-family:Georgia,serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s}}
-header{{margin-bottom:2rem;text-align:center;position:relative}}
+body{{max-width:1400px;margin:0 auto;padding:1.5rem;font-family:Georgia,serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s}}
+header{{margin-bottom:2rem;text-align:center}}
 h1{{font-size:2.2rem;margin:0 0 .5rem}}
 .subtitle{{color:var(--muted);margin-bottom:1.5rem}}
-.search-box{{width:100%;max-width:500px;padding:.8rem 1rem;font-size:1rem;
-            border:1px solid var(--input-border);border-radius:6px;font-family:inherit;
-            background:var(--card-bg);color:var(--text)}}
+.search-box{{width:100%;max-width:500px;padding:.8rem 1rem;font-size:1rem;border:1px solid var(--input-border);border-radius:6px;font-family:inherit;background:var(--card-bg);color:var(--text)}}
 .layout{{display:flex;gap:2rem;align-items:flex-start}}
-.sidebar{{width:300px;flex-shrink:0;background:var(--sidebar-bg);padding:1.5rem;
-        border-radius:6px;box-shadow:0 2px 6px var(--shadow);
-        position:sticky;top:1.5rem;max-height:calc(100vh - 3rem);overflow-y:auto;
-        border:1px solid var(--border)}}
+.sidebar{{width:300px;flex-shrink:0;background:var(--sidebar-bg);padding:1.5rem;border-radius:6px;box-shadow:0 2px 6px var(--shadow);position:sticky;top:1.5rem;max-height:calc(100vh - 3rem);overflow-y:auto;border:1px solid var(--border)}}
 .sidebar::-webkit-scrollbar{{width:6px}}
 .sidebar::-webkit-scrollbar-thumb{{background-color:#ccc;border-radius:3px}}
 .sidebar-section{{margin-bottom:1.5rem}}
-.sidebar-title{{font-size:1rem;font-weight:bold;margin:0 0 .8rem;
-              border-bottom:1px solid var(--border);padding-bottom:.5rem;cursor:pointer;
-              display:flex;justify-content:space-between;align-items:center}}
+.sidebar-title{{font-size:1rem;font-weight:bold;margin:0 0 .8rem;border-bottom:1px solid var(--border);padding-bottom:.5rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}}
 .sidebar-title::after{{content:'▼';font-size:.7rem;transition:transform .2s}}
 .sidebar-title.collapsed::after{{transform:rotate(-90deg)}}
 .sidebar-content{{overflow:hidden;transition:max-height .3s ease}}
-.sidebar-content.collapsed{{max-height:0 !important}}
+.sidebar-content.collapsed{{max-height:0!important}}
 .sidebar ul{{list-style:none;padding:0;margin:0}}
 .sidebar li{{margin-bottom:.4rem}}
 .sidebar a{{text-decoration:none;color:var(--link);font-size:.9rem;display:block;transition:color .15s;padding:2px 4px;border-radius:3px}}
 .sidebar a:hover{{color:var(--active);background:var(--border)}}
 .sidebar a.active{{color:var(--active);font-weight:bold;background:var(--border)}}
-.month-list{{padding-left:1.2rem !important;margin-top:.3rem !important;font-size:.9em}}
-.filter-reset{{display:none;margin-bottom:1rem;color:var(--reset-text) !important;
-             font-weight:bold;text-align:center;background:var(--reset-bg);
-             padding:.6rem;border-radius:4px}}
+.month-list{{padding-left:1.2rem!important;margin-top:.3rem!important;font-size:.9em}}
+.filter-reset{{display:none;margin-bottom:1rem;color:var(--reset-text)!important;font-weight:bold;text-align:center;background:var(--reset-bg);padding:.6rem;border-radius:4px;text-decoration:none}}
 .filter-reset:hover{{opacity:.8}}
 .main-content{{flex-grow:1;min-width:0}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.5rem}}
-.card{{background:var(--card-bg);text-decoration:none;color:var(--text);border-radius:8px;
-      overflow:hidden;box-shadow:0 2px 8px var(--shadow);transition:transform .15s,box-shadow .15s;
-      border:1px solid var(--border)}}
+.card{{background:var(--card-bg);text-decoration:none;color:var(--text);border-radius:8px;overflow:hidden;box-shadow:0 2px 8px var(--shadow);transition:transform .15s,box-shadow .15s;border:1px solid var(--border)}}
 .card:hover{{transform:translateY(-4px);box-shadow:0 8px 25px var(--shadow)}}
 .card-img{{width:100%;aspect-ratio:4/3;background:var(--border);overflow:hidden}}
 .card-img img{{width:100%;height:100%;object-fit:cover;display:block}}
 .card-body{{padding:.9rem 1.1rem}}
-.card-artist{{font-weight:bold;font-size:1rem;line-height:1.2;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
-.card-title{{font-style:italic;color:var(--muted);font-size:.9rem;margin-top:.35rem;
-            display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
-.card-museum{{font-size:.8rem;color:var(--muted);margin-top:.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
-.theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);
-              padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);font-size:.9rem;
-              box-shadow:0 2px 8px var(--shadow);z-index:1000;transition:all .2s}}
-.theme-toggle:hover{{transform:scale(1.05)}}
-.random-btn{{display:inline-block;padding:.5rem 1.5rem;background:var(--active);color:#fff;
-            text-decoration:none;border-radius:20px;font-size:.9rem;transition:opacity .2s;margin-bottom:1rem}}
+.card-artist{{font-weight:bold;font-size:1rem;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
+.card-title{{font-style:italic;color:var(--muted);font-size:.9rem;margin-top:.35rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
+.card-info{{font-size:.8rem;color:var(--muted);margin-top:.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+.theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);font-size:.9rem;box-shadow:0 2px 8px var(--shadow);z-index:1000}}
+.random-btn{{display:inline-block;padding:.5rem 1.5rem;background:var(--active);color:#fff;text-decoration:none;border-radius:20px;font-size:.9rem;transition:opacity .2s;margin-bottom:1rem}}
 .random-btn:hover{{opacity:.8}}
-@media (max-width: 900px) {{
-    .layout{{flex-direction:column;gap:1rem}}
-    .sidebar{{width:100%;position:static;max-height:300px}}
-    .grid{{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem}}
-    .theme-toggle{{top:.5rem;right:.5rem;padding:.3rem .8rem;font-size:.8rem}}
-}}
+@media(max-width:900px){{.layout{{flex-direction:column;gap:1rem}}.sidebar{{width:100%;position:static;max-height:300px}}.grid{{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem}}}}
 </style></head><body>
-<button class="theme-toggle" onclick="toggleTheme()" title="Переключить тему">🌓 Тема</button>
+<button class="theme-toggle" onclick="toggleTheme()">🌓 Тема</button>
 <header>
 <h1>🎨 Old Picture Art</h1>
 <div class="subtitle">Картин в коллекции: <strong>{len(posts_sorted)}</strong></div>
 <a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная картина</a>
 <input type="text" class="search-box" placeholder="🔍 Поиск по художнику или картине…" id="search">
 </header>
-
 <div class="layout">
   <aside class="sidebar">
     <a href="#" id="reset-filter" class="filter-reset">✕ Сбросить все фильтры</a>
@@ -765,109 +735,58 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
       <div class="sidebar-content"><ul>{museums_html}</ul></div>
     </div>
     <div class="sidebar-section">
-      <div class="sidebar-title" onclick="toggleSection(this)">🎨 Техника</div>
-      <div class="sidebar-content"><ul>{techniques_html}</ul></div>
+      <div class="sidebar-title" onclick="toggleSection(this)">📄 Материал</div>
+      <div class="sidebar-content collapsed"><ul>{materials_html}</ul></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title" onclick="toggleSection(this)">🖌 Техника</div>
+      <div class="sidebar-content collapsed"><ul>{techniques_html}</ul></div>
     </div>
   </aside>
-
   <main class="main-content">
     <div class="grid" id="cards">{''.join(cards)}</div>
   </main>
 </div>
-
 <script>
 const ALL_POSTS = {all_filenames};
-
-function toggleTheme() {{
-  const html = document.documentElement;
-  const current = html.getAttribute('data-theme');
-  const next = current === 'light' ? 'dark' : 'light';
-  html.setAttribute('data-theme', next);
-  localStorage.setItem('theme', next);
-}}
-
-(() => {{
-  const saved = localStorage.getItem('theme') || 'light';
-  document.documentElement.setAttribute('data-theme', saved);
-  localStorage.setItem('allPosts', JSON.stringify(ALL_POSTS));
-}})();
-
-function goRandom() {{
-  if (ALL_POSTS.length > 0) {{
-    const random = ALL_POSTS[Math.floor(Math.random() * ALL_POSTS.length)];
-    window.location.href = random;
-  }}
-}}
-
-function toggleSection(titleEl) {{
-  titleEl.classList.toggle('collapsed');
-  titleEl.nextElementSibling.classList.toggle('collapsed');
-}}
-
-const searchInput = document.getElementById('search');
-const cards = document.querySelectorAll('.card');
-const filterLinks = document.querySelectorAll('.filter-link');
-const resetBtn = document.getElementById('reset-filter');
-let activeFilter = {{ type: null, val: null, year: null }};
-
-function updateView() {{
-  const q = searchInput.value.toLowerCase();
-  cards.forEach(c => {{
-    let show = true;
-    if (q) {{
-      const text = (c.querySelector('.card-artist')?.textContent || '') + ' ' +
-                   (c.querySelector('.card-title')?.textContent || '');
-      if (!text.toLowerCase().includes(q)) show = false;
+function toggleTheme(){{const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}}
+(()=>{{const s=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',s);localStorage.setItem('allPosts',JSON.stringify(ALL_POSTS))}})();
+function goRandom(){{if(ALL_POSTS.length)window.location.href=ALL_POSTS[Math.floor(Math.random()*ALL_POSTS.length)]}}
+function toggleSection(el){{el.classList.toggle('collapsed');el.nextElementSibling.classList.toggle('collapsed')}}
+const searchInput=document.getElementById('search');
+const cards=document.querySelectorAll('.card');
+const filterLinks=document.querySelectorAll('.filter-link');
+const resetBtn=document.getElementById('reset-filter');
+let activeFilter={{type:null,val:null,year:null}};
+function updateView(){{
+  const q=searchInput.value.toLowerCase();
+  cards.forEach(c=>{{
+    let show=true;
+    if(q){{const t=(c.querySelector('.card-artist')?.textContent||'')+' '+(c.querySelector('.card-title')?.textContent||'');if(!t.toLowerCase().includes(q))show=false}}
+    if(show&&activeFilter.type){{
+      if(activeFilter.type==='artist'&&c.dataset.artist!==activeFilter.val)show=false;
+      if(activeFilter.type==='museum'&&c.dataset.museum!==activeFilter.val)show=false;
+      if(activeFilter.type==='material'&&c.dataset.material!==activeFilter.val)show=false;
+      if(activeFilter.type==='technique'){{if(!c.dataset.techniques.includes(activeFilter.val))show=false}}
+      if(activeFilter.type==='year'&&c.dataset.year!==activeFilter.val)show=false;
+      if(activeFilter.type==='month'&&(c.dataset.year!==activeFilter.year||c.dataset.month!==activeFilter.val))show=false;
     }}
-    if (show && activeFilter.type) {{
-      if (activeFilter.type === 'artist' && c.dataset.artist !== activeFilter.val) show = false;
-      if (activeFilter.type === 'museum' && c.dataset.museum !== activeFilter.val) show = false;
-      if (activeFilter.type === 'medium') {{
-        if (!c.dataset.medium.includes(activeFilter.val)) show = false;
-      }}
-      if (activeFilter.type === 'year' && c.dataset.year !== activeFilter.val) show = false;
-      if (activeFilter.type === 'month' && (c.dataset.year !== activeFilter.year || c.dataset.month !== activeFilter.val)) show = false;
-    }}
-    c.style.display = show ? '' : 'none';
+    c.style.display=show?'':'none';
   }});
-  filterLinks.forEach(link => {{
-    let isActive = false;
-    if (activeFilter.type === link.dataset.type) {{
-      if (activeFilter.type === 'month') {{
-        isActive = (link.dataset.val === activeFilter.val && link.dataset.year === activeFilter.year);
-      }} else {{
-        isActive = (link.dataset.val === activeFilter.val);
-      }}
+  filterLinks.forEach(link=>{{
+    let isActive=false;
+    if(activeFilter.type===link.dataset.type){{
+      if(activeFilter.type==='month')isActive=(link.dataset.val===activeFilter.val&&link.dataset.year===activeFilter.year);
+      else isActive=(link.dataset.val===activeFilter.val);
     }}
-    link.classList.toggle('active', isActive);
+    link.classList.toggle('active',isActive);
   }});
-  resetBtn.style.display = activeFilter.type ? 'block' : 'none';
+  resetBtn.style.display=activeFilter.type?'block':'none';
 }}
-
-searchInput.addEventListener('input', updateView);
-filterLinks.forEach(link => {{
-  link.addEventListener('click', e => {{
-    e.preventDefault();
-    activeFilter.type = link.dataset.type;
-    activeFilter.val = link.dataset.val;
-    if (activeFilter.type === 'month') activeFilter.year = link.dataset.year;
-    updateView();
-  }});
-}});
-resetBtn.addEventListener('click', e => {{
-  e.preventDefault();
-  activeFilter = {{ type: null, val: null, year: null }};
-  searchInput.value = '';
-  updateView();
-}});
-
-// Сворачиваем все секции кроме первой
-document.querySelectorAll('.sidebar-title').forEach((title, i) => {{
-  if (i > 0) {{
-    title.classList.add('collapsed');
-    title.nextElementSibling.classList.add('collapsed');
-  }}
-}});
+searchInput.addEventListener('input',updateView);
+filterLinks.forEach(link=>{{link.addEventListener('click',e=>{{e.preventDefault();activeFilter.type=link.dataset.type;activeFilter.val=link.dataset.val;if(activeFilter.type==='month')activeFilter.year=link.dataset.year;updateView()}})}});
+resetBtn.addEventListener('click',e=>{{e.preventDefault();activeFilter={{type:null,val:null,year:null}};searchInput.value='';updateView()}});
+document.querySelectorAll('.sidebar-title').forEach((t,i)=>{{if(i>0){{t.classList.add('collapsed');t.nextElementSibling.classList.add('collapsed')}}}});
 </script></body></html>"""
 
 # ---------- TELEGRAM ----------
@@ -882,7 +801,6 @@ async def fetch_new_posts(client, processed_ids):
     def _process_group(group):
         stats["total"] += 1
         group.reverse()
-
         full_text = ""
         main_msg = None
         for m in group:
@@ -891,7 +809,6 @@ async def fetch_new_posts(client, processed_ids):
                 full_text += text + "\n"
             if "#картина" in text.lower():
                 main_msg = m
-
         if not main_msg:
             stats["no_main_msg"] += 1
             return
@@ -901,7 +818,6 @@ async def fetch_new_posts(client, processed_ids):
         if main_msg.id in processed_ids:
             stats["already_seen"] += 1
             return
-
         parsed = parse_post(full_text)
         if not parsed:
             stats["parse_failed"] += 1
@@ -910,7 +826,6 @@ async def fetch_new_posts(client, processed_ids):
         accepted.append((main_msg, group, parsed))
 
     min_id = max(processed_ids) if processed_ids else 0
-
     current_album_id = None
     current_group = []
 
@@ -980,17 +895,14 @@ def generate_sitemap(all_posts):
     base_url = "https://denchest.github.io/Site-Oldpictureart"
     
     urls = []
-    # Главная страница
     urls.append(f"  <url><loc>{base_url}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>")
     
-    # Страницы картин
     for post in all_posts:
         urls.append(
             f"  <url><loc>{base_url}/{post['filename']}</loc>"
             f"<lastmod>{post['date']}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>"
         )
     
-    # Страницы тегов
     all_tags = set()
     for post in all_posts:
         for tag in post.get("tags", []):
@@ -1071,11 +983,10 @@ async def main():
         logger.warning("Pillow не установлен — крупные оригиналы не будут автоматически сжиматься.")
 
     processed_ids = set(load_json(PROCESSED_FILE, []))
-    all_posts     = load_json(META_FILE, [])
+    all_posts = load_json(META_FILE, [])
 
     logger.info("Подключение к Telegram как пользователь...")
     
-    # Используем функцию с перебором прокси
     client = await connect_with_proxy(API_ID, API_HASH, PHONE, PROXY_LIST)
 
     try:
@@ -1123,7 +1034,7 @@ async def main():
     await client.disconnect()
     logger.info("Отключено от Telegram")
 
-    # Постобработка: создаём миниатюры для старых постов
+    # Постобработка миниатюр
     if PIL_AVAILABLE:
         missing = [p for p in all_posts if not p.get("thumbs") and p.get("images")]
         if missing:
@@ -1143,17 +1054,14 @@ async def main():
     save_json(META_FILE, all_posts)
     save_json(PROCESSED_FILE, sorted(processed_ids))
 
-    # Генерируем страницы тегов
+    # Генерируем страницы
     generate_tag_pages(all_posts)
-    
-    # Генерируем sitemap
     generate_sitemap(all_posts)
 
-    # Генерируем главную страницу
     with open(os.path.join(OUTPUT_DIR, "index.html"), "w", encoding="utf-8") as f:
         f.write(render_index(all_posts))
 
-    # Файл 404.html
+    # 404.html
     with open(os.path.join(OUTPUT_DIR, "404.html"), "w", encoding="utf-8") as f:
         f.write("""<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8">
 <meta http-equiv="refresh" content="0;url=index.html"><title>Перенаправление...</title></head><body></body></html>""")
