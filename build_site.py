@@ -220,6 +220,18 @@ def slugify(text):
     t = re.sub(r"\s+","-",t).strip("-")
     return t[:60] or "post"
 
+def plural_ru(n, one, two, five):
+    """Склоняет существительное в зависимости от числа: 1 картиНА, 2 картинЫ, 5 картиН"""
+    n = abs(n) % 100
+    if 11 <= n <= 19:
+        return five
+    n = n % 10
+    if n == 1:
+        return one
+    if 2 <= n <= 4:
+        return two
+    return five
+
 def load_json(path, default):
     if os.path.exists(path):
         with open(path, encoding="utf-8") as f: return json.load(f)
@@ -549,7 +561,7 @@ def render_index(all_posts):
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 <button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх">↑</button>
 <header><h1>🎨 Old Picture Art</h1>
-<div class="subtitle">{len(ps)} картин · {len(authors)} художников · {len(museums)} музеев · {year_range}</div>
+<div class="subtitle">{len(ps)} {plural_ru(len(ps), 'картина', 'картины', 'картин')} · {len(authors)} {plural_ru(len(authors), 'художник', 'художника', 'художников')} · {len(museums)} {plural_ru(len(museums), 'музей', 'музея', 'музеев')} · {year_range}</div>
 <a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная картина</a></header>
 <div class="layout"><aside class="sidebar">
 <div class="sidebar-section" style="padding: 8px 12px;"><input type="text" class="search-box" placeholder="🔍 Поиск..." id="search" style="width:100%"></div>

@@ -69,6 +69,14 @@ def slugify(text):
     t = re.sub(r"\s+", "-", t).strip("-")
     return t[:60] or "post"
 
+def plural_ru(n, one, two, five):
+    """Склоняет существительное: 1 картина, 2 картины, 5 картин"""
+    n = abs(n) % 100
+    if 11 <= n <= 19: return five
+    n = n % 10
+    if n == 1: return one
+    if 2 <= n <= 4: return two
+    return five
 
 def extract_city_country(display_name):
     parts = [p.strip() for p in display_name.split(',')]
@@ -147,7 +155,7 @@ def generate_museums_page():
             visible_html = "".join([f'<li><a href="{h(p["filename"])}">{h(p["artist"])} — {h(p["title"])}</a></li>' for p in visible_posts])
             hidden_html = "".join([f'<li><a href="{h(p["filename"])}">{h(p["artist"])} — {h(p["title"])}</a></li>' for p in hidden_posts])
             
-            show_more_btn = f'<button class="show-more-btn" onclick="toggleMuseumPosts(\'{museum_id}\')">Показать все {len(posts)} картин ▾</button>'
+            show_more_btn = f'<button class="show-more-btn" onclick="toggleMuseumPosts(\'{museum_id}\')">Показать все {len(posts)} {plural_ru(len(posts), "картину", "картины", "картин")} ▾</button>'
             hidden_class = 'hidden-posts'
         else:
             visible_html = "".join([f'<li><a href="{h(p["filename"])}">{h(p["artist"])} — {h(p["title"])}</a></li>' for p in posts])
@@ -163,7 +171,7 @@ def generate_museums_page():
         <div class="museum-card" id="museum-{museum_id}">
           <h3>🏛 {h(museum)}</h3>
           {location_html}
-          <p class="museum-count">{len(posts)} картин(ы)</p>
+          <p class="museum-count">{len(posts)} {plural_ru(len(posts), 'картина', 'картины', 'картин')}</p>
           <ul class="museum-posts-list">
             {visible_html}
           </ul>
@@ -177,7 +185,7 @@ def generate_museums_page():
         
         # Маркер с ссылкой на карточку музея
         if lat and lon:
-            popup_html = f'<b>{h(museum)}</b><br>{h(city)}, {h(country)}<br>{len(posts)} картин(ы)<br><a href="#museum-{museum_id}" onclick="scrollToMuseum(\'{museum_id}\')" style="color:var(--active)">🔍 Показать в списке</a>'
+            popup_html = f'<b>{h(museum)}</b><br>{h(city)}, {h(country)}<br>{len(posts)} {plural_ru(len(posts), 'картина', 'картины', 'картин')}<br><a href="#museum-{museum_id}" onclick="scrollToMuseum(\'{museum_id}\')" style="color:var(--active)">🔍 Показать в списке</a>'
             markers_js.append(
             f"L.marker([{lat}, {lon}]).addTo(map).bindPopup(`{popup_html}`);"
              )
@@ -214,7 +222,7 @@ def generate_museums_page():
 <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
 <a href="index.html" class="back" style="padding:1rem;display:inline-block">← На главную</a>
 <h1 style="text-align:center">🗺 Карта музеев</h1>
-<p style="text-align:center;color:var(--muted)">{len(museums_dict)} музеев в коллекции ({found_locations} на карте)</p>
+<p style="text-align:center;color:var(--muted)">{len(museums_dict)} {plural_ru(len(museums_dict), 'музей', 'музея', 'музеев')} в коллекции ({found_locations} на карте)</p>
 <div style="max-width:1200px;margin:0 auto;padding:0 1.5rem">
   <div id="map"></div>
 </div>
@@ -258,7 +266,8 @@ function toggleMuseumPosts(id) {{
         btn.textContent = 'Свернуть ▴';
     }} else {{
         hidden.style.display = 'none';
-        btn.textContent = 'Показать все ' + (hidden.querySelectorAll('li').length) + ' картин ▾';
+        var count = hidden.querySelectorAll('li').length;
+btn.textContent = 'Показать все ' + count + ' ' + (count%10==1&&count%100!=11 ? 'картину' : count%10>=2&&count%10<=4&&(count%100<10||count%100>=20) ? 'картины' : 'картин') + ' ▾';
     }}
 }}
 </script>
