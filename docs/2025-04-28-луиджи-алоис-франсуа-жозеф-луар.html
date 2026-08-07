@@ -39,7 +39,6 @@ function toggleLike(){
     const likes=JSON.parse(localStorage.getItem('likes')||'{}');
     likes[pid]=!likes[pid];
     localStorage.setItem('likes',JSON.stringify(likes));
-    btn.textContent=likes[pid]?'♥':'♡';
     btn.classList.toggle('liked',likes[pid]);
     // Обновляем избранное на главной странице
     try {
@@ -48,7 +47,7 @@ function toggleLike(){
         }
     } catch(e) {}
 }
-(()=>{const likes=JSON.parse(localStorage.getItem('likes')||'{}');const btn=document.getElementById('like-btn');if(btn&&likes[btn.dataset.postId]){btn.textContent='♥';btn.classList.add('liked')}})();
+(()=>{const likes=JSON.parse(localStorage.getItem('likes')||'{}');const btn=document.getElementById('like-btn');if(btn&&likes[btn.dataset.postId]){btn.classList.add('liked')}})();
 window.addEventListener('scroll',function(){const b=document.querySelector('.scroll-top');if(b)b.classList.toggle('visible',window.scrollY>400)});
 const postPath=window.location.pathname;const views=JSON.parse(localStorage.getItem('pageViews')||'{}');views[postPath]=(views[postPath]||0)+1;localStorage.setItem('pageViews',JSON.stringify(views));document.getElementById('views-count').innerHTML='<span class="icon-views"></span> '+views[postPath];
 document.addEventListener('keydown',function(e){if(e.key==='r'||e.key==='к')goRandom();if(e.key==='Escape'){const lb=document.getElementById('lightbox');if(lb)lb.classList.remove('active')}if(e.key==='h'||e.key==='р')window.location.href='index.html';if(e.key==='t'||e.key==='е')toggleTheme();if(e.key==='ArrowLeft'){const p=document.querySelector('.prev-post');if(p)p.click()}if(e.key==='ArrowRight'){const p=document.querySelector('.next-post');if(p)p.click()}});
