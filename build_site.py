@@ -460,9 +460,9 @@ def render_post_page(post: dict) -> str:
 body{{max-width:900px;margin:0 auto;padding:1.5rem;font-family:'EB Garamond',Georgia,serif;background:var(--bg);color:var(--text);line-height:1.55;transition:background .3s,color .3s;-webkit-tap-highlight-color:transparent}}
 .painting{{max-width:100%;max-height:70vh;display:block;margin:1.5rem auto;box-shadow:0 4px 20px var(--shadow);border-radius:4px;transition:transform .2s;cursor:pointer}}
 .painting:active{{transform:scale(1.02)}}
-h1{{font-size:1.8rem;margin:0 0 .3rem;line-height:1.2}}
-h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:var(--muted);margin:0 0 1rem}}
-.medium-details{{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;margin:1rem auto;padding:.8rem;background:var(--card-bg);border-radius:6px;font-size:.9rem;color:var(--muted);border:1px solid var(--border);justify-content:center;text-align:center;max-width:fit-content}}
+h1{{font-size:2.2rem;margin:0 0 .3rem;line-height:1.2}}
+h2{{font-size:1.5rem;font-style:italic;font-weight:normal;color:var(--muted);margin:0 0 1rem}}
+.medium-details{{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;margin:1rem auto;padding:.8rem;background:var(--card-bg);border-radius:6px;font-size:.1rem;color:var(--muted);border:1px solid var(--border);justify-content:center;text-align:center;max-width:fit-content}}
 .museum{{font-style:italic;color:var(--muted);margin:.3rem 0}}
 .source a,.source-list a{{color:var(--link);word-break:break-all;overflow-wrap:break-word;hyphens:auto}}
 .source{{max-width:100%;overflow:hidden}}
@@ -475,18 +475,18 @@ h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:var(--muted);ma
 .history ul{{margin:0;padding-left:1.2rem}}
 .history li{{margin:.4rem 0;color:#4a4a4a;font-size:.95rem;line-height:1.5}}
 .tags{{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:.4rem}}
-.tag{{display:inline-block;background:var(--tag-bg);color:var(--tag-text);text-decoration:none;padding:.3rem .7rem;border-radius:4px;font-size:.85rem;transition:background .2s}}
+.tag{{display:inline-block;background:var(--tag-bg);color:var(--tag-text);text-decoration:none;padding:.3rem .7rem;border-radius:4px;font-size:.95rem;transition:background .2s}}
 .tag:active{{background:var(--link);color:#fff}}
 .top-nav{{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:1rem}}
 .back{{display:inline-block;color:var(--link);text-decoration:none;font-size:.95rem}}
-time{{color:var(--muted);font-size:.85rem;display:block;margin-top:.5rem}}
-.theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);z-index:1000;font-size:.9rem;box-shadow:0 2px 8px var(--shadow)}}
-.random-btn{{display:inline-block;padding:.3rem 1rem;background:var(--link);color:#fff;text-decoration:none;border-radius:4px;font-size:.9rem}}
+time{{color:var(--muted);font-size:.95rem;display:block;margin-top:.5rem}}
+.theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);z-index:1000;font-size:.1rem;box-shadow:0 2px 8px var(--shadow)}}
+.random-btn{{display:inline-block;padding:.3rem 1rem;background:var(--link);color:#fff;text-decoration:none;border-radius:4px;font-size:.1rem}}
 .scroll-top{{position:fixed;bottom:1.5rem;right:1.5rem;width:44px;height:44px;background:var(--link);color:#fff;border:none;border-radius:50%;font-size:1.3rem;cursor:pointer;box-shadow:0 2px 10px var(--shadow);z-index:999;display:none;align-items:center;justify-content:center}}
 .scroll-top.visible{{display:flex}}
 .scroll-top:active{{transform:scale(.9)}}
 @media(max-width:768px){{
-  body{{padding:.8rem;font-size:15px}}
+  body{{padding:.8rem;font-size:18px}}
   h1{{font-size:1.4rem}}
   h2{{font-size:1.1rem;margin-bottom:.5rem}}
   .painting{{margin:.8rem auto;max-height:50vh}}
@@ -495,13 +495,13 @@ time{{color:var(--muted);font-size:.85rem;display:block;margin-top:.5rem}}
   .random-btn{{padding:.2rem .7rem;font-size:.8rem}}
   .tags{{gap:.3rem;margin-top:1rem;padding-top:.8rem}}
   .tag{{padding:.25rem .6rem;font-size:.78rem}}
-  .description{{font-size:.9rem}}
+  .description{{font-size:.1rem}}
   .history{{padding:.8rem 1rem;margin:1.2rem 0}}
   .scroll-top{{width:40px;height:40px;font-size:1.1rem;bottom:1rem;right:1rem}}
-  .back{{font-size:.85rem}}
+  .back{{font-size:.95rem}}
 }}
 @media(max-width:480px){{
-  body{{padding:.5rem;font-size:14px}}
+  body{{padding:.5rem;font-size:16px}}
   h1{{font-size:1.2rem}}
   h2{{font-size:1rem}}
   .painting{{max-height:40vh;margin:.5rem auto}}
@@ -576,7 +576,7 @@ def render_tag_page(tag: str, posts: list) -> str:
 [data-theme="dark"]{{--bg:#1a1a2e;--text:#e0e0e0;--card-bg:#16213e;--border:#333;--muted:#aaa}}
 *{{box-sizing:border-box}}
 body{{max-width:1200px;margin:0 auto;padding:1.5rem;font-family:'EB Garamond',Georgia,serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s;-webkit-tap-highlight-color:transparent}}
-h1{{text-align:center;margin-bottom:2rem;font-size:1.8rem}}
+h1{{text-align:center;margin-bottom:2rem;font-size:2.2rem}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}}
 .card{{background:var(--card-bg);text-decoration:none;color:var(--text);border-radius:6px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.1);transition:transform .15s;border:1px solid var(--border)}}
 .card:active{{transform:scale(.98)}}
@@ -584,9 +584,9 @@ h1{{text-align:center;margin-bottom:2rem;font-size:1.8rem}}
 .card-img img{{width:100%;height:100%;object-fit:cover;display:block}}
 .card-body{{padding:.8rem 1rem}}
 .card-artist{{font-weight:bold;font-size:.95rem}}
-.card-title{{font-style:italic;color:var(--muted);margin-top:.3rem;font-size:.85rem}}
+.card-title{{font-style:italic;color:var(--muted);margin-top:.3rem;font-size:.95rem}}
 .back{{display:inline-block;margin-bottom:1rem;color:#0366d6;text-decoration:none;font-size:.95rem}}
-.theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);z-index:1000;font-size:.9rem;box-shadow:0 2px 8px rgba(0,0,0,.1)}}
+.theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);z-index:1000;font-size:.1rem;box-shadow:0 2px 8px rgba(0,0,0,.1)}}
 .scroll-top{{position:fixed;bottom:1.5rem;right:1.5rem;width:44px;height:44px;background:var(--link,#0366d6);color:#fff;border:none;border-radius:50%;font-size:1.3rem;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.2);z-index:999;display:none;align-items:center;justify-content:center}}
 .scroll-top.visible{{display:flex}}
 @media(max-width:768px){{
@@ -594,7 +594,7 @@ h1{{text-align:center;margin-bottom:2rem;font-size:1.8rem}}
   h1{{font-size:1.3rem}}
   .grid{{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.8rem}}
   .card-body{{padding:.6rem}}
-  .card-artist{{font-size:.85rem}}
+  .card-artist{{font-size:.95rem}}
   .card-title{{font-size:.75rem}}
   .theme-toggle{{top:.5rem;right:.5rem;padding:.4rem .8rem;font-size:.75rem}}
   .scroll-top{{width:40px;height:40px;font-size:1.1rem;bottom:1rem;right:1rem}}
@@ -761,11 +761,11 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
 .card-img img{{width:100%;height:100%;object-fit:cover;display:block}}
 .card-body{{padding:.9rem 1.1rem}}
 .card-artist{{font-weight:bold;font-size:1rem;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
-.card-title{{font-style:italic;color:var(--muted);margin-top:.3rem;font-size:.85rem;word-break:break-word}}
+.card-title{{font-style:italic;color:var(--muted);margin-top:.3rem;font-size:.95rem;word-break:break-word}}
 .card-info{{font-size:.8rem;color:var(--muted);margin-top:.3rem;word-break:break-word;overflow-wrap:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
 .card-museum{{font-size:.75rem;color:var(--muted);margin-top:.2rem;word-break:break-word;overflow-wrap:break-word}}
-.theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);font-size:.9rem;box-shadow:0 2px 8px var(--shadow);z-index:1000}}
-.random-btn{{display:inline-block;padding:.5rem 1.5rem;background:var(--active);color:#fff;text-decoration:none;border-radius:20px;font-size:.9rem;transition:opacity .2s;margin-bottom:1rem}}
+.theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);font-size:.1rem;box-shadow:0 2px 8px var(--shadow);z-index:1000}}
+.random-btn{{display:inline-block;padding:.5rem 1.5rem;background:var(--active);color:#fff;text-decoration:none;border-radius:20px;font-size:.1rem;transition:opacity .2s;margin-bottom:1rem}}
 .random-btn:active{{opacity:.8}}
 .scroll-top{{position:fixed;bottom:1.5rem;right:1.5rem;width:44px;height:44px;background:var(--active);color:#fff;border:none;border-radius:50%;font-size:1.3rem;cursor:pointer;box-shadow:0 2px 10px var(--shadow);z-index:999;display:none;align-items:center;justify-content:center}}
 .scroll-top.visible{{display:flex}}
@@ -773,12 +773,12 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
 @media(max-width:900px){{
   body{{padding:.8rem}}
   h1{{font-size:1.5rem}}
-  .subtitle{{font-size:.9rem}}
-  .search-box{{max-width:100%;padding:.7rem;font-size:.9rem}}
+  .subtitle{{font-size:.1rem}}
+  .search-box{{max-width:100%;padding:.7rem;font-size:.1rem}}
   .layout{{flex-direction:column;gap:.5rem}}
   .sidebar{{width:100%;position:static;max-height:none;padding:.8rem;border-radius:8px}}
   .sidebar-section{{margin-bottom:.5rem}}
-  .sidebar-title{{font-size:.9rem;padding:.6rem .8rem;margin:0 0 .3rem 0;background:var(--card-bg);border-radius:6px;border:1px solid var(--border)}}
+  .sidebar-title{{font-size:.1rem;padding:.6rem .8rem;margin:0 0 .3rem 0;background:var(--card-bg);border-radius:6px;border:1px solid var(--border)}}
   .sidebar-content{{padding:0 .3rem}}
   .sidebar ul{{display:flex;flex-wrap:wrap;gap:.25rem}}
   .sidebar li{{margin-bottom:0}}
@@ -789,12 +789,12 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
   .grid{{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.8rem}}
   .card{{border-radius:6px}}
   .card-body{{padding:.6rem .7rem}}
-  .card-artist{{font-size:.85rem}}
+  .card-artist{{font-size:.95rem}}
   .card-title{{font-size:.75rem;margin-top:.2rem}}
   .card-info{{font-size:.7rem}}
   .theme-toggle{{top:.5rem;right:.5rem;padding:.4rem .8rem;font-size:.75rem;border-radius:15px}}
   .random-btn{{padding:.4rem 1rem;font-size:.8rem;margin-bottom:.5rem}}
-  .filter-reset{{font-size:.85rem;padding:.5rem}}
+  .filter-reset{{font-size:.95rem;padding:.5rem}}
   .scroll-top{{width:40px;height:40px;font-size:1.1rem;bottom:1rem;right:1rem}}
 }}
 @media(max-width:480px){{
@@ -802,7 +802,7 @@ h1{{font-size:2.2rem;margin:0 0 .5rem}}
   h1{{font-size:1.3rem}}
   .grid{{grid-template-columns:repeat(2,1fr);gap:.4rem}}
   .card-img{{aspect-ratio:1/1}}
-  .search-box{{padding:.6rem;font-size:.85rem}}
+  .search-box{{padding:.6rem;font-size:.95rem}}
   .sidebar{{padding:.5rem}}
   .sidebar a{{font-size:.72rem;padding:.2rem .45rem}}
   .sidebar-title{{font-size:.8rem;padding:.5rem .6rem}}
