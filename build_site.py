@@ -609,8 +609,8 @@ function toggleSection(el) {{
 }}
 
 function toggleMenu() {{
-    document.querySelector('.sidebar').classList.toggle('active');
-    document.getElementById('overlay').classList.toggle('active');
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('visible');
 }}
 
 document.addEventListener('DOMContentLoaded', function() {{
