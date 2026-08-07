@@ -171,63 +171,60 @@ TAG_RE = re.compile(r"#(\w+)@\w+")
 PROVENANCE_MARKERS = ["до ","с 1","с 2","поступил","поступла","собрание","коллекци","приобрет","продан","продаж","галере","бывш","передан","находил","хранил","наследств","bequest","acquired","purchased","donated","gift of","private"]
 
 def looks_like_provenance(s):
-    """Проверяет, похож ли текст на историю происхождения (провенанс).
-    Провенанс - это краткие строки о владельцах и перемещениях картины."""
+    """Строгая проверка: является ли текст провенансом (историей владения)."""
     if not s or len(s) < 10:
         return False
     
     s_lower = s.lower()
-    lines = [l.strip() for l in s.split('\n') if l.strip()]
     
-    # Если текст очень длинный (более 400 символов) — это НЕ провенанс
+    # 1. Если текст длиннее 400 символов — 100% НЕ провенанс
     if len(s) > 400:
         return False
     
-    # Провенанс обычно состоит из коротких строк
-    if len(lines) > 0:
-        avg_line_len = sum(len(l) for l in lines) / len(lines)
-        if avg_line_len > 200:  # Слишком длинные строки — не провенанс
-            return False
-    
-    # Ключевые слова, характерные ТОЛЬКО для провенанса
-    provenance_only = [
-        "поступил", "поступила", "приобретен", "приобретена", 
-        "продан", "продана", "подарен", "подарена",
-        "передан", "передана", "завещан", "завещана",
-        "bequest", "acquired", "purchased", "donated", "gift of",
-        "бывш. влад", "бывший влад", "собр.", "коллекция",
-        "собрание", "коллекци", "наследств",
-        "аукцион", "продаж", "лот"
-    ]
-    
-    has_provenance_word = any(word in s_lower for word in provenance_only)
-    
-    # Проверяем наличие дат
-    years = re.findall(r"\b(1[5-9]\d{2}|20\d{2})\b", s)
-    has_multiple_years = len(years) >= 2
-    
-    # Провенанс должен иметь специфические слова И несколько дат
-    if has_provenance_word and has_multiple_years:
-        return True
-    
-    # Дополнительно: если есть "до " с годом и ключевые слова
-    if has_provenance_word and len(years) >= 1:
-        return True
-    
-    # Явные признаки описания картины (НЕ провенанс)
-    descriptive_phrases = [
-        "художник", "живописец", "мастер", "творчество",
+    # 2. Слова-маркеры, которые указывают на описание (НЕ провенанс)
+    not_provenance = [
+        "художник", "живописец", "мастер", "творчество", "творческий",
         "картина", "полотно", "произведение", "работа",
-        "композиция", "колорит", "палитра", "мазок",
+        "композиция", "колорит", "палитра", "мазок", "живопис",
         "выставка", "экспонирование", "зритель", "публика",
         "критик", "искусствовед", "передвижник",
-        "стиль", "жанр", "сюжет", "образ", "тема",
-        "холст", "масло", "акварель", "гуашь"
+        "стиль", "жанр", "сюжет", "образ", "тема", "тематик",
+        "холст", "масло", "акварель", "гуашь",
+        "особенность", "трактовка", "интонация", "приём",
+        "выразительный", "художественный",
+        "картины", "картин", "картине",
+        "драматический", "пореформенный", "академический",
+        "стилистический", "сюжетно-тематический"
     ]
     
-    descriptive_count = sum(1 for phrase in descriptive_phrases if phrase in s_lower)
-    if descriptive_count >= 2:
-        return False  # Это описание картины
+    for word in not_provenance:
+        if word in s_lower:
+            return False  # Найдено слово-описание — это НЕ провенанс
+    
+    # 3. Провенанс должен содержать СПЕЦИФИЧЕСКИЕ слова
+    provenance_words = [
+        "поступил", "поступила", "приобретен", "приобретена",
+        "продан", "продана", "подарен", "подарена",
+        "передан", "передана", "завещан", "завещана",
+        "bequest", "acquired", "purchased", "donated",
+        "бывш", "собр", "коллекци", "наследств",
+        "аукцион", "лот", "галерея", "частное собрание"
+    ]
+    
+    has_provenance_word = any(word in s_lower for word in provenance_words)
+    
+    # 4. Проверяем структуру: провенанс обычно многострочный с датами
+    lines = [l.strip() for l in s.split('\n') if l.strip()]
+    years = re.findall(r"\b(1[5-9]\d{2}|20\d{2})\b", s)
+    
+    # Для провенанса нужно И специфическое слово, И хотя бы одна дата
+    if has_provenance_word and len(years) >= 1:
+        # Дополнительная проверка: строки должны быть короткими
+        if len(lines) > 0:
+            long_lines = sum(1 for l in lines if len(l) > 150)
+            if long_lines > len(lines) * 0.3:  # Больше 30% длинных строк
+                return False
+        return True
     
     return False
 
@@ -257,22 +254,35 @@ def parse_post(text):
             else:
                 desc = re.sub(r"\s*\n\s*", " ", extras[0]).strip()
         elif len(extras) >= 2:
-            # Проверяем каждый extra отдельно на провенанс
-            provenance_parts = []
-            description_parts = []
+            # Разделяем на провенанс и описание
+            prov_parts = []
+            desc_parts = []
             
-            for extra in extras:
+            for i, extra in enumerate(extras):
                 if looks_like_provenance(extra):
-                    provenance_parts.extend([l.strip() for l in extra.split("\n") if l.strip()])
+                    prov_parts.extend([l.strip() for l in extra.split("\n") if l.strip()])
                 else:
-                    description_parts.append(re.sub(r"\s*\n\s*", " ", extra).strip())
+                    desc_parts.append(re.sub(r"\s*\n\s*", " ", extra).strip())
             
-            hist = provenance_parts
-            desc = "\n\n".join(p for p in description_parts if p)
+            hist = prov_parts
+            desc = "\n\n".join(p for p in desc_parts if p)
+        
+        # ФИНАЛЬНАЯ ПРОВЕРКА: если что-то попало в hist, но это описание
+        if hist:
+            combined = " ".join(hist).lower()
+            # Маркеры описания
+            desc_markers = ["художник", "картина", "творчество", "произведение", 
+                          "искусство", "живопись", "выставка", "композиция"]
+            if any(marker in combined for marker in desc_markers):
+                # Перемещаем в описание
+                if desc:
+                    desc = "\n\n".join(hist) + "\n\n" + desc
+                else:
+                    desc = "\n\n".join(hist)
+                hist = []
         
         md = parse_medium_details(medium)
         
-        # Извлекаем год создания картины из названия
         creation_year = None
         if title:
             year_match = re.search(r'(\d{4})', title)
