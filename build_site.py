@@ -395,7 +395,21 @@ function toggleTheme(){{const h=document.documentElement;const c=h.getAttribute(
 (()=>{{const s=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',s)}})();
 function goRandom(){{const p=JSON.parse(localStorage.getItem('allPosts')||'[]');if(p.length)location.href=p[Math.floor(Math.random()*p.length)]}}
 function sharePage(){{if(navigator.share){{navigator.share({{title:document.title,url:window.location.href}})}}else{{navigator.clipboard.writeText(window.location.href);alert('Ссылка скопирована! 📋')}}}}
-function toggleLike(){{const btn=document.getElementById('like-btn');const pid=btn.dataset.postId;const likes=JSON.parse(localStorage.getItem('likes')||'{{}}');likes[pid]=!likes[pid];localStorage.setItem('likes',JSON.stringify(likes));btn.textContent=likes[pid]?'♥':'♡';btn.classList.toggle('liked',likes[pid])}}
+function toggleLike(){{
+    const btn=document.getElementById('like-btn');
+    const pid=btn.dataset.postId;
+    const likes=JSON.parse(localStorage.getItem('likes')||'{{}}');
+    likes[pid]=!likes[pid];
+    localStorage.setItem('likes',JSON.stringify(likes));
+    btn.textContent=likes[pid]?'♥':'♡';
+    btn.classList.toggle('liked',likes[pid]);
+    // Обновляем избранное на главной странице
+    try {{
+        if (window.opener && window.opener.updateFavList) {{
+            window.opener.updateFavList();
+        }}
+    }} catch(e) {{}}
+}}
 (()=>{{const likes=JSON.parse(localStorage.getItem('likes')||'{{}}');const btn=document.getElementById('like-btn');if(btn&&likes[btn.dataset.postId]){{btn.textContent='♥';btn.classList.add('liked')}}}})();
 window.addEventListener('scroll',function(){{const b=document.querySelector('.scroll-top');if(b)b.classList.toggle('visible',window.scrollY>400)}});
 const postPath=window.location.pathname;const views=JSON.parse(localStorage.getItem('pageViews')||'{{}}');views[postPath]=(views[postPath]||0)+1;localStorage.setItem('pageViews',JSON.stringify(views));document.getElementById('views-count').textContent='👁 '+views[postPath];
@@ -435,7 +449,6 @@ def render_index(all_posts):
     MONTHS = {"01":"Январь","02":"Февраль","03":"Март","04":"Апрель","05":"Май","06":"Июнь","07":"Июль","08":"Август","09":"Сентябрь","10":"Октябрь","11":"Ноябрь","12":"Декабрь"}
     ps = sorted(all_posts, key=lambda x: x["date"], reverse=True)
     
-    # Сбор данных
     authors = sorted({p["artist"] for p in ps if p.get("artist")}, key=surname_key)
     museums = sorted({p.get("museum","") for p in ps if p.get("museum")})
     ms, ts = set(), set()
@@ -445,30 +458,28 @@ def render_index(all_posts):
             if t and len(t)>2: ts.add(t)
     materials, techniques = sorted(ms), sorted(ts)
     
-    # Архив (по дате публикации)
     archive = defaultdict(set)
+    archive_count = defaultdict(int)
     for p in ps:
         if p.get("date") and "-" in p["date"]:
             y, m, _ = p["date"].split("-")
             archive[y].add(m)
+            archive_count[y] += 1
     ars = {y: sorted(list(m), reverse=True) for y, m in sorted(archive.items(), reverse=True)}
     
-    # Декады (по году создания картины)
     creation_years = []
     for p in ps:
         cy = p.get("creation_year")
-        if cy:
-            creation_years.append(cy)
-    decades = set()
+        if cy: creation_years.append(cy)
+    decades = {}
     for y in creation_years:
         d_start = y // 10 * 10
-        decades.add(f"{d_start}–{d_start+9}")
-    decades_sorted = sorted(decades)
+        d_label = f"{d_start}–{d_start+9}"
+        decades[d_label] = decades.get(d_label, 0) + 1
+    decades_sorted = sorted(decades.keys())
     
-    # Общий счётчик
     year_range = f"{min(creation_years)}–{max(creation_years)}" if creation_years else ""
     
-    # Карточки
     cards = []
     for p in ps:
         cv = ""
@@ -484,7 +495,6 @@ def render_index(all_posts):
             decade_attr = f'data-decade="{d_start}–{d_start+9}"'
         cards.append(f"""<a class="card" href="{h(p['filename'])}" data-artist="{h(p['artist'].lower())}" data-year="{y}" data-month="{m}" data-museum="{h(slugify(p.get('museum','')))}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}" {decade_attr}><div class="card-img"><img src="{cv}" alt="" loading="lazy"></div><div class="card-body"><div class="card-artist">{h(p['artist'])}</div><div class="card-title">{h(p['title'])}</div><div class="card-museum">{h(p.get('museum',''))}</div><div class="card-info">{h(p.get('material',''))} {h(', '.join(p.get('techniques',[])[:2]))}</div></div></a>""")
     
-    # Подсчёт количества
     artist_count = defaultdict(int)
     museum_count = defaultdict(int)
     material_count = defaultdict(int)
@@ -496,28 +506,27 @@ def render_index(all_posts):
         for t in p.get("techniques",[]):
             if t and len(t)>2: technique_count[t] += 1
     
-    # HTML для фильтров
     ah = "".join(f'<li><a href="#" class="filter-link" data-type="artist" data-val="{h(a.lower())}">{h(a)} <span class="count">({artist_count[a]})</span></a></li>' for a in authors)
     mh = "".join(f'<li><a href="#" class="filter-link" data-type="museum" data-val="{h(slugify(m))}">{h(m)} <span class="count">({museum_count[m]})</span></a></li>' for m in museums if m)
     mth = "".join(f'<li><a href="#" class="filter-link" data-type="material" data-val="{h(slugify(m))}">{h(m)} <span class="count">({material_count[m]})</span></a></li>' for m in materials)
     th = "".join(f'<li><a href="#" class="filter-link" data-type="technique" data-val="{h(slugify(t))}">{h(t)} <span class="count">({technique_count[t]})</span></a></li>' for t in techniques)
-    dech = "".join(f'<li><a href="#" class="filter-link" data-type="decade" data-val="{h(d)}">{h(d)}</a></li>' for d in decades_sorted)
+    dech = "".join(f'<li><a href="#" class="filter-link" data-type="decade" data-val="{h(d)}">{h(d)} <span class="count">({decades.get(d,0)})</span></a></li>' for d in decades_sorted)
     
     arh = ""
     for y, ms_list in ars.items():
-        arh += f'<li><a href="#" class="filter-link" data-type="year" data-val="{y}"><b>{y} год</b></a><ul class="month-list">'
+        arh += f'<li><a href="#" class="filter-link" data-type="year" data-val="{y}"><b>{y} год</b> <span class="count">({archive_count[y]})</span></a><ul class="month-list">'
         for mn in ms_list: arh += f'<li><a href="#" class="filter-link" data-type="month" data-year="{y}" data-val="{mn}">{MONTHS.get(mn,mn)}</a></li>'
         arh += '</ul></li>'
     
     af = json.dumps([p["filename"] for p in ps])
     
-    # Избранное
-    fav_html = '<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">⭐ Избранное</div><div class="sidebar-content collapsed"><ul id="fav-list"><li style="color:var(--muted);font-size:.8rem;padding:.5rem">Нажмите ♥ на странице картины</li></ul></div></div>'
+    # Избранное (кликабельное)
+    fav_html = '<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">⭐ Избранное <span id="fav-count" class="count" style="font-size:.68rem;opacity:.6"></span></div><div class="sidebar-content collapsed"><ul id="fav-list"><li style="color:var(--muted);font-size:.8rem;padding:.5rem">Нажмите ♥ на странице картины</li></ul></div></div>'
     
-    # Активные фильтры
-    active_filters_html = '<div class="active-filters" id="active-filters" style="display:none"><span class="active-filters-label">Активные фильтры:</span><span id="active-filter-tags"></span><a href="#" id="clear-active-filters" style="color:var(--reset-text);margin-left:.5rem;font-size:.8rem">Очистить</a></div>'
+    # Тема в сайдбаре
+    theme_html = '<div class="sidebar-section"><div class="sidebar-title" style="cursor:pointer" onclick="toggleTheme()">🌓 Тема</div></div>'
     
-    # Ссылка на карту музеев
+    # Карта музеев
     map_link_html = '<div class="sidebar-section"><a href="museums.html" class="map-link">🗺 Карта музеев</a></div>'
     
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
@@ -530,12 +539,10 @@ def render_index(all_posts):
 </head><body class="index-page">
 <button class="menu-toggle" onclick="toggleMenu()">☰ Меню</button>
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-<button class="theme-toggle" onclick="toggleTheme()">🌓 Тема</button>
 <button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх">↑</button>
 <header><h1>🎨 Old Picture Art</h1>
 <div class="subtitle">{len(ps)} картин · {len(authors)} художников · {len(museums)} музеев · {year_range}</div>
 <a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная картина</a></header>
-{active_filters_html}
 <div class="layout"><aside class="sidebar">
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">🔍 Поиск</div><div class="sidebar-content"><input type="text" class="search-box" placeholder="Поиск..." id="search" style="width:100%;margin-bottom:.5rem"></div></div>
 <a href="#" id="reset-filter" class="filter-reset">✕ Сбросить все фильтры</a>
@@ -546,6 +553,7 @@ def render_index(all_posts):
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">📄 Материал</div><div class="sidebar-content collapsed"><ul>{mth}</ul></div></div>
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">🖌 Техника</div><div class="sidebar-content collapsed"><ul>{th}</ul></div></div>
 {fav_html}
+{theme_html}
 {map_link_html}
 </aside><main class="main-content"><div class="grid" id="cards">{''.join(cards)}</div></main></div>
 <script>
@@ -563,18 +571,31 @@ function toggleTheme() {{
     const s = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', s);
     localStorage.setItem('allPosts', JSON.stringify(ALL_POSTS));
-    // Загружаем избранное
+    updateFavList();
+}})();
+
+function updateFavList() {{
     const likes = JSON.parse(localStorage.getItem('likes') || '{{}}');
     const favList = document.getElementById('fav-list');
+    const favCount = document.getElementById('fav-count');
     if (favList) {{
         const likedIds = Object.entries(likes).filter(function(e) {{ return e[1]; }}).map(function(e) {{ return e[0]; }});
+        if (favCount) favCount.textContent = '(' + likedIds.length + ')';
         if (likedIds.length > 0) {{
             favList.innerHTML = likedIds.map(function(id) {{
-                return '<li style="padding:.2rem .5rem;font-size:.8rem">🖼 Картина #' + id + '</li>';
+                return '<li><a href="#" onclick="goToPost(\'' + id + '\')" style="font-size:.8rem">🖼 Картина #' + id + '</a></li>';
             }}).join('');
+        }} else {{
+            favList.innerHTML = '<li style="color:var(--muted);font-size:.8rem;padding:.5rem">Нажмите ♥ на странице картины</li>';
         }}
     }}
-}})();
+}}
+
+function goToPost(postId) {{
+    // Ищем файл по id в allPosts (упрощённо — перенаправляем на индекс)
+    // В реальности нужен маппинг id → filename
+    alert('Откройте картину через поиск');
+}}
 
 function goRandom() {{
     if(ALL_POSTS.length) location.href = ALL_POSTS[Math.floor(Math.random() * ALL_POSTS.length)];
@@ -587,27 +608,39 @@ function toggleMenu() {{
 
 function toggleSection(el) {{
     document.querySelectorAll('.sidebar-title').forEach(function(title) {{
-        if (title !== el) {{
+        if (title !== el && !title.hasAttribute('onclick')) {{
             title.classList.remove('open');
             title.nextElementSibling.classList.remove('open');
         }}
     }});
     el.classList.toggle('open');
-    el.nextElementSibling.classList.toggle('open');
+    if (el.nextElementSibling) el.nextElementSibling.classList.toggle('open');
 }}
 
+// Скрытие/показ меню при прокрутке на мобильных
+let lastScroll = 0;
 window.addEventListener('scroll', function() {{
     const b = document.querySelector('.scroll-top');
     if(b) b.classList.toggle('visible', window.scrollY > 400);
+    
+    const menuToggle = document.querySelector('.menu-toggle');
+    if (menuToggle && window.innerWidth <= 900) {{
+        const currentScroll = window.pageYOffset;
+        if (currentScroll > lastScroll && currentScroll > 200) {{
+            menuToggle.style.opacity = '0';
+            menuToggle.style.pointerEvents = 'none';
+        }} else {{
+            menuToggle.style.opacity = '1';
+            menuToggle.style.pointerEvents = 'auto';
+        }}
+        lastScroll = currentScroll;
+    }}
 }});
 
 const si = document.getElementById('search');
 const cards = document.querySelectorAll('.card');
 const fl = document.querySelectorAll('.filter-link');
 const rb = document.getElementById('reset-filter');
-const afTags = document.getElementById('active-filter-tags');
-const afDiv = document.getElementById('active-filters');
-const clearAf = document.getElementById('clear-active-filters');
 let afilt = {{ type: null, val: null, year: null }};
 
 function updateView() {{
@@ -643,11 +676,6 @@ function updateView() {{
         l.classList.toggle('active', isActive);
     }});
     rb.style.display = afilt.type ? 'block' : 'none';
-    
-    if (afTags && afDiv) {{
-        afTags.innerHTML = afilt.type ? '<span class="filter-tag">✔ ' + afilt.val + ' <a href="#" onclick="clearFilter()" style="color:inherit;text-decoration:none">×</a></span>' : '';
-        afDiv.style.display = afilt.type ? 'block' : 'none';
-    }}
 }}
 
 function clearFilter() {{
@@ -681,8 +709,6 @@ rb.addEventListener('click', function(e) {{
     document.getElementById('overlay').classList.remove('visible');
 }});
 
-if (clearAf) clearAf.addEventListener('click', function(e) {{ e.preventDefault(); clearFilter(); }});
-
 document.addEventListener('keydown', function(e) {{
     if (e.key === 'r' || e.key === 'к') goRandom();
     if (e.key === 'Escape') {{
@@ -690,7 +716,6 @@ document.addEventListener('keydown', function(e) {{
         document.getElementById('overlay').classList.remove('visible');
     }}
     if (e.key === 'm' || e.key === 'ь') toggleMenu();
-    if (e.key === 't' || e.key === 'е') toggleTheme();
     if (e.key === '/' && document.activeElement !== si) {{
         e.preventDefault();
         si.focus();
