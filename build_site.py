@@ -546,8 +546,6 @@ def render_index(all_posts):
 <div class="layout"><aside class="sidebar">
 <div class="sidebar-section" style="padding: 8px 12px;"><input type="text" class="search-box" placeholder="🔍 Поиск..." id="search" style="width:100%"></div>
 <a href="#" id="reset-filter" class="filter-reset" style="display:none">✕ Сбросить все фильтры</a>
-<div class="sidebar-section" style="padding: 8px 12px;"><input type="text" class="search-box" placeholder="Поиск..." id="search" style="width:100%"></div>
-<a href="#" id="reset-filter" class="filter-reset" style="display:none">✕ Сбросить все фильтры</a>
 <div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-archive" onclick="toggleSection(this)">Архив</div><div class="sidebar-content collapsed"><ul>{arh}</ul></div></div>
 <div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-decades" onclick="toggleSection(this)">Декады</div><div class="sidebar-content collapsed"><ul>{dech}</ul></div></div>
 <div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-artists" onclick="toggleSection(this)">Художники</div><div class="sidebar-content collapsed"><ul>{ah}</ul></div></div>
