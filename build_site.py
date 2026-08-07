@@ -528,7 +528,7 @@ function showAuthForm() {{
   
   const overlay = document.createElement('div');
   overlay.className = 'auth-modal-overlay';
-  overlay.innerHTML = `
+    overlay.innerHTML = `
     <div class="auth-modal">
       <button class="auth-modal-close" onclick="this.closest('.auth-modal-overlay').remove()">×</button>
       <h3>Вход в аккаунт</h3>
@@ -538,9 +538,11 @@ function showAuthForm() {{
         Войти через Google
       </button>
       <div class="auth-divider">или</div>
-      <input type="email" class="auth-input" id="auth-email" placeholder="Email" autocomplete="email">
-      <input type="password" class="auth-input" id="auth-password" placeholder="Пароль" autocomplete="current-password">
-      <button class="auth-submit" id="auth-submit-btn">Войти</button>
+      <form id="auth-form" autocomplete="on">
+        <input type="email" class="auth-input" id="auth-email" name="email" placeholder="Email" autocomplete="email">
+        <input type="password" class="auth-input" id="auth-password" name="password" placeholder="Пароль" autocomplete="current-password">
+        <button type="submit" class="auth-submit" id="auth-submit-btn">Войти</button>
+      </form>
       <div class="auth-error" id="auth-error"></div>
       <div class="auth-switch">
         Нет аккаунта? <a id="auth-switch-link">Создать</a>
@@ -574,35 +576,35 @@ function showAuthForm() {{
   }};
   
   // Submit
-  submitBtn.onclick = () => {{
-    const email = emailInp.value.trim();
-    const pass = passInp.value;
-    if (!email) {{ errorDiv.textContent = 'Введите email'; return; }}
-    if (pass.length < 6) {{ errorDiv.textContent = 'Пароль: минимум 6 символов'; return; }}
+    submitBtn.onclick = () => {{
+      const email = emailInp.value.trim();
+      const pass = passInp.value;
+      if (!email) {{ errorDiv.textContent = 'Введите email'; return; }}
+      if (pass.length < 6) {{ errorDiv.textContent = 'Пароль: минимум 6 символов'; return; }}
+      
+      const promise = isLogin 
+        ? auth.signInWithEmailAndPassword(email, pass)
+        : auth.createUserWithEmailAndPassword(email, pass);
+      
+      promise
+        .then(() => overlay.remove())
+        .catch(err => {{
+          if (err.code === 'auth/user-not-found') errorDiv.textContent = 'Аккаунт не найден';
+          else if (err.code === 'auth/wrong-password') errorDiv.textContent = 'Неверный пароль';
+          else if (err.code === 'auth/email-already-in-use') errorDiv.textContent = 'Email уже используется';
+          else errorDiv.textContent = 'Ошибка: ' + err.message;
+        }});
+    }};
     
-    const promise = isLogin 
-      ? auth.signInWithEmailAndPassword(email, pass)
-      : auth.createUserWithEmailAndPassword(email, pass);
+    // Close on overlay click
+    overlay.onclick = (e) => {{ if (e.target === overlay) overlay.remove(); }};
     
-    promise
-      .then(() => overlay.remove())
-      .catch(err => {{
-        if (err.code === 'auth/user-not-found') errorDiv.textContent = 'Аккаунт не найден';
-        else if (err.code === 'auth/wrong-password') errorDiv.textContent = 'Неверный пароль';
-        else if (err.code === 'auth/email-already-in-use') errorDiv.textContent = 'Email уже используется';
-        else errorDiv.textContent = 'Ошибка: ' + err.message;
-      }});
-  }};
+    // Enter key
+    passInp.onkeydown = (e) => {{ if (e.key === 'Enter') submitBtn.click(); }};
+    
+    setTimeout(() => emailInp.focus(), 100);
+  }}
   
-  // Close on overlay click
-  overlay.onclick = (e) => {{ if (e.target === overlay) overlay.remove(); }};
-  
-  // Enter key
-  passInp.onkeydown = (e) => {{ if (e.key === 'Enter') submitBtn.click(); }};
-  
-  setTimeout(() => emailInp.focus(), 100);
-}}
-
 async function syncLike(postId, liked) {{
   const local = JSON.parse(localStorage.getItem('likes') || '{{}}');
   local[postId] = liked;
