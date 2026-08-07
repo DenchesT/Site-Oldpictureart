@@ -415,9 +415,35 @@ def render_post_page(post, all_posts=None):
   </div>
 </header>
 <button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх"><span class="icon-arrow-up"></span></button>
-<article><h1>{artist}</h1><h2>{title}</h2>{img_html}{mdet}<p class="museum"><span class="icon-museum-inline"></span> {museum}</p>{desc_html}{hist_html}{src_html}<time>{h(post['date'])}</time><span class="views-count" id="views-count"></span>{tags_html}</article>
+<article><h1>{artist}</h1><h2>{title}</h2>{img_html}
+<div class="color-palette" id="color-palette" style="display:flex;justify-content:center;gap:8px;margin:1rem 0;flex-wrap:wrap;"></div>
+{mdet}<p class="museum"><span class="icon-museum-inline"></span> {museum}</p>{desc_html}{hist_html}{src_html}<time>{h(post['date'])}</time><span class="views-count" id="views-count"></span>{tags_html}</article>
 {post_nav}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
 <script>
+// Палитра цветов
+const paintingImg = document.querySelector('.painting');
+if (paintingImg && window.ColorThief) {{
+    paintingImg.addEventListener('load', function() {{
+        try {{
+            const colorThief = new ColorThief();
+            const palette = colorThief.getPalette(paintingImg, 5);
+            const container = document.getElementById('color-palette');
+            if (container && palette) {{
+                palette.forEach(color => {{
+                    const hex = '#' + color.map(c => c.toString(16).padStart(2,'0')).join('');
+                    const swatch = document.createElement('span');
+                    swatch.style.cssText = 'display:inline-block;width:32px;height:32px;background:' + hex + ';border-radius:50%;cursor:pointer;border:2px solid var(--border);transition:transform .2s;';
+                    swatch.title = hex;
+                    swatch.onmouseenter = function() {{ this.style.transform = 'scale(1.2)'; }};
+                    swatch.onmouseleave = function() {{ this.style.transform = 'scale(1)'; }};
+                    swatch.onclick = function() {{ navigator.clipboard.writeText(hex).then(() => {{ const t = this; t.style.boxShadow = '0 0 10px ' + hex; setTimeout(() => t.style.boxShadow = '', 600); }}); }};
+                    container.appendChild(swatch);
+                }});
+            }}
+        }} catch(e) {{ console.log('Color palette:', e); }}
+    }});
+}}
 function toggleTheme(){{const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}}
 (()=>{{const s=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',s)}})();
 function goRandom(){{const p=JSON.parse(localStorage.getItem('allPosts')||'[]');if(p.length)location.href=p[Math.floor(Math.random()*p.length)]}}
@@ -552,6 +578,8 @@ def render_index(all_posts):
     
     fav_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-fav" onclick="toggleSection(this)">Избранное <span id="fav-count" class="count" style="font-size:.68rem;opacity:.6"></span></div><div class="sidebar-content collapsed"><ul id="fav-list"><li style="color:var(--muted);font-size:.8rem;padding:.5rem">Нажмите <span class="icon-heart" style="display:inline-block;width:14px;height:14px;vertical-align:middle"></span> на странице картины</li></ul></div></div>'
     theme_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-theme" style="cursor:pointer" onclick="toggleTheme()">Тема</div></div>'
+    quiz_link_html = '<div class="sidebar-section"><a href="quiz.html" class="map-link"><span class="icon-quiz-inline"></span> Квиз</a></div>'
+    timeline_link_html = '<div class="sidebar-section"><a href="timeline.html" class="map-link"><span class="icon-timeline-inline"></span> Таймлайн</a></div>'
     map_link_html = '<div class="sidebar-section"><a href="museums.html" class="map-link"><span class="icon-map-inline"></span> Карта музеев</a></div>'
     
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
@@ -580,6 +608,8 @@ def render_index(all_posts):
 {fav_html}
 {theme_html}
 {map_link_html}
+{quiz_link_html}
+{timeline_link_html}
 </aside><main class="main-content"><div class="grid" id='cards'>{''.join(cards)}</div></main></div>
 <script>
 const ALL_POSTS = {af};
@@ -788,6 +818,8 @@ def generate_sitemap(all_posts):
     for p in all_posts: urls.append(f"  <url><loc>{bu}/{p['filename']}</loc><lastmod>{p['date']}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>")
     urls.append(f"  <url><loc>{bu}/feed.xml</loc><changefreq>daily</changefreq><priority>0.6</priority></url>")
     urls.append(f"  <url><loc>{bu}/museums.html</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>")
+    urls.append(f"  <url><loc>{bu}/quiz.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>")
+    urls.append(f"  <url><loc>{bu}/timeline.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>")
     at = set()
     for p in all_posts:
         for t in p.get("tags",[]): at.add(t)
@@ -890,7 +922,6 @@ async def main():
         post = {"id":mm.id,"date":date,"filename":fn,"images":im,"hires":hi,"thumbs":th,**parsed}
         all_posts.append(post)
         processed_ids.update(m.id for m in group)
-        # Передаём all_posts для Prev/Next
         with open(os.path.join(OUTPUT_DIR, fn), "w", encoding="utf-8") as f:
             f.write(render_post_page(post, all_posts))
     await client.disconnect()
@@ -907,7 +938,6 @@ async def main():
                     if t: th.append(t)
                 p["thumbs"] = th
             logger.info("Миниатюры готовы")
-    # Перегенерируем все страницы с Prev/Next
     for post in all_posts:
         with open(os.path.join(OUTPUT_DIR, post["filename"]), "w", encoding="utf-8") as f:
             f.write(render_post_page(post, all_posts))
@@ -918,6 +948,18 @@ async def main():
     generate_manifest()
     generate_rss(all_posts)
     generate_museums_page(all_posts)
+    # Генерация квиза и таймлайна
+    try:
+        subprocess.run([sys.executable, "generate_quiz.py"], check=True)
+        logger.info("Квиз сгенерирован")
+    except Exception as e:
+        logger.error(f"Ошибка генерации квиза: {e}")
+    
+    try:
+        subprocess.run([sys.executable, "generate_timeline.py"], check=True)
+        logger.info("Таймлайн сгенерирован")
+    except Exception as e:
+        logger.error(f"Ошибка генерации таймлайна: {e}")
     with open(os.path.join(OUTPUT_DIR, "index.html"), "w", encoding="utf-8") as f: f.write(render_index(all_posts))
     with open(os.path.join(OUTPUT_DIR, "404.html"), "w", encoding="utf-8") as f: f.write('<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0;url=index.html"></head><body></body></html>')
     logger.info(f"Новых постов: {len(accepted)}. Всего: {len(all_posts)}")
