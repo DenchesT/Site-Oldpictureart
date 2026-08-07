@@ -19,6 +19,7 @@
       <button onclick="goRandom()" class="topbar-btn" title="Случайная картина"><span class="icon-random"></span></button>
       <button onclick="sharePage()" class="topbar-btn" title="Поделиться"><span class="icon-share"></span></button>
       <button id="like-btn" data-post-id="272" onclick="toggleLike()" class="topbar-btn topbar-like"><span class="icon-heart"></span></button>
+<button id="auth-btn" class="topbar-btn" title="Войти"><span class="icon-login"></span> Войти</button>
     </div>
   </div>
 </header>
@@ -56,22 +57,89 @@ function toggleTheme(){const h=document.documentElement;const c=h.getAttribute('
 (()=>{const s=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',s)})();
 function goRandom(){const p=JSON.parse(localStorage.getItem('allPosts')||'[]');if(p.length)location.href=p[Math.floor(Math.random()*p.length)]}
 function sharePage(){if(navigator.share){navigator.share({title:document.title,url:window.location.href})}else{navigator.clipboard.writeText(window.location.href);alert('Ссылка скопирована!')}}
-function toggleLike(){
+window.addEventListener('scroll',function(){const b=document.querySelector('.scroll-top');if(b)b.classList.toggle('visible',window.scrollY>400)});
+const postPath=window.location.pathname;const views=JSON.parse(localStorage.getItem('pageViews')||'{}');views[postPath]=(views[postPath]||0)+1;localStorage.setItem('pageViews',JSON.stringify(views));document.getElementById('views-count').innerHTML='<span class="icon-views"></span> '+views[postPath];
+document.addEventListener('keydown',function(e){if(e.key==='r'||e.key==='к')goRandom();if(e.key==='Escape'){const lb=document.getElementById('lightbox');if(lb)lb.classList.remove('active')}if(e.key==='h'||e.key==='р')window.location.href='index.html';if(e.key==='t'||e.key==='е')toggleTheme();if(e.key==='ArrowLeft'){const p=document.querySelector('.prev-post');if(p)p.click()}if(e.key==='ArrowRight'){const p=document.querySelector('.next-post');if(p)p.click()}});
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+auth.onAuthStateChanged(user => {
+  if (user) {
+    db.collection('likes')
+      .where('userId', '==', user.uid)
+      .where('liked', '==', true).get()
+      .then(snap => {
+        const cloud = {};
+        snap.forEach(d => cloud[d.data().postId] = true);
+        const local = JSON.parse(localStorage.getItem('likes') || '{}');
+        localStorage.setItem('likes', JSON.stringify({...local, ...cloud}));
+        updateFavList();
+      });
+  }
+});
+</script>
+
+function showAuthForm() {
+  const email = prompt('Email:');
+  if (!email) return;
+  const password = prompt('Пароль:');
+  if (!password) return;
+  auth.signInWithEmailAndPassword(email, password)
+    .catch(err => {
+      if (err.code === 'auth/user-not-found') {
+        if (confirm('Создать аккаунт?')) {
+          auth.createUserWithEmailAndPassword(email, password)
+            .catch(e => alert(e.message));
+        }
+      } else alert(err.message);
+    });
+}
+
+async function syncLike(postId, liked) {
+  const local = JSON.parse(localStorage.getItem('likes') || '{}');
+  local[postId] = liked;
+  localStorage.setItem('likes', JSON.stringify(local));
+  if (currentUser) {
+    try {
+      await db.collection('likes').doc(currentUser.uid + '_' + postId).set({
+        userId: currentUser.uid, postId: postId, liked: liked,
+        time: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    } catch(e) { console.error(e); }
+  }
+}
+
+async function loadLikesFromCloud() {
+  if (!currentUser) return;
+  const snap = await db.collection('likes')
+    .where('userId', '==', currentUser.uid).where('liked', '==', true).get();
+  const cloud = {};
+  snap.forEach(d => cloud[d.data().postId] = true);
+  const local = JSON.parse(localStorage.getItem('likes') || '{}');
+  const merged = { ...local, ...cloud };
+  localStorage.setItem('likes', JSON.stringify(merged));
+  const btn = document.getElementById('like-btn');
+  if (btn && merged[btn.dataset.postId]) btn.classList.add('liked');
+}
+
+async function toggleLike(){
     const btn=document.getElementById('like-btn');
     const pid=btn.dataset.postId;
     const likes=JSON.parse(localStorage.getItem('likes')||'{}');
-    likes[pid]=!likes[pid];
-    localStorage.setItem('likes',JSON.stringify(likes));
-    btn.classList.toggle('liked',likes[pid]);
-    // Обновляем избранное на главной странице
+    const newState = !likes[pid];
+    await syncLike(pid, newState);
+    btn.classList.toggle('liked', newState);
     try {
         if (window.opener && window.opener.updateFavList) {
             window.opener.updateFavList();
         }
     } catch(e) {}
 }
-(()=>{const likes=JSON.parse(localStorage.getItem('likes')||'{}');const btn=document.getElementById('like-btn');if(btn&&likes[btn.dataset.postId]){btn.classList.add('liked')}})();
-window.addEventListener('scroll',function(){const b=document.querySelector('.scroll-top');if(b)b.classList.toggle('visible',window.scrollY>400)});
-const postPath=window.location.pathname;const views=JSON.parse(localStorage.getItem('pageViews')||'{}');views[postPath]=(views[postPath]||0)+1;localStorage.setItem('pageViews',JSON.stringify(views));document.getElementById('views-count').innerHTML='<span class="icon-views"></span> '+views[postPath];
-document.addEventListener('keydown',function(e){if(e.key==='r'||e.key==='к')goRandom();if(e.key==='Escape'){const lb=document.getElementById('lightbox');if(lb)lb.classList.remove('active')}if(e.key==='h'||e.key==='р')window.location.href='index.html';if(e.key==='t'||e.key==='е')toggleTheme();if(e.key==='ArrowLeft'){const p=document.querySelector('.prev-post');if(p)p.click()}if(e.key==='ArrowRight'){const p=document.querySelector('.next-post');if(p)p.click()}});
 </script></body></html>

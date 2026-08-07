@@ -869,4 +869,28 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+auth.onAuthStateChanged(user => {
+  if (user) {
+    db.collection('likes')
+      .where('userId', '==', user.uid)
+      .where('liked', '==', true).get()
+      .then(snap => {
+        const cloud = {};
+        snap.forEach(d => cloud[d.data().postId] = true);
+        const local = JSON.parse(localStorage.getItem('likes') || '{}');
+        localStorage.setItem('likes', JSON.stringify({...local, ...cloud}));
+        updateFavList();
+      });
+  }
+});
 </script></body></html>

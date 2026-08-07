@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 
+/* ========== БАЗОВЫЕ НАСТРОЙКИ ========== */
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
@@ -22,10 +23,6 @@ html {
   --input-border: #444; --active: #90caf9; --icon-color: #aaa;
 }
 
-[data-theme="dark"] .sidebar::-webkit-scrollbar-thumb { background-color: #555; border-radius: 3px; }
-[data-theme="dark"] .sidebar::-webkit-scrollbar { width: 6px; }
-[data-theme="dark"] .sidebar::-webkit-scrollbar-track { background: #1a1a2e; }
-
 * { box-sizing: border-box; }
 body {
   font-family: 'EB Garamond', Georgia, serif;
@@ -35,69 +32,20 @@ body {
 }
 body:has(.sidebar.open) { overflow: hidden; }
 
-/* ========== СТРАНИЦА КАРТИНЫ ========== */
-.post-page { max-width: 900px; margin: 0 auto; padding: 1.5rem; font-size: 20px; }
-.painting { max-width: 100%; max-height: 70vh; display: block; margin: 1.5rem auto;
-  box-shadow: 0 4px 20px var(--shadow); border-radius: 4px; cursor: pointer; }
-.painting:active { transform: scale(1.02); }
 h1 { font-size: 2.4rem; margin: 0 0 .3rem; line-height: 1.2; font-weight: 700; }
 h2 { font-size: 1.5rem; font-style: italic; font-weight: 400; color: var(--muted); margin: 0 0 1rem; }
 
-.medium-details {
-  display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin: 1rem auto;
-  padding: .8rem 1.2rem; background: var(--card-bg); border-radius: 6px;
-  font-size: 1rem; color: var(--muted); border: 1px solid var(--border);
-  justify-content: center; text-align: center; max-width: fit-content;
-}
-.museum { font-style: italic; color: var(--muted); margin: .3rem 0; font-size: 1.1rem; display: flex; align-items: center; gap: 4px; }
-.source a, .source-list a { color: var(--link); word-break: break-all; overflow-wrap: break-word; }
-.source { max-width: 100%; overflow: hidden; font-size: .95rem; }
-.description { margin: 1.5rem 0; text-align: justify; }
-.description p { margin: .6rem 0; line-height: 1.7; }
-.history {
-  margin: 1.8rem 0; padding: 1rem 1.25rem; background: var(--history-bg);
-  border-left: 3px solid var(--history-border); border-radius: 4px;
-}
-.history h3 { margin: 0 0 .6rem; font-size: 1.1rem; color: #5a4f2a; }
-.history ul { margin: 0; padding-left: 1.2rem; }
-.history li { margin: .4rem 0; color: #4a4a4a; font-size: 1rem; }
-.tags { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);
-  display: flex; flex-wrap: wrap; gap: .4rem; }
-.tag {
-  display: inline-block; background: var(--tag-bg); color: var(--tag-text);
-  text-decoration: none; padding: .3rem .7rem; border-radius: 4px;
-  font-size: .9rem; transition: background .2s;
-}
-.tag:active { background: var(--link); color: #fff; }
-.top-nav { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-bottom: 1rem; }
+/* ========== СКРОЛЛБАР ТЁМНОЙ ТЕМЫ ========== */
+[data-theme="dark"] .sidebar::-webkit-scrollbar { width: 6px; }
+[data-theme="dark"] .sidebar::-webkit-scrollbar-track { background: #1a1a2e; }
+[data-theme="dark"] .sidebar::-webkit-scrollbar-thumb { background-color: #555; border-radius: 3px; }
+
+/* ========== ОБЩИЕ КОМПОНЕНТЫ ========== */
 .back { color: var(--link); text-decoration: none; font-size: 1rem; display: inline-flex; align-items: center; gap: 4px; }
 time { color: var(--muted); font-size: .9rem; display: block; margin-top: .5rem; }
+.views-count { color: var(--muted); font-size: .8rem; margin-left: 1rem; }
 
-/* Навигация Prev/Next */
-.post-nav { display: flex; justify-content: space-between; margin-top: 2rem; gap: 1rem; flex-wrap: wrap; }
-.post-nav a {
-  color: var(--link); text-decoration: none; padding: .5rem 1.2rem;
-  border: 1px solid var(--border); border-radius: 8px; transition: all .2s;
-  font-size: .95rem; display: inline-flex; align-items: center; gap: 4px;
-}
-.post-nav a:hover { background: var(--border); border-color: var(--active); }
-
-/* Кнопка лайка */
-.like-btn {
-  background: none; border: 1px solid var(--border); padding: .3rem .8rem;
-  border-radius: 20px; cursor: pointer; font-size: 1.1rem; transition: all .2s;
-  color: var(--muted); line-height: 1;
-}
-.like-btn:hover { border-color: var(--like-color); }
-.like-btn.liked { color: var(--like-color); border-color: var(--like-color); background: rgba(231,76,60,.1); }
-
-/* ========== КНОПКИ ========== */
-.theme-toggle {
-  position: fixed; top: 1rem; right: 1rem; background: var(--card-bg);
-  border: 1px solid var(--border); padding: .5rem 1rem; border-radius: 20px;
-  cursor: pointer; color: var(--text); z-index: 1001; font-size: .9rem;
-  box-shadow: 0 2px 8px var(--shadow); display: flex; align-items: center; gap: 6px;
-}
+/* Кнопки */
 .random-btn {
   display: inline-flex; align-items: center; gap: 6px; padding: .5rem 1.5rem; 
   background: var(--active); color: #fff; text-decoration: none; border-radius: 20px; 
@@ -109,16 +57,81 @@ time { color: var(--muted); font-size: .9rem; display: block; margin-top: .5rem;
   font-size: 1.3rem; cursor: pointer; box-shadow: 0 2px 10px var(--shadow);
   z-index: 999; display: none; align-items: center; justify-content: center;
 }
-@media (min-width: 769px) { .scroll-top.visible { display: flex; } }
-@media (max-width: 768px) { .scroll-top { display: none !important; } }
+.theme-toggle {
+  position: fixed; top: 1rem; right: 1rem; background: var(--card-bg);
+  border: 1px solid var(--border); padding: .5rem 1rem; border-radius: 20px;
+  cursor: pointer; color: var(--text); z-index: 1001; font-size: .9rem;
+  box-shadow: 0 2px 8px var(--shadow); display: flex; align-items: center; gap: 6px;
+}
+.share-btn {
+  display: inline-block; padding: .3rem .7rem; background: var(--card-bg);
+  color: var(--link); border: 1px solid var(--border); border-radius: 20px;
+  cursor: pointer; font-size: .9rem; transition: all .2s;
+}
+.share-btn:hover { background: var(--border); }
+.like-btn {
+  background: none; border: 1px solid var(--border); padding: .3rem .8rem;
+  border-radius: 20px; cursor: pointer; font-size: 1.1rem; transition: all .2s;
+  color: var(--muted); line-height: 1;
+}
+.like-btn:hover { border-color: var(--like-color); }
+.like-btn.liked { color: var(--like-color); border-color: var(--like-color); background: rgba(231,76,60,.1); }
 
-/* ========== ВЕРХНЯЯ ПАНЕЛЬ КАРТИНЫ ========== */
+/* ========== СТРАНИЦА КАРТИНЫ ========== */
+.post-page { max-width: 900px; margin: 0 auto; padding: 1.5rem; font-size: 20px; }
+.painting { max-width: 100%; max-height: 70vh; display: block; margin: 1.5rem auto;
+  box-shadow: 0 4px 20px var(--shadow); border-radius: 4px; cursor: pointer; }
+.painting:active { transform: scale(1.02); }
+
+/* Детали картины */
+.medium-details {
+  display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin: 1rem auto;
+  padding: .8rem 1.2rem; background: var(--card-bg); border-radius: 6px;
+  font-size: 1rem; color: var(--muted); border: 1px solid var(--border);
+  justify-content: center; text-align: center; max-width: fit-content;
+}
+.museum { font-style: italic; color: var(--muted); margin: .3rem 0; font-size: 1.1rem; display: flex; align-items: center; gap: 4px; }
+.description { margin: 1.5rem 0; text-align: justify; }
+.description p { margin: .6rem 0; line-height: 1.7; }
+.history {
+  margin: 1.8rem 0; padding: 1rem 1.25rem; background: var(--history-bg);
+  border-left: 3px solid var(--history-border); border-radius: 4px;
+}
+.history h3 { margin: 0 0 .6rem; font-size: 1.1rem; color: #5a4f2a; }
+.history ul { margin: 0; padding-left: 1.2rem; }
+.history li { margin: .4rem 0; color: #4a4a4a; font-size: 1rem; }
+.source a, .source-list a { color: var(--link); word-break: break-all; overflow-wrap: break-word; }
+.source { max-width: 100%; overflow: hidden; font-size: .95rem; }
+.tags { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);
+  display: flex; flex-wrap: wrap; gap: .4rem; }
+.tag {
+  display: inline-block; background: var(--tag-bg); color: var(--tag-text);
+  text-decoration: none; padding: .3rem .7rem; border-radius: 4px;
+  font-size: .9rem; transition: background .2s;
+}
+.tag:active { background: var(--link); color: #fff; }
+.color-palette span {
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+.color-palette span:hover {
+  transform: scale(1.3);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+/* Навигация Prev/Next */
+.post-nav { display: flex; justify-content: space-between; margin-top: 2rem; gap: 1rem; flex-wrap: wrap; }
+.post-nav a {
+  color: var(--link); text-decoration: none; padding: .5rem 1.2rem;
+  border: 1px solid var(--border); border-radius: 8px; transition: all .2s;
+  font-size: .95rem; display: inline-flex; align-items: center; gap: 4px;
+}
+.post-nav a:hover { background: var(--border); border-color: var(--active); }
+
+/* Верхняя панель картины */
 .painting-topbar {
   position: sticky; top: 0; z-index: 100;
-  background: var(--card-bg);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--card-bg); border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   margin-bottom: 1.5rem;
 }
 .painting-topbar-inner {
@@ -140,29 +153,15 @@ time { color: var(--muted); font-size: .9rem; display: block; margin-top: .5rem;
   display: inline-flex; align-items: center; gap: 4px;
 }
 .topbar-btn:hover { background: var(--border); border-color: var(--active); }
-.topbar-like { 
-  font-size: 1rem; 
-  padding: .3rem .8rem; 
-}
-
-.topbar-like .icon-heart { 
-  transition: transform 0.2s ease; 
-}
-
-.topbar-like.liked { 
-  color: var(--like-color); 
-  border-color: var(--like-color); 
-  background: rgba(231,76,60,.1); 
-}
-
-.topbar-like.liked .icon-heart { 
-  transform: scale(1.1); 
-}
+.topbar-like { font-size: 1rem; padding: .3rem .8rem; }
+.topbar-like .icon-heart { transition: transform 0.2s ease; }
+.topbar-like.liked { color: var(--like-color); border-color: var(--like-color); background: rgba(231,76,60,.1); }
+.topbar-like.liked .icon-heart { transform: scale(1.1); }
 
 /* ========== ГЛАВНАЯ СТРАНИЦА ========== */
 .index-page { max-width: 1400px; margin: 0 auto; padding: 1.5rem; font-size: 18px; }
-header { margin-bottom: 1.5rem; text-align: center; }
 .index-page h1 { font-size: 2.5rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
+header { margin-bottom: 1.5rem; text-align: center; }
 .subtitle { color: var(--muted); margin-bottom: 1rem; font-size: 1.1rem; line-height: 1.5; }
 .search-box {
   width: 100%; padding: .7rem .9rem; font-size: .95rem;
@@ -170,125 +169,6 @@ header { margin-bottom: 1.5rem; text-align: center; }
   font-family: inherit; background: var(--card-bg); color: var(--text);
 }
 .layout { display: flex; gap: 2rem; align-items: flex-start; }
-
-/* ========== ПАЛИТРА ЦВЕТОВ ========== */
-.color-palette span {
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-}
-.color-palette span:hover {
-  transform: scale(1.3);
-  box-shadow: 0 2px 8px var(--shadow);
-}
-
-/* ========== ИКОНКИ САЙДБАРА (через ::before) ========== */
-.icon-search::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E"); }
-.icon-archive::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M3 10h18'/%3E%3Cpath d='M8 2v4'/%3E%3Cpath d='M16 2v4'/%3E%3C/svg%3E"); }
-.icon-decades::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M3 10h18'/%3E%3C/svg%3E"); }
-.icon-artists::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Ccircle cx='12' cy='8' r='5'/%3E%3Cpath d='M3 21v-2a7 7 0 0 1 7-7h4a7 7 0 0 1 7 7v2'/%3E%3C/svg%3E"); }
-.icon-museums::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M3 21h18'/%3E%3Cpath d='M5 21V7l8-4v18'/%3E%3Cpath d='M19 21V11l-6-4'/%3E%3C/svg%3E"); }
-.icon-material::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E"); }
-.icon-technique::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='m12 19 7-7 3 3-7 7-3-3z'/%3E%3Cpath d='m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z'/%3E%3C/svg%3E"); }
-.icon-fav::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e74c3c' stroke-width='2'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/%3E%3C/svg%3E"); }
-.icon-theme::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='5'/%3E%3Cpath d='M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42'/%3E%3C/svg%3E"); }
-
-/* Тёмная тема для иконок сайдбара */
-[data-theme="dark"] .icon-search::before,
-[data-theme="dark"] .icon-archive::before,
-[data-theme="dark"] .icon-decades::before,
-[data-theme="dark"] .icon-artists::before,
-[data-theme="dark"] .icon-museums::before,
-[data-theme="dark"] .icon-material::before,
-[data-theme="dark"] .icon-technique::before,
-[data-theme="dark"] .icon-theme::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E"); }
-
-.sidebar-icon::before {
-  content: ''; display: inline-block;
-  width: 18px; height: 18px; margin-right: 8px;
-  background-size: contain; background-repeat: no-repeat;
-  background-position: center; opacity: 0.7; flex-shrink: 0;
-  vertical-align: middle;
-}
-
-/* ========== ИКОНКИ В ДЕТАЛЯХ КАРТИНЫ ========== */
-.detail-item { display: inline-flex; align-items: center; gap: 4px; }
-.detail-icon { display: inline-block; width: 16px; height: 16px; opacity: 0.7;
-  background-size: contain; background-repeat: no-repeat; background-position: center; flex-shrink: 0; vertical-align: middle; }
-
-/* ========== ВСЕ ИКОНКИ ЧЕРЕЗ КЛАССЫ (не ::before) ========== */
-.icon-back, .icon-prev, .icon-next, .icon-menu, .icon-logo,
-.icon-random, .icon-share, .icon-heart, .icon-arrow-up, .icon-random-white,
-.icon-views, .icon-map-header, .icon-theme-toggle,
-.icon-museum-inline, .icon-painting-small, .icon-location, 
-.icon-museum-small, .icon-search-small, .icon-map-inline,
-.icon-material-card, .icon-technique-card, .icon-size-card,
-.icon-quiz-inline, .icon-timeline-inline, .icon-info-small {
-  display: inline-block;
-  background-size: contain; background-repeat: no-repeat;
-  background-position: center; flex-shrink: 0;
-  vertical-align: middle;
-}
-
-/* Размеры */
-.icon-back, .icon-prev, .icon-next { width: 16px; height: 16px; }
-.icon-menu { width: 18px; height: 18px; margin-right: 4px; }
-.icon-logo { width: 28px; height: 28px; }
-.icon-random, .icon-share, .icon-heart, .icon-random-white { width: 18px; height: 18px; }
-.icon-arrow-up { width: 18px; height: 18px; }
-.icon-views { width: 14px; height: 14px; opacity: 0.6; }
-.icon-map-header { width: 32px; height: 32px; margin-right: 8px; }
-.icon-theme-toggle { width: 18px; height: 18px; }
-.icon-museum-inline { width: 1.2em; height: 1.2em; margin-right: 2px; }
-.icon-painting-small { width: 14px; height: 14px; margin-right: 3px; }
-.icon-location { width: 16px; height: 16px; margin-right: 2px; }
-.icon-museum-small { width: 16px; height: 16px; margin-right: 3px; }
-.icon-search-small { width: 14px; height: 14px; margin-right: 3px; }
-.icon-map-inline { width: 16px; height: 16px; margin-right: 6px; }
-.icon-quiz-inline { width: 16px; height: 16px; margin-right: 6px; }
-.icon-timeline-inline { width: 16px; height: 16px; margin-right: 6px; }
-.icon-info-small { width: 12px; height: 12px; }
-.icon-material-card, .icon-technique-card, .icon-size-card { width: 16px; height: 16px; opacity: 0.7; }
-
-/* SVG для светлой темы */
-.icon-back, .icon-prev { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E"); }
-.icon-next { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E"); }
-.icon-menu { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cline x1='3' y1='6' x2='21' y2='6'/%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cline x1='3' y1='18' x2='21' y2='18'/%3E%3C/svg%3E"); }
-.icon-logo { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); }
-.icon-random { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M18 4h3v3'/%3E%3Cpath d='M21 4l-3.5 3.5'/%3E%3Cpath d='M6 20H3v-3'/%3E%3Cpath d='M3 20l3.5-3.5'/%3E%3C/svg%3E"); }
-.icon-share { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cpath d='M8.59 13.51l6.83 3.98'/%3E%3Cpath d='M15.41 6.51l-6.82 3.98'/%3E%3C/svg%3E"); }
-.icon-heart { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/%3E%3C/svg%3E"); }
-.topbar-like.liked .icon-heart { 
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e74c3c' stroke='%23e74c3c' stroke-width='2'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/%3E%3C/svg%3E");
-  transform: scale(1.1); 
-}
-.icon-arrow-up { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E"); }
-.icon-random-white { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M18 4h3v3'/%3E%3Cpath d='M21 4l-3.5 3.5'/%3E%3Cpath d='M6 20H3v-3'/%3E%3Cpath d='M3 20l3.5-3.5'/%3E%3C/svg%3E"); }
-.icon-views { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); }
-.icon-map-header, .icon-map-inline { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Cpath d='M1 6v16l7-5 8 5 7-5V2l-7 5-8-5-7 5z'/%3E%3C/svg%3E"); }
-.icon-theme-toggle { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='5'/%3E%3Cpath d='M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42'/%3E%3C/svg%3E"); }
-.icon-museum-inline, .icon-museum-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M3 21h18'/%3E%3Cpath d='M5 21V7l8-4v18'/%3E%3Cpath d='M19 21V11l-6-4'/%3E%3C/svg%3E"); }
-.icon-painting-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'/%3E%3Cpath d='m21 15-5-5L5 21'/%3E%3C/svg%3E"); }
-.icon-location { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E"); }
-.icon-search-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E"); }
-.icon-quiz-inline { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E"); }
-.icon-timeline-inline { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cpolyline points='8 5 3 12 8 19'/%3E%3Cpolyline points='16 5 21 12 16 19'/%3E%3C/svg%3E"); }
-.icon-info-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='16' x2='12' y2='12'/%3E%3Cline x1='12' y1='8' x2='12.01' y2='8'/%3E%3C/svg%3E"); }
-.icon-material-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E"); }
-.icon-technique-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='m12 19 7-7 3 3-7 7-3-3z'/%3E%3Cpath d='m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z'/%3E%3C/svg%3E"); }
-.icon-size-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M15 3h6v6'/%3E%3Cpath d='M9 21H3v-6'/%3E%3Cpath d='M21 3 14 10'/%3E%3Cpath d='M3 21 10 14'/%3E%3C/svg%3E"); }
-
-/* SVG для тёмной темы */
-[data-theme="dark"] .icon-back, [data-theme="dark"] .icon-prev { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364b5f6' stroke-width='2'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E"); }
-[data-theme="dark"] .icon-next { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364b5f6' stroke-width='2'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E"); }
-[data-theme="dark"] .icon-views { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpath d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); }
-[data-theme="dark"] .icon-museum-inline, [data-theme="dark"] .icon-museum-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpath d='M3 21h18'/%3E%3Cpath d='M5 21V7l8-4v18'/%3E%3Cpath d='M19 21V11l-6-4'/%3E%3C/svg%3E"); }
-[data-theme="dark"] .icon-painting-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'/%3E%3Cpath d='m21 15-5-5L5 21'/%3E%3C/svg%3E"); }
-[data-theme="dark"] .icon-location { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpath d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E"); }
-[data-theme="dark"] .icon-material-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E"); }
-[data-theme="dark"] .icon-technique-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpath d='m12 19 7-7 3 3-7 7-3-3z'/%3E%3Cpath d='m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z'/%3E%3C/svg%3E"); }
-[data-theme="dark"] .icon-size-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpath d='M15 3h6v6'/%3E%3Cpath d='M9 21H3v-6'/%3E%3Cpath d='M21 3 14 10'/%3E%3Cpath d='M3 21 10 14'/%3E%3C/svg%3E"); }
-[data-theme="dark"] .icon-quiz-inline { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2390caf9' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E"); }
-[data-theme="dark"] .icon-timeline-inline { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2390caf9' stroke-width='2'%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cpolyline points='8 5 3 12 8 19'/%3E%3Cpolyline points='16 5 21 12 16 19'/%3E%3C/svg%3E"); }
-[data-theme="dark"] .icon-info-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2390caf9' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='16' x2='12' y2='12'/%3E%3Cline x1='12' y1='8' x2='12.01' y2='8'/%3E%3C/svg%3E"); }
 
 /* ========== САЙДБАР ========== */
 .sidebar {
@@ -315,7 +195,6 @@ header { margin-bottom: 1.5rem; text-align: center; }
   content: '\25BE'; font-size: .75rem; transition: transform .3s ease; color: var(--muted);
 }
 .sidebar-title.open::after { transform: rotate(180deg); color: var(--active); }
-
 .sidebar-content {
   display: grid; grid-template-rows: 1fr;
   transition: grid-template-rows .35s cubic-bezier(0.4, 0, 0.2, 1), padding .35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -323,7 +202,6 @@ header { margin-bottom: 1.5rem; text-align: center; }
 }
 .sidebar-content > * { overflow: hidden; }
 .sidebar-content.collapsed { grid-template-rows: 0fr; padding: 0 .2rem; }
-
 .sidebar ul { list-style: none; padding: 0; margin: 0; }
 .sidebar li { margin-bottom: .2rem; }
 .sidebar a {
@@ -333,6 +211,8 @@ header { margin-bottom: 1.5rem; text-align: center; }
 .sidebar a:hover { background: var(--border); color: var(--active); }
 .sidebar a.active { background: var(--active); color: #fff; font-weight: 600; }
 .sidebar a.active .count { color: rgba(255,255,255,.8); }
+.sidebar a .count { font-size: .68rem; color: var(--muted); opacity: .6; margin-left: 3px; }
+.sidebar a:hover .count { opacity: 1; }
 .month-list { padding-left: .8rem !important; margin-top: .15rem !important; font-size: .85em; }
 .month-list a { font-size: .78rem; }
 .filter-reset {
@@ -342,10 +222,6 @@ header { margin-bottom: 1.5rem; text-align: center; }
   border: 1px solid transparent; transition: all .2s;
 }
 .filter-reset:hover { border-color: var(--reset-text); }
-.sidebar a .count { font-size: .68rem; color: var(--muted); opacity: .6; margin-left: 3px; }
-.sidebar a:hover .count { opacity: 1; }
-
-/* ========== ССЫЛКА НА КАРТУ ========== */
 .map-link {
   display: flex; align-items: center; gap: 6px; padding: .6rem .8rem;
   background: var(--card-bg); border: 1px solid var(--border);
@@ -383,35 +259,17 @@ header { margin-bottom: 1.5rem; text-align: center; }
 .card:active { transform: scale(.98); }
 .card-img { width: 100%; aspect-ratio: 4/3; background: var(--border); overflow: hidden; }
 .card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.card-body { 
-  padding: .9rem 1.1rem; 
-  display: flex; 
-  flex-direction: column; 
-  gap: .15rem; 
-}
+.card-body { padding: .9rem 1.1rem; display: flex; flex-direction: column; gap: .15rem; }
 .card-artist { font-weight: 700; font-size: 1.05rem; }
 .card-title { font-style: italic; color: var(--muted); font-size: .9rem; }
-.card-medium {
-  font-size: .78rem; color: var(--muted);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.card-museum { 
-  font-size: .78rem; color: var(--muted); word-break: break-word;
-  display: flex; align-items: center; gap: 3px;
-}
-.card-extra {
-  font-size: .7rem; color: var(--active);
-  display: flex; align-items: center; gap: 3px;
-}
-.card-date {
-  font-size: .7rem; color: var(--muted); opacity: 0.7;
-}
+.card-medium { font-size: .78rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-museum { font-size: .78rem; color: var(--muted); word-break: break-word; display: flex; align-items: center; gap: 3px; }
+.card-date { font-size: .7rem; color: var(--muted); opacity: 0.7; }
 
-/* ========== СТРАНИЦА ТЕГОВ ========== */
+/* ========== СТРАНИЦЫ ========== */
 .tag-page { max-width: 1200px; margin: 0 auto; padding: 1.5rem; font-size: 18px; }
 .tag-page h1 { text-align: center; margin-bottom: 2rem; font-size: 2.2rem; }
 
-/* ========== СТРАНИЦА МУЗЕЕВ ========== */
 .museums-grid {
   max-width: 1200px; margin: 0 auto; padding: 1.5rem;
   display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;
@@ -438,20 +296,121 @@ header { margin-bottom: 1.5rem; text-align: center; }
   transition: opacity .3s ease;
 }
 .menu-toggle:active { background: var(--border); }
-.share-btn {
-  display: inline-block; padding: .3rem .7rem; background: var(--card-bg);
-  color: var(--link); border: 1px solid var(--border); border-radius: 20px;
-  cursor: pointer; font-size: .9rem; transition: all .2s;
-}
-.share-btn:hover { background: var(--border); }
-.views-count { color: var(--muted); font-size: .8rem; margin-left: 1rem; }
 
-/* Focus styles */
+/* ========== БАЗОВЫЕ СТИЛИ ИКОНОК ========== */
+.sidebar-icon::before {
+  content: ''; display: inline-block;
+  width: 18px; height: 18px; margin-right: 8px;
+  background-size: contain; background-repeat: no-repeat;
+  background-position: center; opacity: 0.7; flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.detail-icon, .icon-back, .icon-prev, .icon-next, .icon-menu, .icon-logo,
+.icon-random, .icon-share, .icon-heart, .icon-arrow-up, .icon-random-white,
+.icon-views, .icon-map-header, .icon-theme-toggle,
+.icon-museum-inline, .icon-painting-small, .icon-location, 
+.icon-museum-small, .icon-search-small, .icon-map-inline,
+.icon-material-card, .icon-technique-card, .icon-size-card,
+.icon-quiz-inline, .icon-timeline-inline, .icon-info-small,
+.icon-login, .icon-user {
+  display: inline-block;
+  background-size: contain; background-repeat: no-repeat;
+  background-position: center; flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* ========== РАЗМЕРЫ ИКОНОК ========== */
+.icon-back, .icon-prev, .icon-next { width: 16px; height: 16px; }
+.icon-menu { width: 18px; height: 18px; margin-right: 4px; }
+.icon-logo { width: 28px; height: 28px; }
+.icon-random, .icon-share, .icon-heart, .icon-random-white { width: 18px; height: 18px; }
+.icon-arrow-up { width: 18px; height: 18px; }
+.icon-views { width: 14px; height: 14px; opacity: 0.6; }
+.icon-map-header { width: 32px; height: 32px; margin-right: 8px; }
+.icon-theme-toggle { width: 18px; height: 18px; }
+.icon-museum-inline { width: 1.2em; height: 1.2em; margin-right: 2px; }
+.icon-painting-small { width: 14px; height: 14px; margin-right: 3px; }
+.icon-location { width: 16px; height: 16px; margin-right: 2px; }
+.icon-museum-small { width: 16px; height: 16px; margin-right: 3px; }
+.icon-search-small { width: 14px; height: 14px; margin-right: 3px; }
+.icon-map-inline, .icon-quiz-inline, .icon-timeline-inline { width: 16px; height: 16px; margin-right: 6px; }
+.icon-info-small { width: 12px; height: 12px; }
+.icon-login, .icon-user { width: 16px; height: 16px; }
+.icon-material-card, .icon-technique-card, .icon-size-card { width: 16px; height: 16px; opacity: 0.7; }
+.detail-icon { width: 16px; height: 16px; opacity: 0.7; }
+.detail-item { display: inline-flex; align-items: center; gap: 4px; }
+
+/* ========== ИКОНКИ САЙДБАРА (через ::before) ========== */
+.icon-search::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E"); }
+.icon-archive::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M3 10h18'/%3E%3Cpath d='M8 2v4'/%3E%3Cpath d='M16 2v4'/%3E%3C/svg%3E"); }
+.icon-decades::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M3 10h18'/%3E%3C/svg%3E"); }
+.icon-artists::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Ccircle cx='12' cy='8' r='5'/%3E%3Cpath d='M3 21v-2a7 7 0 0 1 7-7h4a7 7 0 0 1 7 7v2'/%3E%3C/svg%3E"); }
+.icon-museums::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M3 21h18'/%3E%3Cpath d='M5 21V7l8-4v18'/%3E%3Cpath d='M19 21V11l-6-4'/%3E%3C/svg%3E"); }
+.icon-material::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E"); }
+.icon-technique::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='m12 19 7-7 3 3-7 7-3-3z'/%3E%3Cpath d='m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z'/%3E%3C/svg%3E"); }
+.icon-fav::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e74c3c' stroke-width='2'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/%3E%3C/svg%3E"); }
+.icon-theme::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='5'/%3E%3Cpath d='M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42'/%3E%3C/svg%3E"); }
+
+[data-theme="dark"] .icon-search::before,
+[data-theme="dark"] .icon-archive::before,
+[data-theme="dark"] .icon-decades::before,
+[data-theme="dark"] .icon-artists::before,
+[data-theme="dark"] .icon-museums::before,
+[data-theme="dark"] .icon-material::before,
+[data-theme="dark"] .icon-technique::before,
+[data-theme="dark"] .icon-theme::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E"); }
+
+/* ========== SVG ИКОНКИ (светлая тема) ========== */
+.icon-back, .icon-prev { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E"); }
+.icon-next { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E"); }
+.icon-menu { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cline x1='3' y1='6' x2='21' y2='6'/%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cline x1='3' y1='18' x2='21' y2='18'/%3E%3C/svg%3E"); }
+.icon-logo { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); }
+.icon-random { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M18 4h3v3'/%3E%3Cpath d='M21 4l-3.5 3.5'/%3E%3Cpath d='M6 20H3v-3'/%3E%3Cpath d='M3 20l3.5-3.5'/%3E%3C/svg%3E"); }
+.icon-share { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cpath d='M8.59 13.51l6.83 3.98'/%3E%3Cpath d='M15.41 6.51l-6.82 3.98'/%3E%3C/svg%3E"); }
+.icon-heart { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/%3E%3C/svg%3E"); }
+.topbar-like.liked .icon-heart { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e74c3c' stroke='%23e74c3c' stroke-width='2'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/%3E%3C/svg%3E"); transform: scale(1.1); }
+.icon-arrow-up { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E"); }
+.icon-random-white { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M18 4h3v3'/%3E%3Cpath d='M21 4l-3.5 3.5'/%3E%3Cpath d='M6 20H3v-3'/%3E%3Cpath d='M3 20l3.5-3.5'/%3E%3C/svg%3E"); }
+.icon-views { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); }
+.icon-map-header, .icon-map-inline { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Cpath d='M1 6v16l7-5 8 5 7-5V2l-7 5-8-5-7 5z'/%3E%3C/svg%3E"); }
+.icon-theme-toggle { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='5'/%3E%3Cpath d='M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42'/%3E%3C/svg%3E"); }
+.icon-museum-inline, .icon-museum-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M3 21h18'/%3E%3Cpath d='M5 21V7l8-4v18'/%3E%3Cpath d='M19 21V11l-6-4'/%3E%3C/svg%3E"); }
+.icon-painting-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'/%3E%3Cpath d='m21 15-5-5L5 21'/%3E%3C/svg%3E"); }
+.icon-location { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E"); }
+.icon-search-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E"); }
+.icon-quiz-inline { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E"); }
+.icon-timeline-inline { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cpolyline points='8 5 3 12 8 19'/%3E%3Cpolyline points='16 5 21 12 16 19'/%3E%3C/svg%3E"); }
+.icon-info-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='16' x2='12' y2='12'/%3E%3Cline x1='12' y1='8' x2='12.01' y2='8'/%3E%3C/svg%3E"); }
+.icon-login { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4'/%3E%3Cpolyline points='10 17 15 12 10 7'/%3E%3Cline x1='15' y1='12' x2='3' y2='12'/%3E%3C/svg%3E"); }
+.icon-user { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E"); }
+.icon-material-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E"); }
+.icon-technique-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='m12 19 7-7 3 3-7 7-3-3z'/%3E%3Cpath d='m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z'/%3E%3C/svg%3E"); }
+.icon-size-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M15 3h6v6'/%3E%3Cpath d='M9 21H3v-6'/%3E%3Cpath d='M21 3 14 10'/%3E%3Cpath d='M3 21 10 14'/%3E%3C/svg%3E"); }
+
+/* ========== SVG ИКОНКИ (тёмная тема) ========== */
+[data-theme="dark"] .icon-back, [data-theme="dark"] .icon-prev { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364b5f6' stroke-width='2'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E"); }
+[data-theme="dark"] .icon-next { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364b5f6' stroke-width='2'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E"); }
+[data-theme="dark"] .icon-views { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpath d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); }
+[data-theme="dark"] .icon-museum-inline, [data-theme="dark"] .icon-museum-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpath d='M3 21h18'/%3E%3Cpath d='M5 21V7l8-4v18'/%3E%3Cpath d='M19 21V11l-6-4'/%3E%3C/svg%3E"); }
+[data-theme="dark"] .icon-painting-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'/%3E%3Cpath d='m21 15-5-5L5 21'/%3E%3C/svg%3E"); }
+[data-theme="dark"] .icon-location { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpath d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E"); }
+[data-theme="dark"] .icon-material-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E"); }
+[data-theme="dark"] .icon-technique-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpath d='m12 19 7-7 3 3-7 7-3-3z'/%3E%3Cpath d='m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z'/%3E%3C/svg%3E"); }
+[data-theme="dark"] .icon-size-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpath d='M15 3h6v6'/%3E%3Cpath d='M9 21H3v-6'/%3E%3Cpath d='M21 3 14 10'/%3E%3Cpath d='M3 21 10 14'/%3E%3C/svg%3E"); }
+[data-theme="dark"] .icon-quiz-inline { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2390caf9' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E"); }
+[data-theme="dark"] .icon-timeline-inline { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2390caf9' stroke-width='2'%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cpolyline points='8 5 3 12 8 19'/%3E%3Cpolyline points='16 5 21 12 16 19'/%3E%3C/svg%3E"); }
+[data-theme="dark"] .icon-info-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2390caf9' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='16' x2='12' y2='12'/%3E%3Cline x1='12' y1='8' x2='12.01' y2='8'/%3E%3C/svg%3E"); }
+
+/* ========== FOCUS STYLES ========== */
 .sidebar-title:focus-visible, .topbar-btn:focus-visible, .sidebar a:focus-visible {
   outline: 2px solid var(--active); outline-offset: 2px; border-radius: 4px;
 }
 
 /* ========== МЕДИА-ЗАПРОСЫ ========== */
+@media (min-width: 769px) { .scroll-top.visible { display: flex; } }
+@media (max-width: 768px) { .scroll-top { display: none !important; } }
+
 @media (max-width: 900px) {
   .menu-toggle { display: block; }
   .theme-toggle { top: 1rem; right: 1rem; }
