@@ -608,13 +608,15 @@ function toggleMenu() {{
 
 function toggleSection(el) {{
     document.querySelectorAll('.sidebar-title').forEach(function(title) {{
-        if (title !== el && !title.hasAttribute('onclick')) {{
+        if (title !== el && title.nextElementSibling && title.nextElementSibling.classList.contains('sidebar-content')) {{
             title.classList.remove('open');
             title.nextElementSibling.classList.remove('open');
         }}
     }});
-    el.classList.toggle('open');
-    if (el.nextElementSibling) el.nextElementSibling.classList.toggle('open');
+    if (el.nextElementSibling && el.nextElementSibling.classList.contains('sidebar-content')) {{
+        el.classList.toggle('open');
+        el.nextElementSibling.classList.toggle('open');
+    }}
 }}
 
 // Скрытие/показ меню при прокрутке на мобильных
