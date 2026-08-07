@@ -124,20 +124,6 @@ header { margin-bottom: 1.5rem; text-align: center; }
 }
 .layout { display: flex; gap: 2rem; align-items: flex-start; }
 
-/* ========== АКТИВНЫЕ ФИЛЬТРЫ ========== */
-.active-filters {
-  background: var(--card-bg); padding: .5rem 1rem; border-radius: 8px;
-  margin-bottom: 1rem; border: 1px solid var(--border); font-size: .9rem;
-  text-align: center; display: flex; flex-wrap: wrap; align-items: center;
-  justify-content: center; gap: .4rem;
-}
-.active-filters-label { color: var(--muted); }
-.filter-tag {
-  display: inline-block; background: var(--active); color: #fff;
-  padding: .2rem .7rem; border-radius: 15px; font-size: .82rem;
-}
-.filter-tag a { color: #fff; text-decoration: none; margin-left: 4px; font-weight: bold; }
-
 /* ========== САЙДБАР ========== */
 .sidebar {
   width: 300px; flex-shrink: 0; background: var(--sidebar-bg); padding: 1.2rem;
@@ -160,11 +146,19 @@ header { margin-bottom: 1.5rem; text-align: center; }
   content: '▾'; font-size: .75rem; transition: transform .3s ease; color: var(--muted);
 }
 .sidebar-title.open::after { transform: rotate(180deg); color: var(--active); }
+
+/* Контент секции — по умолчанию открыт, скрывается через .collapsed */
 .sidebar-content {
-  overflow: hidden; max-height: 0;
-  transition: max-height .35s cubic-bezier(0.4, 0, 0.2, 1); padding: 0 .2rem;
+  overflow: hidden;
+  max-height: 3000px;
+  transition: max-height .35s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: .4rem .2rem;
 }
-.sidebar-content.open { max-height: 3000px; padding: .4rem .2rem; }
+.sidebar-content.collapsed {
+  max-height: 0 !important;
+  padding: 0 .2rem;
+}
+
 .sidebar ul { list-style: none; padding: 0; margin: 0; }
 .sidebar li { margin-bottom: .2rem; }
 .sidebar a {

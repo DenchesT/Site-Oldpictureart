@@ -546,10 +546,10 @@ def render_index(all_posts):
 <div class="layout"><aside class="sidebar">
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">🔍 Поиск</div><div class="sidebar-content"><input type="text" class="search-box" placeholder="Поиск..." id="search" style="width:100%;margin-bottom:.5rem"></div></div>
 <a href="#" id="reset-filter" class="filter-reset">✕ Сбросить все фильтры</a>
-<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">📅 Архив</div><div class="sidebar-content"><ul>{arh}</ul></div></div>
+<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">📅 Архив</div><div class="sidebar-content collapsed"><ul>{arh}</ul></div></div>
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">📆 Декады</div><div class="sidebar-content collapsed"><ul>{dech}</ul></div></div>
-<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">👨‍🎨 Художники</div><div class="sidebar-content"><ul>{ah}</ul></div></div>
-<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">🏛 Музеи</div><div class="sidebar-content"><ul>{mh}</ul></div></div>
+<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">👨‍🎨 Художники</div><div class="sidebar-content collapsed"><ul>{ah}</ul></div></div>
+<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">🏛 Музеи</div><div class="sidebar-content collapsed"><ul>{mh}</ul></div></div>
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">📄 Материал</div><div class="sidebar-content collapsed"><ul>{mth}</ul></div></div>
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">🖌 Техника</div><div class="sidebar-content collapsed"><ul>{th}</ul></div></div>
 {fav_html}
@@ -610,15 +610,14 @@ function toggleSection(el) {{
     document.querySelectorAll('.sidebar-title').forEach(function(title) {{
         if (title !== el && title.nextElementSibling && title.nextElementSibling.classList.contains('sidebar-content')) {{
             title.classList.remove('open');
-            title.nextElementSibling.classList.remove('open');
+            title.nextElementSibling.classList.add('collapsed');
         }}
     }});
     if (el.nextElementSibling && el.nextElementSibling.classList.contains('sidebar-content')) {{
         el.classList.toggle('open');
-        el.nextElementSibling.classList.toggle('open');
+        el.nextElementSibling.classList.toggle('collapsed');
     }}
 }}
-
 // Скрытие/показ меню при прокрутке на мобильных
 let lastScroll = 0;
 window.addEventListener('scroll', function() {{
