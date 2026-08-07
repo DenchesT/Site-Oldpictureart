@@ -108,9 +108,12 @@ function showAuthForm() {
         <input type="password" class="auth-input" id="auth-password" name="password" placeholder="Пароль" autocomplete="current-password">
         <button type="submit" class="auth-submit" id="auth-submit-btn">Войти</button>
       </form>
-      <div class="auth-error" id="auth-error"></div>
+            <div class="auth-error" id="auth-error"></div>
       <div class="auth-switch">
         Нет аккаунта? <a id="auth-switch-link">Создать</a>
+      </div>
+      <div class="auth-switch" style="margin-top:0.2rem">
+        <a id="auth-reset-link">Забыли пароль?</a>
       </div>
     </div>
   `;
@@ -136,7 +139,7 @@ function showAuthForm() {
       .catch(err => errorDiv.textContent = 'Ошибка: ' + err.message);
   };
   
-  // Switch login/register
+   // Switch login/register
   switchLink.onclick = () => {
     isLogin = !isLogin;
     submitBtn.textContent = isLogin ? 'Войти' : 'Создать аккаунт';
@@ -145,7 +148,16 @@ function showAuthForm() {
     errorDiv.textContent = '';
   };
   
-  // Submit формы (ЕДИНСТВЕННЫЙ обработчик)
+  // Reset password
+  document.getElementById('auth-reset-link').onclick = () => {
+    const email = emailInp.value.trim();
+    if (!email) { errorDiv.textContent = 'Введите email для сброса пароля'; return; }
+    auth.sendPasswordResetEmail(email)
+      .then(() => alert('Письмо для сброса пароля отправлено на ' + email))
+      .catch(err => errorDiv.textContent = 'Ошибка: ' + err.message);
+  };
+  
+  // Submit формы
   document.getElementById('auth-form').onsubmit = (e) => {
     e.preventDefault();
     const email = emailInp.value.trim();
