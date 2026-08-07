@@ -12,10 +12,18 @@
 <title>Анри Мари Раймон де Тулуз-Лотрек-Монфа — Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888</title>
 <link rel="stylesheet" href="style.css">
 </head><body class="post-page">
-<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+<header class="painting-topbar">
+  <div class="painting-topbar-inner">
+    <a href="index.html" class="topbar-back">← Галерея</a>
+    <div class="topbar-actions">
+      <button onclick="goRandom()" class="topbar-btn" title="Случайная картина">🎲</button>
+      <button onclick="sharePage()" class="topbar-btn" title="Поделиться">📤</button>
+      <button id="like-btn" data-post-id="320" onclick="toggleLike()" class="topbar-btn topbar-like">♡</button>
+    </div>
+  </div>
+</header>
 <button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Наверх">↑</button>
-<div class="top-nav"><a href="index.html" class="back">← На главную</a><a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная</a><button class="share-btn" onclick="sharePage()" title="Поделиться">📤</button><button class="like-btn" id="like-btn" data-post-id="320" onclick="toggleLike()">♡</button></div>
-<article><h1>Анри Мари Раймон де Тулуз-Лотрек-Монфа</h1><h2>Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888</h2><a href="images/2025-09-17-анри-мари-раймон-де-тулуз-лотрек-монфа-hires-1.jpg" target="_blank" title="Оригинал"><img src="images/2025-09-17-анри-мари-раймон-де-тулуз-лотрек-монфа-1.jpg" alt="Анри Мари Раймон де Тулуз-Лотрек-Монфа — Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888" class="painting" loading="lazy"></a><div class="medium-details"><span class="material">📄 Холст</span>  <span class="size">📏 80 x 51 см</span></div><p class="museum">🏛 Частная коллекция, Монте-Карло</p><time>2025-09-17</time><span class="views-count" id="views-count"></span><div class="tags"><a href="tag-pc.html" class="tag">#pc</a> <a href="tag-toulouse_lautrec.html" class="tag">#toulouse_lautrec</a> <a href="tag-картина.html" class="tag">#картина</a></div></article>
+<article><h1>Анри Мари Раймон де Тулуз-Лотрек-Монфа</h1><h2>Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888</h2><a href="images/2025-09-17-анри-мари-раймон-де-тулуз-лотрек-монфа-hires-1.jpg" target="_blank" title="Оригинал"><img src="images/2025-09-17-анри-мари-раймон-де-тулуз-лотрек-монфа-1.jpg" alt="Анри Мари Раймон де Тулуз-Лотрек-Монфа — Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888" class="painting" loading="lazy"></a><div class="medium-details"><span class="detail-item"><span class="detail-icon icon-material-card"></span> Холст</span>  <span class="detail-item"><span class="detail-icon icon-size-card"></span> 80 x 51 см</span></div><p class="museum">🏛 Частная коллекция, Монте-Карло</p><time>2025-09-17</time><span class="views-count" id="views-count"></span><div class="tags"><a href="tag-pc.html" class="tag">#pc</a> <a href="tag-toulouse_lautrec.html" class="tag">#toulouse_lautrec</a> <a href="tag-картина.html" class="tag">#картина</a></div></article>
 <nav class="post-nav"><a href="2025-09-02-жакоб-абраам-камиль-писсарро.html" class="prev-post" title="Жакоб Абраам Камиль Писсарро — Une Crique a Saint-Thomas (Antilles) (Бухта на острове Сент-Томас (Антильские острова)), 1856">← Предыдущая</a><a href="2025-09-24-константин-аполлонович-савицкий.html" class="next-post" title="Константин Аполлонович Савицкий — У мирового суда, XIX век">Следующая →</a></nav>
 <script>
 function toggleTheme(){const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}

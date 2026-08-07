@@ -12,10 +12,18 @@
 <title>Никола Пуссен — Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660</title>
 <link rel="stylesheet" href="style.css">
 </head><body class="post-page">
-<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+<header class="painting-topbar">
+  <div class="painting-topbar-inner">
+    <a href="index.html" class="topbar-back">← Галерея</a>
+    <div class="topbar-actions">
+      <button onclick="goRandom()" class="topbar-btn" title="Случайная картина">🎲</button>
+      <button onclick="sharePage()" class="topbar-btn" title="Поделиться">📤</button>
+      <button id="like-btn" data-post-id="141" onclick="toggleLike()" class="topbar-btn topbar-like">♡</button>
+    </div>
+  </div>
+</header>
 <button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Наверх">↑</button>
-<div class="top-nav"><a href="index.html" class="back">← На главную</a><a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная</a><button class="share-btn" onclick="sharePage()" title="Поделиться">📤</button><button class="like-btn" id="like-btn" data-post-id="141" onclick="toggleLike()">♡</button></div>
-<article><h1>Никола Пуссен</h1><h2>Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660</h2><a href="images/2025-03-29-никола-пуссен-hires-1.jpg" target="_blank" title="Оригинал"><img src="images/2025-03-29-никола-пуссен-1.jpg" alt="Никола Пуссен — Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660" class="painting" loading="lazy"></a><div class="medium-details"><span class="material">📄 Холст</span> <span class="techniques">🖌 масло</span> <span class="size">📏 156 x 202 см</span></div><p class="museum">🏛 ГМИИ им. А.С. Пушкина, Москва</p><section class="description"><p>Дата поступления 03.03.1930 г.</p></section><p class="source">Источник: <a href="https://collection.pushkinmuseum.art/entity/OBJECT/77802" target="_blank" rel="noopener">https://collection.pushkinmuseum.art/entity/OBJECT/77802</a></p><time>2025-03-29</time><span class="views-count" id="views-count"></span><div class="tags"><a href="tag-poussin.html" class="tag">#poussin</a> <a href="tag-гмии.html" class="tag">#гмии</a> <a href="tag-картина.html" class="tag">#картина</a></div></article>
+<article><h1>Никола Пуссен</h1><h2>Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660</h2><a href="images/2025-03-29-никола-пуссен-hires-1.jpg" target="_blank" title="Оригинал"><img src="images/2025-03-29-никола-пуссен-1.jpg" alt="Никола Пуссен — Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660" class="painting" loading="lazy"></a><div class="medium-details"><span class="detail-item"><span class="detail-icon icon-material-card"></span> Холст</span> <span class="detail-item"><span class="detail-icon icon-technique-card"></span> масло</span> <span class="detail-item"><span class="detail-icon icon-size-card"></span> 156 x 202 см</span></div><p class="museum">🏛 ГМИИ им. А.С. Пушкина, Москва</p><section class="description"><p>Дата поступления 03.03.1930 г.</p></section><p class="source">Источник: <a href="https://collection.pushkinmuseum.art/entity/OBJECT/77802" target="_blank" rel="noopener">https://collection.pushkinmuseum.art/entity/OBJECT/77802</a></p><time>2025-03-29</time><span class="views-count" id="views-count"></span><div class="tags"><a href="tag-poussin.html" class="tag">#poussin</a> <a href="tag-гмии.html" class="tag">#гмии</a> <a href="tag-картина.html" class="tag">#картина</a></div></article>
 <nav class="post-nav"><a href="2025-03-25-архип-иванович-куинджи.html" class="prev-post" title="Архип Иванович Куинджи — Берёзовая роща, 1879">← Предыдущая</a><a href="2025-04-11-альфред-сислей.html" class="next-post" title="Альфред Сислей — La gelée à Louvecienne (Мороз в Лувесьенне), 1873">Следующая →</a></nav>
 <script>
 function toggleTheme(){const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}

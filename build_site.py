@@ -327,9 +327,9 @@ def render_post_page(post, all_posts=None):
         parts.append(f'<a href="{h(lh)}" target="_blank" title="Оригинал"><img src="{h(src)}" alt="{artist} — {title}" class="painting" loading="lazy"></a>')
     img_html = "\n".join(parts)
 
-    mat = f'<span class="material">📄 {h(post.get("material",""))}</span>' if post.get("material") else ""
-    tech = f'<span class="techniques">🖌 {h(", ".join(post.get("techniques",[])))}</span>' if post.get("techniques") else ""
-    sz = f'<span class="size">📏 {h(post.get("size",""))}</span>' if post.get("size") else ""
+    mat = f'<span class="detail-item"><span class="detail-icon icon-material-card"></span> {h(post.get("material",""))}</span>' if post.get("material") else ""
+    tech = f'<span class="detail-item"><span class="detail-icon icon-technique-card"></span> {h(", ".join(post.get("techniques",[])))}</span>' if post.get("techniques") else ""
+    sz = f'<span class="detail-item"><span class="detail-icon icon-size-card"></span> {h(post.get("size",""))}</span>' if post.get("size") else ""
     mdet = f'<div class="medium-details">{mat} {tech} {sz}</div>'
 
     tags_html = ""
@@ -385,9 +385,17 @@ def render_post_page(post, all_posts=None):
 <title>{artist} — {title}</title>
 <link rel="stylesheet" href="style.css">
 </head><body class="post-page">
-<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+<header class="painting-topbar">
+  <div class="painting-topbar-inner">
+    <a href="index.html" class="topbar-back">← Галерея</a>
+    <div class="topbar-actions">
+      <button onclick="goRandom()" class="topbar-btn" title="Случайная картина">🎲</button>
+      <button onclick="sharePage()" class="topbar-btn" title="Поделиться">📤</button>
+      <button id="like-btn" data-post-id="{post_id}" onclick="toggleLike()" class="topbar-btn topbar-like">♡</button>
+    </div>
+  </div>
+</header>
 <button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх">↑</button>
-<div class="top-nav"><a href="index.html" class="back">← На главную</a><a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная</a><button class="share-btn" onclick="sharePage()" title="Поделиться">📤</button><button class="like-btn" id="like-btn" data-post-id="{post_id}" onclick="toggleLike()">♡</button></div>
 <article><h1>{artist}</h1><h2>{title}</h2>{img_html}{mdet}<p class="museum">🏛 {museum}</p>{desc_html}{hist_html}{src_html}<time>{h(post['date'])}</time><span class="views-count" id="views-count"></span>{tags_html}</article>
 {post_nav}
 <script>

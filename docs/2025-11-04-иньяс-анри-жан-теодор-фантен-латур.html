@@ -12,10 +12,18 @@
 <title>Иньяс-Анри-Жан-Теодор Фантен-Латур — La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879</title>
 <link rel="stylesheet" href="style.css">
 </head><body class="post-page">
-<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+<header class="painting-topbar">
+  <div class="painting-topbar-inner">
+    <a href="index.html" class="topbar-back">← Галерея</a>
+    <div class="topbar-actions">
+      <button onclick="goRandom()" class="topbar-btn" title="Случайная картина">🎲</button>
+      <button onclick="sharePage()" class="topbar-btn" title="Поделиться">📤</button>
+      <button id="like-btn" data-post-id="364" onclick="toggleLike()" class="topbar-btn topbar-like">♡</button>
+    </div>
+  </div>
+</header>
 <button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Наверх">↑</button>
-<div class="top-nav"><a href="index.html" class="back">← На главную</a><a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная</a><button class="share-btn" onclick="sharePage()" title="Поделиться">📤</button><button class="like-btn" id="like-btn" data-post-id="364" onclick="toggleLike()">♡</button></div>
-<article><h1>Иньяс-Анри-Жан-Теодор Фантен-Латур</h1><h2>La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879</h2><a href="images/2025-11-04-иньяс-анри-жан-теодор-фантен-латур-hires-1.jpg" target="_blank" title="Оригинал"><img src="images/2025-11-04-иньяс-анри-жан-теодор-фантен-латур-1.jpg" alt="Иньяс-Анри-Жан-Теодор Фантен-Латур — La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879" class="painting" loading="lazy"></a><div class="medium-details"><span class="material">📄 Холст</span> <span class="techniques">🖌 масло</span> <span class="size">📏 145 x 170 см</span></div><p class="museum">🏛 Королевский музей изящных искусств, Брюссель</p><section class="description"><p>Приобретено на трёхгодичной выставке изящных искусств, Гент, 1899 г.</p></section><time>2025-11-04</time><span class="views-count" id="views-count"></span><div class="tags"><a href="tag-fantin_latour.html" class="tag">#fantin_latour</a> <a href="tag-rmfab.html" class="tag">#rmfab</a> <a href="tag-картина.html" class="tag">#картина</a></div></article>
+<article><h1>Иньяс-Анри-Жан-Теодор Фантен-Латур</h1><h2>La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879</h2><a href="images/2025-11-04-иньяс-анри-жан-теодор-фантен-латур-hires-1.jpg" target="_blank" title="Оригинал"><img src="images/2025-11-04-иньяс-анри-жан-теодор-фантен-латур-1.jpg" alt="Иньяс-Анри-Жан-Теодор Фантен-Латур — La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879" class="painting" loading="lazy"></a><div class="medium-details"><span class="detail-item"><span class="detail-icon icon-material-card"></span> Холст</span> <span class="detail-item"><span class="detail-icon icon-technique-card"></span> масло</span> <span class="detail-item"><span class="detail-icon icon-size-card"></span> 145 x 170 см</span></div><p class="museum">🏛 Королевский музей изящных искусств, Брюссель</p><section class="description"><p>Приобретено на трёхгодичной выставке изящных искусств, Гент, 1899 г.</p></section><time>2025-11-04</time><span class="views-count" id="views-count"></span><div class="tags"><a href="tag-fantin_latour.html" class="tag">#fantin_latour</a> <a href="tag-rmfab.html" class="tag">#rmfab</a> <a href="tag-картина.html" class="tag">#картина</a></div></article>
 <nav class="post-nav"><a href="2025-10-16-гюстав-кайботт.html" class="prev-post" title="Гюстав Кайботт — Jeune homme à sa fenêtre (Молодой человек у окна), 1876">← Предыдущая</a><a href="2025-11-07-фрэнсис-кэмпбелл-буало-каделл.html" class="next-post" title="Фрэнсис Кэмпбелл Буало Каделл — Florian&#x27;s café, Venice (Кафе Флориан, Венеция), 1910">Следующая →</a></nav>
 <script>
 function toggleTheme(){const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}
