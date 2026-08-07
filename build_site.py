@@ -553,6 +553,8 @@ fl.forEach(l => {{
         afilt.val = l.dataset.val;
         if(afilt.type === 'month') afilt.year = l.dataset.year;
         updateView();
+        document.querySelector('.sidebar').classList.remove('open');
+        document.getElementById('overlay').classList.remove('visible');
     }});
 }});
 
@@ -561,6 +563,8 @@ rb.addEventListener('click', e => {{
     afilt = {{ type: null, val: null, year: null }};
     si.value = '';
     updateView();
+    document.querySelector('.sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('visible');
 }});
 
 </script></body></html>"""
