@@ -519,6 +519,11 @@ def render_index(all_posts):
         arh += '</ul></li>'
     
     af = json.dumps([p["filename"] for p in ps])
+    post_map_data = {
+        str(p.get("id", "")): {"file": p["filename"], "title": p.get("title", f"Картина #{p.get('id', '')}")} 
+        for p in ps if p.get("id")
+    }
+    pm_js = json.dumps(post_map_data, ensure_ascii=False)
     
     # Избранное (кликабельное)
     fav_html = '<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">⭐ Избранное <span id="fav-count" class="count" style="font-size:.68rem;opacity:.6"></span></div><div class="sidebar-content collapsed"><ul id="fav-list"><li style="color:var(--muted);font-size:.8rem;padding:.5rem">Нажмите ♥ на странице картины</li></ul></div></div>'
@@ -558,6 +563,7 @@ def render_index(all_posts):
 </aside><main class="main-content"><div class="grid" id="cards">{''.join(cards)}</div></main></div>
 <script>
 const ALL_POSTS = {af};
+const POSTS_DATA = {pm_js}; // Передаем словарь из Python в JS
 
 function toggleTheme() {{
     const h = document.documentElement;
@@ -583,18 +589,19 @@ function updateFavList() {{
         if (favCount) favCount.textContent = '(' + likedIds.length + ')';
         if (likedIds.length > 0) {{
             favList.innerHTML = likedIds.map(function(id) {{
-                return '<li><a href="#" onclick="goToPost(`' + id + '`)" style="font-size:.8rem">🖼 Картина #' + id + '</a></li>';
+                // Получаем данные картины по ID, если они есть
+                const info = POSTS_DATA[id];
+                if (info) {{
+                    // Формируем настоящую ссылку (href) вместо onclick
+                    return '<li><a href="' + info.file + '" style="font-size:.8rem" title="' + info.title + '">🖼 ' + info.title + '</a></li>';
+                }} else {{
+                    return '<li><a href="#" style="font-size:.8rem">🖼 Картина #' + id + '</a></li>';
+                }}
             }}).join('');
         }} else {{
             favList.innerHTML = '<li style="color:var(--muted);font-size:.8rem;padding:.5rem">Нажмите ♥ на странице картины</li>';
         }}
     }}
-}}
-
-function goToPost(postId) {{
-    // Ищем файл по id в allPosts (упрощённо — перенаправляем на индекс)
-    // В реальности нужен маппинг id → filename
-    alert('Откройте картину через поиск');
 }}
 
 function goRandom() {{
