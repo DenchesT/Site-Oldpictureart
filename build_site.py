@@ -546,12 +546,14 @@ def render_index(all_posts):
 <div class="layout"><aside class="sidebar">
 <div class="sidebar-section" style="padding: 8px 12px;"><input type="text" class="search-box" placeholder="🔍 Поиск..." id="search" style="width:100%"></div>
 <a href="#" id="reset-filter" class="filter-reset" style="display:none">✕ Сбросить все фильтры</a>
-<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">📅 Архив</div><div class="sidebar-content collapsed"><ul>{arh}</ul></div></div>
-<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">📆 Декады</div><div class="sidebar-content collapsed"><ul>{dech}</ul></div></div>
-<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">👨‍🎨 Художники</div><div class="sidebar-content collapsed"><ul>{ah}</ul></div></div>
-<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">🏛 Музеи</div><div class="sidebar-content collapsed"><ul>{mh}</ul></div></div>
-<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">📄 Материал</div><div class="sidebar-content collapsed"><ul>{mth}</ul></div></div>
-<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">🖌 Техника</div><div class="sidebar-content collapsed"><ul>{th}</ul></div></div>
+<div class="sidebar-section" style="padding: 8px 12px;"><input type="text" class="search-box" placeholder="Поиск..." id="search" style="width:100%"></div>
+<a href="#" id="reset-filter" class="filter-reset" style="display:none">✕ Сбросить все фильтры</a>
+<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-archive" onclick="toggleSection(this)">Архив</div><div class="sidebar-content collapsed"><ul>{arh}</ul></div></div>
+<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-decades" onclick="toggleSection(this)">Декады</div><div class="sidebar-content collapsed"><ul>{dech}</ul></div></div>
+<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-artists" onclick="toggleSection(this)">Художники</div><div class="sidebar-content collapsed"><ul>{ah}</ul></div></div>
+<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-museums" onclick="toggleSection(this)">Музеи</div><div class="sidebar-content collapsed"><ul>{mh}</ul></div></div>
+<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-material" onclick="toggleSection(this)">Материал</div><div class="sidebar-content collapsed"><ul>{mth}</ul></div></div>
+<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-technique" onclick="toggleSection(this)">Техника</div><div class="sidebar-content collapsed"><ul>{th}</ul></div></div>
 {fav_html}
 {theme_html}
 {map_link_html}
