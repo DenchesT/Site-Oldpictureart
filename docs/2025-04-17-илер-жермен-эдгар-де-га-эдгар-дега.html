@@ -1,90 +1,16 @@
-<!DOCTYPE html>
-<html lang="ru" data-theme="light"><head>
+<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
 <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Илер-Жермен-Эдгар де Га (Эдгар Дега) — Paysage Avec Fumée de Cheminées (Пейзаж с дымовыми трубами), 1890-1893</title>
-<style>
-:root{--bg:#fafafa;--text:#222;--card-bg:#fff;--tag-bg:#eee;--tag-text:#555;--border:#ddd;--muted:#555;--link:#0366d6;--shadow:rgba(0,0,0,.15);--history-bg:#f3eedb;--history-border:#b8a86a}
-[data-theme="dark"]{--bg:#1a1a2e;--text:#e0e0e0;--card-bg:#16213e;--tag-bg:#0f3460;--tag-text:#e0e0e0;--border:#333;--muted:#aaa;--link:#64b5f6;--shadow:rgba(0,0,0,.5);--history-bg:#2d2d1a;--history-border:#8b7a2e}
-*{box-sizing:border-box}
-body{max-width:900px;margin:0 auto;padding:1.5rem;font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.55;transition:background .3s,color .3s;-webkit-tap-highlight-color:transparent}
-.painting{max-width:100%;max-height:70vh;display:block;margin:1.5rem auto;box-shadow:0 4px 20px var(--shadow);border-radius:4px;transition:transform .2s;cursor:pointer}
-.painting:active{transform:scale(1.02)}
-h1{font-size:1.8rem;margin:0 0 .3rem;line-height:1.2}
-h2{font-size:1.25rem;font-style:italic;font-weight:normal;color:var(--muted);margin:0 0 1rem}
-.medium-details{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;margin:1rem auto;padding:.8rem;background:var(--card-bg);border-radius:6px;font-size:.9rem;color:var(--muted);border:1px solid var(--border);justify-content:center;text-align:center;max-width:fit-content}
-.museum{font-style:italic;color:var(--muted);margin:.3rem 0}
-.source a,.source-list a{color:var(--link);word-break:break-all;overflow-wrap:break-word;hyphens:auto}
-.source{max-width:100%;overflow:hidden}
-.source-list{max-width:100%}
-.source-list li{word-break:break-all;overflow-wrap:break-word}
-.description{margin:1.5rem 0;text-align:justify}
-.description p{margin:.6rem 0;line-height:1.65}
-.history{margin:1.8rem 0;padding:1rem 1.25rem;background:var(--history-bg);border-left:3px solid var(--history-border);border-radius:4px}
-.history h3{margin:0 0 .6rem;font-size:1rem;color:#5a4f2a}
-.history ul{margin:0;padding-left:1.2rem}
-.history li{margin:.4rem 0;color:#4a4a4a;font-size:.95rem;line-height:1.5}
-.tags{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:.4rem}
-.tag{display:inline-block;background:var(--tag-bg);color:var(--tag-text);text-decoration:none;padding:.3rem .7rem;border-radius:4px;font-size:.85rem;transition:background .2s}
-.tag:active{background:var(--link);color:#fff}
-.top-nav{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:1rem}
-.back{display:inline-block;color:var(--link);text-decoration:none;font-size:.95rem}
-time{color:var(--muted);font-size:.85rem;display:block;margin-top:.5rem}
-.theme-toggle{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);z-index:1000;font-size:.9rem;box-shadow:0 2px 8px var(--shadow)}
-.random-btn{display:inline-block;padding:.3rem 1rem;background:var(--link);color:#fff;text-decoration:none;border-radius:4px;font-size:.9rem}
-.scroll-top{position:fixed;bottom:1.5rem;right:1.5rem;width:44px;height:44px;background:var(--link);color:#fff;border:none;border-radius:50%;font-size:1.3rem;cursor:pointer;box-shadow:0 2px 10px var(--shadow);z-index:999;display:none;align-items:center;justify-content:center}
-.scroll-top.visible{display:flex}
-.scroll-top:active{transform:scale(.9)}
-@media(max-width:768px){
-  body{padding:.8rem;font-size:15px}
-  h1{font-size:1.4rem}
-  h2{font-size:1.1rem;margin-bottom:.5rem}
-  .painting{margin:.8rem auto;max-height:50vh}
-  .medium-details{flex-direction:column;gap:.3rem;padding:.6rem;font-size:.8rem}
-  .theme-toggle{top:.5rem;right:.5rem;padding:.4rem .8rem;font-size:.75rem}
-  .random-btn{padding:.2rem .7rem;font-size:.8rem}
-  .tags{gap:.3rem;margin-top:1rem;padding-top:.8rem}
-  .tag{padding:.25rem .6rem;font-size:.78rem}
-  .description{font-size:.9rem}
-  .history{padding:.8rem 1rem;margin:1.2rem 0}
-  .scroll-top{width:40px;height:40px;font-size:1.1rem;bottom:1rem;right:1rem}
-  .back{font-size:.85rem}
-}
-@media(max-width:480px){
-  body{padding:.5rem;font-size:14px}
-  h1{font-size:1.2rem}
-  h2{font-size:1rem}
-  .painting{max-height:40vh;margin:.5rem auto}
-  .medium-details{padding:.4rem;font-size:.75rem;gap:.2rem}
-  .tag{padding:.2rem .5rem;font-size:.7rem}
-  .theme-toggle{top:.3rem;right:.3rem;padding:.3rem .6rem;font-size:.7rem}
-  .random-btn{padding:.2rem .6rem;font-size:.7rem}
-  .scroll-top{width:36px;height:36px;font-size:1rem;bottom:.8rem;right:.8rem}
-}
-</style></head><body>
+<link rel="stylesheet" href="style.css">
+</head><body class="post-page">
 <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
 <button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Наверх">↑</button>
-<div class="top-nav">
-<a href="index.html" class="back">← На главную</a>
-<a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная</a>
-</div>
-<article>
-<h1>Илер-Жермен-Эдгар де Га (Эдгар Дега)</h1>
-<h2>Paysage Avec Fumée de Cheminées (Пейзаж с дымовыми трубами), 1890-1893</h2>
-<a href="images/2025-04-17-илер-жермен-эдгар-де-га-эдгар-дега-hires-1.png" target="_blank" title="Открыть оригинал"><img src="images/2025-04-17-илер-жермен-эдгар-де-га-эдгар-дега-1.jpg" alt="Илер-Жермен-Эдгар де Га (Эдгар Дега) — Paysage Avec Fumée de Cheminées (Пейзаж с дымовыми трубами), 1890-1893" class="painting" loading="lazy"></a>
-<div class="medium-details"><span class="material">📄 Текстурированная кремовая бумага наклеенная на картон</span> <span class="techniques">🖌 пастель, монотипия</span> <span class="size">📏 31,7 x 41,6 см</span></div>
-<p class="museum">🏛 Чикагский институт искусств, Чикаго</p>
-<section class="description"><p>Дега наиболее известен своими изображениями балета и других сцен из современной городской жизни. Однако периодически он обращался к жанру пейзажа, например, во время поездки в 1869 году на побережье Нормандии, результатом которой стал ряд пастельных пейзажей. В годы расцвета импрессионизма - в 1870-е и 1880-е годы, когда пейзаж безраздельно господствовал во французском авангарде, - Дега, как известно, испытывал отвращение к пейзажной живописи под открытым небом. Однако в 1890-х годах он создал несколько групп пейзажей, различными способами сочетая наблюдение и изобретательность. Возобновившийся интерес художника был вызван его поездкой по Бургундии в 1890 году, которая вдохновила его на создание пейзажа в технике монотипии. Монотипия создается путём рисования изображения жирными типографскими чернилами на металлической пластине, а затем печати этой пластины на листе бумаги. Обычно с фотопластинки можно получить только один яркий оттиск; иногда можно получить и второй, более бледный оттиск, известный как монотипический рисунок. Дега иногда писал пастелью поверх монотипий или монотипических изображений, например, на картине &quot;Пейзаж с дымовыми трубами&quot;. Он впервые применил эту технику в 1870-х годах. Некоторые из своих монотипий он начал писать на месте, в то время как другие - например, пейзаж с дымовыми трубами - были воспоминаниями. Безусловно, цель Дега при создании таких композиций сильно отличалась от стремления его коллеги Клода Моне к изменению атмосферных эффектов. Хотя пейзажи памяти Дега основаны на памяти, они задумчивы и таинственны.</p></section>
-<section class="history"><h3>Происхождение</h3><ul><li>Из коллекции художника, 1917 г.</li><li>Продано в галерею Жоржа Пети, Париж, 2–4 июля 1919 г.</li><li>Л. Вольф, Гамбург</li><li>Неизвестный частный коллекционер, до 1932 (хотя на аукционе 1932 г. были представлены коллекции Саймона и Зильберберга, остаётся неясным, кому принадлежал этот конкретный лот. Это могли быть Саймон, Зильберберг или неизвестное третье лицо)</li><li>Продано в галерею Жоржа Пети, Париж, 9 июня 1932 г. доктору Хельмуту Лютьенсу, директору амстердамского отделения Пауля Кассирера, для Фридриха и Луизы Гутман, Хемстеде, Голландия Отправлено Фридрихом Гутманном Полю Граупе, Париж, 1939 г.</li><li>Отправлено на склад Ваккер-Бонди на бульваре Распай к 1945 г.</li><li>Ганс Вендланд, Париж, своему зятю Гансу Фрицу Фанкхаузеру, Базель</li><li>Продан Гансом Фрицем Фанкхаузером Эмилю Вольфу, Нью-Йорк, 1951 г.</li><li>Продано Эмилем Вольфом через Марго Поллинс Шаб, Нью-Йорк, Дэниелу Сирлу, Уиннетка, Иллинойс, 1987 г.</li><li>Подарено Дэниелом Сирлом и продано семьей Гудман (ранее Гутман) Художественному институту в 1998 г.</li></ul></section>
-<p class="source">Источник: <a href="https://www.artic.edu/artworks/151507/landscape-with-smokestacks" target="_blank" rel="noopener">https://www.artic.edu/artworks/151507/landscape-with-smokestacks</a></p>
-<time>2025-04-17</time>
-<div class="tags"><a href="tag-aic.html" class="tag">#aic</a> <a href="tag-degas.html" class="tag">#degas</a> <a href="tag-картина.html" class="tag">#картина</a></div>
-</article>
-<script>
-function toggleTheme(){const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}
+<div class="top-nav"><a href="index.html" class="back">← На главную</a><a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная</a></div>
+<article><h1>Илер-Жермен-Эдгар де Га (Эдгар Дега)</h1><h2>Paysage Avec Fumée de Cheminées (Пейзаж с дымовыми трубами), 1890-1893</h2><a href="images/2025-04-17-илер-жермен-эдгар-де-га-эдгар-дега-hires-1.png" target="_blank" title="Оригинал"><img src="images/2025-04-17-илер-жермен-эдгар-де-га-эдгар-дега-1.jpg" alt="Илер-Жермен-Эдгар де Га (Эдгар Дега) — Paysage Avec Fumée de Cheminées (Пейзаж с дымовыми трубами), 1890-1893" class="painting" loading="lazy"></a><div class="medium-details"><span class="material">📄 Текстурированная кремовая бумага наклеенная на картон</span> <span class="techniques">🖌 пастель, монотипия</span> <span class="size">📏 31,7 x 41,6 см</span></div><p class="museum">🏛 Чикагский институт искусств, Чикаго</p><section class="description"><p>Дега наиболее известен своими изображениями балета и других сцен из современной городской жизни. Однако периодически он обращался к жанру пейзажа, например, во время поездки в 1869 году на побережье Нормандии, результатом которой стал ряд пастельных пейзажей. В годы расцвета импрессионизма - в 1870-е и 1880-е годы, когда пейзаж безраздельно господствовал во французском авангарде, - Дега, как известно, испытывал отвращение к пейзажной живописи под открытым небом. Однако в 1890-х годах он создал несколько групп пейзажей, различными способами сочетая наблюдение и изобретательность. Возобновившийся интерес художника был вызван его поездкой по Бургундии в 1890 году, которая вдохновила его на создание пейзажа в технике монотипии. Монотипия создается путём рисования изображения жирными типографскими чернилами на металлической пластине, а затем печати этой пластины на листе бумаги. Обычно с фотопластинки можно получить только один яркий оттиск; иногда можно получить и второй, более бледный оттиск, известный как монотипический рисунок. Дега иногда писал пастелью поверх монотипий или монотипических изображений, например, на картине &quot;Пейзаж с дымовыми трубами&quot;. Он впервые применил эту технику в 1870-х годах. Некоторые из своих монотипий он начал писать на месте, в то время как другие - например, пейзаж с дымовыми трубами - были воспоминаниями. Безусловно, цель Дега при создании таких композиций сильно отличалась от стремления его коллеги Клода Моне к изменению атмосферных эффектов. Хотя пейзажи памяти Дега основаны на памяти, они задумчивы и таинственны.</p></section><section class="history"><h3>Происхождение</h3><ul><li>Из коллекции художника, 1917 г.</li><li>Продано в галерею Жоржа Пети, Париж, 2–4 июля 1919 г.</li><li>Л. Вольф, Гамбург</li><li>Неизвестный частный коллекционер, до 1932 (хотя на аукционе 1932 г. были представлены коллекции Саймона и Зильберберга, остаётся неясным, кому принадлежал этот конкретный лот. Это могли быть Саймон, Зильберберг или неизвестное третье лицо)</li><li>Продано в галерею Жоржа Пети, Париж, 9 июня 1932 г. доктору Хельмуту Лютьенсу, директору амстердамского отделения Пауля Кассирера, для Фридриха и Луизы Гутман, Хемстеде, Голландия Отправлено Фридрихом Гутманном Полю Граупе, Париж, 1939 г.</li><li>Отправлено на склад Ваккер-Бонди на бульваре Распай к 1945 г.</li><li>Ганс Вендланд, Париж, своему зятю Гансу Фрицу Фанкхаузеру, Базель</li><li>Продан Гансом Фрицем Фанкхаузером Эмилю Вольфу, Нью-Йорк, 1951 г.</li><li>Продано Эмилем Вольфом через Марго Поллинс Шаб, Нью-Йорк, Дэниелу Сирлу, Уиннетка, Иллинойс, 1987 г.</li><li>Подарено Дэниелом Сирлом и продано семьей Гудман (ранее Гутман) Художественному институту в 1998 г.</li></ul></section><p class="source">Источник: <a href="https://www.artic.edu/artworks/151507/landscape-with-smokestacks" target="_blank" rel="noopener">https://www.artic.edu/artworks/151507/landscape-with-smokestacks</a></p><time>2025-04-17</time><div class="tags"><a href="tag-aic.html" class="tag">#aic</a> <a href="tag-degas.html" class="tag">#degas</a> <a href="tag-картина.html" class="tag">#картина</a></div></article>
+<script>function toggleTheme(){const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}
 (()=>{const s=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',s)})();
-function goRandom(){const p=JSON.parse(localStorage.getItem('allPosts')||'[]');if(p.length)window.location.href=p[Math.floor(Math.random()*p.length)]}
-window.addEventListener('scroll',function(){const b=document.querySelector('.scroll-top');if(b)b.classList.toggle('visible',window.scrollY>400)});
-</script></body></html>
+function goRandom(){const p=JSON.parse(localStorage.getItem('allPosts')||'[]');if(p.length)location.href=p[Math.floor(Math.random()*p.length)]}
+window.addEventListener('scroll',function(){const b=document.querySelector('.scroll-top');if(b)b.classList.toggle('visible',window.scrollY>400)});</script></body></html>

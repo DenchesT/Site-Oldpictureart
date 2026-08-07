@@ -1,7 +1,7 @@
 {
   "name": "Old Picture Art",
   "short_name": "OldPictureArt",
-  "description": "Галерея картин из Telegram канала Old Picture Art",
+  "description": "Галерея картин",
   "start_url": "/Site-Oldpictureart/",
   "display": "standalone",
   "background_color": "#fafafa",
