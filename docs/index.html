@@ -46,6 +46,12 @@ function toggleMenu() {
 }
 
 function toggleSection(el) {
+    document.querySelectorAll('.sidebar-title').forEach(title => {
+        if (title !== el) {
+            title.classList.remove('open');
+            title.nextElementSibling.classList.remove('open');
+        }
+    });
     el.classList.toggle('open');
     el.nextElementSibling.classList.toggle('open');
 }
