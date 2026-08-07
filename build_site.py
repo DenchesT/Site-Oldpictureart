@@ -201,7 +201,15 @@ def parse_post(text):
                 desc = "\n\n".join(re.sub(r"\s*\n\s*"," ",e).strip() for e in extras[1:])
             else: desc = "\n\n".join(re.sub(r"\s*\n\s*"," ",e).strip() for e in extras)
         md = parse_medium_details(medium)
-        return {"artist":artist,"title":title,"medium":medium,"material":md["material"],"techniques":md["techniques"],"size":md["size"],"museum":museum,"history":hist,"description":desc,"urls":urls,"tags":sorted(set(raw_tags)),"raw":text}
+        
+        # Извлекаем год создания картины из названия
+        creation_year = None
+        if title:
+            year_match = re.search(r'(\d{4})', title)
+            if year_match:
+                creation_year = int(year_match.group(1))
+        
+        return {"artist":artist,"title":title,"medium":medium,"material":md["material"],"techniques":md["techniques"],"size":md["size"],"museum":museum,"history":hist,"description":desc,"urls":urls,"tags":sorted(set(raw_tags)),"raw":text,"creation_year":creation_year}
     except Exception as e:
         logger.error(f"Ошибка парсинга: {e}")
         return {}
@@ -437,25 +445,28 @@ def render_index(all_posts):
             if t and len(t)>2: ts.add(t)
     materials, techniques = sorted(ms), sorted(ts)
     
-    # Архив
+    # Архив (по дате публикации)
     archive = defaultdict(set)
-    years_list = []
     for p in ps:
         if p.get("date") and "-" in p["date"]:
             y, m, _ = p["date"].split("-")
             archive[y].add(m)
-            years_list.append(int(y))
     ars = {y: sorted(list(m), reverse=True) for y, m in sorted(archive.items(), reverse=True)}
     
-    # Декады
+    # Декады (по году создания картины)
+    creation_years = []
+    for p in ps:
+        cy = p.get("creation_year")
+        if cy:
+            creation_years.append(cy)
     decades = set()
-    for y in years_list:
+    for y in creation_years:
         d_start = y // 10 * 10
         decades.add(f"{d_start}–{d_start+9}")
     decades_sorted = sorted(decades)
     
     # Общий счётчик
-    year_range = f"{min(years_list)}–{max(years_list)}" if years_list else ""
+    year_range = f"{min(creation_years)}–{max(creation_years)}" if creation_years else ""
     
     # Карточки
     cards = []
@@ -467,8 +478,9 @@ def render_index(all_posts):
         y, m = "", ""
         if p.get("date") and "-" in p["date"]: y, m, _ = p["date"].split("-")
         decade_attr = ""
-        if y:
-            d_start = int(y) // 10 * 10
+        creation_year = p.get("creation_year")
+        if creation_year:
+            d_start = creation_year // 10 * 10
             decade_attr = f'data-decade="{d_start}–{d_start+9}"'
         cards.append(f"""<a class="card" href="{h(p['filename'])}" data-artist="{h(p['artist'].lower())}" data-year="{y}" data-month="{m}" data-museum="{h(slugify(p.get('museum','')))}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}" {decade_attr}><div class="card-img"><img src="{cv}" alt="" loading="lazy"></div><div class="card-body"><div class="card-artist">{h(p['artist'])}</div><div class="card-title">{h(p['title'])}</div><div class="card-museum">{h(p.get('museum',''))}</div><div class="card-info">{h(p.get('material',''))} {h(', '.join(p.get('techniques',[])[:2]))}</div></div></a>""")
     
@@ -505,6 +517,9 @@ def render_index(all_posts):
     # Активные фильтры
     active_filters_html = '<div class="active-filters" id="active-filters" style="display:none"><span class="active-filters-label">Активные фильтры:</span><span id="active-filter-tags"></span><a href="#" id="clear-active-filters" style="color:var(--reset-text);margin-left:.5rem;font-size:.8rem">Очистить</a></div>'
     
+    # Ссылка на карту музеев
+    map_link_html = '<div class="sidebar-section"><a href="museums.html" class="map-link">🗺 Карта музеев</a></div>'
+    
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
 <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
@@ -531,6 +546,7 @@ def render_index(all_posts):
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">📄 Материал</div><div class="sidebar-content collapsed"><ul>{mth}</ul></div></div>
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">🖌 Техника</div><div class="sidebar-content collapsed"><ul>{th}</ul></div></div>
 {fav_html}
+{map_link_html}
 </aside><main class="main-content"><div class="grid" id="cards">{''.join(cards)}</div></main></div>
 <script>
 const ALL_POSTS = {af};
@@ -550,11 +566,13 @@ function toggleTheme() {{
     // Загружаем избранное
     const likes = JSON.parse(localStorage.getItem('likes') || '{{}}');
     const favList = document.getElementById('fav-list');
-    if (favList && Object.values(likes).some(v => v)) {{
-        favList.innerHTML = '';
-        ALL_POSTS.forEach(fn => {{
-            // Здесь нужен маппинг filename → id — упрощённо
-        }});
+    if (favList) {{
+        const likedIds = Object.entries(likes).filter(function(e) {{ return e[1]; }}).map(function(e) {{ return e[0]; }});
+        if (likedIds.length > 0) {{
+            favList.innerHTML = likedIds.map(function(id) {{
+                return '<li style="padding:.2rem .5rem;font-size:.8rem">🖼 Картина #' + id + '</li>';
+            }}).join('');
+        }}
     }}
 }})();
 
@@ -568,7 +586,7 @@ function toggleMenu() {{
 }}
 
 function toggleSection(el) {{
-    document.querySelectorAll('.sidebar-title').forEach(title => {{
+    document.querySelectorAll('.sidebar-title').forEach(function(title) {{
         if (title !== el) {{
             title.classList.remove('open');
             title.nextElementSibling.classList.remove('open');
@@ -594,7 +612,7 @@ let afilt = {{ type: null, val: null, year: null }};
 
 function updateView() {{
     const q = si.value.toLowerCase();
-    cards.forEach(c => {{
+    cards.forEach(function(c) {{
         let s = true;
         if(q) {{
             const artist = (c.querySelector('.card-artist')?.textContent || '').toLowerCase();
@@ -616,7 +634,7 @@ function updateView() {{
         c.style.display = s ? '' : 'none';
     }});
 
-    fl.forEach(l => {{
+    fl.forEach(function(l) {{
         let isActive = false;
         if(afilt.type === l.dataset.type) {{
             if(afilt.type === 'month') isActive = (l.dataset.val === afilt.val && l.dataset.year === afilt.year);
@@ -626,7 +644,6 @@ function updateView() {{
     }});
     rb.style.display = afilt.type ? 'block' : 'none';
     
-    // Активные фильтры
     if (afTags && afDiv) {{
         afTags.innerHTML = afilt.type ? '<span class="filter-tag">✔ ' + afilt.val + ' <a href="#" onclick="clearFilter()" style="color:inherit;text-decoration:none">×</a></span>' : '';
         afDiv.style.display = afilt.type ? 'block' : 'none';
@@ -640,13 +657,13 @@ function clearFilter() {{
 }}
 
 let debounceTimer;
-si.addEventListener('input', () => {{
+si.addEventListener('input', function() {{
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(updateView, 200);
 }});
 
-fl.forEach(l => {{
-    l.addEventListener('click', e => {{
+fl.forEach(function(l) {{
+    l.addEventListener('click', function(e) {{
         e.preventDefault();
         afilt.type = l.dataset.type;
         afilt.val = l.dataset.val;
@@ -657,14 +674,14 @@ fl.forEach(l => {{
     }});
 }});
 
-rb.addEventListener('click', e => {{
+rb.addEventListener('click', function(e) {{
     e.preventDefault();
     clearFilter();
     document.querySelector('.sidebar').classList.remove('open');
     document.getElementById('overlay').classList.remove('visible');
 }});
 
-if (clearAf) clearAf.addEventListener('click', e => {{ e.preventDefault(); clearFilter(); }});
+if (clearAf) clearAf.addEventListener('click', function(e) {{ e.preventDefault(); clearFilter(); }});
 
 document.addEventListener('keydown', function(e) {{
     if (e.key === 'r' || e.key === 'к') goRandom();
