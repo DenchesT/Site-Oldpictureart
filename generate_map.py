@@ -220,7 +220,7 @@ def generate_museums_page():
 </style>
 </head><body>
 <button class="theme-toggle" onclick="toggleTheme()"><span class="icon-theme-toggle"></span></button>
-<a href="index.html" class="back" style="padding:1rem;display:inline-block">← На главную</a>
+<a href="index.html" class="back" style="padding:1rem;display:inline-block"><span class="icon-back"></span> На главную</a>
 <h1 style="text-align:center"><span class="icon-map-header"></span> Карта музеев</h1>
 <p style="text-align:center;color:var(--muted)">{len(museums_dict)} {plural_ru(len(museums_dict), 'музей', 'музея', 'музеев')} в коллекции ({found_locations} на карте)</p>
 <div style="max-width:1200px;margin:0 auto;padding:0 1.5rem">
