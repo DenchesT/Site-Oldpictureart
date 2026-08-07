@@ -122,6 +122,16 @@ def parse_medium_details(medium_text):
             size = m.group(1).strip()
             text = text.replace(m.group(0),"").strip().rstrip(",.").strip()
             break
+    for mat in d["materials"]:
+        if mat in text.lower():
+            # Находим позицию материала и вставляем запятую после него
+            idx = text.lower().find(mat)
+            end_idx = idx + len(mat)
+            # Если после материала нет запятой, добавляем
+            if end_idx < len(text) and text[end_idx] != ',':
+                text = text[:end_idx] + ',' + text[end_idx:]
+            break
+    
     parts = [p.strip() for p in text.split(",") if p.strip()]
     material, techniques = "", []
     sw = re.compile(r'^\d+[,.]?\d*\s*(?:[xх×]|см|mm|мм|m|м)')
