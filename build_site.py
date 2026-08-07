@@ -54,7 +54,7 @@ try:
     API_HASH = os.environ["API_HASH"]
     PHONE = os.environ["PHONE"]
 except KeyError:
-    raise SystemExit("❌ Нужен .env с API_ID, API_HASH, PHONE")
+    raise SystemExit("✕ Нужен .env с API_ID, API_HASH, PHONE")
 
 logger.info(f"Аккаунт: {PHONE}")
 
@@ -415,7 +415,7 @@ def render_post_page(post, all_posts=None):
   </div>
 </header>
 <button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх"><span class="icon-arrow-up"></span></button>
-<article><h1>{artist}</h1><h2>{title}</h2>{img_html}{mdet}<p class="museum">🏛 {museum}</p>{desc_html}{hist_html}{src_html}<time>{h(post['date'])}</time><span class="views-count" id="views-count"></span>{tags_html}</article>
+<article><h1>{artist}</h1><h2>{title}</h2>{img_html}{mdet}<p class="museum"><span class="icon-museum-inline"></span> {museum}</p>{desc_html}{hist_html}{src_html}<time>{h(post['date'])}</time><span class="views-count" id="views-count"></span>{tags_html}</article>
 {post_nav}
 <script>
 function toggleTheme(){{const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}}
@@ -563,7 +563,7 @@ def render_index(all_posts):
 <title>Old Picture Art — Галерея</title>
 <link rel="stylesheet" href="style.css">
 </head><body class="index-page">
-<button class="menu-toggle" onclick="toggleMenu()">☰ Меню</button>
+<button class="menu-toggle" onclick="toggleMenu()"><span class="icon-menu"></span> Меню</button>
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 <button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх">↑</button>
 <header><h1><span class="icon-logo"></span> Old Picture Art</h1>
@@ -612,9 +612,9 @@ function updateFavList() {{
             favList.innerHTML = likedIds.map(function(id) {{
                 const info = POSTS_DATA[id];
                 if (info) {{
-                    return '<li><a href="' + info.file + '" style="font-size:.8rem" title="' + info.title + '">🖼 ' + info.title + '</a></li>';
+                    return '<li><a href="' + info.file + '" style="font-size:.8rem" title="' + info.title + '"><span class="icon-painting-small"></span> ' + info.title + '</a></li>';
                 }} else {{
-                    return '<li><a href="#" style="font-size:.8rem">🖼 Картина #' + id + '</a></li>';
+                    return '<li><a href="#" style="font-size:.8rem"><span class="icon-painting-small"></span> Картина #' + id + '</a></li>';
                 }}
             }}).join('');
         }} else {{

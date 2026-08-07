@@ -165,11 +165,11 @@ def generate_museums_page():
         
         location_html = ""
         if city:
-            location_html = f'<p class="museum-location">📍 {h(city)}{", " if city and country else ""}{h(country)}</p>'
+            location_html = f'<p class="museum-location"><span class="icon-location"></span> {h(city)}{", " if city and country else ""}{h(country)}</p>'
         
         museum_list.append(f"""
         <div class="museum-card" id="museum-{museum_id}">
-          <h3>🏛 {h(museum)}</h3>
+          <h3><span class="icon-museum-small"></span> {h(museum)}</h3>
           {location_html}
           <p class="museum-count">{len(posts)} {plural_ru(len(posts), 'картина', 'картины', 'картин')}</p>
           <ul class="museum-posts-list">
@@ -185,7 +185,7 @@ def generate_museums_page():
         
         # Маркер с ссылкой на карточку музея
         if lat and lon:
-            popup_html = f'<b>{h(museum)}</b><br>{h(city)}, {h(country)}<br>{len(posts)} {plural_ru(len(posts), 'картина', 'картины', 'картин')}<br><a href="#museum-{museum_id}" onclick="scrollToMuseum(\'{museum_id}\')" style="color:var(--active)">🔍 Показать в списке</a>'
+            popup_html = f'<b>{h(museum)}</b><br>{h(city)}, {h(country)}<br>{len(posts)} {plural_ru(len(posts), 'картина', 'картины', 'картин')}<br><a href="#museum-{museum_id}" onclick="scrollToMuseum(\'{museum_id}\')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>'
             markers_js.append(
             f"L.marker([{lat}, {lon}]).addTo(map).bindPopup(`{popup_html}`);"
              )
@@ -198,7 +198,7 @@ def generate_museums_page():
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
 <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
-<title>🗺 Карта музеев — Old Picture Art</title>
+<title>Карта музеев — Old Picture Art</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <link rel="stylesheet" href="style.css">
 <style>
@@ -219,9 +219,9 @@ def generate_museums_page():
 @media (max-width: 768px) {{ #map {{ height: 350px; }} }}
 </style>
 </head><body>
-<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+<button class="theme-toggle" onclick="toggleTheme()"><span class="icon-theme-toggle"></span></button>
 <a href="index.html" class="back" style="padding:1rem;display:inline-block">← На главную</a>
-<h1 style="text-align:center">🗺 Карта музеев</h1>
+<h1 style="text-align:center"><span class="icon-map-header"></span> Карта музеев</h1>
 <p style="text-align:center;color:var(--muted)">{len(museums_dict)} {plural_ru(len(museums_dict), 'музей', 'музея', 'музеев')} в коллекции ({found_locations} на карте)</p>
 <div style="max-width:1200px;margin:0 auto;padding:0 1.5rem">
   <div id="map"></div>
@@ -286,4 +286,4 @@ btn.textContent = 'Показать все ' + count + ' ' + (count%10==1&&count
 
 if __name__ == "__main__":
     generate_museums_page()
-    print("\n✨ Готово! Откройте docs/museums.html в браузере.")
+    print("\nГотово! Откройте docs/museums.html в браузере.")

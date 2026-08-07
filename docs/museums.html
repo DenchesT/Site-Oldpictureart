@@ -3,7 +3,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
 <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
-<title>🗺 Карта музеев — Old Picture Art</title>
+<title>Карта музеев — Old Picture Art</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <link rel="stylesheet" href="style.css">
 <style>
@@ -24,16 +24,16 @@
 @media (max-width: 768px) { #map { height: 350px; } }
 </style>
 </head><body>
-<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+<button class="theme-toggle" onclick="toggleTheme()"><span class="icon-theme-toggle"></span></button>
 <a href="index.html" class="back" style="padding:1rem;display:inline-block">← На главную</a>
-<h1 style="text-align:center">🗺 Карта музеев</h1>
+<h1 style="text-align:center"><span class="icon-map-header"></span> Карта музеев</h1>
 <p style="text-align:center;color:var(--muted)">50 музеев в коллекции (11 на карте)</p>
 <div style="max-width:1200px;margin:0 auto;padding:0 1.5rem">
   <div id="map"></div>
 </div>
 <div class="museums-grid">
         <div class="museum-card" id="museum-базельский-художественный-музей-базель">
-          <h3>🏛 Базельский художественный музей, Базель</h3>
+          <h3><span class="icon-museum-small"></span> Базельский художественный музей, Базель</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -47,7 +47,7 @@
           
         </div>
         <div class="museum-card" id="museum-британская-галерея-тейт-лондон">
-          <h3>🏛 Британская галерея Тейт, Лондон</h3>
+          <h3><span class="icon-museum-small"></span> Британская галерея Тейт, Лондон</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -61,7 +61,7 @@
           
         </div>
         <div class="museum-card" id="museum-винтертурский-художественный-музей-винтертур">
-          <h3>🏛 Винтертурский художественный музей, Винтертур</h3>
+          <h3><span class="icon-museum-small"></span> Винтертурский художественный музей, Винтертур</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -75,8 +75,8 @@
           
         </div>
         <div class="museum-card" id="museum-гим-москва">
-          <h3>🏛 ГИМ, Москва</h3>
-          <p class="museum-location">📍 Исторический музей, Россия</p>
+          <h3><span class="icon-museum-small"></span> ГИМ, Москва</h3>
+          <p class="museum-location"><span class="icon-location"></span> Исторический музей, Россия</p>
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
             <li><a href="2025-05-09-константин-фёдорович-юон.html">Константин Фёдорович Юон — Парад на Красной площади 7 ноября 1941 года, 1949</a></li>
@@ -89,7 +89,7 @@
           
         </div>
         <div class="museum-card" id="museum-гмии-им-ас-пушкина-москва">
-          <h3>🏛 ГМИИ им. А.С. Пушкина, Москва</h3>
+          <h3><span class="icon-museum-small"></span> ГМИИ им. А.С. Пушкина, Москва</h3>
           
           <p class="museum-count">6 картин</p>
           <ul class="museum-posts-list">
@@ -103,7 +103,7 @@
           <button class="show-more-btn" onclick="toggleMuseumPosts('гмии-им-ас-пушкина-москва')">Показать все 6 картин ▾</button>
         </div>
         <div class="museum-card" id="museum-грм-санкт-петербург">
-          <h3>🏛 ГРМ, Санкт-Петербург</h3>
+          <h3><span class="icon-museum-small"></span> ГРМ, Санкт-Петербург</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -117,8 +117,8 @@
           
         </div>
         <div class="museum-card" id="museum-государственная-третьяковская-галерея-москва">
-          <h3>🏛 Государственная Третьяковская галерея, Москва</h3>
-          <p class="museum-location">📍 Третьяковская галерея, Россия</p>
+          <h3><span class="icon-museum-small"></span> Государственная Третьяковская галерея, Москва</h3>
+          <p class="museum-location"><span class="icon-location"></span> Третьяковская галерея, Россия</p>
           <p class="museum-count">5 картин</p>
           <ul class="museum-posts-list">
             <li><a href="2025-03-06-николай-александрович-тархов.html">Николай Александрович Тархов — Козы на солнце, 1904</a></li><li><a href="2025-03-12-александр-иванович-морозов.html">Александр Иванович Морозов — Выход из церкви в Пскове, 1864</a></li><li><a href="2025-03-14-николай-дмитриевич-кузнецов.html">Николай Дмитриевич Кузнецов — В праздник, 1879</a></li><li><a href="2025-03-25-архип-иванович-куинджи.html">Архип Иванович Куинджи — Берёзовая роща, 1879</a></li><li><a href="2025-12-06-карл-павлович-брюллов.html">Карл Павлович Брюллов — Вид форта Пику на острове Мадейра (Неоконченная картина), 1849–1850</a></li>
@@ -131,7 +131,7 @@
           
         </div>
         <div class="museum-card" id="museum-государственный-музей-тюрингии-хайдексбург">
-          <h3>🏛 Государственный музей Тюрингии, Хайдексбург</h3>
+          <h3><span class="icon-museum-small"></span> Государственный музей Тюрингии, Хайдексбург</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -145,7 +145,7 @@
           
         </div>
         <div class="museum-card" id="museum-государственный-музей-истории-религии-санкт-петербург">
-          <h3>🏛 Государственный музей истории религии, Санкт-Петербург</h3>
+          <h3><span class="icon-museum-small"></span> Государственный музей истории религии, Санкт-Петербург</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -159,7 +159,7 @@
           
         </div>
         <div class="museum-card" id="museum-государственный-художественный-музей-платтсбурга-галерея-рок">
-          <h3>🏛 Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург</h3>
+          <h3><span class="icon-museum-small"></span> Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -173,7 +173,7 @@
           
         </div>
         <div class="museum-card" id="museum-гётеборгский-художественный-музей-гётеборг">
-          <h3>🏛 Гётеборгский художественный музей, Гётеборг</h3>
+          <h3><span class="icon-museum-small"></span> Гётеборгский художественный музей, Гётеборг</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -187,7 +187,7 @@
           
         </div>
         <div class="museum-card" id="museum-институт-искусств-миннеаполиса-миннеаполис">
-          <h3>🏛 Институт искусств Миннеаполиса, Миннеаполис</h3>
+          <h3><span class="icon-museum-small"></span> Институт искусств Миннеаполиса, Миннеаполис</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -201,7 +201,7 @@
           
         </div>
         <div class="museum-card" id="museum-институт-искусств-стерлинга-и-франсин-кларк-уильямстаун">
-          <h3>🏛 Институт искусств Стерлинга и Франсин Кларк, Уильямстаун</h3>
+          <h3><span class="icon-museum-small"></span> Институт искусств Стерлинга и Франсин Кларк, Уильямстаун</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -215,7 +215,7 @@
           
         </div>
         <div class="museum-card" id="museum-коллекции-версальского-дворца-версаль">
-          <h3>🏛 Коллекции Версальского дворца, Версаль</h3>
+          <h3><span class="icon-museum-small"></span> Коллекции Версальского дворца, Версаль</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -229,7 +229,7 @@
           
         </div>
         <div class="museum-card" id="museum-королевский-музей-изящных-искусств-брюссель">
-          <h3>🏛 Королевский музей изящных искусств, Брюссель</h3>
+          <h3><span class="icon-museum-small"></span> Королевский музей изящных искусств, Брюссель</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -243,7 +243,7 @@
           
         </div>
         <div class="museum-card" id="museum-лувр-париж-в-запаснике">
-          <h3>🏛 Лувр, Париж (в запаснике)</h3>
+          <h3><span class="icon-museum-small"></span> Лувр, Париж (в запаснике)</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -257,7 +257,7 @@
           
         </div>
         <div class="museum-card" id="museum-малый-дворец-музей-изящных-искусств-города-парижа-париж">
-          <h3>🏛 Малый дворец, музей изящных искусств города Парижа, Париж</h3>
+          <h3><span class="icon-museum-small"></span> Малый дворец, музей изящных искусств города Парижа, Париж</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -271,7 +271,7 @@
           
         </div>
         <div class="museum-card" id="museum-метрополитен-музей-нью-йорк">
-          <h3>🏛 Метрополитен-музей, Нью-Йорк</h3>
+          <h3><span class="icon-museum-small"></span> Метрополитен-музей, Нью-Йорк</h3>
           
           <p class="museum-count">2 картины</p>
           <ul class="museum-posts-list">
@@ -285,8 +285,8 @@
           
         </div>
         <div class="museum-card" id="museum-музей-барберини-потсдам">
-          <h3>🏛 Музей Барберини, Потсдам</h3>
-          <p class="museum-location">📍 Museum Barberini, Германия</p>
+          <h3><span class="icon-museum-small"></span> Музей Барберини, Потсдам</h3>
+          <p class="museum-location"><span class="icon-location"></span> Museum Barberini, Германия</p>
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
             <li><a href="2025-10-02-жан-батист-арман-гийомен.html">Жан-Батист Арман Гийомен — Vue du Puy-de-Dôme (Вид на Пюи-де-Дом), 1899</a></li>
@@ -299,7 +299,7 @@
           
         </div>
         <div class="museum-card" id="museum-музей-вальрафа-рихарца-и-фонд-корбо-кёльн">
-          <h3>🏛 Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн</h3>
+          <h3><span class="icon-museum-small"></span> Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -313,7 +313,7 @@
           
         </div>
         <div class="museum-card" id="museum-музей-гетти-лос-анджелес">
-          <h3>🏛 Музей Гетти, Лос-Анджелес</h3>
+          <h3><span class="icon-museum-small"></span> Музей Гетти, Лос-Анджелес</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -327,8 +327,8 @@
           
         </div>
         <div class="museum-card" id="museum-музей-кунстпаласт-дюссельдорф">
-          <h3>🏛 Музей Кунстпаласт, Дюссельдорф</h3>
-          <p class="museum-location">📍 Museum Kunstpalast, Германия</p>
+          <h3><span class="icon-museum-small"></span> Музей Кунстпаласт, Дюссельдорф</h3>
+          <p class="museum-location"><span class="icon-location"></span> Museum Kunstpalast, Германия</p>
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
             <li><a href="2025-05-04-макс-либерман.html">Макс Либерман — Die Kartoffelernte (Собирание картофеля), 1875</a></li>
@@ -341,8 +341,8 @@
           
         </div>
         <div class="museum-card" id="museum-музей-леопольда-вена">
-          <h3>🏛 Музей Леопольда, Вена</h3>
-          <p class="museum-location">📍 Музей Леопольда, Австрия</p>
+          <h3><span class="icon-museum-small"></span> Музей Леопольда, Вена</h3>
+          <p class="museum-location"><span class="icon-location"></span> Музей Леопольда, Австрия</p>
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
             <li><a href="2026-06-04-рудольф-фон-альт.html">Рудольф фон Альт — Die alte Fichte in Bad Gastein (Старая ель в Бад-Гастайне), 1899</a></li>
@@ -355,7 +355,7 @@
           
         </div>
         <div class="museum-card" id="museum-музей-скагена-скаген">
-          <h3>🏛 Музей Скагена, Скаген</h3>
+          <h3><span class="icon-museum-small"></span> Музей Скагена, Скаген</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -369,7 +369,7 @@
           
         </div>
         <div class="museum-card" id="museum-музей-фабра-монпелье">
-          <h3>🏛 Музей Фабра, Монпелье</h3>
+          <h3><span class="icon-museum-small"></span> Музей Фабра, Монпелье</h3>
           
           <p class="museum-count">2 картины</p>
           <ul class="museum-posts-list">
@@ -383,7 +383,7 @@
           
         </div>
         <div class="museum-card" id="museum-музей-эжена-будена-онфлёр">
-          <h3>🏛 Музей Эжена Будена, Онфлёр</h3>
+          <h3><span class="icon-museum-small"></span> Музей Эжена Будена, Онфлёр</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -397,8 +397,8 @@
           
         </div>
         <div class="museum-card" id="museum-музей-дорсе-париж">
-          <h3>🏛 Музей д’Орсе, Париж</h3>
-          <p class="museum-location">📍 Музей Орсе, Франция</p>
+          <h3><span class="icon-museum-small"></span> Музей д’Орсе, Париж</h3>
+          <p class="museum-location"><span class="icon-location"></span> Музей Орсе, Франция</p>
           <p class="museum-count">3 картины</p>
           <ul class="museum-posts-list">
             <li><a href="2025-06-27-альфред-сислей.html">Альфред Сислей — Le Pont de Moret (Мост в Морэ), 1893</a></li><li><a href="2025-08-07-илер-жермен-эдгар-де-га-эдгар-дега.html">Илер-Жермен-Эдгар де Га (Эдгар Дега) — Salle de billard au Ménil-Hubert (Бильярдная в Мениль-Юбер), 1892</a></li><li><a href="2025-12-01-станислас-анри-руар.html">Станислас Анри Руар — La Terrasse au bord de la Seine à Melun (Терраса на берегу Сены в Мелуне), 1874</a></li>
@@ -411,7 +411,7 @@
           
         </div>
         <div class="museum-card" id="museum-музей-изящных-искусств-гент">
-          <h3>🏛 Музей изящных искусств, Гент</h3>
+          <h3><span class="icon-museum-small"></span> Музей изящных искусств, Гент</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -425,7 +425,7 @@
           
         </div>
         <div class="museum-card" id="museum-музей-искусств-охара-курасики">
-          <h3>🏛 Музей искусств Охара, Курасики</h3>
+          <h3><span class="icon-museum-small"></span> Музей искусств Охара, Курасики</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -439,7 +439,7 @@
           
         </div>
         <div class="museum-card" id="museum-музей-современного-искусства-андре-мальро-гавр">
-          <h3>🏛 Музей современного искусства Андре Мальро, Гавр</h3>
+          <h3><span class="icon-museum-small"></span> Музей современного искусства Андре Мальро, Гавр</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -453,8 +453,8 @@
           
         </div>
         <div class="museum-card" id="museum-национальная-галерея-шотландии-эдинбург">
-          <h3>🏛 Национальная галерея Шотландии, Эдинбург</h3>
-          <p class="museum-location">📍 Национальная портретная галерея Шотландии, Соединённое Королевство</p>
+          <h3><span class="icon-museum-small"></span> Национальная галерея Шотландии, Эдинбург</h3>
+          <p class="museum-location"><span class="icon-location"></span> Национальная портретная галерея Шотландии, Соединённое Королевство</p>
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
             <li><a href="2025-06-18-фердинан-виктор-эжен-делакруа.html">Фердинан Виктор Эжен Делакруа — Bouquet de fleurs (Ваза с цветами), 1833</a></li>
@@ -467,7 +467,7 @@
           
         </div>
         <div class="museum-card" id="museum-национальная-галерея-искусства-вашингтон">
-          <h3>🏛 Национальная галерея искусства, Вашингтон</h3>
+          <h3><span class="icon-museum-small"></span> Национальная галерея искусства, Вашингтон</h3>
           
           <p class="museum-count">4 картины</p>
           <ul class="museum-posts-list">
@@ -481,7 +481,7 @@
           
         </div>
         <div class="museum-card" id="museum-национальный-музей-прадо-мадрид">
-          <h3>🏛 Национальный музей Прадо, Мадрид</h3>
+          <h3><span class="icon-museum-small"></span> Национальный музей Прадо, Мадрид</h3>
           
           <p class="museum-count">2 картины</p>
           <ul class="museum-posts-list">
@@ -495,8 +495,8 @@
           
         </div>
         <div class="museum-card" id="museum-национальный-музей-западного-искусства-токио">
-          <h3>🏛 Национальный музей западного искусства, Токио</h3>
-          <p class="museum-location">📍 Национальный музей западного искусства, Япония</p>
+          <h3><span class="icon-museum-small"></span> Национальный музей западного искусства, Токио</h3>
+          <p class="museum-location"><span class="icon-location"></span> Национальный музей западного искусства, Япония</p>
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
             <li><a href="2025-08-21-альфред-сислей.html">Альфред Сислей — Landscape at Louveciennes (Пейзаж в Лувесьене), 1873</a></li>
@@ -509,7 +509,7 @@
           
         </div>
         <div class="museum-card" id="museum-национальный-художественный-музей-республики-беларусь-минск">
-          <h3>🏛 Национальный художественный музей Республики Беларусь, Минск</h3>
+          <h3><span class="icon-museum-small"></span> Национальный художественный музей Республики Беларусь, Минск</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -523,7 +523,7 @@
           
         </div>
         <div class="museum-card" id="museum-отдел-личных-коллекций-гмии-им-ас-пушкина-москва">
-          <h3>🏛 Отдел личных коллекций, ГМИИ им. А.С. Пушкина, Москва</h3>
+          <h3><span class="icon-museum-small"></span> Отдел личных коллекций, ГМИИ им. А.С. Пушкина, Москва</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -537,8 +537,8 @@
           
         </div>
         <div class="museum-card" id="museum-пермская-государственная-художественная-галерея-пермь">
-          <h3>🏛 Пермская государственная художественная галерея, Пермь</h3>
-          <p class="museum-location">📍 Пермская Государственная Художественная Галерея, Россия</p>
+          <h3><span class="icon-museum-small"></span> Пермская государственная художественная галерея, Пермь</h3>
+          <p class="museum-location"><span class="icon-location"></span> Пермская Государственная Художественная Галерея, Россия</p>
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
             <li><a href="2025-09-24-константин-аполлонович-савицкий.html">Константин Аполлонович Савицкий — У мирового суда, XIX век</a></li>
@@ -551,7 +551,7 @@
           
         </div>
         <div class="museum-card" id="museum-портлендский-художественный-музей-портленд">
-          <h3>🏛 Портлендский художественный музей, Портленд</h3>
+          <h3><span class="icon-museum-small"></span> Портлендский художественный музей, Портленд</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -565,7 +565,7 @@
           
         </div>
         <div class="museum-card" id="museum-собрание-фонда-эмиля-бюрле-цюрих">
-          <h3>🏛 Собрание Фонда Эмиля Бюрле, Цюрих</h3>
+          <h3><span class="icon-museum-small"></span> Собрание Фонда Эмиля Бюрле, Цюрих</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -579,7 +579,7 @@
           
         </div>
         <div class="museum-card" id="museum-собрание-хиршпрунга-копенгаген">
-          <h3>🏛 Собрание Хиршпрунга, Копенгаген</h3>
+          <h3><span class="icon-museum-small"></span> Собрание Хиршпрунга, Копенгаген</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -593,8 +593,8 @@
           
         </div>
         <div class="museum-card" id="museum-старая-национальная-галерея-берлин">
-          <h3>🏛 Старая национальная галерея, Берлин</h3>
-          <p class="museum-location">📍 Старая национальная галерея, Германия</p>
+          <h3><span class="icon-museum-small"></span> Старая национальная галерея, Берлин</h3>
+          <p class="museum-location"><span class="icon-location"></span> Старая национальная галерея, Германия</p>
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
             <li><a href="2025-06-02-франц-теодор-макс-слефогт.html">Франц Теодор Макс Слефогт — Unter den Linden (Унтер-ден-Линден), 1913</a></li>
@@ -607,7 +607,7 @@
           
         </div>
         <div class="museum-card" id="museum-художественная-галерея-южной-австралии-аделаида">
-          <h3>🏛 Художественная галерея Южной Австралии, Аделаида</h3>
+          <h3><span class="icon-museum-small"></span> Художественная галерея Южной Австралии, Аделаида</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -621,7 +621,7 @@
           
         </div>
         <div class="museum-card" id="museum-художественный-музей-колледжа-смит-нортхемптон">
-          <h3>🏛 Художественный музей колледжа Смит, Нортхемптон</h3>
+          <h3><span class="icon-museum-small"></span> Художественный музей колледжа Смит, Нортхемптон</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -635,8 +635,8 @@
           
         </div>
         <div class="museum-card" id="museum-частная-коллекция">
-          <h3>🏛 Частная коллекция</h3>
-          <p class="museum-location">📍 Частная коллекция, Россия</p>
+          <h3><span class="icon-museum-small"></span> Частная коллекция</h3>
+          <p class="museum-location"><span class="icon-location"></span> Частная коллекция, Россия</p>
           <p class="museum-count">11 картин</p>
           <ul class="museum-posts-list">
             <li><a href="2025-03-22-гюстав-кайботт.html">Гюстав Кайботт — Chemin montant (Восходящая дорога), 1881</a></li><li><a href="2025-05-23-геркулес-сегерс.html">Геркулес Сегерс — Woodland Path (Лесная тропа), около 1618-20</a></li><li><a href="2025-05-25-игорь-эммануилович-грабарь.html">Игорь Эммануилович Грабарь — Весенний пейзаж. Апрель, 1939</a></li><li><a href="2025-05-31-ханс-даль.html">Ханс Даль — Норвежский фьорд с козами, 1910-е</a></li><li><a href="2025-07-03-альберт-бирштадт.html">Альберт Бирштадт — A River Landscape, Westphalia (Речной пейзаж, Вестфалия), 1855</a></li>
@@ -649,7 +649,7 @@
           <button class="show-more-btn" onclick="toggleMuseumPosts('частная-коллекция')">Показать все 11 картин ▾</button>
         </div>
         <div class="museum-card" id="museum-частная-коллекция-монте-карло">
-          <h3>🏛 Частная коллекция, Монте-Карло</h3>
+          <h3><span class="icon-museum-small"></span> Частная коллекция, Монте-Карло</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -663,7 +663,7 @@
           
         </div>
         <div class="museum-card" id="museum-частная-коллекция-сша">
-          <h3>🏛 Частная коллекция, США</h3>
+          <h3><span class="icon-museum-small"></span> Частная коллекция, США</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -677,7 +677,7 @@
           
         </div>
         <div class="museum-card" id="museum-частная-коллекция-франция">
-          <h3>🏛 Частная коллекция, Франция</h3>
+          <h3><span class="icon-museum-small"></span> Частная коллекция, Франция</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -691,7 +691,7 @@
           
         </div>
         <div class="museum-card" id="museum-частная-коллекция-швейцария">
-          <h3>🏛 Частная коллекция, Швейцария</h3>
+          <h3><span class="icon-museum-small"></span> Частная коллекция, Швейцария</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -705,7 +705,7 @@
           
         </div>
         <div class="museum-card" id="museum-чикагский-институт-искусств-чикаго">
-          <h3>🏛 Чикагский институт искусств, Чикаго</h3>
+          <h3><span class="icon-museum-small"></span> Чикагский институт искусств, Чикаго</h3>
           
           <p class="museum-count">2 картины</p>
           <ul class="museum-posts-list">
@@ -719,7 +719,7 @@
           
         </div>
         <div class="museum-card" id="museum-штеделевский-художественный-институт-франкфурт-на-майне">
-          <h3>🏛 Штеделевский художественный институт, Франкфурт-на-Майне</h3>
+          <h3><span class="icon-museum-small"></span> Штеделевский художественный институт, Франкфурт-на-Майне</h3>
           
           <p class="museum-count">1 картина</p>
           <ul class="museum-posts-list">
@@ -743,17 +743,17 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18
 }).addTo(map);
 
-L.marker([55.755323, 37.6178815]).addTo(map).bindPopup(`<b>ГИМ, Москва</b><br>Исторический музей, Россия<br>1 картина<br><a href="#museum-гим-москва" onclick="scrollToMuseum('гим-москва')" style="color:var(--active)">🔍 Показать в списке</a>`);
-            L.marker([55.7413613, 37.6202196]).addTo(map).bindPopup(`<b>Государственная Третьяковская галерея, Москва</b><br>Третьяковская галерея, Россия<br>5 картин<br><a href="#museum-государственная-третьяковская-галерея-москва" onclick="scrollToMuseum('государственная-третьяковская-галерея-москва')" style="color:var(--active)">🔍 Показать в списке</a>`);
-            L.marker([52.395233, 13.0618998]).addTo(map).bindPopup(`<b>Музей Барберини, Потсдам</b><br>Museum Barberini, Германия<br>1 картина<br><a href="#museum-музей-барберини-потсдам" onclick="scrollToMuseum('музей-барберини-потсдам')" style="color:var(--active)">🔍 Показать в списке</a>`);
-            L.marker([51.234998, 6.7731045]).addTo(map).bindPopup(`<b>Музей Кунстпаласт, Дюссельдорф</b><br>Museum Kunstpalast, Германия<br>1 картина<br><a href="#museum-музей-кунстпаласт-дюссельдорф" onclick="scrollToMuseum('музей-кунстпаласт-дюссельдорф')" style="color:var(--active)">🔍 Показать в списке</a>`);
-            L.marker([48.2025896, 16.3590667]).addTo(map).bindPopup(`<b>Музей Леопольда, Вена</b><br>Музей Леопольда, Австрия<br>1 картина<br><a href="#museum-музей-леопольда-вена" onclick="scrollToMuseum('музей-леопольда-вена')" style="color:var(--active)">🔍 Показать в списке</a>`);
-            L.marker([48.8599179, 2.3265849]).addTo(map).bindPopup(`<b>Музей д’Орсе, Париж</b><br>Музей Орсе, Франция<br>3 картины<br><a href="#museum-музей-дорсе-париж" onclick="scrollToMuseum('музей-дорсе-париж')" style="color:var(--active)">🔍 Показать в списке</a>`);
-            L.marker([55.9554655, -3.1935919]).addTo(map).bindPopup(`<b>Национальная галерея Шотландии, Эдинбург</b><br>Национальная портретная галерея Шотландии, Соединённое Королевство<br>1 картина<br><a href="#museum-национальная-галерея-шотландии-эдинбург" onclick="scrollToMuseum('национальная-галерея-шотландии-эдинбург')" style="color:var(--active)">🔍 Показать в списке</a>`);
-            L.marker([35.7155512, 139.7759424]).addTo(map).bindPopup(`<b>Национальный музей западного искусства, Токио</b><br>Национальный музей западного искусства, Япония<br>1 картина<br><a href="#museum-национальный-музей-западного-искусства-токио" onclick="scrollToMuseum('национальный-музей-западного-искусства-токио')" style="color:var(--active)">🔍 Показать в списке</a>`);
-            L.marker([58.0164488, 56.2346467]).addTo(map).bindPopup(`<b>Пермская государственная художественная галерея, Пермь</b><br>Пермская Государственная Художественная Галерея, Россия<br>1 картина<br><a href="#museum-пермская-государственная-художественная-галерея-пермь" onclick="scrollToMuseum('пермская-государственная-художественная-галерея-пермь')" style="color:var(--active)">🔍 Показать в списке</a>`);
-            L.marker([52.520862, 13.3982661]).addTo(map).bindPopup(`<b>Старая национальная галерея, Берлин</b><br>Старая национальная галерея, Германия<br>1 картина<br><a href="#museum-старая-национальная-галерея-берлин" onclick="scrollToMuseum('старая-национальная-галерея-берлин')" style="color:var(--active)">🔍 Показать в списке</a>`);
-            L.marker([55.7484059, 37.6086121]).addTo(map).bindPopup(`<b>Частная коллекция</b><br>Частная коллекция, Россия<br>11 картин<br><a href="#museum-частная-коллекция" onclick="scrollToMuseum('частная-коллекция')" style="color:var(--active)">🔍 Показать в списке</a>`);
+L.marker([55.755323, 37.6178815]).addTo(map).bindPopup(`<b>ГИМ, Москва</b><br>Исторический музей, Россия<br>1 картина<br><a href="#museum-гим-москва" onclick="scrollToMuseum('гим-москва')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
+            L.marker([55.7413613, 37.6202196]).addTo(map).bindPopup(`<b>Государственная Третьяковская галерея, Москва</b><br>Третьяковская галерея, Россия<br>5 картин<br><a href="#museum-государственная-третьяковская-галерея-москва" onclick="scrollToMuseum('государственная-третьяковская-галерея-москва')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
+            L.marker([52.395233, 13.0618998]).addTo(map).bindPopup(`<b>Музей Барберини, Потсдам</b><br>Museum Barberini, Германия<br>1 картина<br><a href="#museum-музей-барберини-потсдам" onclick="scrollToMuseum('музей-барберини-потсдам')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
+            L.marker([51.234998, 6.7731045]).addTo(map).bindPopup(`<b>Музей Кунстпаласт, Дюссельдорф</b><br>Museum Kunstpalast, Германия<br>1 картина<br><a href="#museum-музей-кунстпаласт-дюссельдорф" onclick="scrollToMuseum('музей-кунстпаласт-дюссельдорф')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
+            L.marker([48.2025896, 16.3590667]).addTo(map).bindPopup(`<b>Музей Леопольда, Вена</b><br>Музей Леопольда, Австрия<br>1 картина<br><a href="#museum-музей-леопольда-вена" onclick="scrollToMuseum('музей-леопольда-вена')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
+            L.marker([48.8599179, 2.3265849]).addTo(map).bindPopup(`<b>Музей д’Орсе, Париж</b><br>Музей Орсе, Франция<br>3 картины<br><a href="#museum-музей-дорсе-париж" onclick="scrollToMuseum('музей-дорсе-париж')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
+            L.marker([55.9554655, -3.1935919]).addTo(map).bindPopup(`<b>Национальная галерея Шотландии, Эдинбург</b><br>Национальная портретная галерея Шотландии, Соединённое Королевство<br>1 картина<br><a href="#museum-национальная-галерея-шотландии-эдинбург" onclick="scrollToMuseum('национальная-галерея-шотландии-эдинбург')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
+            L.marker([35.7155512, 139.7759424]).addTo(map).bindPopup(`<b>Национальный музей западного искусства, Токио</b><br>Национальный музей западного искусства, Япония<br>1 картина<br><a href="#museum-национальный-музей-западного-искусства-токио" onclick="scrollToMuseum('национальный-музей-западного-искусства-токио')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
+            L.marker([58.0164488, 56.2346467]).addTo(map).bindPopup(`<b>Пермская государственная художественная галерея, Пермь</b><br>Пермская Государственная Художественная Галерея, Россия<br>1 картина<br><a href="#museum-пермская-государственная-художественная-галерея-пермь" onclick="scrollToMuseum('пермская-государственная-художественная-галерея-пермь')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
+            L.marker([52.520862, 13.3982661]).addTo(map).bindPopup(`<b>Старая национальная галерея, Берлин</b><br>Старая национальная галерея, Германия<br>1 картина<br><a href="#museum-старая-национальная-галерея-берлин" onclick="scrollToMuseum('старая-национальная-галерея-берлин')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
+            L.marker([55.7484059, 37.6086121]).addTo(map).bindPopup(`<b>Частная коллекция</b><br>Частная коллекция, Россия<br>11 картин<br><a href="#museum-частная-коллекция" onclick="scrollToMuseum('частная-коллекция')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
 
 const markers = [];
 map.eachLayer(function(layer) {

@@ -6,7 +6,7 @@
 <title>Old Picture Art — Галерея</title>
 <link rel="stylesheet" href="style.css">
 </head><body class="index-page">
-<button class="menu-toggle" onclick="toggleMenu()">☰ Меню</button>
+<button class="menu-toggle" onclick="toggleMenu()"><span class="icon-menu"></span> Меню</button>
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 <button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Наверх">↑</button>
 <header><h1><span class="icon-logo"></span> Old Picture Art</h1>
@@ -55,9 +55,9 @@ function updateFavList() {
             favList.innerHTML = likedIds.map(function(id) {
                 const info = POSTS_DATA[id];
                 if (info) {
-                    return '<li><a href="' + info.file + '" style="font-size:.8rem" title="' + info.title + '">🖼 ' + info.title + '</a></li>';
+                    return '<li><a href="' + info.file + '" style="font-size:.8rem" title="' + info.title + '"><span class="icon-painting-small"></span> ' + info.title + '</a></li>';
                 } else {
-                    return '<li><a href="#" style="font-size:.8rem">🖼 Картина #' + id + '</a></li>';
+                    return '<li><a href="#" style="font-size:.8rem"><span class="icon-painting-small"></span> Картина #' + id + '</a></li>';
                 }
             }).join('');
         } else {
