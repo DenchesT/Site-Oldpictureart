@@ -109,10 +109,10 @@ function showAuthForm() {
         <button type="submit" class="auth-submit" id="auth-submit-btn">Войти</button>
       </form>
             <div class="auth-error" id="auth-error"></div>
-      <div class="auth-switch">
+            <div class="auth-switch">
         Нет аккаунта? <a id="auth-switch-link">Создать</a>
       </div>
-      <div class="auth-switch" style="margin-top:0.2rem">
+      <div class="auth-switch" style="margin-top:0.2rem;display:none" id="auth-reset-container">
         <a id="auth-reset-link">Забыли пароль?</a>
       </div>
     </div>
@@ -139,13 +139,14 @@ function showAuthForm() {
       .catch(err => errorDiv.textContent = 'Ошибка: ' + err.message);
   };
   
-   // Switch login/register
+    // Switch login/register
   switchLink.onclick = () => {
     isLogin = !isLogin;
     submitBtn.textContent = isLogin ? 'Войти' : 'Создать аккаунт';
     switchLink.textContent = isLogin ? 'Создать' : 'Войти';
     document.getElementById('auth-title').textContent = isLogin ? 'Вход в аккаунт' : 'Регистрация';
     errorDiv.textContent = '';
+    document.getElementById('auth-reset-container').style.display = 'none';
   };
   
   // Reset password
@@ -169,13 +170,22 @@ function showAuthForm() {
       ? auth.signInWithEmailAndPassword(email, pass)
       : auth.createUserWithEmailAndPassword(email, pass);
     
-    promise
+        promise
       .then(() => overlay.remove())
       .catch(err => {
-        if (err.code === 'auth/user-not-found') errorDiv.textContent = 'Аккаунт не найден';
-        else if (err.code === 'auth/wrong-password') errorDiv.textContent = 'Неверный пароль';
-        else if (err.code === 'auth/email-already-in-use') errorDiv.textContent = 'Email уже используется';
-        else errorDiv.textContent = 'Ошибка: ' + err.message;
+        if (err.code === 'auth/user-not-found') {
+          errorDiv.textContent = 'Аккаунт не найден. Проверьте email или создайте новый.';
+          document.getElementById('auth-reset-container').style.display = 'none';
+        } else if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+          errorDiv.textContent = 'Неверный пароль.';
+          document.getElementById('auth-reset-container').style.display = 'block';
+        } else if (err.code === 'auth/email-already-in-use') {
+          errorDiv.textContent = 'Email уже используется.';
+          document.getElementById('auth-reset-container').style.display = 'block';
+        } else {
+          errorDiv.textContent = 'Ошибка: ' + err.message;
+          document.getElementById('auth-reset-container').style.display = 'none';
+        }
       });
   };
   
