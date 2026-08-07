@@ -544,7 +544,7 @@ def render_index(all_posts):
 <div class="subtitle">{len(ps)} картин · {len(authors)} художников · {len(museums)} музеев · {year_range}</div>
 <a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная картина</a></header>
 <div class="layout"><aside class="sidebar">
-<div class="sidebar-section"><div class="sidebar-title">🔍 Поиск</div><div class="sidebar-content"><input type="text" class="search-box" placeholder="Поиск..." id="search" style="width:100%"></div></div>
+<div class="sidebar-section" style="padding: 8px 12px;"><input type="text" class="search-box" placeholder="🔍 Поиск..." id="search" style="width:100%"></div>
 <a href="#" id="reset-filter" class="filter-reset" style="display:none">✕ Сбросить все фильтры</a>
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">📅 Архив</div><div class="sidebar-content collapsed"><ul>{arh}</ul></div></div>
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">📆 Декады</div><div class="sidebar-content collapsed"><ul>{dech}</ul></div></div>
@@ -613,7 +613,6 @@ function toggleMenu() {{
     document.getElementById('overlay').classList.toggle('active');
 }}
 
-// Логика отображения кнопки сброса фильтров и фильтрации
 document.addEventListener('DOMContentLoaded', function() {{
     const searchBox = document.getElementById('search');
     const resetBtn = document.getElementById('reset-filter');
@@ -640,7 +639,6 @@ document.addEventListener('DOMContentLoaded', function() {{
         cards.forEach(card => {{
             let show = true;
             
-            // Поиск по текстовому полю
             if (activeFilters.search) {{
                 const text = card.textContent.toLowerCase();
                 if (!text.includes(activeFilters.search)) {{
@@ -648,7 +646,6 @@ document.addEventListener('DOMContentLoaded', function() {{
                 }}
             }}
 
-            // Фильтры по категориям (художник, музей, материал, техника и т.д.)
             if (show && activeFilters.type) {{
                 if (activeFilters.type === 'artist') {{
                     if (card.dataset.artist !== activeFilters.val) show = false;
