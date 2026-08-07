@@ -457,58 +457,58 @@ def render_post_page(post: dict) -> str:
 :root{{--bg:#fafafa;--text:#222;--card-bg:#fff;--tag-bg:#eee;--tag-text:#555;--border:#ddd;--muted:#555;--link:#0366d6;--shadow:rgba(0,0,0,.15);--history-bg:#f3eedb;--history-border:#b8a86a}}
 [data-theme="dark"]{{--bg:#1a1a2e;--text:#e0e0e0;--card-bg:#16213e;--tag-bg:#0f3460;--tag-text:#e0e0e0;--border:#333;--muted:#aaa;--link:#64b5f6;--shadow:rgba(0,0,0,.5);--history-bg:#2d2d1a;--history-border:#8b7a2e}}
 *{{box-sizing:border-box}}
-body{{max-width:900px;margin:0 auto;padding:1.5rem;font-family:'EB Garamond',Georgia,serif;font-size:20px;background:var(--bg);color:var(--text);line-height:1.65;transition:background .3s,color .3s;-webkit-tap-highlight-color:transparent}}
+body{{max-width:900px;margin:0 auto;padding:1.5rem;font-family:'EB Garamond',Georgia,serif;background:var(--bg);color:var(--text);line-height:1.55;transition:background .3s,color .3s;-webkit-tap-highlight-color:transparent}}
 .painting{{max-width:100%;max-height:70vh;display:block;margin:1.5rem auto;box-shadow:0 4px 20px var(--shadow);border-radius:4px;transition:transform .2s;cursor:pointer}}
 .painting:active{{transform:scale(1.02)}}
-h1{{font-size:2.4rem;margin:0 0 .3rem;line-height:1.2;font-weight:700}}
-h2{{font-size:1.5rem;font-style:italic;font-weight:400;color:var(--muted);margin:0 0 1rem}}
-.medium-details{{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;margin:1rem auto;padding:.8rem 1.2rem;background:var(--card-bg);border-radius:6px;font-size:1rem;color:var(--muted);border:1px solid var(--border);justify-content:center;text-align:center;max-width:fit-content}}
-.museum{{font-style:italic;color:var(--muted);margin:.3rem 0;font-size:1.1rem}}
+h1{{font-size:1.8rem;margin:0 0 .3rem;line-height:1.2}}
+h2{{font-size:1.25rem;font-style:italic;font-weight:normal;color:var(--muted);margin:0 0 1rem}}
+.medium-details{{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;margin:1rem auto;padding:.8rem;background:var(--card-bg);border-radius:6px;font-size:.9rem;color:var(--muted);border:1px solid var(--border);justify-content:center;text-align:center;max-width:fit-content}}
+.museum{{font-style:italic;color:var(--muted);margin:.3rem 0}}
 .source a,.source-list a{{color:var(--link);word-break:break-all;overflow-wrap:break-word;hyphens:auto}}
-.source{{max-width:100%;overflow:hidden;font-size:.95rem}}
+.source{{max-width:100%;overflow:hidden}}
 .source-list{{max-width:100%}}
 .source-list li{{word-break:break-all;overflow-wrap:break-word}}
 .description{{margin:1.5rem 0;text-align:justify}}
-.description p{{margin:.6rem 0;line-height:1.7}}
+.description p{{margin:.6rem 0;line-height:1.65}}
 .history{{margin:1.8rem 0;padding:1rem 1.25rem;background:var(--history-bg);border-left:3px solid var(--history-border);border-radius:4px}}
-.history h3{{margin:0 0 .6rem;font-size:1.1rem;color:#5a4f2a}}
+.history h3{{margin:0 0 .6rem;font-size:1rem;color:#5a4f2a}}
 .history ul{{margin:0;padding-left:1.2rem}}
-.history li{{margin:.4rem 0;color:#4a4a4a;font-size:1rem;line-height:1.5}}
+.history li{{margin:.4rem 0;color:#4a4a4a;font-size:.95rem;line-height:1.5}}
 .tags{{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:.4rem}}
-.tag{{display:inline-block;background:var(--tag-bg);color:var(--tag-text);text-decoration:none;padding:.3rem .7rem;border-radius:4px;font-size:.9rem;transition:background .2s}}
+.tag{{display:inline-block;background:var(--tag-bg);color:var(--tag-text);text-decoration:none;padding:.3rem .7rem;border-radius:4px;font-size:.85rem;transition:background .2s}}
 .tag:active{{background:var(--link);color:#fff}}
 .top-nav{{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:1rem}}
-.back{{display:inline-block;color:var(--link);text-decoration:none;font-size:1rem}}
-time{{color:var(--muted);font-size:.9rem;display:block;margin-top:.5rem}}
+.back{{display:inline-block;color:var(--link);text-decoration:none;font-size:.95rem}}
+time{{color:var(--muted);font-size:.85rem;display:block;margin-top:.5rem}}
 .theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);z-index:1000;font-size:.9rem;box-shadow:0 2px 8px var(--shadow)}}
-.random-btn{{display:inline-block;padding:.3rem 1rem;background:var(--link);color:#fff;text-decoration:none;border-radius:4px;font-size:.95rem}}
+.random-btn{{display:inline-block;padding:.3rem 1rem;background:var(--link);color:#fff;text-decoration:none;border-radius:4px;font-size:.9rem}}
 .scroll-top{{position:fixed;bottom:1.5rem;right:1.5rem;width:44px;height:44px;background:var(--link);color:#fff;border:none;border-radius:50%;font-size:1.3rem;cursor:pointer;box-shadow:0 2px 10px var(--shadow);z-index:999;display:none;align-items:center;justify-content:center}}
 .scroll-top.visible{{display:flex}}
 .scroll-top:active{{transform:scale(.9)}}
 @media(max-width:768px){{
-  body{{padding:.8rem;font-size:18px}}
-  h1{{font-size:1.8rem}}
-  h2{{font-size:1.2rem;margin-bottom:.5rem}}
+  body{{padding:.8rem;font-size:15px}}
+  h1{{font-size:1.4rem}}
+  h2{{font-size:1.1rem;margin-bottom:.5rem}}
   .painting{{margin:.8rem auto;max-height:50vh}}
-  .medium-details{{flex-direction:column;gap:.3rem;padding:.6rem;font-size:.9rem}}
-  .theme-toggle{{top:.5rem;right:.5rem;padding:.4rem .8rem;font-size:.8rem}}
-  .random-btn{{padding:.2rem .7rem;font-size:.85rem}}
+  .medium-details{{flex-direction:column;gap:.3rem;padding:.6rem;font-size:.8rem}}
+  .theme-toggle{{top:.5rem;right:.5rem;padding:.4rem .8rem;font-size:.75rem}}
+  .random-btn{{padding:.2rem .7rem;font-size:.8rem}}
   .tags{{gap:.3rem;margin-top:1rem;padding-top:.8rem}}
-  .tag{{padding:.25rem .6rem;font-size:.8rem}}
-  .description{{font-size:1rem}}
+  .tag{{padding:.25rem .6rem;font-size:.78rem}}
+  .description{{font-size:.9rem}}
   .history{{padding:.8rem 1rem;margin:1.2rem 0}}
   .scroll-top{{width:40px;height:40px;font-size:1.1rem;bottom:1rem;right:1rem}}
-  .back{{font-size:.9rem}}
+  .back{{font-size:.85rem}}
 }}
 @media(max-width:480px){{
-  body{{padding:.5rem;font-size:16px}}
-  h1{{font-size:1.4rem}}
-  h2{{font-size:1.1rem}}
+  body{{padding:.5rem;font-size:14px}}
+  h1{{font-size:1.2rem}}
+  h2{{font-size:1rem}}
   .painting{{max-height:40vh;margin:.5rem auto}}
-  .medium-details{{padding:.4rem;font-size:.8rem;gap:.2rem}}
-  .tag{{padding:.2rem .5rem;font-size:.75rem}}
+  .medium-details{{padding:.4rem;font-size:.75rem;gap:.2rem}}
+  .tag{{padding:.2rem .5rem;font-size:.7rem}}
   .theme-toggle{{top:.3rem;right:.3rem;padding:.3rem .6rem;font-size:.7rem}}
-  .random-btn{{padding:.2rem .6rem;font-size:.75rem}}
+  .random-btn{{padding:.2rem .6rem;font-size:.7rem}}
   .scroll-top{{width:36px;height:36px;font-size:1rem;bottom:.8rem;right:.8rem}}
 }}
 </style></head><body>
@@ -575,37 +575,37 @@ def render_tag_page(tag: str, posts: list) -> str:
 :root{{--bg:#fafafa;--text:#222;--card-bg:#fff;--border:#ddd;--muted:#666}}
 [data-theme="dark"]{{--bg:#1a1a2e;--text:#e0e0e0;--card-bg:#16213e;--border:#333;--muted:#aaa}}
 *{{box-sizing:border-box}}
-body{{max-width:1200px;margin:0 auto;padding:1.5rem;font-family:'EB Garamond',Georgia,serif;font-size:18px;background:var(--bg);color:var(--text);transition:background .3s,color .3s;-webkit-tap-highlight-color:transparent}}
-h1{{text-align:center;margin-bottom:2rem;font-size:2.2rem;font-weight:700}}
+body{{max-width:1200px;margin:0 auto;padding:1.5rem;font-family:'EB Garamond',Georgia,serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s;-webkit-tap-highlight-color:transparent}}
+h1{{text-align:center;margin-bottom:2rem;font-size:1.8rem}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}}
 .card{{background:var(--card-bg);text-decoration:none;color:var(--text);border-radius:6px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.1);transition:transform .15s;border:1px solid var(--border)}}
 .card:active{{transform:scale(.98)}}
 .card-img{{width:100%;aspect-ratio:4/3;overflow:hidden;background:var(--border)}}
 .card-img img{{width:100%;height:100%;object-fit:cover;display:block}}
 .card-body{{padding:.8rem 1rem}}
-.card-artist{{font-weight:700;font-size:1.05rem}}
-.card-title{{font-style:italic;color:var(--muted);margin-top:.3rem;font-size:.9rem;word-break:break-word}}
-.back{{display:inline-block;margin-bottom:1rem;color:#0366d6;text-decoration:none;font-size:1rem}}
+.card-artist{{font-weight:bold;font-size:.95rem}}
+.card-title{{font-style:italic;color:var(--muted);margin-top:.3rem;font-size:.85rem}}
+.back{{display:inline-block;margin-bottom:1rem;color:#0366d6;text-decoration:none;font-size:.95rem}}
 .theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);z-index:1000;font-size:.9rem;box-shadow:0 2px 8px rgba(0,0,0,.1)}}
 .scroll-top{{position:fixed;bottom:1.5rem;right:1.5rem;width:44px;height:44px;background:var(--link,#0366d6);color:#fff;border:none;border-radius:50%;font-size:1.3rem;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.2);z-index:999;display:none;align-items:center;justify-content:center}}
 .scroll-top.visible{{display:flex}}
 @media(max-width:768px){{
-  body{{padding:.8rem;font-size:16px}}
-  h1{{font-size:1.5rem}}
+  body{{padding:.8rem}}
+  h1{{font-size:1.3rem}}
   .grid{{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.8rem}}
   .card-body{{padding:.6rem}}
-  .card-artist{{font-size:.9rem}}
-  .card-title{{font-size:.8rem}}
-  .theme-toggle{{top:.5rem;right:.5rem;padding:.4rem .8rem;font-size:.8rem}}
+  .card-artist{{font-size:.85rem}}
+  .card-title{{font-size:.75rem}}
+  .theme-toggle{{top:.5rem;right:.5rem;padding:.4rem .8rem;font-size:.75rem}}
   .scroll-top{{width:40px;height:40px;font-size:1.1rem;bottom:1rem;right:1rem}}
 }}
 @media(max-width:480px){{
-  body{{padding:.5rem;font-size:15px}}
-  h1{{font-size:1.2rem;margin-bottom:1.2rem}}
+  body{{padding:.5rem}}
+  h1{{font-size:1.1rem;margin-bottom:1.2rem}}
   .grid{{grid-template-columns:repeat(2,1fr);gap:.5rem}}
   .card-img{{aspect-ratio:1/1}}
   .card-body{{padding:.4rem .5rem}}
-  .card-artist{{font-size:.8rem}}
+  .card-artist{{font-size:.78rem}}
   .card-title{{font-size:.7rem}}
   .theme-toggle{{top:.3rem;right:.3rem;padding:.3rem .6rem;font-size:.7rem}}
   .scroll-top{{width:36px;height:36px;font-size:1rem;bottom:.8rem;right:.8rem}}
@@ -731,28 +731,28 @@ def render_index(all_posts) -> str:
 :root{{--bg:#fafafa;--text:#222;--card-bg:#fff;--sidebar-bg:#fff;--border:#ddd;--muted:#777;--link:#555;--active:#0366d6;--shadow:rgba(0,0,0,.08);--reset-bg:#ffeef0;--reset-text:#d73a49;--input-border:#ccc}}
 [data-theme="dark"]{{--bg:#1a1a2e;--text:#e0e0e0;--card-bg:#16213e;--sidebar-bg:#0f3460;--border:#333;--muted:#aaa;--link:#64b5f6;--active:#90caf9;--shadow:rgba(0,0,0,.3);--reset-bg:#3d1a1a;--reset-text:#ef9a9a;--input-border:#444}}
 *{{box-sizing:border-box}}
-body{{max-width:1400px;margin:0 auto;padding:1.5rem;font-family:'EB Garamond',Georgia,serif;font-size:18px;background:var(--bg);color:var(--text);transition:background .3s,color .3s;-webkit-tap-highlight-color:transparent}}
+body{{max-width:1400px;margin:0 auto;padding:1.5rem;font-family:'EB Garamond',Georgia,serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s;-webkit-tap-highlight-color:transparent}}
 header{{margin-bottom:2rem;text-align:center}}
-h1{{font-size:2.5rem;margin:0 0 .5rem;font-weight:700}}
-.subtitle{{color:var(--muted);margin-bottom:1.5rem;font-size:1.2rem}}
-.search-box{{width:100%;max-width:500px;padding:.8rem 1rem;font-size:1.1rem;border:1px solid var(--input-border);border-radius:6px;font-family:inherit;background:var(--card-bg);color:var(--text)}}
+h1{{font-size:2.2rem;margin:0 0 .5rem}}
+.subtitle{{color:var(--muted);margin-bottom:1.5rem}}
+.search-box{{width:100%;max-width:500px;padding:.8rem 1rem;font-size:1rem;border:1px solid var(--input-border);border-radius:6px;font-family:inherit;background:var(--card-bg);color:var(--text)}}
 .layout{{display:flex;gap:2rem;align-items:flex-start}}
 .sidebar{{width:300px;flex-shrink:0;background:var(--sidebar-bg);padding:1.5rem;border-radius:6px;box-shadow:0 2px 6px var(--shadow);position:sticky;top:1.5rem;max-height:calc(100vh - 3rem);overflow-y:auto;border:1px solid var(--border)}}
 .sidebar::-webkit-scrollbar{{width:6px}}
 .sidebar::-webkit-scrollbar-thumb{{background-color:#ccc;border-radius:3px}}
 .sidebar-section{{margin-bottom:1.2rem}}
-.sidebar-title{{font-size:1.05rem;font-weight:bold;margin:0 0 .6rem;border-bottom:1px solid var(--border);padding-bottom:.4rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}}
+.sidebar-title{{font-size:1rem;font-weight:bold;margin:0 0 .6rem;border-bottom:1px solid var(--border);padding-bottom:.4rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}}
 .sidebar-title::after{{content:'▼';font-size:.7rem;transition:transform .2s}}
 .sidebar-title.collapsed::after{{transform:rotate(-90deg)}}
 .sidebar-content{{overflow:hidden;transition:max-height .3s ease}}
 .sidebar-content.collapsed{{max-height:0!important}}
 .sidebar ul{{list-style:none;padding:0;margin:0}}
 .sidebar li{{margin-bottom:.35rem}}
-.sidebar a{{text-decoration:none;color:var(--link);font-size:.9rem;display:block;transition:color .15s;padding:2px 4px;border-radius:3px;word-break:break-word;overflow-wrap:break-word;hyphens:auto}}
+.sidebar a{{text-decoration:none;color:var(--link);font-size:.88rem;display:block;transition:color .15s;padding:2px 4px;border-radius:3px;word-break:break-word;overflow-wrap:break-word;hyphens:auto}}
 .sidebar a:hover,.sidebar a:active{{color:var(--active);background:var(--border)}}
 .sidebar a.active{{color:var(--active);font-weight:bold;background:var(--border)}}
 .month-list{{padding-left:1.2rem!important;margin-top:.3rem!important;font-size:.9em}}
-.filter-reset{{display:none;margin-bottom:.8rem;color:var(--reset-text)!important;font-weight:bold;text-align:center;background:var(--reset-bg);padding:.6rem;border-radius:4px;text-decoration:none;font-size:1rem}}
+.filter-reset{{display:none;margin-bottom:.8rem;color:var(--reset-text)!important;font-weight:bold;text-align:center;background:var(--reset-bg);padding:.6rem;border-radius:4px;text-decoration:none}}
 .main-content{{flex-grow:1;min-width:0}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.5rem}}
 .card{{background:var(--card-bg);text-decoration:none;color:var(--text);border-radius:8px;overflow:hidden;box-shadow:0 2px 8px var(--shadow);transition:transform .15s,box-shadow .15s;border:1px solid var(--border);-webkit-tap-highlight-color:transparent}}
@@ -760,61 +760,60 @@ h1{{font-size:2.5rem;margin:0 0 .5rem;font-weight:700}}
 .card-img{{width:100%;aspect-ratio:4/3;background:var(--border);overflow:hidden}}
 .card-img img{{width:100%;height:100%;object-fit:cover;display:block}}
 .card-body{{padding:.9rem 1.1rem}}
-.card-artist{{font-weight:700;font-size:1.05rem;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
-.card-title{{font-style:italic;color:var(--muted);margin-top:.3rem;font-size:.9rem;word-break:break-word}}
+.card-artist{{font-weight:bold;font-size:1rem;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
+.card-title{{font-style:italic;color:var(--muted);margin-top:.3rem;font-size:.85rem;word-break:break-word}}
 .card-info{{font-size:.8rem;color:var(--muted);margin-top:.3rem;word-break:break-word;overflow-wrap:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
-.card-museum{{font-size:.78rem;color:var(--muted);margin-top:.2rem;word-break:break-word;overflow-wrap:break-word}}
+.card-museum{{font-size:.75rem;color:var(--muted);margin-top:.2rem;word-break:break-word;overflow-wrap:break-word}}
 .theme-toggle{{position:fixed;top:1rem;right:1rem;background:var(--card-bg);border:1px solid var(--border);padding:.5rem 1rem;border-radius:20px;cursor:pointer;color:var(--text);font-size:.9rem;box-shadow:0 2px 8px var(--shadow);z-index:1000}}
-.random-btn{{display:inline-block;padding:.5rem 1.5rem;background:var(--active);color:#fff;text-decoration:none;border-radius:20px;font-size:1rem;transition:opacity .2s;margin-bottom:1rem}}
+.random-btn{{display:inline-block;padding:.5rem 1.5rem;background:var(--active);color:#fff;text-decoration:none;border-radius:20px;font-size:.9rem;transition:opacity .2s;margin-bottom:1rem}}
 .random-btn:active{{opacity:.8}}
 .scroll-top{{position:fixed;bottom:1.5rem;right:1.5rem;width:44px;height:44px;background:var(--active);color:#fff;border:none;border-radius:50%;font-size:1.3rem;cursor:pointer;box-shadow:0 2px 10px var(--shadow);z-index:999;display:none;align-items:center;justify-content:center}}
 .scroll-top.visible{{display:flex}}
 .scroll-top:active{{transform:scale(.9)}}
 @media(max-width:900px){{
-  body{{padding:.8rem;font-size:16px}}
-  h1{{font-size:1.8rem}}
-  .subtitle{{font-size:1rem}}
-  .search-box{{max-width:100%;padding:.7rem;font-size:1rem}}
+  body{{padding:.8rem}}
+  h1{{font-size:1.5rem}}
+  .subtitle{{font-size:.9rem}}
+  .search-box{{max-width:100%;padding:.7rem;font-size:.9rem}}
   .layout{{flex-direction:column;gap:.5rem}}
   .sidebar{{width:100%;position:static;max-height:none;padding:.8rem;border-radius:8px}}
   .sidebar-section{{margin-bottom:.5rem}}
-  .sidebar-title{{font-size:.95rem;padding:.6rem .8rem;margin:0 0 .3rem 0;background:var(--card-bg);border-radius:6px;border:1px solid var(--border)}}
+  .sidebar-title{{font-size:.9rem;padding:.6rem .8rem;margin:0 0 .3rem 0;background:var(--card-bg);border-radius:6px;border:1px solid var(--border)}}
   .sidebar-content{{padding:0 .3rem}}
   .sidebar ul{{display:flex;flex-wrap:wrap;gap:.25rem}}
   .sidebar li{{margin-bottom:0}}
-  .sidebar a{{font-size:.8rem;padding:.3rem .6rem;background:var(--bg);border-radius:15px;border:1px solid var(--border)}}
+  .sidebar a{{font-size:.78rem;padding:.3rem .6rem;background:var(--bg);border-radius:15px;border:1px solid var(--border)}}
   .month-list{{padding-left:0!important;display:flex;flex-wrap:wrap;gap:.2rem}}
   .month-list li{{margin:0}}
   .month-list a{{font-size:.7rem!important;padding:.2rem .45rem}}
   .grid{{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.8rem}}
   .card{{border-radius:6px}}
   .card-body{{padding:.6rem .7rem}}
-  .card-artist{{font-size:.9rem}}
-  .card-title{{font-size:.78rem;margin-top:.2rem}}
+  .card-artist{{font-size:.85rem}}
+  .card-title{{font-size:.75rem;margin-top:.2rem}}
   .card-info{{font-size:.7rem}}
-  .theme-toggle{{top:.5rem;right:.5rem;padding:.4rem .8rem;font-size:.8rem;border-radius:15px}}
-  .random-btn{{padding:.4rem 1rem;font-size:.9rem;margin-bottom:.5rem}}
-  .filter-reset{{font-size:.9rem;padding:.5rem}}
+  .theme-toggle{{top:.5rem;right:.5rem;padding:.4rem .8rem;font-size:.75rem;border-radius:15px}}
+  .random-btn{{padding:.4rem 1rem;font-size:.8rem;margin-bottom:.5rem}}
+  .filter-reset{{font-size:.85rem;padding:.5rem}}
   .scroll-top{{width:40px;height:40px;font-size:1.1rem;bottom:1rem;right:1rem}}
 }}
 @media(max-width:480px){{
-  body{{padding:.4rem;font-size:15px}}
-  h1{{font-size:1.4rem}}
+  body{{padding:.4rem}}
+  h1{{font-size:1.3rem}}
   .grid{{grid-template-columns:repeat(2,1fr);gap:.4rem}}
   .card-img{{aspect-ratio:1/1}}
-  .search-box{{padding:.6rem;font-size:.9rem}}
+  .search-box{{padding:.6rem;font-size:.85rem}}
   .sidebar{{padding:.5rem}}
   .sidebar a{{font-size:.72rem;padding:.2rem .45rem}}
   .sidebar-title{{font-size:.8rem;padding:.5rem .6rem}}
   .theme-toggle{{padding:.3rem .6rem;font-size:.7rem}}
-  .random-btn{{padding:.3rem .8rem;font-size:.8rem}}
+  .random-btn{{padding:.3rem .8rem;font-size:.75rem}}
   .card-body{{padding:.4rem .5rem}}
-  .card-artist{{font-size:.8rem}}
+  .card-artist{{font-size:.78rem}}
   .card-title{{font-size:.7rem}}
   .scroll-top{{width:36px;height:36px;font-size:1rem;bottom:.7rem;right:.7rem}}
 }}
 </style></head><body>
-
 <button class="theme-toggle" onclick="toggleTheme()">🌓 Тема</button>
 <button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх">↑</button>
 <header>
