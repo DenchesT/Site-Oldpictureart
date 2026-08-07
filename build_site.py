@@ -198,40 +198,36 @@ def parse_post(text):
         # Части после музея (индексы 4+)
         extras = parts[4:] if len(parts) > 4 else []
         
-        # Жёсткое распределение по порядку:
-        # parts[4] = происхождение (если есть)
-        # parts[5] = описание (если есть)
-        # parts[6] = ссылки (игнорируем, уже извлечены)
-        # parts[7] = теги (игнорируем, уже извлечены)
-        
         hist = []
         desc = ""
         
-        if len(extras) >= 1:
-            # Первый extra после музея — либо происхождение, либо описание
-            first_extra = extras[0].strip()
+        # Функция для проверки, является ли текст происхождением
+        def is_provenance(text):
+            """Проверяет, является ли текст происхождением (нумерованные строки)."""
+            if not text:
+                return False
+            lines = [l.strip() for l in text.split('\n') if l.strip()]
+            if not lines:
+                return False
+            # Проверяем, что хотя бы 50% строк начинаются с цифры и скобки
+            numbered = sum(1 for l in lines if re.match(r'^\d+\s*\)', l))
+            return numbered > 0 and numbered >= len(lines) * 0.5
+        
+        for extra in extras:
+            # Пропускаем URL и теги (их уже нет, но на всякий случай)
+            if re.match(r'^https?://', extra) or extra.startswith('#'):
+                continue
             
-            # Проверяем, является ли это URL или тегами (их уже убрали, 
-            # но на всякий случай проверяем)
-            if not re.match(r'^https?://', first_extra) and not first_extra.startswith('#'):
-                # Это либо происхождение, либо описание
-                # Если есть второй extra — первый это происхождение
-                if len(extras) >= 2:
-                    # Первый — происхождение, второй — описание
-                    hist = [l.strip() for l in first_extra.split('\n') if l.strip()]
-                    
-                    # Второй extra — описание (если это не URL и не теги)
-                    second_extra = extras[1].strip()
-                    if second_extra and not re.match(r'^https?://', second_extra) and not second_extra.startswith('#'):
-                        desc = re.sub(r"\s*\n\s*", " ", second_extra).strip()
-                else:
-                    # Только один extra — проверяем, похож ли на происхождение
-                    lines = first_extra.split('\n')
-                    # Если текст короткий и строки короткие — возможно происхождение
-                    if len(first_extra) < 400 and all(len(l.strip()) < 150 for l in lines if l.strip()):
-                        hist = [l.strip() for l in lines if l.strip()]
+            if is_provenance(extra):
+                hist = [l.strip() for l in extra.split('\n') if l.strip()]
+            else:
+                # Всё остальное — описание
+                desc_part = re.sub(r"\s*\n\s*", " ", extra).strip()
+                if desc_part:
+                    if desc:
+                        desc += "\n\n" + desc_part
                     else:
-                        desc = re.sub(r"\s*\n\s*", " ", first_extra).strip()
+                        desc = desc_part
         
         md = parse_medium_details(medium)
         
