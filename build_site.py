@@ -525,13 +525,8 @@ def render_index(all_posts):
     }
     pm_js = json.dumps(post_map_data, ensure_ascii=False)
     
-    # Избранное (кликабельное)
     fav_html = '<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">⭐ Избранное <span id="fav-count" class="count" style="font-size:.68rem;opacity:.6"></span></div><div class="sidebar-content collapsed"><ul id="fav-list"><li style="color:var(--muted);font-size:.8rem;padding:.5rem">Нажмите ♥ на странице картины</li></ul></div></div>'
-    
-    # Тема в сайдбаре
     theme_html = '<div class="sidebar-section"><div class="sidebar-title" style="cursor:pointer" onclick="toggleTheme()">🌓 Тема</div></div>'
-    
-    # Карта музеев
     map_link_html = '<div class="sidebar-section"><a href="museums.html" class="map-link">🗺 Карта музеев</a></div>'
     
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
@@ -549,8 +544,8 @@ def render_index(all_posts):
 <div class="subtitle">{len(ps)} картин · {len(authors)} художников · {len(museums)} музеев · {year_range}</div>
 <a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная картина</a></header>
 <div class="layout"><aside class="sidebar">
-<div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">🔍 Поиск</div><div class="sidebar-content"><input type="text" class="search-box" placeholder="Поиск..." id="search" style="width:100%;margin-bottom:.5rem"></div></div>
-<a href="#" id="reset-filter" class="filter-reset">✕ Сбросить все фильтры</a>
+<div class="sidebar-section"><div class="sidebar-title">🔍 Поиск</div><div class="sidebar-content"><input type="text" class="search-box" placeholder="Поиск..." id="search" style="width:100%"></div></div>
+<a href="#" id="reset-filter" class="filter-reset" style="display:none">✕ Сбросить все фильтры</a>
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">📅 Архив</div><div class="sidebar-content collapsed"><ul>{arh}</ul></div></div>
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">📆 Декады</div><div class="sidebar-content collapsed"><ul>{dech}</ul></div></div>
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">👨‍🎨 Художники</div><div class="sidebar-content collapsed"><ul>{ah}</ul></div></div>
@@ -560,10 +555,10 @@ def render_index(all_posts):
 {fav_html}
 {theme_html}
 {map_link_html}
-</aside><main class="main-content"><div class="grid" id="cards">{''.join(cards)}</div></main></div>
+</aside><main class="main-content"><div class="grid" id='cards'>{''.join(cards)}</div></main></div>
 <script>
 const ALL_POSTS = {af};
-const POSTS_DATA = {pm_js}; // Передаем словарь из Python в JS
+const POSTS_DATA = {pm_js};
 
 function toggleTheme() {{
     const h = document.documentElement;
@@ -589,10 +584,8 @@ function updateFavList() {{
         if (favCount) favCount.textContent = '(' + likedIds.length + ')';
         if (likedIds.length > 0) {{
             favList.innerHTML = likedIds.map(function(id) {{
-                // Получаем данные картины по ID, если они есть
                 const info = POSTS_DATA[id];
                 if (info) {{
-                    // Формируем настоящую ссылку (href) вместо onclick
                     return '<li><a href="' + info.file + '" style="font-size:.8rem" title="' + info.title + '">🖼 ' + info.title + '</a></li>';
                 }} else {{
                     return '<li><a href="#" style="font-size:.8rem">🖼 Картина #' + id + '</a></li>';
@@ -605,132 +598,108 @@ function updateFavList() {{
 }}
 
 function goRandom() {{
-    if(ALL_POSTS.length) location.href = ALL_POSTS[Math.floor(Math.random() * ALL_POSTS.length)];
-}}
-
-function toggleMenu() {{
-    document.querySelector('.sidebar').classList.toggle('open');
-    document.getElementById('overlay').classList.toggle('visible');
+    if (ALL_POSTS.length) location.href = ALL_POSTS[Math.floor(Math.random() * ALL_POSTS.length)];
 }}
 
 function toggleSection(el) {{
-    document.querySelectorAll('.sidebar-title').forEach(function(title) {{
-        if (title !== el && title.nextElementSibling && title.nextElementSibling.classList.contains('sidebar-content')) {{
-            title.classList.remove('open');
-            title.nextElementSibling.classList.add('collapsed');
-        }}
-    }});
-    if (el.nextElementSibling && el.nextElementSibling.classList.contains('sidebar-content')) {{
-        el.classList.toggle('open');
-        el.nextElementSibling.classList.toggle('collapsed');
+    const content = el.nextElementSibling;
+    if (content) {{
+        content.classList.toggle('collapsed');
     }}
 }}
-// Скрытие/показ меню при прокрутке на мобильных
-let lastScroll = 0;
-window.addEventListener('scroll', function() {{
-    const b = document.querySelector('.scroll-top');
-    if(b) b.classList.toggle('visible', window.scrollY > 400);
-    
-    const menuToggle = document.querySelector('.menu-toggle');
-    if (menuToggle && window.innerWidth <= 900) {{
-        const currentScroll = window.pageYOffset;
-        if (currentScroll > lastScroll && currentScroll > 200) {{
-            menuToggle.style.opacity = '0';
-            menuToggle.style.pointerEvents = 'none';
+
+function toggleMenu() {{
+    document.querySelector('.sidebar').classList.toggle('active');
+    document.getElementById('overlay').classList.toggle('active');
+}}
+
+// Логика отображения кнопки сброса фильтров и фильтрации
+document.addEventListener('DOMContentLoaded', function() {{
+    const searchBox = document.getElementById('search');
+    const resetBtn = document.getElementById('reset-filter');
+    const filterLinks = document.querySelectorAll('.filter-link');
+    const cards = document.querySelectorAll('.card');
+
+    let activeFilters = {{
+        search: '',
+        type: null,
+        val: null,
+        year: null
+    }};
+
+    function checkResetVisibility() {{
+        const hasActive = activeFilters.search || activeFilters.type || activeFilters.val || activeFilters.year;
+        if (hasActive) {{
+            resetBtn.style.display = 'block';
         }} else {{
-            menuToggle.style.opacity = '1';
-            menuToggle.style.pointerEvents = 'auto';
+            resetBtn.style.display = 'none';
         }}
-        lastScroll = currentScroll;
     }}
-}});
 
-const si = document.getElementById('search');
-const cards = document.querySelectorAll('.card');
-const fl = document.querySelectorAll('.filter-link');
-const rb = document.getElementById('reset-filter');
-let afilt = {{ type: null, val: null, year: null }};
+    function applyFilters() {{
+        cards.forEach(card => {{
+            let show = true;
+            
+            // Поиск по текстовому полю
+            if (activeFilters.search) {{
+                const text = card.textContent.toLowerCase();
+                if (!text.includes(activeFilters.search)) {{
+                    show = false;
+                }}
+            }}
 
-function updateView() {{
-    const q = si.value.toLowerCase();
-    cards.forEach(function(c) {{
-        let s = true;
-        if(q) {{
-            const artist = (c.querySelector('.card-artist')?.textContent || '').toLowerCase();
-            const title = (c.querySelector('.card-title')?.textContent || '').toLowerCase();
-            const museum = (c.querySelector('.card-museum')?.textContent || '').toLowerCase();
-            const info = (c.querySelector('.card-info')?.textContent || '').toLowerCase();
-            const all = artist + ' ' + title + ' ' + museum + ' ' + info;
-            if(!all.includes(q)) s = false;
-        }}
-        if(s && afilt.type) {{
-            if(afilt.type === 'artist' && c.dataset.artist !== afilt.val) s = false;
-            if(afilt.type === 'museum' && c.dataset.museum !== afilt.val) s = false;
-            if(afilt.type === 'material' && c.dataset.material !== afilt.val) s = false;
-            if(afilt.type === 'technique') {{ if(!c.dataset.techniques.includes(afilt.val)) s = false; }}
-            if(afilt.type === 'decade' && c.dataset.decade !== afilt.val) s = false;
-            if(afilt.type === 'year' && c.dataset.year !== afilt.val) s = false;
-            if(afilt.type === 'month' && (c.dataset.year !== afilt.year || c.dataset.month !== afilt.val)) s = false;
-        }}
-        c.style.display = s ? '' : 'none';
+            // Фильтры по категориям (художник, музей, материал, техника и т.д.)
+            if (show && activeFilters.type) {{
+                if (activeFilters.type === 'artist') {{
+                    if (card.dataset.artist !== activeFilters.val) show = false;
+                }} else if (activeFilters.type === 'museum') {{
+                    if (card.dataset.museum !== activeFilters.val) show = false;
+                }} else if (activeFilters.type === 'material') {{
+                    if (card.dataset.material !== activeFilters.val) show = false;
+                }} else if (activeFilters.type === 'technique') {{
+                    const techs = card.dataset.techniques ? card.dataset.techniques.split(' ') : [];
+                    if (!techs.includes(activeFilters.val)) show = false;
+                }} else if (activeFilters.type === 'decade') {{
+                    if (card.dataset.decade !== activeFilters.val) show = false;
+                }} else if (activeFilters.type === 'year') {{
+                    if (card.dataset.year !== activeFilters.val) show = false;
+                }} else if (activeFilters.type === 'month') {{
+                    if (card.dataset.year !== activeFilters.year || card.dataset.month !== activeFilters.val) show = false;
+                }}
+            }}
+
+            card.style.display = show ? '' : 'none';
+        }});
+        checkResetVisibility();
+    }}
+
+    if (searchBox) {{
+        searchBox.addEventListener('input', function(e) {{
+            activeFilters.search = e.target.value.toLowerCase().trim();
+            applyFilters();
+        }});
+    }}
+
+    filterLinks.forEach(link => {{
+        link.addEventListener('click', function(e) {{
+            e.preventDefault();
+            activeFilters.type = this.dataset.type;
+            activeFilters.val = this.dataset.val;
+            activeFilters.year = this.dataset.year || null;
+            applyFilters();
+        }});
     }});
 
-    fl.forEach(function(l) {{
-        let isActive = false;
-        if(afilt.type === l.dataset.type) {{
-            if(afilt.type === 'month') isActive = (l.dataset.val === afilt.val && l.dataset.year === afilt.year);
-            else isActive = (l.dataset.val === afilt.val);
-        }}
-        l.classList.toggle('active', isActive);
-    }});
-    rb.style.display = afilt.type ? 'block' : 'none';
-}}
-
-function clearFilter() {{
-    afilt = {{ type: null, val: null, year: null }};
-    si.value = '';
-    updateView();
-}}
-
-let debounceTimer;
-si.addEventListener('input', function() {{
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(updateView, 200);
-}});
-
-fl.forEach(function(l) {{
-    l.addEventListener('click', function(e) {{
-        e.preventDefault();
-        afilt.type = l.dataset.type;
-        afilt.val = l.dataset.val;
-        if(afilt.type === 'month') afilt.year = l.dataset.year;
-        updateView();
-        document.querySelector('.sidebar').classList.remove('open');
-        document.getElementById('overlay').classList.remove('visible');
-    }});
-}});
-
-rb.addEventListener('click', function(e) {{
-    e.preventDefault();
-    clearFilter();
-    document.querySelector('.sidebar').classList.remove('open');
-    document.getElementById('overlay').classList.remove('visible');
-}});
-
-document.addEventListener('keydown', function(e) {{
-    if (e.key === 'r' || e.key === 'к') goRandom();
-    if (e.key === 'Escape') {{
-        document.querySelector('.sidebar').classList.remove('open');
-        document.getElementById('overlay').classList.remove('visible');
-    }}
-    if (e.key === 'm' || e.key === 'ь') toggleMenu();
-    if (e.key === '/' && document.activeElement !== si) {{
-        e.preventDefault();
-        si.focus();
+    if (resetBtn) {{
+        resetBtn.addEventListener('click', function(e) {{
+            e.preventDefault();
+            activeFilters = {{ search: '', type: null, val: null, year: null }};
+            if (searchBox) searchBox.value = '';
+            applyFilters();
+        }});
     }}
 }});
-</script>
-</body></html>"""
+</script></body></html>"""
 
 # ===================== TELEGRAM =====================
 

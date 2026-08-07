@@ -139,9 +139,21 @@ def generate_museums_page():
         
         show_more_btn = ""
         hidden_class = ""
+# Формируем HTML для списка картин
         if len(posts) > 5:
+            visible_posts = posts[:5]
+            hidden_posts = posts[5:]
+            
+            visible_html = "".join([f'<li><a href="{h(p["filename"])}">{h(p["artist"])} — {h(p["title"])}</a></li>' for p in visible_posts])
+            hidden_html = "".join([f'<li><a href="{h(p["filename"])}">{h(p["artist"])} — {h(p["title"])}</a></li>' for p in hidden_posts])
+            
             show_more_btn = f'<button class="show-more-btn" onclick="toggleMuseumPosts(\'{museum_id}\')">Показать все {len(posts)} картин ▾</button>'
             hidden_class = 'hidden-posts'
+        else:
+            visible_html = "".join([f'<li><a href="{h(p["filename"])}">{h(p["artist"])} — {h(p["title"])}</a></li>' for p in posts])
+            hidden_html = ""
+            show_more_btn = ""
+            hidden_class = ""
         
         location_html = ""
         if city:
@@ -153,11 +165,11 @@ def generate_museums_page():
           {location_html}
           <p class="museum-count">{len(posts)} картин(ы)</p>
           <ul class="museum-posts-list">
-            {all_posts_html[:all_posts_html.rfind('</li>', 0, all_posts_html.find('</li>', all_posts_html.find('</li>')*5) if len(posts) > 5 else len(all_posts_html))] if len(posts) > 5 else all_posts_html}
+            {visible_html}
           </ul>
           <div class="{hidden_class}" id="hidden-{museum_id}" style="display:none">
             <ul class="museum-posts-list">
-              {all_posts_html if len(posts) > 5 else ''}
+              {hidden_html}
             </ul>
           </div>
           {show_more_btn}
