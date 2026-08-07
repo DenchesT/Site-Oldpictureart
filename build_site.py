@@ -412,6 +412,7 @@ def render_index(all_posts):
         y, m = "", ""
         if p.get("date") and "-" in p["date"]: y, m, _ = p["date"].split("-")
         cards.append(f"""<a class="card" href="{h(p['filename'])}" data-artist="{h(p['artist'].lower())}" data-year="{y}" data-month="{m}" data-museum="{h(slugify(p.get('museum','')))}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}"><div class="card-img"><img src="{cv}" alt="" loading="lazy"></div><div class="card-body"><div class="card-artist">{h(p['artist'])}</div><div class="card-title">{h(p['title'])}</div><div class="card-museum">{h(p.get('museum',''))}</div><div class="card-info">{h(p.get('material',''))} {h(', '.join(p.get('techniques',[])[:2]))}</div></div></a>""")
+    
     ah = "".join(f'<li><a href="#" class="filter-link" data-type="artist" data-val="{h(a.lower())}">{h(a)}</a></li>' for a in authors)
     mh = "".join(f'<li><a href="#" class="filter-link" data-type="museum" data-val="{h(slugify(m))}">{h(m)}</a></li>' for m in museums if m)
     mth = "".join(f'<li><a href="#" class="filter-link" data-type="material" data-val="{h(slugify(m))}">{h(m)}</a></li>' for m in materials)
@@ -422,6 +423,7 @@ def render_index(all_posts):
         for mn in ms_list: arh += f'<li><a href="#" class="filter-link" data-type="month" data-year="{y}" data-val="{mn}">{MONTHS.get(mn,mn)}</a></li>'
         arh += '</ul></li>'
     af = json.dumps([p["filename"] for p in ps])
+    
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
 <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
@@ -441,50 +443,100 @@ def render_index(all_posts):
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">📄 Материал</div><div class="sidebar-content collapsed"><ul>{mth}</ul></div></div>
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">🖌 Техника</div><div class="sidebar-content collapsed"><ul>{th}</ul></div></div>
 </aside><main class="main-content"><div class="grid" id="cards">{''.join(cards)}</div></main></div>
-<script>const ALL_POSTS={af};
-function toggleTheme(){{const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}}
-(()=>{{const s=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',s);localStorage.setItem('allPosts',JSON.stringify(ALL_POSTS))}})();
-function goRandom(){{if(ALL_POSTS.length)location.href=ALL_POSTS[Math.floor(Math.random()*ALL_POSTS.length)]}}
-function toggleSection(el){{el.classList.toggle('collapsed');el.nextElementSibling.classList.toggle('collapsed')}}
-window.addEventListener('scroll',function(){{const b=document.querySelector('.scroll-top');if(b)b.classList.toggle('visible',window.scrollY>400)}});
-const si=document.getElementById('search'),cards=document.querySelectorAll('.card'),fl=document.querySelectorAll('.filter-link'),rb=document.getElementById('reset-filter');
-let afilt={{type:null,val:null,year:null}};
-function updateView(){{
-  const q=si.value.toLowerCase();
-  cards.forEach(c=>{{
-    let s=true;
-    if(q){{
-      const artist=(c.querySelector('.card-artist')?.textContent||'').toLowerCase();
-      const title=(c.querySelector('.card-title')?.textContent||'').toLowerCase();
-      const museum=(c.querySelector('.card-museum')?.textContent||'').toLowerCase();
-      const info=(c.querySelector('.card-info')?.textContent||'').toLowerCase();
-      const all=artist+' '+title+' '+museum+' '+info;
-      if(!all.includes(q))s=false;
-    }}
-    if(s&&afilt.type){{
-      if(afilt.type==='artist'&&c.dataset.artist!==afilt.val)s=false;
-      if(afilt.type==='museum'&&c.dataset.museum!==afilt.val)s=false;
-      if(afilt.type==='material'&&c.dataset.material!==afilt.val)s=false;
-      if(afilt.type==='technique'){{if(!c.dataset.techniques.includes(afilt.val))s=false}}
-      if(afilt.type==='year'&&c.dataset.year!==afilt.val)s=false;
-      if(afilt.type==='month'&&(c.dataset.year!==afilt.year||c.dataset.month!==afilt.val))s=false;
-    }}
-    c.style.display=s?'':'none';}});fl.forEach(l=>{{let isActive=false;if(afilt.type===l.dataset.type){{if(afilt.type==='month')isActive=(l.dataset.val===afilt.val&&l.dataset.year===afilt.year);else isActive=(l.dataset.val===afilt.val);}}l.classList.toggle('active',isActive);}});rb.style.display=afilt.type?'block':'none';}}si.addEventListener
-  }});
-  fl.forEach(l=>{{
-    let isActive=false;
-    if(afilt.type===l.dataset.type){{
-      if(afilt.type==='month')isActive=(l.dataset.val===afilt.val&&l.dataset.year===afilt.year);
-      else isActive=(l.dataset.val===afilt.val);
-    }}
-    l.classList.toggle('active',isActive);
-  }});
-  rb.style.display=afilt.type?'block':'none';
+<script>
+const ALL_POSTS = {af};
+
+function toggleTheme() {{
+    const h = document.documentElement;
+    const c = h.getAttribute('data-theme');
+    const n = c === 'light' ? 'dark' : 'light';
+    h.setAttribute('data-theme', n);
+    localStorage.setItem('theme', n);
 }}
-si.addEventListener('input',updateView);
-fl.forEach(l=>{{l.addEventListener('click',e=>{{e.preventDefault();afilt.type=l.dataset.type;afilt.val=l.dataset.val;if(afilt.type==='month')afilt.year=l.dataset.year;updateView()}})}});
-rb.addEventListener('click',e=>{{e.preventDefault();afilt={{type:null,val:null,year:null}};si.value='';updateView()}});
-document.querySelectorAll('.sidebar-title').forEach((t,i)=>{{t.classList.add('collapsed');t.nextElementSibling.classList.add('collapsed')}});
+
+(() => {{
+    const s = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', s);
+    localStorage.setItem('allPosts', JSON.stringify(ALL_POSTS));
+}})();
+
+function goRandom() {{
+    if(ALL_POSTS.length) location.href = ALL_POSTS[Math.floor(Math.random() * ALL_POSTS.length)];
+}}
+
+function toggleSection(el) {{
+    el.classList.toggle('collapsed');
+    el.nextElementSibling.classList.toggle('collapsed');
+}}
+
+window.addEventListener('scroll', function() {{
+    const b = document.querySelector('.scroll-top');
+    if(b) b.classList.toggle('visible', window.scrollY > 400);
+}});
+
+const si = document.getElementById('search');
+const cards = document.querySelectorAll('.card');
+const fl = document.querySelectorAll('.filter-link');
+const rb = document.getElementById('reset-filter');
+let afilt = {{ type: null, val: null, year: null }};
+
+function updateView() {{
+    const q = si.value.toLowerCase();
+    cards.forEach(c => {{
+        let s = true;
+        if(q) {{
+            const artist = (c.querySelector('.card-artist')?.textContent || '').toLowerCase();
+            const title = (c.querySelector('.card-title')?.textContent || '').toLowerCase();
+            const museum = (c.querySelector('.card-museum')?.textContent || '').toLowerCase();
+            const info = (c.querySelector('.card-info')?.textContent || '').toLowerCase();
+            const all = artist + ' ' + title + ' ' + museum + ' ' + info;
+            if(!all.includes(q)) s = false;
+        }}
+        if(s && afilt.type) {{
+            if(afilt.type === 'artist' && c.dataset.artist !== afilt.val) s = false;
+            if(afilt.type === 'museum' && c.dataset.museum !== afilt.val) s = false;
+            if(afilt.type === 'material' && c.dataset.material !== afilt.val) s = false;
+            if(afilt.type === 'technique') {{ if(!c.dataset.techniques.includes(afilt.val)) s = false; }}
+            if(afilt.type === 'year' && c.dataset.year !== afilt.val) s = false;
+            if(afilt.type === 'month' && (c.dataset.year !== afilt.year || c.dataset.month !== afilt.val)) s = false;
+        }}
+        c.style.display = s ? '' : 'none';
+    }});
+
+    fl.forEach(l => {{
+        let isActive = false;
+        if(afilt.type === l.dataset.type) {{
+            if(afilt.type === 'month') isActive = (l.dataset.val === afilt.val && l.dataset.year === afilt.year);
+            else isActive = (l.dataset.val === afilt.val);
+        }}
+        l.classList.toggle('active', isActive);
+    }});
+    rb.style.display = afilt.type ? 'block' : 'none';
+}}
+
+si.addEventListener('input', updateView);
+
+fl.forEach(l => {{
+    l.addEventListener('click', e => {{
+        e.preventDefault();
+        afilt.type = l.dataset.type;
+        afilt.val = l.dataset.val;
+        if(afilt.type === 'month') afilt.year = l.dataset.year;
+        updateView();
+    }});
+}});
+
+rb.addEventListener('click', e => {{
+    e.preventDefault();
+    afilt = {{ type: null, val: null, year: null }};
+    si.value = '';
+    updateView();
+}});
+
+document.querySelectorAll('.sidebar-title').forEach((t) => {{
+    t.classList.add('collapsed');
+    t.nextElementSibling.classList.add('collapsed');
+}});
 </script></body></html>"""
 
 # ===================== TELEGRAM =====================
