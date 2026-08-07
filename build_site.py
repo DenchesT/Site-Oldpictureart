@@ -527,7 +527,7 @@ function showAuthForm() {{
   
   const overlay = document.createElement('div');
   overlay.className = 'auth-modal-overlay';
-  overlay.innerHTML = `
+        overlay.innerHTML = `
     <div class="auth-modal">
       <button class="auth-modal-close" id="auth-close-btn">×</button>
       <h3 id="auth-title">Вход в аккаунт</h3>

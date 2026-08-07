@@ -483,6 +483,19 @@ header { margin-bottom: 1.5rem; text-align: center; }
   color: var(--like-color); font-size: .8rem; margin-top: .5rem; min-height: 1.2rem;
 }
 
+/* Защита модального окна от Dark Reader */
+.auth-modal-overlay,
+.auth-modal-overlay *,
+.auth-modal,
+.auth-modal * {
+  color-scheme: light only !important;
+}
+.auth-modal input {
+  background: #fff !important;
+  color: #222 !important;
+  border-color: #ddd !important;
+}
+
 /* ========== МЕДИА-ЗАПРОСЫ ========== */
 @media (min-width: 769px) { .scroll-top.visible { display: flex; } }
 @media (max-width: 768px) { .scroll-top { display: none !important; } }
