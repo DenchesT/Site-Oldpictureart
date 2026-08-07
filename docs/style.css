@@ -78,14 +78,20 @@ time { color: var(--muted); font-size: .9rem; display: block; margin-top: .5rem;
   color: #fff; text-decoration: none; border-radius: 20px; font-size: 1rem;
   transition: opacity .2s; margin-bottom: 1.5rem;
 }
+
+/* Кнопка "Наверх" — только на десктопе */
 .scroll-top {
   position: fixed; bottom: 1.5rem; right: 1.5rem; width: 44px; height: 44px;
   background: var(--link); color: #fff; border: none; border-radius: 50%;
   font-size: 1.3rem; cursor: pointer; box-shadow: 0 2px 10px var(--shadow);
   z-index: 999; display: none; align-items: center; justify-content: center;
 }
-.scroll-top.visible { display: flex; }
-.scroll-top:active { transform: scale(.9); }
+@media (min-width: 769px) {
+  .scroll-top.visible { display: flex; }
+}
+@media (max-width: 768px) {
+  .scroll-top { display: none !important; }
+}
 
 /* ========== ГЛАВНАЯ СТРАНИЦА ========== */
 .index-page { max-width: 1400px; margin: 0 auto; padding: 1.5rem; font-size: 18px; }
@@ -99,7 +105,7 @@ header { margin-bottom: 2rem; text-align: center; }
 }
 .layout { display: flex; gap: 2rem; align-items: flex-start; }
 
-/* ========== САЙДБАР С ВЫПАДАЮЩИМ МЕНЮ ========== */
+/* ========== САЙДБАР ========== */
 .sidebar {
   width: 300px; flex-shrink: 0; background: var(--sidebar-bg); padding: 1.5rem;
   border-radius: 6px; box-shadow: 0 2px 6px var(--shadow); position: sticky;
@@ -108,10 +114,7 @@ header { margin-bottom: 2rem; text-align: center; }
 }
 .sidebar::-webkit-scrollbar { width: 6px; }
 .sidebar::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 3px; }
-
 .sidebar-section { margin-bottom: .8rem; }
-
-/* Заголовок секции */
 .sidebar-title {
   font-size: 1rem; font-weight: 600; margin: 0; padding: .7rem .9rem;
   background: var(--card-bg); border: 1px solid var(--border);
@@ -119,45 +122,27 @@ header { margin-bottom: 2rem; text-align: center; }
   display: flex; justify-content: space-between; align-items: center;
   transition: all .2s ease;
 }
-.sidebar-title:hover {
-  background: var(--border);
-  border-color: var(--active);
-}
+.sidebar-title:hover { background: var(--border); border-color: var(--active); }
 .sidebar-title::after {
-  content: '▾'; font-size: .8rem; transition: transform .3s ease;
-  color: var(--muted);
+  content: '▾'; font-size: .8rem; transition: transform .3s ease; color: var(--muted);
 }
-.sidebar-title.open::after {
-  transform: rotate(180deg);
-  color: var(--active);
-}
-
-/* Контент секции */
+.sidebar-title.open::after { transform: rotate(180deg); color: var(--active); }
 .sidebar-content {
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height .4s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 0 .3rem;
+  overflow: hidden; max-height: 0;
+  transition: max-height .4s cubic-bezier(0.4, 0, 0.2, 1); padding: 0 .3rem;
 }
-.sidebar-content.open {
-  max-height: 2000px;
-  padding: .5rem .3rem;
-}
-
+.sidebar-content.open { max-height: 2000px; padding: .5rem .3rem; }
 .sidebar ul { list-style: none; padding: 0; margin: 0; }
 .sidebar li { margin-bottom: .25rem; }
 .sidebar a {
   text-decoration: none; color: var(--link); font-size: .88rem; display: block;
-  padding: .35rem .6rem; border-radius: 6px; word-break: break-word;
-  transition: all .1s ease;
+  padding: .35rem .6rem; border-radius: 6px; word-break: break-word; transition: all .1s ease;
 }
 .sidebar a:hover { background: var(--border); color: var(--active); }
 .sidebar a.active { background: var(--active); color: #fff; font-weight: 600; }
 .sidebar a.active .count { color: rgba(255,255,255,.8); }
-
 .month-list { padding-left: 1rem !important; margin-top: .2rem !important; font-size: .9em; }
 .month-list a { font-size: .8rem; }
-
 .filter-reset {
   display: none; margin-bottom: .8rem; color: var(--reset-text) !important;
   font-weight: bold; text-align: center; background: var(--reset-bg);
@@ -165,10 +150,7 @@ header { margin-bottom: 2rem; text-align: center; }
   border: 1px solid transparent; transition: all .2s;
 }
 .filter-reset:hover { border-color: var(--reset-text); }
-
-.sidebar a .count {
-  font-size: .72rem; color: var(--muted); opacity: .6; margin-left: 3px;
-}
+.sidebar a .count { font-size: .72rem; color: var(--muted); opacity: .6; margin-left: 3px; }
 .sidebar a:hover .count { opacity: 1; }
 
 /* ========== КАРТОЧКИ ========== */
@@ -181,8 +163,7 @@ header { margin-bottom: 2rem; text-align: center; }
   background: var(--card-bg); text-decoration: none; color: var(--text);
   border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px var(--shadow);
   border: 1px solid var(--border);
-  transition: transform .1s ease, box-shadow .1s ease;
-  will-change: transform;
+  transition: transform .1s ease, box-shadow .1s ease; will-change: transform;
 }
 .card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px var(--shadow); }
 .card:active { transform: scale(.98); }
@@ -200,8 +181,7 @@ header { margin-bottom: 2rem; text-align: center; }
 
 /* ========== МОБИЛЬНАЯ КНОПКА МЕНЮ ========== */
 .menu-toggle {
-  display: none;
-  position: fixed; top: 1rem; left: 1rem; z-index: 1002;
+  display: none; position: fixed; top: 1rem; left: 1rem; z-index: 1002;
   background: var(--card-bg); border: 1px solid var(--border);
   padding: .6rem .9rem; border-radius: 20px; cursor: pointer;
   font-size: 1rem; color: var(--text); box-shadow: 0 2px 8px var(--shadow);
@@ -212,11 +192,9 @@ header { margin-bottom: 2rem; text-align: center; }
 @media (max-width: 900px) {
   .menu-toggle { display: block; }
   .theme-toggle { top: 1rem; right: 1rem; }
-
   .index-page { padding: .8rem; font-size: 16px; padding-top: 3.5rem; }
   .index-page h1 { font-size: 1.8rem; }
   .layout { flex-direction: column; gap: .5rem; }
-
   .sidebar {
     position: fixed; top: 0; left: -100%; width: 85%; max-width: 350px; height: 100vh;
     z-index: 2000; border-radius: 0 12px 12px 0; padding-top: 4rem;
@@ -224,17 +202,14 @@ header { margin-bottom: 2rem; text-align: center; }
     box-shadow: 4px 0 20px rgba(0,0,0,.3); overflow-y: auto;
   }
   .sidebar.open { left: 0; }
-
   .overlay {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,.5); z-index: 1999;
   }
   .overlay.visible { display: block; }
-
   .sidebar ul { display: block; }
   .sidebar li { margin-bottom: .25rem; }
   .sidebar a { font-size: .9rem; padding: .4rem .7rem; background: none; border: none; border-radius: 6px; }
-
   .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .8rem; }
 }
 
@@ -245,7 +220,6 @@ header { margin-bottom: 2rem; text-align: center; }
   .painting { max-height: 50vh; }
   .medium-details { flex-direction: column; gap: .3rem; padding: .6rem; font-size: .9rem; }
   .tag { padding: .25rem .6rem; font-size: .8rem; }
-  .scroll-top { width: 40px; height: 40px; font-size: 1.1rem; bottom: 1rem; right: 1rem; }
 }
 
 @media (max-width: 480px) {
@@ -259,7 +233,6 @@ header { margin-bottom: 2rem; text-align: center; }
   .card-img { aspect-ratio: 1/1; }
   .theme-toggle { padding: .3rem .6rem; font-size: .7rem; top: .3rem; right: .3rem; }
   .menu-toggle { top: .3rem; left: .3rem; padding: .3rem .6rem; font-size: .8rem; }
-  .scroll-top { width: 36px; height: 36px; font-size: 1rem; bottom: .8rem; right: .8rem; }
   .tag-page { padding: .5rem; font-size: 15px; }
   .tag-page h1 { font-size: 1.2rem; }
 }
