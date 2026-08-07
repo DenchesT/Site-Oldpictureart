@@ -171,7 +171,50 @@ TAG_RE = re.compile(r"#(\w+)@\w+")
 PROVENANCE_MARKERS = ["до ","с 1","с 2","поступил","поступла","собрание","коллекци","приобрет","продан","продаж","галере","бывш","передан","находил","хранил","наследств","bequest","acquired","purchased","donated","gift of","private"]
 
 def looks_like_provenance(s):
-    return len(re.findall(r"\b1[5-9]\d{2}\b|\b20\d{2}\b", s)) >= 2 and any(m in s.lower() for m in PROVENANCE_MARKERS)
+    """Проверяет, похож ли текст на историю происхождения (провенанс)."""
+    if not s or len(s) < 20:
+        return False
+    
+    s_lower = s.lower()
+    
+    # Должно быть хотя бы одно ключевое слово провенанса
+    has_marker = any(m in s_lower for m in PROVENANCE_MARKERS)
+    if not has_marker:
+        return False
+    
+    # Должно быть хотя бы 2 даты (года)
+    years = re.findall(r"\b(1[5-9]\d{2}|20\d{2})\b", s)
+    if len(years) < 2:
+        return False
+    
+    # Дополнительная проверка: провенанс обычно короче описания
+    # и содержит специфические конструкции
+    lines = [l.strip() for l in s.split('\n') if l.strip()]
+    
+    # Если текст очень длинный (более 500 символов) — скорее описание
+    if len(s) > 500:
+        return False
+    
+    # Проверяем, что большинство строк короткие (характерно для провенанса)
+    short_lines = sum(1 for l in lines if len(l) < 150)
+    if len(lines) > 0 and short_lines / len(lines) < 0.7:
+        return False  # Слишком много длинных строк — похоже на описание
+    
+    # Проверяем на наличие описательных маркеров (если есть — это не провенанс)
+    descriptive_markers = [
+        "картина", "художник", "творчество", "произведение", "искусство",
+        "живопись", "холст", "масло", "акварель", "композиция", "пейзаж",
+        "портрет", "образ", "стиль", "жанр", "выставка", "экспонирование",
+        "критик", "публика", "художественный", "живописный", "мастер",
+        "полотно", "картины", "художника", "творчеств", "произведений",
+        "искусства", "живописи", "стилистических", "сюжетно-тематических",
+        "трактовки", "интонаций", "приёмов", "выразительных", "средств"
+    ]
+    descriptive_count = sum(1 for m in descriptive_markers if m in s_lower)
+    if descriptive_count >= 3:
+        return False  # Много описательных слов — это описание картины
+    
+    return True
 
 def parse_post(text):
     if not text: return {}
@@ -192,14 +235,33 @@ def parse_post(text):
         if not artist or not title: return {}
         extras = parts[4:]
         hist, desc = [], ""
+        
         if len(extras) == 1:
-            if looks_like_provenance(extras[0]): hist = [l.strip() for l in extras[0].split("\n") if l.strip()]
-            else: desc = re.sub(r"\s*\n\s*"," ",extras[0]).strip()
-        elif len(extras) >= 2:
             if looks_like_provenance(extras[0]):
                 hist = [l.strip() for l in extras[0].split("\n") if l.strip()]
-                desc = "\n\n".join(re.sub(r"\s*\n\s*"," ",e).strip() for e in extras[1:])
-            else: desc = "\n\n".join(re.sub(r"\s*\n\s*"," ",e).strip() for e in extras)
+            else:
+                desc = re.sub(r"\s*\n\s*", " ", extras[0]).strip()
+        elif len(extras) >= 2:
+            # Проверяем первый extra на провенанс
+            if looks_like_provenance(extras[0]):
+                hist = [l.strip() for l in extras[0].split("\n") if l.strip()]
+                # Всё остальное — описание
+                desc = "\n\n".join(re.sub(r"\s*\n\s*", " ", e).strip() for e in extras[1:] if e.strip())
+            else:
+                # Если первый не провенанс, то всё идёт в описание
+                desc = "\n\n".join(re.sub(r"\s*\n\s*", " ", e).strip() for e in extras if e.strip())
+        
+        # Финальная проверка: если desc пустой, а hist не пустой и длинный — 
+        # возможно, это описание ошибочно попало в hist
+        if not desc and hist and len(" ".join(hist)) > 300:
+            # Проверяем на описательные маркеры
+            combined = " ".join(hist).lower()
+            art_words = ["картина", "художник", "творчество", "произведение", "искусство",
+                         "живопись", "композиция", "стиль", "жанр", "образ"]
+            if sum(1 for w in art_words if w in combined) >= 3:
+                desc = "\n\n".join(hist)
+                hist = []
+        
         md = parse_medium_details(medium)
         
         # Извлекаем год создания картины из названия
@@ -213,7 +275,7 @@ def parse_post(text):
     except Exception as e:
         logger.error(f"Ошибка парсинга: {e}")
         return {}
-
+    
 def slugify(text):
     t = text.lower()
     t = re.sub(r"[^\w\s-]","",t,flags=re.UNICODE)
