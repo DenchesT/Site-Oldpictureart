@@ -168,163 +168,95 @@ SEPARATOR_RE = re.compile(r"\s*[⸻⸺]\s*")
 URL_RE = re.compile(r"https?://(?:(?!https?://)[^\s⸻⸺])+")
 TAG_RE = re.compile(r"#(\w+)@\w+")
 
-PROVENANCE_MARKERS = ["до ","с 1","с 2","поступил","поступла","собрание","коллекци","приобрет","продан","продаж","галере","бывш","передан","находил","хранил","наследств","bequest","acquired","purchased","donated","gift of","private"]
-
-def looks_like_provenance(s):
-    """Строгая проверка: является ли текст провенансом."""
-    if not s or len(s) < 10:
-        return False
-    
-    s_lower = s.lower()
-    
-    # 1. Если текст длиннее 400 символов — НЕ провенанс
-    if len(s) > 400:
-        return False
-    
-    # 2. Явные маркеры провенанса (короткие строки о продаже/владении)
-    strong_provenance = [
-        "продано за", "продана за", "проданы за",
-        "приобретено за", "куплено за",
-        "аукцион", "лот номер", "лот №",
-        "происхождение:", "prov:",
-        "бывшее собрание", "бывшая коллекция",
-        "поступил в", "поступила в", "поступило в",
-        "передано в", "подарено", "завещано",
-        "собрание", "коллекция", "галерея",
-        "выставлялся на", "выставлялась на",
-        "оценка:", "эстимейт:"
-    ]
-    
-    for marker in strong_provenance:
-        if marker in s_lower:
-            return True
-    
-    # 3. Короткий текст с датами и без описательных слов
-    not_provenance = [
-        "художник", "живописец", "мастер", "творчество", "творческий",
-        "картина", "полотно", "произведение", "работа",
-        "композиция", "колорит", "палитра", "мазок", "живопис",
-        "выставка", "экспонирование", "зритель", "публика",
-        "критик", "искусствовед", "передвижник",
-        "стиль", "жанр", "сюжет", "образ", "тема", "тематик",
-        "особенность", "трактовка", "интонация", "приём",
-        "выразительный", "художественный",
-        "картины", "картин", "картине",
-        "драматический", "пореформенный", "академический",
-        "стилистический", "символический", "мифологический",
-        "пейзаж", "портрет", "натюрморт",
-        "кисть", "краска", "оттенок", "свет", "тень"
-    ]
-    
-    for word in not_provenance:
-        if word in s_lower:
-            return False
-    
-    return False
-
-
-def split_provenance_from_description(text):
-    """Разделяет текст на провенанс и описание, если они слиты в одном блоке."""
-    if not text or len(text) < 100:
-        return [], text  # Короткий текст — либо провенанс, либо описание целиком
-    
-    lines = text.split('\n')
-    prov_lines = []
-    desc_lines = []
-    found_split = False
-    
-    for i, line in enumerate(lines):
-        stripped = line.strip()
-        if not stripped:
-            continue
-        
-        # Если ещё не нашли разделение
-        if not found_split:
-            # Проверяем, похожа ли строка на провенанс
-            if looks_like_provenance(stripped):
-                prov_lines.append(stripped)
-            else:
-                # Первая же не-провенанс строка — начинается описание
-                found_split = True
-                desc_lines.append(stripped)
-        else:
-            desc_lines.append(stripped)
-    
-    # Если не нашли явного разделения, но есть "продано за" в начале
-    if not found_split and prov_lines:
-        # Всё что после провенанса — описание
-        pass  # уже разделено
-    
-    if not prov_lines:
-        return [], text
-    
-    return prov_lines, '\n'.join(desc_lines) if desc_lines else ''
-
 def parse_post(text):
+    """Парсит пост, разделяя поля строго по ⸻."""
     if not text: return {}
     try:
-        urls = []
-        def _grab(m):
-            urls.append(m.group(0))
-            return " "
-        tc = URL_RE.sub(_grab, text)
-        raw_tags = TAG_RE.findall(tc)
+        # Извлекаем URL и теги
+        urls = URL_RE.findall(text)
+        raw_tags = TAG_RE.findall(text)
+        
+        # Удаляем URL и теги из текста для парсинга структуры
+        tc = URL_RE.sub(" ", text)
         tc = TAG_RE.sub("", tc)
+        
+        # Разделяем по ⸻
         parts = [p.strip() for p in SEPARATOR_RE.split(tc) if p.strip()]
-        if len(parts) < 4: return {}
-        artist = re.sub(r"\s+"," ",parts[0]) if parts[0] else ""
-        title = re.sub(r"\s+"," ",parts[1]) if parts[1] else ""
-        medium = re.sub(r"\s+"," ",parts[2]) if parts[2] else ""
-        museum = re.sub(r"\s+"," ",parts[3]) if parts[3] else ""
-        if not artist or not title: return {}
-        extras = parts[4:]
-        hist, desc = [], ""
         
-        if len(extras) == 1:
-            # Пытаемся разделить слитный текст на провенанс и описание
-            prov, desc_text = split_provenance_from_description(extras[0])
-            if prov:
-                hist = prov
-                desc = re.sub(r"\s*\n\s*", " ", desc_text).strip() if desc_text else ""
-            elif looks_like_provenance(extras[0]):
-                hist = [l.strip() for l in extras[0].split("\n") if l.strip()]
-            else:
-                desc = re.sub(r"\s*\n\s*", " ", extras[0]).strip()
-        elif len(extras) >= 2:
-            # Проверяем каждый extra отдельно
-            for extra in extras:
-                # Пытаемся разделить каждый блок
-                prov, desc_text = split_provenance_from_description(extra)
-                if prov:
-                    hist.extend(prov)
-                    if desc_text:
-                        desc_parts = [re.sub(r"\s*\n\s*", " ", desc_text).strip()]
-                        if desc:
-                            desc += "\n\n" + "\n\n".join(desc_parts)
-                        else:
-                            desc = "\n\n".join(desc_parts)
-                elif looks_like_provenance(extra):
-                    hist.extend([l.strip() for l in extra.split("\n") if l.strip()])
+        # Минимальная структура: автор, название, medium, музей
+        if len(parts) < 4: 
+            return {}
+        
+        artist = re.sub(r"\s+", " ", parts[0]) if len(parts) > 0 else ""
+        title = re.sub(r"\s+", " ", parts[1]) if len(parts) > 1 else ""
+        medium = re.sub(r"\s+", " ", parts[2]) if len(parts) > 2 else ""
+        museum = re.sub(r"\s+", " ", parts[3]) if len(parts) > 3 else ""
+        
+        if not artist or not title: 
+            return {}
+        
+        # Части после музея (индексы 4+)
+        extras = parts[4:] if len(parts) > 4 else []
+        
+        # Жёсткое распределение по порядку:
+        # parts[4] = происхождение (если есть)
+        # parts[5] = описание (если есть)
+        # parts[6] = ссылки (игнорируем, уже извлечены)
+        # parts[7] = теги (игнорируем, уже извлечены)
+        
+        hist = []
+        desc = ""
+        
+        if len(extras) >= 1:
+            # Первый extra после музея — либо происхождение, либо описание
+            first_extra = extras[0].strip()
+            
+            # Проверяем, является ли это URL или тегами (их уже убрали, 
+            # но на всякий случай проверяем)
+            if not re.match(r'^https?://', first_extra) and not first_extra.startswith('#'):
+                # Это либо происхождение, либо описание
+                # Если есть второй extra — первый это происхождение
+                if len(extras) >= 2:
+                    # Первый — происхождение, второй — описание
+                    hist = [l.strip() for l in first_extra.split('\n') if l.strip()]
+                    
+                    # Второй extra — описание (если это не URL и не теги)
+                    second_extra = extras[1].strip()
+                    if second_extra and not re.match(r'^https?://', second_extra) and not second_extra.startswith('#'):
+                        desc = re.sub(r"\s*\n\s*", " ", second_extra).strip()
                 else:
-                    desc_part = re.sub(r"\s*\n\s*", " ", extra).strip()
-                    if desc:
-                        desc += "\n\n" + desc_part
+                    # Только один extra — проверяем, похож ли на происхождение
+                    lines = first_extra.split('\n')
+                    # Если текст короткий и строки короткие — возможно происхождение
+                    if len(first_extra) < 400 and all(len(l.strip()) < 150 for l in lines if l.strip()):
+                        hist = [l.strip() for l in lines if l.strip()]
                     else:
-                        desc = desc_part
-        
-        # Финальная очистка: убираем дубликаты и пустые строки
-        hist = [h for h in hist if h.strip()]
-        desc = desc.strip()
+                        desc = re.sub(r"\s*\n\s*", " ", first_extra).strip()
         
         md = parse_medium_details(medium)
         
+        # Извлекаем год создания
         creation_year = None
         if title:
             year_match = re.search(r'(\d{4})', title)
             if year_match:
                 creation_year = int(year_match.group(1))
         
-        return {"artist":artist,"title":title,"medium":medium,"material":md["material"],"techniques":md["techniques"],"size":md["size"],"museum":museum,"history":hist,"description":desc,"urls":urls,"tags":sorted(set(raw_tags)),"raw":text,"creation_year":creation_year}
+        return {
+            "artist": artist,
+            "title": title,
+            "medium": medium,
+            "material": md["material"],
+            "techniques": md["techniques"],
+            "size": md["size"],
+            "museum": museum,
+            "history": hist,
+            "description": desc,
+            "urls": urls,
+            "tags": sorted(set(raw_tags)),
+            "raw": text,
+            "creation_year": creation_year
+        }
     except Exception as e:
         logger.error(f"Ошибка парсинга: {e}")
         return {}
