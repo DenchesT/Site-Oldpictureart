@@ -455,6 +455,8 @@ def render_index(all_posts):
 <title>Old Picture Art — Галерея</title>
 <link rel="stylesheet" href="style.css">
 </head><body class="index-page">
+<button class="menu-toggle" onclick="toggleMenu()">☰ Меню</button>
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 <button class="theme-toggle" onclick="toggleTheme()">🌓 Тема</button>
 <button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх">↑</button>
 <header><h1>🎨 Old Picture Art</h1><div class="subtitle">Картин в коллекции: <strong>{len(ps)}</strong></div><a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная картина</a><input type="text" class="search-box" placeholder="🔍 Поиск по художнику, картине, музею, технике…" id="search"></header>
@@ -487,9 +489,14 @@ function goRandom() {{
     if(ALL_POSTS.length) location.href = ALL_POSTS[Math.floor(Math.random() * ALL_POSTS.length)];
 }}
 
+function toggleMenu() {{
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('visible');
+}}
+
 function toggleSection(el) {{
-    el.classList.toggle('collapsed');
-    el.nextElementSibling.classList.toggle('collapsed');
+    el.classList.toggle('open');
+    el.nextElementSibling.classList.toggle('open');
 }}
 
 window.addEventListener('scroll', function() {{
@@ -556,10 +563,6 @@ rb.addEventListener('click', e => {{
     updateView();
 }});
 
-document.querySelectorAll('.sidebar-title').forEach((t) => {{
-    t.classList.add('collapsed');
-    t.nextElementSibling.classList.add('collapsed');
-}});
 </script></body></html>"""
 
 # ===================== TELEGRAM =====================
