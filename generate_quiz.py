@@ -35,48 +35,246 @@ def generate_quiz_page():
 <title>Квиз — Old Picture Art</title>
 <link rel="stylesheet" href="style.css">
 <style>
-.quiz-container {{ max-width: 800px; margin: 0 auto; padding: 1.5rem; text-align: center; }}
-.quiz-painting {{ max-width: 100%; max-height: 50vh; border-radius: 8px; box-shadow: 0 4px 20px var(--shadow); margin: 1.5rem auto; display: block; }}
-.quiz-answers {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1.5rem 0; }}
+* {{ box-sizing: border-box; }}
+
+.quiz-wrapper {{
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}}
+
+.quiz-container {{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}}
+
+.quiz-painting {{
+  max-width: 100%;
+  max-height: 40vh;
+  height: auto;
+  width: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px var(--shadow);
+  margin: 0.5rem auto;
+  display: block;
+  object-fit: contain;
+}}
+
+.quiz-answers {{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+}}
+
 .quiz-btn {{
-  background: var(--card-bg); border: 2px solid var(--border);
-  padding: 1rem; border-radius: 12px; cursor: pointer;
-  font-size: 1.1rem; color: var(--text); transition: all .2s;
-  font-family: inherit; white-space: normal; word-break: break-word;
+  background: var(--card-bg);
+  border: 2px solid var(--border);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text);
+  transition: all .2s;
+  font-family: inherit;
+  white-space: normal;
+  word-break: break-word;
+  min-height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.3;
 }}
+
 .quiz-btn:hover {{ border-color: var(--active); background: var(--border); }}
-.quiz-btn.correct {{ border-color: #27ae60; background: rgba(39,174,96,.15); color: #27ae60; }}
+.quiz-btn.correct {{ border-color: #27ae60; background: rgba(39,174,96,.15); color: #27ae60; font-weight: 700; }}
 .quiz-btn.wrong {{ border-color: var(--like-color); background: rgba(231,76,60,.15); color: var(--like-color); }}
-.quiz-btn:disabled {{ pointer-events: none; }}
-.quiz-score {{ font-size: 1.5rem; font-weight: 700; margin: 1rem 0; color: var(--active); }}
+.quiz-btn:disabled {{ pointer-events: none; opacity: 0.8; }}
+
+.quiz-score {{
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+  color: var(--active);
+}}
+
 .quiz-next {{ 
-  display: none; background: var(--active); color: #fff; border: none;
-  padding: .8rem 2rem; border-radius: 25px; cursor: pointer;
-  font-size: 1.1rem; font-family: inherit; margin: 1rem auto; transition: opacity .2s;
+  display: none;
+  background: var(--active);
+  color: #fff;
+  border: none;
+  padding: .7rem 2rem;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: inherit;
+  margin: 0.75rem auto;
+  transition: opacity .2s;
 }}
+
 .quiz-next:hover {{ opacity: .8; }}
-.quiz-result {{ margin-top: 1rem; font-size: 1rem; color: var(--muted); }}
-.quiz-reset-btn {{
-  background: var(--reset-bg); color: var(--reset-text); border: none;
-  padding: .5rem 1.5rem; border-radius: 20px; cursor: pointer;
-  font-size: 1rem; font-family: inherit; margin: 1rem 0.5rem; transition: opacity .2s;
+
+.quiz-result {{
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: var(--muted);
+  min-height: 1.5rem;
 }}
+
+.quiz-reset-btn {{
+  background: var(--reset-bg);
+  color: var(--reset-text);
+  border: none;
+  padding: .5rem 1.5rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-family: inherit;
+  margin: 0.75rem 0.5rem;
+  transition: opacity .2s;
+}}
+
 .quiz-reset-btn:hover {{ opacity: .8; }}
-@media (max-width: 600px) {{ .quiz-answers {{ grid-template-columns: 1fr; }} }}
+
+.quiz-title {{
+  font-style: italic;
+  color: var(--muted);
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+}}
+
+.quiz-buttons {{
+  margin-top: 0.5rem;
+}}
+
+/* Десктоп: большие экраны */
+@media (min-width: 769px) {{
+  .quiz-painting {{
+    max-height: 45vh;
+  }}
+  
+  .quiz-answers {{
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }}
+  
+  .quiz-btn {{
+    font-size: 1.1rem;
+    padding: 1rem;
+  }}
+  
+  .quiz-score {{
+    font-size: 1.5rem;
+  }}
+}}
+
+/* Планшеты */
+@media (max-width: 768px) {{
+  .quiz-wrapper {{
+    padding: 0.75rem;
+  }}
+  
+  .quiz-painting {{
+    max-height: 35vh;
+  }}
+  
+  .quiz-answers {{
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }}
+  
+  .quiz-btn {{
+    font-size: 0.9rem;
+    padding: 0.6rem;
+    min-height: 3rem;
+  }}
+}}
+
+/* Телефоны */
+@media (max-width: 480px) {{
+  .quiz-wrapper {{
+    padding: 0.5rem;
+  }}
+  
+  .quiz-container h1 {{
+    font-size: 1.3rem;
+    margin: 0.3rem 0;
+  }}
+  
+  .quiz-painting {{
+    max-height: 30vh;
+    margin: 0.3rem auto;
+  }}
+  
+  .quiz-answers {{
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }}
+  
+  .quiz-btn {{
+    font-size: 0.85rem;
+    padding: 0.6rem 0.8rem;
+    min-height: 2.8rem;
+    border-radius: 8px;
+  }}
+  
+  .quiz-score {{
+    font-size: 1.1rem;
+  }}
+  
+  .quiz-title {{
+    font-size: 0.85rem;
+  }}
+  
+  .quiz-next {{
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+  }}
+  
+  .quiz-reset-btn {{
+    font-size: 0.8rem;
+    padding: 0.4rem 1rem;
+  }}
+}}
+
+/* Очень маленькие экраны */
+@media (max-width: 360px) {{
+  .quiz-painting {{
+    max-height: 25vh;
+  }}
+  
+  .quiz-btn {{
+    font-size: 0.8rem;
+    padding: 0.5rem;
+    min-height: 2.5rem;
+  }}
+}}
 </style>
 </head><body>
 <a href="index.html" class="back" style="padding:1rem;display:inline-flex;align-items:center;gap:4px"><span class="icon-back"></span> На главную</a>
-<div class="quiz-container">
-  <h1>Квиз: Угадай художника</h1>
-  <p class="quiz-score">Счёт: <span id="score">0</span> / <span id="total">0</span></p>
-  <img id="quiz-image" class="quiz-painting" src="" alt="Картина" style="display:none">
-  <p id="quiz-title" style="font-style:italic;color:var(--muted);margin:.5rem 0"></p>
-  <div id="quiz-answers" class="quiz-answers"></div>
-  <p id="quiz-feedback" class="quiz-result"></p>
-  <button id="quiz-next" class="quiz-next" onclick="newQuestion()">Следующий вопрос</button>
-  <div style="margin-top:1rem">
-    <button class="random-btn" onclick="startNewGame()">Новая игра</button>
-    <button class="quiz-reset-btn" onclick="resetQuiz()">Сбросить счёт</button>
+<div class="quiz-wrapper">
+  <div class="quiz-container">
+    <h1>Квиз: Угадай художника</h1>
+    <p class="quiz-score">Счёт: <span id="score">0</span> / <span id="total">0</span></p>
+    <img id="quiz-image" class="quiz-painting" src="" alt="Картина" style="display:none">
+    <p id="quiz-title" class="quiz-title"></p>
+    <div id="quiz-answers" class="quiz-answers"></div>
+    <p id="quiz-feedback" class="quiz-result"></p>
+    <button id="quiz-next" class="quiz-next" onclick="newQuestion()">Следующий вопрос</button>
+    <div class="quiz-buttons">
+      <button class="random-btn" onclick="startNewGame()">Новая игра</button>
+      <button class="quiz-reset-btn" onclick="resetQuiz()">Сбросить счёт</button>
+    </div>
   </div>
 </div>
 <script>
@@ -150,9 +348,7 @@ function checkAnswer(btn, answer) {{
         document.getElementById('quiz-feedback').innerHTML = '✗ Неправильно. Правильный ответ: ' + currentPost.artist + ' <a href="' + currentPost.filename + '" style="color:var(--active)">Посмотреть картину</a>';
     }}
     
-    // Сохраняем прогресс
     localStorage.setItem('quizProgress', JSON.stringify({{score: score, total: total}}));
-    
     document.getElementById('quiz-next').style.display = 'inline-block';
 }}
 
