@@ -10,7 +10,7 @@ html {
   --tag-text: #555; --border: #ddd; --muted: #555; --link: #0366d6;
   --shadow: rgba(0,0,0,.15); --history-bg: #f3eedb; --history-border: #b8a86a;
   --sidebar-bg: #fff; --reset-bg: #ffeef0; --reset-text: #d73a49;
-  --input-border: #ccc; --active: #0366d6;
+  --input-border: #ccc; --active: #0366d6; --like-color: #e74c3c;
 }
 [data-theme="dark"] {
   --bg: #1a1a2e; --text: #e0e0e0; --card-bg: #16213e; --tag-bg: #0f3460;
@@ -19,16 +19,9 @@ html {
   --sidebar-bg: #0f3460; --reset-bg: #3d1a1a; --reset-text: #ef9a9a;
   --input-border: #444; --active: #90caf9;
 }
-[data-theme="dark"] .sidebar::-webkit-scrollbar-thumb {
-  background-color: #555;
-  border-radius: 3px;
-}
-[data-theme="dark"] .sidebar::-webkit-scrollbar {
-  width: 6px;
-}
-[data-theme="dark"] .sidebar::-webkit-scrollbar-track {
-  background: #1a1a2e;
-}
+[data-theme="dark"] .sidebar::-webkit-scrollbar-thumb { background-color: #555; border-radius: 3px; }
+[data-theme="dark"] .sidebar::-webkit-scrollbar { width: 6px; }
+[data-theme="dark"] .sidebar::-webkit-scrollbar-track { background: #1a1a2e; }
 
 * { box-sizing: border-box; }
 body {
@@ -76,6 +69,26 @@ h2 { font-size: 1.5rem; font-style: italic; font-weight: 400; color: var(--muted
 .back { color: var(--link); text-decoration: none; font-size: 1rem; }
 time { color: var(--muted); font-size: .9rem; display: block; margin-top: .5rem; }
 
+/* Навигация Prev/Next */
+.post-nav { display: flex; justify-content: space-between; margin-top: 2rem; gap: 1rem; flex-wrap: wrap; }
+.post-nav a {
+  color: var(--link); text-decoration: none; padding: .5rem 1.2rem;
+  border: 1px solid var(--border); border-radius: 8px; transition: all .2s;
+  font-size: .95rem;
+}
+.post-nav a:hover { background: var(--border); border-color: var(--active); }
+.prev-post::before { content: '← '; }
+.next-post::after { content: ' →'; }
+
+/* Кнопка лайка */
+.like-btn {
+  background: none; border: 1px solid var(--border); padding: .3rem .8rem;
+  border-radius: 20px; cursor: pointer; font-size: 1.1rem; transition: all .2s;
+  color: var(--muted); line-height: 1;
+}
+.like-btn:hover { border-color: var(--like-color); }
+.like-btn.liked { color: var(--like-color); border-color: var(--like-color); background: rgba(231,76,60,.1); }
+
 /* ========== КНОПКИ ========== */
 .theme-toggle {
   position: fixed; top: 1rem; right: 1rem; background: var(--card-bg);
@@ -96,37 +109,47 @@ time { color: var(--muted); font-size: .9rem; display: block; margin-top: .5rem;
   font-size: 1.3rem; cursor: pointer; box-shadow: 0 2px 10px var(--shadow);
   z-index: 999; display: none; align-items: center; justify-content: center;
 }
-@media (min-width: 769px) {
-  .scroll-top.visible { display: flex; }
-}
-@media (max-width: 768px) {
-  .scroll-top { display: none !important; }
-}
+@media (min-width: 769px) { .scroll-top.visible { display: flex; } }
+@media (max-width: 768px) { .scroll-top { display: none !important; } }
 
 /* ========== ГЛАВНАЯ СТРАНИЦА ========== */
 .index-page { max-width: 1400px; margin: 0 auto; padding: 1.5rem; font-size: 18px; }
-header { margin-bottom: 2rem; text-align: center; }
+header { margin-bottom: 1.5rem; text-align: center; }
 .index-page h1 { font-size: 2.5rem; }
-.subtitle { color: var(--muted); margin-bottom: 1.5rem; font-size: 1.2rem; }
+.subtitle { color: var(--muted); margin-bottom: 1rem; font-size: 1.1rem; line-height: 1.5; }
 .search-box {
-  width: 100%; max-width: 500px; padding: .8rem 1rem; font-size: 1.1rem;
+  width: 100%; padding: .7rem .9rem; font-size: .95rem;
   border: 1px solid var(--input-border); border-radius: 6px;
   font-family: inherit; background: var(--card-bg); color: var(--text);
 }
 .layout { display: flex; gap: 2rem; align-items: flex-start; }
 
+/* ========== АКТИВНЫЕ ФИЛЬТРЫ ========== */
+.active-filters {
+  background: var(--card-bg); padding: .5rem 1rem; border-radius: 8px;
+  margin-bottom: 1rem; border: 1px solid var(--border); font-size: .9rem;
+  text-align: center; display: flex; flex-wrap: wrap; align-items: center;
+  justify-content: center; gap: .4rem;
+}
+.active-filters-label { color: var(--muted); }
+.filter-tag {
+  display: inline-block; background: var(--active); color: #fff;
+  padding: .2rem .7rem; border-radius: 15px; font-size: .82rem;
+}
+.filter-tag a { color: #fff; text-decoration: none; margin-left: 4px; font-weight: bold; }
+
 /* ========== САЙДБАР ========== */
 .sidebar {
-  width: 300px; flex-shrink: 0; background: var(--sidebar-bg); padding: 1.5rem;
+  width: 300px; flex-shrink: 0; background: var(--sidebar-bg); padding: 1.2rem;
   border-radius: 6px; box-shadow: 0 2px 6px var(--shadow); position: sticky;
   top: 1.5rem; max-height: calc(100vh - 3rem); overflow-y: auto;
   border: 1px solid var(--border);
 }
 .sidebar::-webkit-scrollbar { width: 6px; }
 .sidebar::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 3px; }
-.sidebar-section { margin-bottom: .8rem; }
+.sidebar-section { margin-bottom: .6rem; }
 .sidebar-title {
-  font-size: 1rem; font-weight: 600; margin: 0; padding: .7rem .9rem;
+  font-size: .95rem; font-weight: 600; margin: 0; padding: .6rem .8rem;
   background: var(--card-bg); border: 1px solid var(--border);
   border-radius: 8px; cursor: pointer; user-select: none;
   display: flex; justify-content: space-between; align-items: center;
@@ -134,33 +157,33 @@ header { margin-bottom: 2rem; text-align: center; }
 }
 .sidebar-title:hover { background: var(--border); border-color: var(--active); }
 .sidebar-title::after {
-  content: '▾'; font-size: .8rem; transition: transform .3s ease; color: var(--muted);
+  content: '▾'; font-size: .75rem; transition: transform .3s ease; color: var(--muted);
 }
 .sidebar-title.open::after { transform: rotate(180deg); color: var(--active); }
 .sidebar-content {
   overflow: hidden; max-height: 0;
-  transition: max-height .4s cubic-bezier(0.4, 0, 0.2, 1); padding: 0 .3rem;
+  transition: max-height .35s cubic-bezier(0.4, 0, 0.2, 1); padding: 0 .2rem;
 }
-.sidebar-content.open { max-height: 2000px; padding: .5rem .3rem; }
+.sidebar-content.open { max-height: 3000px; padding: .4rem .2rem; }
 .sidebar ul { list-style: none; padding: 0; margin: 0; }
-.sidebar li { margin-bottom: .25rem; }
+.sidebar li { margin-bottom: .2rem; }
 .sidebar a {
-  text-decoration: none; color: var(--link); font-size: .88rem; display: block;
-  padding: .35rem .6rem; border-radius: 6px; word-break: break-word; transition: all .1s ease;
+  text-decoration: none; color: var(--link); font-size: .84rem; display: block;
+  padding: .3rem .5rem; border-radius: 6px; word-break: break-word; transition: all .1s ease;
 }
 .sidebar a:hover { background: var(--border); color: var(--active); }
 .sidebar a.active { background: var(--active); color: #fff; font-weight: 600; }
 .sidebar a.active .count { color: rgba(255,255,255,.8); }
-.month-list { padding-left: 1rem !important; margin-top: .2rem !important; font-size: .9em; }
-.month-list a { font-size: .8rem; }
+.month-list { padding-left: .8rem !important; margin-top: .15rem !important; font-size: .85em; }
+.month-list a { font-size: .78rem; }
 .filter-reset {
-  display: none; margin-bottom: .8rem; color: var(--reset-text) !important;
+  display: none; margin-bottom: .6rem; color: var(--reset-text) !important;
   font-weight: bold; text-align: center; background: var(--reset-bg);
-  padding: .7rem; border-radius: 8px; text-decoration: none; font-size: .95rem;
+  padding: .5rem; border-radius: 8px; text-decoration: none; font-size: .9rem;
   border: 1px solid transparent; transition: all .2s;
 }
 .filter-reset:hover { border-color: var(--reset-text); }
-.sidebar a .count { font-size: .72rem; color: var(--muted); opacity: .6; margin-left: 3px; }
+.sidebar a .count { font-size: .68rem; color: var(--muted); opacity: .6; margin-left: 3px; }
 .sidebar a:hover .count { opacity: 1; }
 
 /* ========== КАРТОЧКИ ========== */
@@ -189,6 +212,24 @@ header { margin-bottom: 2rem; text-align: center; }
 .tag-page { max-width: 1200px; margin: 0 auto; padding: 1.5rem; font-size: 18px; }
 .tag-page h1 { text-align: center; margin-bottom: 2rem; font-size: 2.2rem; }
 
+/* ========== СТРАНИЦА МУЗЕЕВ ========== */
+.museums-grid {
+  max-width: 1200px; margin: 0 auto; padding: 1.5rem;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+.museum-card {
+  background: var(--card-bg); padding: 1.2rem; border-radius: 8px;
+  border: 1px solid var(--border); transition: transform .1s;
+}
+.museum-card:hover { transform: translateY(-2px); }
+.museum-card h3 { margin: 0 0 .5rem; font-size: 1.15rem; font-weight: 700; }
+.museum-card p { color: var(--muted); font-size: .85rem; margin: 0 0 .5rem; }
+.museum-card ul { margin: .5rem 0 0; padding-left: 1.2rem; font-size: .9rem; }
+.museum-card li { margin-bottom: .25rem; }
+.museum-card a { color: var(--link); text-decoration: none; }
+.museum-card a:hover { text-decoration: underline; }
+
 /* ========== МОБИЛЬНАЯ КНОПКА МЕНЮ ========== */
 .menu-toggle {
   display: none; position: fixed; top: 1rem; left: 1rem; z-index: 1002;
@@ -197,14 +238,12 @@ header { margin-bottom: 2rem; text-align: center; }
   font-size: 1rem; color: var(--text); box-shadow: 0 2px 8px var(--shadow);
 }
 .menu-toggle:active { background: var(--border); }
-
 .share-btn {
   display: inline-block; padding: .3rem .7rem; background: var(--card-bg);
   color: var(--link); border: 1px solid var(--border); border-radius: 20px;
   cursor: pointer; font-size: .9rem; transition: all .2s;
 }
 .share-btn:hover { background: var(--border); }
-
 .views-count { color: var(--muted); font-size: .8rem; margin-left: 1rem; }
 
 /* ========== МЕДИА-ЗАПРОСЫ ========== */
@@ -230,6 +269,9 @@ header { margin-bottom: 2rem; text-align: center; }
   .sidebar li { margin-bottom: .25rem; }
   .sidebar a { font-size: .9rem; padding: .4rem .7rem; background: none; border: none; border-radius: 6px; }
   .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .8rem; }
+  .museums-grid { grid-template-columns: 1fr; padding: .8rem; }
+  .post-nav { flex-direction: column; }
+  .post-nav a { text-align: center; }
 }
 
 @media (max-width: 768px) {
@@ -254,4 +296,5 @@ header { margin-bottom: 2rem; text-align: center; }
   .menu-toggle { top: .3rem; left: .3rem; padding: .3rem .6rem; font-size: .8rem; }
   .tag-page { padding: .5rem; font-size: 15px; }
   .tag-page h1 { font-size: 1.2rem; }
+  .museums-grid { padding: .4rem; gap: .8rem; }
 }
