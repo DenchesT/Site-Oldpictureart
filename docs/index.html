@@ -45,9 +45,20 @@ function updateView(){
       if(afilt.type==='year'&&c.dataset.year!==afilt.val)s=false;
       if(afilt.type==='month'&&(c.dataset.year!==afilt.year||c.dataset.month!==afilt.val))s=false;
     }
-    c.style.display=s?'':'none';
+    c.style.display=s?'':'none';});fl.forEach(l=>{let isActive=false;if(afilt.type===l.dataset.type){if(afilt.type==='month')isActive=(l.dataset.val===afilt.val&&l.dataset.year===afilt.year);else isActive=(l.dataset.val===afilt.val);}l.classList.toggle('active',isActive);});rb.style.display=afilt.type?'block':'none';}si.addEventListener
   });
-si.addEventListener('input',updateView);fl.forEach(l=>{l.addEventListener('click',e=>{e.preventDefault();afilt.type=l.dataset.type;afilt.val=l.dataset.val;if(afilt.type==='month')afilt.year=l.dataset.year;updateView()})});
+  fl.forEach(l=>{
+    let isActive=false;
+    if(afilt.type===l.dataset.type){
+      if(afilt.type==='month')isActive=(l.dataset.val===afilt.val&&l.dataset.year===afilt.year);
+      else isActive=(l.dataset.val===afilt.val);
+    }
+    l.classList.toggle('active',isActive);
+  });
+  rb.style.display=afilt.type?'block':'none';
+}
+si.addEventListener('input',updateView);
+fl.forEach(l=>{l.addEventListener('click',e=>{e.preventDefault();afilt.type=l.dataset.type;afilt.val=l.dataset.val;if(afilt.type==='month')afilt.year=l.dataset.year;updateView()})});
 rb.addEventListener('click',e=>{e.preventDefault();afilt={type:null,val:null,year:null};si.value='';updateView()});
 document.querySelectorAll('.sidebar-title').forEach((t,i)=>{t.classList.add('collapsed');t.nextElementSibling.classList.add('collapsed')});
 </script></body></html>

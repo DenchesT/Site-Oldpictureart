@@ -65,12 +65,12 @@ META_FILE = "posts_meta.json"
 PROCESSED_FILE = "processed_ids.json"
 DICTIONARY_FILE = "medium_dictionary.json"
 
-MAX_IMAGE_SIZE_MB = 25
-MAX_IMAGE_DIMENSION = 2800
-JPEG_QUALITY = 88
+MAX_IMAGE_SIZE_MB = 100     
+MAX_IMAGE_DIMENSION = 4096 
+JPEG_QUALITY = 95          
 THUMB_DIR = "docs/images/thumbs"
-THUMB_DIMENSION = 600
-THUMB_QUALITY = 78
+THUMB_DIMENSION = 1200     
+THUMB_QUALITY = 90       
 
 PROXY_LIST = [
     {'server': '62.113.59.20', 'port': 443, 'secret': '3f71a99978cf97e115dc89cc80aeca1f706574726f766963682e7275'},
@@ -469,9 +469,20 @@ function updateView(){{
       if(afilt.type==='year'&&c.dataset.year!==afilt.val)s=false;
       if(afilt.type==='month'&&(c.dataset.year!==afilt.year||c.dataset.month!==afilt.val))s=false;
     }}
-    c.style.display=s?'':'none';
+    c.style.display=s?'':'none';}});fl.forEach(l=>{{let isActive=false;if(afilt.type===l.dataset.type){{if(afilt.type==='month')isActive=(l.dataset.val===afilt.val&&l.dataset.year===afilt.year);else isActive=(l.dataset.val===afilt.val);}}l.classList.toggle('active',isActive);}});rb.style.display=afilt.type?'block':'none';}}si.addEventListener
   }});
-si.addEventListener('input',updateView);fl.forEach(l=>{{l.addEventListener('click',e=>{{e.preventDefault();afilt.type=l.dataset.type;afilt.val=l.dataset.val;if(afilt.type==='month')afilt.year=l.dataset.year;updateView()}})}});
+  fl.forEach(l=>{{
+    let isActive=false;
+    if(afilt.type===l.dataset.type){{
+      if(afilt.type==='month')isActive=(l.dataset.val===afilt.val&&l.dataset.year===afilt.year);
+      else isActive=(l.dataset.val===afilt.val);
+    }}
+    l.classList.toggle('active',isActive);
+  }});
+  rb.style.display=afilt.type?'block':'none';
+}}
+si.addEventListener('input',updateView);
+fl.forEach(l=>{{l.addEventListener('click',e=>{{e.preventDefault();afilt.type=l.dataset.type;afilt.val=l.dataset.val;if(afilt.type==='month')afilt.year=l.dataset.year;updateView()}})}});
 rb.addEventListener('click',e=>{{e.preventDefault();afilt={{type:null,val:null,year:null}};si.value='';updateView()}});
 document.querySelectorAll('.sidebar-title').forEach((t,i)=>{{t.classList.add('collapsed');t.nextElementSibling.classList.add('collapsed')}});
 </script></body></html>"""
