@@ -260,7 +260,7 @@ def parse_post(text):
     except Exception as e:
         logger.error(f"Ошибка парсинга: {e}")
         return {}
-    
+
 def slugify(text):
     t = text.lower()
     t = re.sub(r"[^\w\s-]","",t,flags=re.UNICODE)
@@ -579,7 +579,6 @@ def render_index(all_posts):
     
     year_range = f"{min(creation_years)}–{max(creation_years)}" if creation_years else ""
     
-    cards = []
     cards = []
     for p in ps:
         cv = ""
