@@ -88,36 +88,43 @@ auth.onAuthStateChanged(user => {
 });
 
 function showAuthForm() {
-  const choice = confirm('Нажмите OK чтобы войти, или Отмена чтобы создать новый аккаунт.');
-  const email = prompt('Email:');
-  if (!email) return;
-  const password = prompt('Пароль (минимум 6 символов):');
-  if (!password || password.length < 6) { alert('Пароль должен быть минимум 6 символов'); return; }
+  const provider = prompt('Выберите способ входа:\n1 - Google-аккаунт\n2 - Email и пароль\n\nВведите 1 или 2:');
   
-  if (choice) {
-    // Войти
-    auth.signInWithEmailAndPassword(email, password)
-      .then(() => console.log('Вход выполнен'))
-      .catch(err => {
-        if (err.code === 'auth/user-not-found') {
-          alert('Аккаунт не найден. Создайте новый аккаунт.');
-        } else if (err.code === 'auth/wrong-password') {
-          alert('Неверный пароль.');
-        } else {
-          alert('Ошибка: ' + err.message);
-        }
-      });
+  if (provider === '1') {
+    // Вход через Google
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(googleProvider)
+      .then(result => console.log('Вход через Google выполнен:', result.user.displayName))
+      .catch(err => alert('Ошибка Google: ' + err.message));
+  } else if (provider === '2') {
+    // Email и пароль
+    const email = prompt('Email:');
+    if (!email) return;
+    const password = prompt('Пароль (минимум 6 символов):');
+    if (!password || password.length < 6) { alert('Пароль должен быть минимум 6 символов'); return; }
+    
+    const action = confirm('Нажмите OK — Войти, Отмена — Создать аккаунт');
+    
+    if (action) {
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => console.log('Вход выполнен'))
+        .catch(err => {
+          if (err.code === 'auth/user-not-found') alert('Аккаунт не найден.');
+          else if (err.code === 'auth/wrong-password') alert('Неверный пароль.');
+          else if (err.code === 'auth/invalid-credential') alert('Неверный email или пароль.');
+          else alert('Ошибка: ' + err.message);
+        });
+    } else {
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => console.log('Аккаунт создан'))
+        .catch(err => {
+          if (err.code === 'auth/email-already-in-use') alert('Этот email уже занят.');
+          else if (err.code === 'auth/weak-password') alert('Пароль слишком простой.');
+          else alert('Ошибка: ' + err.message);
+        });
+    }
   } else {
-    // Создать аккаунт
-    auth.createUserWithEmailAndPassword(email, password)
-      .then(() => console.log('Аккаунт создан'))
-      .catch(err => {
-        if (err.code === 'auth/email-already-in-use') {
-          alert('Этот email уже используется.');
-        } else {
-          alert('Ошибка: ' + err.message);
-        }
-      });
+    alert('Отменено');
   }
 }
 
