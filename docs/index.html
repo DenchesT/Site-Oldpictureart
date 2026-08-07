@@ -101,7 +101,11 @@ function updateView() {
     rb.style.display = afilt.type ? 'block' : 'none';
 }
 
-si.addEventListener('input', updateView);
+let debounceTimer;
+si.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(updateView, 200);
+});
 
 fl.forEach(l => {
     l.addEventListener('click', e => {
@@ -124,4 +128,18 @@ rb.addEventListener('click', e => {
     document.getElementById('overlay').classList.remove('visible');
 });
 
-</script></body></html>
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'r' || e.key === 'к') goRandom();
+    if (e.key === 'Escape') {
+        document.querySelector('.sidebar').classList.remove('open');
+        document.getElementById('overlay').classList.remove('visible');
+    }
+    if (e.key === 'm' || e.key === 'ь') toggleMenu();
+    if (e.key === 't' || e.key === 'е') toggleTheme();
+    if (e.key === '/' && document.activeElement !== si) {
+        e.preventDefault();
+        si.focus();
+    }
+});
+</script>
+</body></html>

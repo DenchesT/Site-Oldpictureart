@@ -65,12 +65,12 @@ META_FILE = "posts_meta.json"
 PROCESSED_FILE = "processed_ids.json"
 DICTIONARY_FILE = "medium_dictionary.json"
 
-MAX_IMAGE_SIZE_MB = 100     
-MAX_IMAGE_DIMENSION = 4096 
-JPEG_QUALITY = 95          
+MAX_IMAGE_SIZE_MB = 100
+MAX_IMAGE_DIMENSION = 4096
+JPEG_QUALITY = 95
 THUMB_DIR = "docs/images/thumbs"
-THUMB_DIMENSION = 1200     
-THUMB_QUALITY = 90       
+THUMB_DIMENSION = 1200
+THUMB_QUALITY = 90
 
 PROXY_LIST = [
     {'server': '62.113.59.20', 'port': 443, 'secret': '3f71a99978cf97e115dc89cc80aeca1f706574726f766963682e7275'},
@@ -124,14 +124,11 @@ def parse_medium_details(medium_text):
             break
     for mat in d["materials"]:
         if mat in text.lower():
-            # Находим позицию материала и вставляем запятую после него
             idx = text.lower().find(mat)
             end_idx = idx + len(mat)
-            # Если после материала нет запятой, добавляем
             if end_idx < len(text) and text[end_idx] != ',':
                 text = text[:end_idx] + ',' + text[end_idx:]
             break
-    
     parts = [p.strip() for p in text.split(",") if p.strip()]
     material, techniques = "", []
     sw = re.compile(r'^\d+[,.]?\d*\s*(?:[xх×]|см|mm|мм|m|м)')
@@ -312,6 +309,7 @@ def render_post_page(post):
     artist, title, museum = h(post["artist"]), h(post["title"]), h(post["museum"])
     desc = post.get("description") or ""
     urls = post.get("urls") or ([post["url"]] if post.get("url") else [])
+    cover_image = post['images'][0] if post.get('images') else ''
 
     parts = []
     hl = post.get("hires", [])
@@ -351,21 +349,32 @@ def render_post_page(post):
             src_html = f'<div class="sources"><strong>Источники:</strong><ul class="source-list">{its}</ul></div>'
 
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes,viewport-fit=cover">
 <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta property="og:title" content="{artist} — {title}">
+<meta property="og:description" content="{h(desc[:200]) if desc else artist + ' — ' + title}">
+<meta property="og:image" content="{h(cover_image)}">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Old Picture Art">
+<meta name="twitter:card" content="summary_large_image">
 <title>{artist} — {title}</title>
 <link rel="stylesheet" href="style.css">
 </head><body class="post-page">
 <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
 <button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх">↑</button>
-<div class="top-nav"><a href="index.html" class="back">← На главную</a><a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная</a></div>
-<article><h1>{artist}</h1><h2>{title}</h2>{img_html}{mdet}<p class="museum">🏛 {museum}</p>{desc_html}{hist_html}{src_html}<time>{h(post['date'])}</time>{tags_html}</article>
-<script>function toggleTheme(){{const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}}
+<div class="top-nav"><a href="index.html" class="back">← На главную</a><a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная</a><button class="share-btn" onclick="sharePage()" title="Поделиться">📤</button></div>
+<article><h1>{artist}</h1><h2>{title}</h2>{img_html}{mdet}<p class="museum">🏛 {museum}</p>{desc_html}{hist_html}{src_html}<time>{h(post['date'])}</time><span class="views-count" id="views-count"></span>{tags_html}</article>
+<script>
+function toggleTheme(){{const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}}
 (()=>{{const s=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',s)}})();
 function goRandom(){{const p=JSON.parse(localStorage.getItem('allPosts')||'[]');if(p.length)location.href=p[Math.floor(Math.random()*p.length)]}}
-window.addEventListener('scroll',function(){{const b=document.querySelector('.scroll-top');if(b)b.classList.toggle('visible',window.scrollY>400)}});</script></body></html>"""
+function sharePage(){{if(navigator.share){{navigator.share({{title:document.title,url:window.location.href}})}}else{{navigator.clipboard.writeText(window.location.href);alert('Ссылка скопирована! 📋')}}}}
+window.addEventListener('scroll',function(){{const b=document.querySelector('.scroll-top');if(b)b.classList.toggle('visible',window.scrollY>400)}});
+const postPath=window.location.pathname;const views=JSON.parse(localStorage.getItem('pageViews')||'{{}}');views[postPath]=(views[postPath]||0)+1;localStorage.setItem('pageViews',JSON.stringify(views));document.getElementById('views-count').textContent='👁 '+views[postPath];
+document.addEventListener('keydown',function(e){{if(e.key==='r'||e.key==='к')goRandom();if(e.key==='Escape'){{const lb=document.getElementById('lightbox');if(lb)lb.classList.remove('active')}}if(e.key==='h'||e.key==='р')window.location.href='index.html';if(e.key==='t'||e.key==='е')toggleTheme()}});
+</script></body></html>"""
 
 def surname_key(n):
     f = n.split(",")[0].strip()
@@ -423,12 +432,10 @@ def render_index(all_posts):
         if p.get("date") and "-" in p["date"]: y, m, _ = p["date"].split("-")
         cards.append(f"""<a class="card" href="{h(p['filename'])}" data-artist="{h(p['artist'].lower())}" data-year="{y}" data-month="{m}" data-museum="{h(slugify(p.get('museum','')))}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}"><div class="card-img"><img src="{cv}" alt="" loading="lazy"></div><div class="card-body"><div class="card-artist">{h(p['artist'])}</div><div class="card-title">{h(p['title'])}</div><div class="card-museum">{h(p.get('museum',''))}</div><div class="card-info">{h(p.get('material',''))} {h(', '.join(p.get('techniques',[])[:2]))}</div></div></a>""")
     
-    # Подсчёт количества
     artist_count = defaultdict(int)
     museum_count = defaultdict(int)
     material_count = defaultdict(int)
     technique_count = defaultdict(int)
-    
     for p in ps:
         if p.get("artist"): artist_count[p["artist"]] += 1
         if p.get("museum"): museum_count[p["museum"]] += 1
@@ -550,7 +557,11 @@ function updateView() {{
     rb.style.display = afilt.type ? 'block' : 'none';
 }}
 
-si.addEventListener('input', updateView);
+let debounceTimer;
+si.addEventListener('input', () => {{
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(updateView, 200);
+}});
 
 fl.forEach(l => {{
     l.addEventListener('click', e => {{
@@ -573,7 +584,21 @@ rb.addEventListener('click', e => {{
     document.getElementById('overlay').classList.remove('visible');
 }});
 
-</script></body></html>"""
+document.addEventListener('keydown', function(e) {{
+    if (e.key === 'r' || e.key === 'к') goRandom();
+    if (e.key === 'Escape') {{
+        document.querySelector('.sidebar').classList.remove('open');
+        document.getElementById('overlay').classList.remove('visible');
+    }}
+    if (e.key === 'm' || e.key === 'ь') toggleMenu();
+    if (e.key === 't' || e.key === 'е') toggleTheme();
+    if (e.key === '/' && document.activeElement !== si) {{
+        e.preventDefault();
+        si.focus();
+    }}
+}});
+</script>
+</body></html>"""
 
 # ===================== TELEGRAM =====================
 
@@ -638,6 +663,7 @@ def generate_sitemap(all_posts):
     bu = "https://denchest.github.io/Site-Oldpictureart"
     urls = [f"  <url><loc>{bu}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>"]
     for p in all_posts: urls.append(f"  <url><loc>{bu}/{p['filename']}</loc><lastmod>{p['date']}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>")
+    urls.append(f"  <url><loc>{bu}/feed.xml</loc><changefreq>daily</changefreq><priority>0.6</priority></url>")
     at = set()
     for p in all_posts:
         for t in p.get("tags",[]): at.add(t)
@@ -650,6 +676,35 @@ def generate_manifest():
     with open(os.path.join(OUTPUT_DIR, "manifest.json"), "w", encoding="utf-8") as f:
         json.dump({"name":"Old Picture Art","short_name":"OldPictureArt","description":"Галерея картин","start_url":"/Site-Oldpictureart/","display":"standalone","background_color":"#fafafa","theme_color":"#fafafa","icons":[{"src":"images/icon-192.png","sizes":"192x192","type":"image/png"},{"src":"images/icon-512.png","sizes":"512x512","type":"image/png"}]}, f, ensure_ascii=False, indent=2)
     logger.info("manifest.json")
+
+def generate_rss(all_posts):
+    logger.info("Генерация RSS...")
+    base_url = "https://denchest.github.io/Site-Oldpictureart"
+    items = []
+    for p in sorted(all_posts, key=lambda x: x["date"], reverse=True)[:50]:
+        desc = p.get("description", "")[:500]
+        img = p.get("images", [""])[0]
+        items.append(f"""    <item>
+      <title>{h(p['artist'])} — {h(p['title'])}</title>
+      <link>{base_url}/{p['filename']}</link>
+      <description><![CDATA[<img src="{base_url}/{img}" style="max-width:100%"/><br>{h(desc)}]]></description>
+      <pubDate>{p['date']}</pubDate>
+      <guid>{base_url}/{p['filename']}</guid>
+    </item>""")
+    rss = f"""<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>Old Picture Art</title>
+  <link>{base_url}</link>
+  <description>Галерея картин из Telegram канала Old Picture Art</description>
+  <language>ru</language>
+  <atom:link href="{base_url}/feed.xml" rel="self" type="application/rss+xml"/>
+{''.join(items)}
+</channel>
+</rss>"""
+    with open(os.path.join(OUTPUT_DIR, "feed.xml"), "w", encoding="utf-8") as f:
+        f.write(rss)
+    logger.info("RSS сгенерирован")
 
 def push_to_github():
     logger.info("GitHub...")
@@ -667,7 +722,8 @@ def rebuild_reset():
     if input("Продолжить? [y/N]: ").strip().lower() not in ("y","yes","д","да"): print("Отмена."); sys.exit(0)
     if os.path.isdir(OUTPUT_DIR):
         for n in os.listdir(OUTPUT_DIR):
-            if n.endswith(".html") or n.endswith(".xml"): os.remove(os.path.join(OUTPUT_DIR, n))
+            if n.endswith(".html") or n.endswith(".xml") or n == "feed.xml":
+                os.remove(os.path.join(OUTPUT_DIR, n))
     for fn in (PROCESSED_FILE, META_FILE):
         if os.path.exists(fn): os.remove(fn)
 
@@ -721,6 +777,7 @@ async def main():
     generate_tag_pages(all_posts)
     generate_sitemap(all_posts)
     generate_manifest()
+    generate_rss(all_posts)
     with open(os.path.join(OUTPUT_DIR, "index.html"), "w", encoding="utf-8") as f: f.write(render_index(all_posts))
     with open(os.path.join(OUTPUT_DIR, "404.html"), "w", encoding="utf-8") as f: f.write('<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0;url=index.html"></head><body></body></html>')
     logger.info(f"Новых постов: {len(accepted)}. Всего: {len(all_posts)}")

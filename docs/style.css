@@ -19,6 +19,16 @@ html {
   --sidebar-bg: #0f3460; --reset-bg: #3d1a1a; --reset-text: #ef9a9a;
   --input-border: #444; --active: #90caf9;
 }
+[data-theme="dark"] .sidebar::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 3px;
+}
+[data-theme="dark"] .sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+[data-theme="dark"] .sidebar::-webkit-scrollbar-track {
+  background: #1a1a2e;
+}
 
 * { box-sizing: border-box; }
 body {
@@ -187,6 +197,15 @@ header { margin-bottom: 2rem; text-align: center; }
   font-size: 1rem; color: var(--text); box-shadow: 0 2px 8px var(--shadow);
 }
 .menu-toggle:active { background: var(--border); }
+
+.share-btn {
+  display: inline-block; padding: .3rem .7rem; background: var(--card-bg);
+  color: var(--link); border: 1px solid var(--border); border-radius: 20px;
+  cursor: pointer; font-size: .9rem; transition: all .2s;
+}
+.share-btn:hover { background: var(--border); }
+
+.views-count { color: var(--muted); font-size: .8rem; margin-left: 1rem; }
 
 /* ========== МЕДИА-ЗАПРОСЫ ========== */
 @media (max-width: 900px) {
