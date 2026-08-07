@@ -480,7 +480,8 @@ def render_tag_page(tag, posts):
         if p.get("thumbs"): cv = p["thumbs"][0]
         elif p.get("images"): cv = p["images"][0]
         cv = h(cv)
-        cards.append(f'<a class="card" href="{h(p["filename"])}"><div class="card-img"><img src="{cv}" alt="" loading="lazy"></div><div class="card-body"><div class="card-artist">{h(p["artist"])}</div><div class="card-title">{h(p["title"])}</div></div></a>')
+        museum_name = h(p.get('museum', ''))
+    cards.append(f'<a class="card" href="{h(p["filename"])}"><div class="card-img"><img src="{cv}" alt="" loading="lazy"></div><div class="card-body"><div class="card-artist">{h(p["artist"])}</div><div class="card-title">{h(p["title"])}</div>{f"<div class=\"card-museum\">{museum_name}</div>" if museum_name else ""}</div></a>')
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
 <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
@@ -544,7 +545,49 @@ def render_index(all_posts):
         if creation_year:
             d_start = creation_year // 10 * 10
             decade_attr = f'data-decade="{d_start}–{d_start+9}"'
-        cards.append(f"""<a class="card" href="{h(p['filename'])}" data-artist="{h(p['artist'].lower())}" data-year="{y}" data-month="{m}" data-museum="{h(slugify(p.get('museum','')))}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}" {decade_attr}><div class="card-img"><img src="{cv}" alt="" loading="lazy"></div><div class="card-body"><div class="card-artist">{h(p['artist'])}</div><div class="card-title">{h(p['title'])}</div><div class="card-museum">{h(p.get('museum',''))}</div><div class="card-info">{h(p.get('material',''))} {h(', '.join(p.get('techniques',[])[:2]))}</div></div></a>""")
+            artist_name = h(p['artist'])
+    title_name = h(p['title'])
+    museum_name = h(p.get('museum', ''))
+    material_name = h(p.get('material', ''))
+    techniques_list = p.get('techniques', [])
+    size_val = h(p.get('size', ''))
+
+    # Строка с техниками и размером
+    medium_parts = []
+    if material_name:
+        medium_parts.append(material_name)
+    if techniques_list:
+        medium_parts.append(', '.join(h(t) for t in techniques_list[:2]))
+    if size_val:
+        medium_parts.append(size_val)
+    medium_str = ' · '.join(medium_parts) if medium_parts else ''
+
+    # Дата публикации
+    pub_date = p.get('date', '')[:10] if p.get('date') else ''
+
+    # Есть ли описание
+    has_desc = bool(p.get('description', '').strip())
+    # Есть ли происхождение
+    has_hist = bool(p.get('history', []))
+    # Есть ли ссылки
+    has_urls = bool(p.get('urls', []))
+    # Есть ли теги
+    has_tags = bool(p.get('tags', []))
+
+    # Считаем количество разделов (для визуального индикатора)
+    sections_count = sum([1 for x in [museum_name, medium_str, has_hist, has_desc, has_urls, has_tags] if x])
+
+    cards.append(f"""<a class="card" href="{h(p['filename'])}" data-artist="{h(p['artist'].lower())}" data-year="{y}" data-month="{m}" data-museum="{h(slugify(p.get('museum','')))}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}" {decade_attr}>
+    <div class="card-img"><img src="{cv}" alt="" loading="lazy"></div>
+    <div class="card-body">
+        <div class="card-artist">{artist_name}</div>
+        <div class="card-title">{title_name}</div>
+        {f'<div class="card-medium">{medium_str}</div>' if medium_str else ''}
+        {f'<div class="card-museum"><span class="icon-museum-small"></span> {museum_name}</div>' if museum_name else ''}
+        {f'<div class="card-extra"><span class="icon-info-small"></span> {sections_count} разделов</div>' if sections_count > 0 else ''}
+        <div class="card-date">{pub_date}</div>
+    </div>
+    </a>""")
     
     artist_count = defaultdict(int)
     museum_count = defaultdict(int)
