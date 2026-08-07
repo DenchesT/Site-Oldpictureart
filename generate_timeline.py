@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Генератор страницы таймлайна для Old Picture Art.
 Запуск: python generate_timeline.py
@@ -120,14 +121,30 @@ function updateTimeline(decade) {{
     ).join('');
 }}
 
-document.getElementById('timeline-slider').addEventListener('input', function() {{
+const slider = document.getElementById('timeline-slider');
+
+// Восстановление сохранённого периода
+const savedDecade = localStorage.getItem('timelineDecade');
+if (savedDecade) {{
+    slider.value = parseInt(savedDecade);
+}}
+
+slider.addEventListener('input', function() {{
     const year = parseInt(this.value);
     const decade = getDecade(year);
+    localStorage.setItem('timelineDecade', decade);
     updateTimeline(decade);
 }});
 
 // Инициализация
-updateTimeline(getDecade({(min_year+max_year)//2}));
+const initDecade = savedDecade ? getDecade(parseInt(savedDecade)) : getDecade({(min_year+max_year)//2});
+updateTimeline(initDecade);
+
+// Синхронизация слайдера с инициализированным значением
+if (savedDecade) {{
+    const decade = getDecade(parseInt(savedDecade));
+    slider.value = decade;
+}}
 </script>
 </body></html>"""
     

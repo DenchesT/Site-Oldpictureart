@@ -447,7 +447,7 @@ if (paintingImg && window.ColorThief) {{
 function toggleTheme(){{const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}}
 (()=>{{const s=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',s)}})();
 function goRandom(){{const p=JSON.parse(localStorage.getItem('allPosts')||'[]');if(p.length)location.href=p[Math.floor(Math.random()*p.length)]}}
-function sharePage(){{if(navigator.share){{navigator.share({{title:document.title,url:window.location.href}})}}else{{navigator.clipboard.writeText(window.location.href);alert('Ссылка скопирована! 📋')}}}}
+function sharePage(){{if(navigator.share){{navigator.share({{title:document.title,url:window.location.href}})}}else{{navigator.clipboard.writeText(window.location.href);alert('Ссылка скопирована!')}}}}
 function toggleLike(){{
     const btn=document.getElementById('like-btn');
     const pid=btn.dataset.postId;
@@ -647,7 +647,7 @@ function updateFavList() {{
                 }}
             }}).join('');
         }} else {{
-            favList.innerHTML = '<li style="color:var(--muted);font-size:.8rem;padding:.5rem">Нажмите ♥ на странице картины</li>';
+            favList.innerHTML = '<li style="color:var(--muted);font-size:.8rem;padding:.5rem">Нажмите <span class="icon-heart" style="display:inline-block;width:14px;height:14px;vertical-align:middle"></span> на странице картины</li>';
         }}
     }}
 }}

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Генератор страницы квиза для Old Picture Art.
 Запуск: python generate_quiz.py
@@ -55,6 +56,12 @@ def generate_quiz_page():
 }}
 .quiz-next:hover {{ opacity: .8; }}
 .quiz-result {{ margin-top: 1rem; font-size: 1rem; color: var(--muted); }}
+.quiz-reset-btn {{
+  background: var(--reset-bg); color: var(--reset-text); border: none;
+  padding: .5rem 1.5rem; border-radius: 20px; cursor: pointer;
+  font-size: 1rem; font-family: inherit; margin: 1rem 0.5rem; transition: opacity .2s;
+}}
+.quiz-reset-btn:hover {{ opacity: .8; }}
 @media (max-width: 600px) {{ .quiz-answers {{ grid-template-columns: 1fr; }} }}
 </style>
 </head><body>
@@ -67,11 +74,22 @@ def generate_quiz_page():
   <div id="quiz-answers" class="quiz-answers"></div>
   <p id="quiz-feedback" class="quiz-result"></p>
   <button id="quiz-next" class="quiz-next" onclick="newQuestion()">Следующий вопрос</button>
-  <button class="random-btn" onclick="newQuestion()" style="margin-top:1rem">Новая игра</button>
+  <div style="margin-top:1rem">
+    <button class="random-btn" onclick="startNewGame()">Новая игра</button>
+    <button class="quiz-reset-btn" onclick="resetQuiz()">Сбросить счёт</button>
+  </div>
 </div>
 <script>
 const ALL_POSTS = {json.dumps(valid_posts, ensure_ascii=False)};
-let score = 0, total = 0, currentPost = null;
+
+// Восстановление прогресса квиза
+let saved = JSON.parse(localStorage.getItem('quizProgress') || '{{"score":0,"total":0}}');
+let score = saved.score || 0;
+let total = saved.total || 0;
+let currentPost = null;
+
+document.getElementById('score').textContent = score;
+document.getElementById('total').textContent = total;
 
 function shuffle(arr) {{
     const a = [...arr];
@@ -132,7 +150,33 @@ function checkAnswer(btn, answer) {{
         document.getElementById('quiz-feedback').innerHTML = '✗ Неправильно. Правильный ответ: ' + currentPost.artist + ' <a href="' + currentPost.filename + '" style="color:var(--active)">Посмотреть картину</a>';
     }}
     
+    // Сохраняем прогресс
+    localStorage.setItem('quizProgress', JSON.stringify({{score: score, total: total}}));
+    
     document.getElementById('quiz-next').style.display = 'inline-block';
+}}
+
+function startNewGame() {{
+    score = 0;
+    total = 0;
+    document.getElementById('score').textContent = '0';
+    document.getElementById('total').textContent = '0';
+    document.getElementById('quiz-feedback').textContent = '';
+    localStorage.removeItem('quizProgress');
+    newQuestion();
+}}
+
+function resetQuiz() {{
+    score = 0;
+    total = 0;
+    document.getElementById('score').textContent = '0';
+    document.getElementById('total').textContent = '0';
+    document.getElementById('quiz-feedback').textContent = '';
+    localStorage.removeItem('quizProgress');
+    document.getElementById('quiz-next').style.display = 'none';
+    document.getElementById('quiz-image').style.display = 'none';
+    document.getElementById('quiz-title').textContent = '';
+    document.getElementById('quiz-answers').innerHTML = '';
 }}
 
 newQuestion();
