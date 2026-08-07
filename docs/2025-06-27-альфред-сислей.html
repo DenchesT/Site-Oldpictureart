@@ -87,21 +87,37 @@ auth.onAuthStateChanged(user => {
 });
 
 function showAuthForm() {
+  const choice = confirm('Нажмите OK чтобы войти, или Отмена чтобы создать новый аккаунт.');
   const email = prompt('Email:');
   if (!email) return;
-  const password = prompt('Пароль:');
-  if (!password) return;
-  auth.signInWithEmailAndPassword(email, password)
-    .catch(err => {
-      if (err.code === 'auth/user-not-found') {
-        if (confirm('Аккаунт не найден. Создать новый?')) {
-          auth.createUserWithEmailAndPassword(email, password)
-            .catch(e => alert('Ошибка: ' + e.message));
+  const password = prompt('Пароль (минимум 6 символов):');
+  if (!password || password.length < 6) { alert('Пароль должен быть минимум 6 символов'); return; }
+  
+  if (choice) {
+    // Войти
+    auth.signInWithEmailAndPassword(email, password)
+      .then(() => console.log('Вход выполнен'))
+      .catch(err => {
+        if (err.code === 'auth/user-not-found') {
+          alert('Аккаунт не найден. Создайте новый аккаунт.');
+        } else if (err.code === 'auth/wrong-password') {
+          alert('Неверный пароль.');
+        } else {
+          alert('Ошибка: ' + err.message);
         }
-      } else {
-        alert('Ошибка: ' + err.message);
-      }
-    });
+      });
+  } else {
+    // Создать аккаунт
+    auth.createUserWithEmailAndPassword(email, password)
+      .then(() => console.log('Аккаунт создан'))
+      .catch(err => {
+        if (err.code === 'auth/email-already-in-use') {
+          alert('Этот email уже используется.');
+        } else {
+          alert('Ошибка: ' + err.message);
+        }
+      });
+  }
 }
 
 async function syncLike(postId, liked) {
