@@ -147,15 +147,20 @@ header { margin-bottom: 1.5rem; text-align: center; }
 }
 .sidebar-title.open::after { transform: rotate(180deg); color: var(--active); }
 
-/* Контент секции — по умолчанию открыт, скрывается через .collapsed */
 .sidebar-content {
-  overflow: hidden;
-  max-height: 3000px;
-  transition: max-height .35s cubic-bezier(0.4, 0, 0.2, 1);
+  display: grid;
+  grid-template-rows: 1fr; /* Открытое состояние: 1 фракция (реальная высота контента) */
+  transition: grid-template-rows .35s cubic-bezier(0.4, 0, 0.2, 1), 
+              padding .35s cubic-bezier(0.4, 0, 0.2, 1);
   padding: .4rem .2rem;
 }
+
+.sidebar-content > * {
+  overflow: hidden;
+}
+
 .sidebar-content.collapsed {
-  max-height: 0 !important;
+  grid-template-rows: 0fr;
   padding: 0 .2rem;
 }
 

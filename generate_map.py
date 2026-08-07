@@ -167,8 +167,8 @@ def generate_museums_page():
         if lat and lon:
             popup_html = f'<b>{h(museum)}</b><br>{h(city)}, {h(country)}<br>{len(posts)} картин(ы)<br><a href="#museum-{museum_id}" onclick="scrollToMuseum(\'{museum_id}\')" style="color:var(--active)">🔍 Показать в списке</a>'
             markers_js.append(
-                f"L.marker([{lat}, {lon}]).addTo(map).bindPopup('{popup_html}');"
-            )
+            f"L.marker([{lat}, {lon}]).addTo(map).bindPopup(`{popup_html}`);"
+             )
     
     missing = len(museums_dict) - found_locations
     all_markers = "\n            ".join(markers_js)
