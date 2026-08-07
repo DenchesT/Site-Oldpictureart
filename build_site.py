@@ -608,29 +608,16 @@ def render_index(all_posts):
         # Дата публикации
         pub_date = p.get('date', '')[:10] if p.get('date') else ''
 
-        # Есть ли описание
-        has_desc = bool(p.get('description', '').strip())
-        # Есть ли происхождение
-        has_hist = bool(p.get('history', []))
-        # Есть ли ссылки
-        has_urls = bool(p.get('urls', []))
-        # Есть ли теги
-        has_tags = bool(p.get('tags', []))
-
-        # Считаем количество разделов (для визуального индикатора)
-        sections_count = sum([1 for x in [museum_name, medium_str, has_hist, has_desc, has_urls, has_tags] if x])
-
         cards.append(f"""<a class="card" href="{h(p['filename'])}" data-artist="{h(p['artist'].lower())}" data-year="{y}" data-month="{m}" data-museum="{h(slugify(p.get('museum','')))}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}" {decade_attr}>
-  <div class="card-img"><img src="{cv}" alt="" loading="lazy"></div>
-  <div class="card-body">
-    <div class="card-artist">{artist_name}</div>
-    <div class="card-title">{title_name}</div>
-    {f'<div class="card-medium">{medium_str}</div>' if medium_str else ''}
-    {f'<div class="card-museum"><span class="icon-museum-small"></span> {museum_name}</div>' if museum_name else ''}
-    {f'<div class="card-extra"><span class="icon-info-small"></span> {sections_count} разделов</div>' if sections_count > 0 else ''}
-    <div class="card-date">{pub_date}</div>
-  </div>
-</a>""")
+    <div class="card-img"><img src="{cv}" alt="" loading="lazy"></div>
+    <div class="card-body">
+        <div class="card-artist">{artist_name}</div>
+        <div class="card-title">{title_name}</div>
+        {f'<div class="card-medium">{medium_str}</div>' if medium_str else ''}
+        {f'<div class="card-museum"><span class="icon-museum-small"></span> {museum_name}</div>' if museum_name else ''}
+        <div class="card-date">{pub_date}</div>
+    </div>
+    </a>""")
     
     artist_count = defaultdict(int)
     museum_count = defaultdict(int)

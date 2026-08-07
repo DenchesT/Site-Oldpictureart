@@ -39,7 +39,7 @@ def generate_quiz_page():
 .quiz-wrapper {{
   max-width: 900px;
   margin: 0 auto;
-  padding: 0.5rem 1rem 1rem;
+  padding: 0 1rem 0.5rem;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -54,11 +54,11 @@ def generate_quiz_page():
   max-width: 800px;
   margin: 0 auto;
   width: 100%;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }}
 
 .quiz-container h1 {{
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   margin: 0;
 }}
 
@@ -84,16 +84,16 @@ def generate_quiz_page():
 .quiz-btn {{
   background: var(--card-bg);
   border: 2px solid var(--border);
-  padding: 0.6rem 0.8rem;
+  padding: 0.5rem 0.8rem;
   border-radius: 10px;
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--text);
   transition: all .2s;
   font-family: inherit;
   white-space: normal;
   word-break: break-word;
-  min-height: 2.8rem;
+  min-height: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,7 +107,7 @@ def generate_quiz_page():
 .quiz-btn:disabled {{ pointer-events: none; opacity: 0.8; }}
 
 .quiz-score {{
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
   margin: 0;
   color: var(--active);
@@ -118,10 +118,10 @@ def generate_quiz_page():
   background: var(--active);
   color: #fff;
   border: none;
-  padding: 0.5rem 1.5rem;
+  padding: 0.4rem 1.5rem;
   border-radius: 20px;
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-family: inherit;
   margin: 0 auto;
   transition: opacity .2s;
@@ -130,7 +130,7 @@ def generate_quiz_page():
 .quiz-next:hover {{ opacity: .8; }}
 
 .quiz-result {{
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--muted);
   min-height: 1.2rem;
   margin: 0;
@@ -140,10 +140,10 @@ def generate_quiz_page():
   background: var(--reset-bg);
   color: var(--reset-text);
   border: none;
-  padding: 0.4rem 1.2rem;
+  padding: 0.3rem 1rem;
   border-radius: 20px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-family: inherit;
   margin: 0 0.3rem;
   transition: opacity .2s;
@@ -155,7 +155,7 @@ def generate_quiz_page():
   font-style: italic;
   color: var(--muted);
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   line-height: 1.2;
 }}
 
@@ -168,8 +168,8 @@ def generate_quiz_page():
 }}
 
 .quiz-buttons .random-btn {{
-  font-size: 0.9rem;
-  padding: 0.4rem 1.2rem;
+  font-size: 0.85rem;
+  padding: 0.3rem 1rem;
   margin: 0;
 }}
 
@@ -193,12 +193,12 @@ def generate_quiz_page():
     min-height: 3rem;
   }}
   
-  .quiz-score {{
-    font-size: 1.3rem;
-  }}
-  
   .quiz-container h1 {{
     font-size: 1.8rem;
+  }}
+  
+  .quiz-score {{
+    font-size: 1.2rem;
   }}
 }}
 
@@ -222,11 +222,11 @@ def generate_quiz_page():
 /* Телефоны */
 @media (max-width: 480px) {{
   .quiz-wrapper {{
-    padding: 0.3rem 0.5rem 0.5rem;
+    padding: 0 0.5rem 0.5rem;
   }}
   
   .quiz-container h1 {{
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }}
   
   .quiz-painting {{
@@ -235,46 +235,46 @@ def generate_quiz_page():
   
   .quiz-answers {{
     grid-template-columns: 1fr;
-    gap: 0.4rem;
+    gap: 0.35rem;
   }}
   
   .quiz-btn {{
     font-size: 0.8rem;
-    padding: 0.5rem;
-    min-height: 2.3rem;
+    padding: 0.4rem 0.6rem;
+    min-height: 2.2rem;
     border-radius: 8px;
   }}
   
   .quiz-score {{
-    font-size: 1rem;
+    font-size: 0.9rem;
   }}
   
   .quiz-title {{
-    font-size: 0.8rem;
+    font-size: 0.75rem;
   }}
   
   .quiz-next {{
-    padding: 0.4rem 1.2rem;
-    font-size: 0.85rem;
+    padding: 0.35rem 1.2rem;
+    font-size: 0.8rem;
   }}
   
   .quiz-result {{
-    font-size: 0.8rem;
+    font-size: 0.75rem;
   }}
   
   .quiz-reset-btn {{
-    font-size: 0.75rem;
-    padding: 0.3rem 0.8rem;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.7rem;
   }}
   
   .quiz-buttons .random-btn {{
-    font-size: 0.8rem;
-    padding: 0.3rem 1rem;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.8rem;
   }}
 }}
 </style>
 </head><body>
-<a href="index.html" class="back" style="padding:0.75rem 1rem;display:inline-flex;align-items:center;gap:4px"><span class="icon-back"></span> На главную</a>
+<a href="index.html" class="back" style="padding:0.4rem 1rem;display:inline-flex;align-items:center;gap:4px"><span class="icon-back"></span> На главную</a>
 <div class="quiz-wrapper">
   <div class="quiz-container">
     <h1>Квиз: Угадай художника</h1>
