@@ -70,22 +70,22 @@ document.addEventListener('keydown',function(e){if(e.key==='r'||e.key==='к')goR
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+let currentUser = null;
 
 auth.onAuthStateChanged(user => {
-  if (user) {
-    db.collection('likes')
-      .where('userId', '==', user.uid)
-      .where('liked', '==', true).get()
-      .then(snap => {
-        const cloud = {};
-        snap.forEach(d => cloud[d.data().postId] = true);
-        const local = JSON.parse(localStorage.getItem('likes') || '{}');
-        localStorage.setItem('likes', JSON.stringify({...local, ...cloud}));
-        updateFavList();
-      });
+  currentUser = user;
+  const btn = document.getElementById('auth-btn');
+  if (btn) {
+    if (user) {
+      btn.innerHTML = '<span class="icon-user"></span> ' + (user.email ? user.email.split('@')[0] : 'User');
+      btn.onclick = () => auth.signOut();
+    } else {
+      btn.innerHTML = '<span class="icon-login"></span> Войти';
+      btn.onclick = showAuthForm;
+    }
   }
+  if (user) loadLikesFromCloud();
 });
-</script>
 
 function showAuthForm() {
   const email = prompt('Email:');
@@ -95,11 +95,13 @@ function showAuthForm() {
   auth.signInWithEmailAndPassword(email, password)
     .catch(err => {
       if (err.code === 'auth/user-not-found') {
-        if (confirm('Создать аккаунт?')) {
+        if (confirm('Аккаунт не найден. Создать новый?')) {
           auth.createUserWithEmailAndPassword(email, password)
-            .catch(e => alert(e.message));
+            .catch(e => alert('Ошибка: ' + e.message));
         }
-      } else alert(err.message);
+      } else {
+        alert('Ошибка: ' + err.message);
+      }
     });
 }
 
@@ -124,7 +126,7 @@ async function loadLikesFromCloud() {
   const cloud = {};
   snap.forEach(d => cloud[d.data().postId] = true);
   const local = JSON.parse(localStorage.getItem('likes') || '{}');
-  const merged = { ...local, ...cloud };
+  const merged = Object.assign({}, local, cloud);
   localStorage.setItem('likes', JSON.stringify(merged));
   const btn = document.getElementById('like-btn');
   if (btn && merged[btn.dataset.postId]) btn.classList.add('liked');
