@@ -16,14 +16,14 @@
   <div class="painting-topbar-inner">
     <a href="index.html" class="topbar-back">← Галерея</a>
     <div class="topbar-actions">
-      <button onclick="goRandom()" class="topbar-btn" title="Случайная картина">🎲</button>
-      <button onclick="sharePage()" class="topbar-btn" title="Поделиться">📤</button>
-      <button id="like-btn" data-post-id="418" onclick="toggleLike()" class="topbar-btn topbar-like">♡</button>
+      <button onclick="goRandom()" class="topbar-btn" title="Случайная картина"><span class="icon-random"></span></button>
+      <button onclick="sharePage()" class="topbar-btn" title="Поделиться"><span class="icon-share"></span></button>
+      <button id="like-btn" data-post-id="418" onclick="toggleLike()" class="topbar-btn topbar-like"><span class="icon-heart"></span></button>
     </div>
   </div>
 </header>
-<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Наверх">↑</button>
-<article><h1>Станислав Юлианович Жуковский</h1><h2>Былое. Комната старого дома, 1912</h2><a href="images/2026-03-10-станислав-юлианович-жуковский-hires-1.jpg" target="_blank" title="Оригинал"><img src="images/2026-03-10-станислав-юлианович-жуковский-1.jpg" alt="Станислав Юлианович Жуковский — Былое. Комната старого дома, 1912" class="painting" loading="lazy"></a><div class="medium-details"><span class="detail-item"><span class="detail-icon icon-material-card"></span> Холст</span> <span class="detail-item"><span class="detail-icon icon-technique-card"></span> масло</span> <span class="detail-item"><span class="detail-icon icon-size-card"></span> 110 x 130,5 см</span></div><p class="museum">🏛 Национальный художественный музей Республики Беларусь, Минск</p><time>2026-03-10</time><span class="views-count" id="views-count"></span><div class="tags"><a href="tag-жуковский.html" class="tag">#жуковский</a> <a href="tag-картина.html" class="tag">#картина</a> <a href="tag-нхмрб.html" class="tag">#нхмрб</a></div></article>
+<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Наверх"><span class="icon-arrow-up"></span></button>
+<article><h1>Станислав Юлианович Жуковский</h1><h2>Былое. Комната старого дома, 1912</h2><a href="images/2026-03-10-станислав-юлианович-жуковский-hires-1.jpg" target="_blank" title="Оригинал"><img src="images/2026-03-10-станислав-юлианович-жуковский-1.jpg" alt="Станислав Юлианович Жуковский — Былое. Комната старого дома, 1912" class="painting" loading="lazy"></a><div class="medium-details"><span class="detail-item"><span class="detail-icon icon-material-card"></span> Холст</span> <span class="detail-item"><span class="detail-icon icon-technique-card"></span> Масло</span> <span class="detail-item"><span class="detail-icon icon-size-card"></span> 110 x 130,5 см</span></div><p class="museum">🏛 Национальный художественный музей Республики Беларусь, Минск</p><time>2026-03-10</time><span class="views-count" id="views-count"></span><div class="tags"><a href="tag-жуковский.html" class="tag">#жуковский</a> <a href="tag-картина.html" class="tag">#картина</a> <a href="tag-нхмрб.html" class="tag">#нхмрб</a></div></article>
 <nav class="post-nav"><a href="2026-02-16-аурелиано-де-беруэте.html" class="prev-post" title="Аурелиано де Беруэте — Paisaje de Torrelodones (Пейзаж Торрелодонес), 1891">← Предыдущая</a><a href="2026-03-16-анонимные-художники-феликс-огюстен-милиус-александр-огюст-ро.html" class="next-post" title="Анонимные художники, Феликс Огюстен Милиус, Александр-Огюст Розе, Альфред Адольф Ленгле, Огюст Русслен, Огюст Александр Хирш, Эмиль-Анри Лапорт, Огюст Ренуар, Поль Милье, Леонс-Люсьен Кордье, Альбер Дарье — Quarante-trois portraits de peintres de l&#x27;atelier Gleyre (Сорок три портрета художников мастерской Глейра), между 1856 и 1868 годами">Следующая →</a></nav>
 <script>
 function toggleTheme(){const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}
@@ -47,6 +47,6 @@ function toggleLike(){
 }
 (()=>{const likes=JSON.parse(localStorage.getItem('likes')||'{}');const btn=document.getElementById('like-btn');if(btn&&likes[btn.dataset.postId]){btn.textContent='♥';btn.classList.add('liked')}})();
 window.addEventListener('scroll',function(){const b=document.querySelector('.scroll-top');if(b)b.classList.toggle('visible',window.scrollY>400)});
-const postPath=window.location.pathname;const views=JSON.parse(localStorage.getItem('pageViews')||'{}');views[postPath]=(views[postPath]||0)+1;localStorage.setItem('pageViews',JSON.stringify(views));document.getElementById('views-count').textContent='👁 '+views[postPath];
+const postPath=window.location.pathname;const views=JSON.parse(localStorage.getItem('pageViews')||'{}');views[postPath]=(views[postPath]||0)+1;localStorage.setItem('pageViews',JSON.stringify(views));document.getElementById('views-count').textContent=views[postPath];
 document.addEventListener('keydown',function(e){if(e.key==='r'||e.key==='к')goRandom();if(e.key==='Escape'){const lb=document.getElementById('lightbox');if(lb)lb.classList.remove('active')}if(e.key==='h'||e.key==='р')window.location.href='index.html';if(e.key==='t'||e.key==='е')toggleTheme();if(e.key==='ArrowLeft'){const p=document.querySelector('.prev-post');if(p)p.click()}if(e.key==='ArrowRight'){const p=document.querySelector('.next-post');if(p)p.click()}});
 </script></body></html>

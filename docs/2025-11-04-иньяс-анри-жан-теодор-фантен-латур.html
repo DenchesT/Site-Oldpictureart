@@ -16,14 +16,14 @@
   <div class="painting-topbar-inner">
     <a href="index.html" class="topbar-back">← Галерея</a>
     <div class="topbar-actions">
-      <button onclick="goRandom()" class="topbar-btn" title="Случайная картина">🎲</button>
-      <button onclick="sharePage()" class="topbar-btn" title="Поделиться">📤</button>
-      <button id="like-btn" data-post-id="364" onclick="toggleLike()" class="topbar-btn topbar-like">♡</button>
+      <button onclick="goRandom()" class="topbar-btn" title="Случайная картина"><span class="icon-random"></span></button>
+      <button onclick="sharePage()" class="topbar-btn" title="Поделиться"><span class="icon-share"></span></button>
+      <button id="like-btn" data-post-id="364" onclick="toggleLike()" class="topbar-btn topbar-like"><span class="icon-heart"></span></button>
     </div>
   </div>
 </header>
-<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Наверх">↑</button>
-<article><h1>Иньяс-Анри-Жан-Теодор Фантен-Латур</h1><h2>La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879</h2><a href="images/2025-11-04-иньяс-анри-жан-теодор-фантен-латур-hires-1.jpg" target="_blank" title="Оригинал"><img src="images/2025-11-04-иньяс-анри-жан-теодор-фантен-латур-1.jpg" alt="Иньяс-Анри-Жан-Теодор Фантен-Латур — La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879" class="painting" loading="lazy"></a><div class="medium-details"><span class="detail-item"><span class="detail-icon icon-material-card"></span> Холст</span> <span class="detail-item"><span class="detail-icon icon-technique-card"></span> масло</span> <span class="detail-item"><span class="detail-icon icon-size-card"></span> 145 x 170 см</span></div><p class="museum">🏛 Королевский музей изящных искусств, Брюссель</p><section class="description"><p>Приобретено на трёхгодичной выставке изящных искусств, Гент, 1899 г.</p></section><time>2025-11-04</time><span class="views-count" id="views-count"></span><div class="tags"><a href="tag-fantin_latour.html" class="tag">#fantin_latour</a> <a href="tag-rmfab.html" class="tag">#rmfab</a> <a href="tag-картина.html" class="tag">#картина</a></div></article>
+<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Наверх"><span class="icon-arrow-up"></span></button>
+<article><h1>Иньяс-Анри-Жан-Теодор Фантен-Латур</h1><h2>La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879</h2><a href="images/2025-11-04-иньяс-анри-жан-теодор-фантен-латур-hires-1.jpg" target="_blank" title="Оригинал"><img src="images/2025-11-04-иньяс-анри-жан-теодор-фантен-латур-1.jpg" alt="Иньяс-Анри-Жан-Теодор Фантен-Латур — La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879" class="painting" loading="lazy"></a><div class="medium-details"><span class="detail-item"><span class="detail-icon icon-material-card"></span> Холст</span> <span class="detail-item"><span class="detail-icon icon-technique-card"></span> Масло</span> <span class="detail-item"><span class="detail-icon icon-size-card"></span> 145 x 170 см</span></div><p class="museum">🏛 Королевский музей изящных искусств, Брюссель</p><section class="description"><p>Приобретено на трёхгодичной выставке изящных искусств, Гент, 1899 г.</p></section><time>2025-11-04</time><span class="views-count" id="views-count"></span><div class="tags"><a href="tag-fantin_latour.html" class="tag">#fantin_latour</a> <a href="tag-rmfab.html" class="tag">#rmfab</a> <a href="tag-картина.html" class="tag">#картина</a></div></article>
 <nav class="post-nav"><a href="2025-10-16-гюстав-кайботт.html" class="prev-post" title="Гюстав Кайботт — Jeune homme à sa fenêtre (Молодой человек у окна), 1876">← Предыдущая</a><a href="2025-11-07-фрэнсис-кэмпбелл-буало-каделл.html" class="next-post" title="Фрэнсис Кэмпбелл Буало Каделл — Florian&#x27;s café, Venice (Кафе Флориан, Венеция), 1910">Следующая →</a></nav>
 <script>
 function toggleTheme(){const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}
@@ -47,6 +47,6 @@ function toggleLike(){
 }
 (()=>{const likes=JSON.parse(localStorage.getItem('likes')||'{}');const btn=document.getElementById('like-btn');if(btn&&likes[btn.dataset.postId]){btn.textContent='♥';btn.classList.add('liked')}})();
 window.addEventListener('scroll',function(){const b=document.querySelector('.scroll-top');if(b)b.classList.toggle('visible',window.scrollY>400)});
-const postPath=window.location.pathname;const views=JSON.parse(localStorage.getItem('pageViews')||'{}');views[postPath]=(views[postPath]||0)+1;localStorage.setItem('pageViews',JSON.stringify(views));document.getElementById('views-count').textContent='👁 '+views[postPath];
+const postPath=window.location.pathname;const views=JSON.parse(localStorage.getItem('pageViews')||'{}');views[postPath]=(views[postPath]||0)+1;localStorage.setItem('pageViews',JSON.stringify(views));document.getElementById('views-count').textContent=views[postPath];
 document.addEventListener('keydown',function(e){if(e.key==='r'||e.key==='к')goRandom();if(e.key==='Escape'){const lb=document.getElementById('lightbox');if(lb)lb.classList.remove('active')}if(e.key==='h'||e.key==='р')window.location.href='index.html';if(e.key==='t'||e.key==='е')toggleTheme();if(e.key==='ArrowLeft'){const p=document.querySelector('.prev-post');if(p)p.click()}if(e.key==='ArrowRight'){const p=document.querySelector('.next-post');if(p)p.click()}});
 </script></body></html>

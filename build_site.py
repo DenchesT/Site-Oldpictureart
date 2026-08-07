@@ -221,7 +221,7 @@ def slugify(text):
     return t[:60] or "post"
 
 def plural_ru(n, one, two, five):
-    """Склоняет существительное в зависимости от числа: 1 картиНА, 2 картинЫ, 5 картиН"""
+    """Склоняет существительное: 1 картина, 2 картины, 5 картин"""
     n = abs(n) % 100
     if 11 <= n <= 19:
         return five
@@ -339,8 +339,15 @@ def render_post_page(post, all_posts=None):
         parts.append(f'<a href="{h(lh)}" target="_blank" title="Оригинал"><img src="{h(src)}" alt="{artist} — {title}" class="painting" loading="lazy"></a>')
     img_html = "\n".join(parts)
 
-    mat = f'<span class="detail-item"><span class="detail-icon icon-material-card"></span> {h(post.get("material",""))}</span>' if post.get("material") else ""
-    tech = f'<span class="detail-item"><span class="detail-icon icon-technique-card"></span> {h(", ".join(post.get("techniques",[])))}</span>' if post.get("techniques") else ""
+    mat = f'<span class="detail-item"><span class="detail-icon icon-material-card"></span> {h(post.get("material","").capitalize())}</span>' if post.get("material") else ""
+    techniques_list = post.get("techniques", [])
+    if techniques_list:
+        formatted_techs = []
+        for i, t in enumerate(techniques_list):
+            formatted_techs.append(t.capitalize() if i == 0 else t.lower())
+        tech = f'<span class="detail-item"><span class="detail-icon icon-technique-card"></span> {h(", ".join(formatted_techs))}</span>'
+    else:
+        tech = ""
     sz = f'<span class="detail-item"><span class="detail-icon icon-size-card"></span> {h(post.get("size",""))}</span>' if post.get("size") else ""
     mdet = f'<div class="medium-details">{mat} {tech} {sz}</div>'
 
@@ -401,13 +408,13 @@ def render_post_page(post, all_posts=None):
   <div class="painting-topbar-inner">
     <a href="index.html" class="topbar-back">← Галерея</a>
     <div class="topbar-actions">
-      <button onclick="goRandom()" class="topbar-btn" title="Случайная картина">🎲</button>
-      <button onclick="sharePage()" class="topbar-btn" title="Поделиться">📤</button>
-      <button id="like-btn" data-post-id="{post_id}" onclick="toggleLike()" class="topbar-btn topbar-like">♡</button>
+      <button onclick="goRandom()" class="topbar-btn" title="Случайная картина"><span class="icon-random"></span></button>
+      <button onclick="sharePage()" class="topbar-btn" title="Поделиться"><span class="icon-share"></span></button>
+      <button id="like-btn" data-post-id="{post_id}" onclick="toggleLike()" class="topbar-btn topbar-like"><span class="icon-heart"></span></button>
     </div>
   </div>
 </header>
-<button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх">↑</button>
+<button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх"><span class="icon-arrow-up"></span></button>
 <article><h1>{artist}</h1><h2>{title}</h2>{img_html}{mdet}<p class="museum">🏛 {museum}</p>{desc_html}{hist_html}{src_html}<time>{h(post['date'])}</time><span class="views-count" id="views-count"></span>{tags_html}</article>
 {post_nav}
 <script>
@@ -432,7 +439,7 @@ function toggleLike(){{
 }}
 (()=>{{const likes=JSON.parse(localStorage.getItem('likes')||'{{}}');const btn=document.getElementById('like-btn');if(btn&&likes[btn.dataset.postId]){{btn.textContent='♥';btn.classList.add('liked')}}}})();
 window.addEventListener('scroll',function(){{const b=document.querySelector('.scroll-top');if(b)b.classList.toggle('visible',window.scrollY>400)}});
-const postPath=window.location.pathname;const views=JSON.parse(localStorage.getItem('pageViews')||'{{}}');views[postPath]=(views[postPath]||0)+1;localStorage.setItem('pageViews',JSON.stringify(views));document.getElementById('views-count').textContent='👁 '+views[postPath];
+const postPath=window.location.pathname;const views=JSON.parse(localStorage.getItem('pageViews')||'{{}}');views[postPath]=(views[postPath]||0)+1;localStorage.setItem('pageViews',JSON.stringify(views));document.getElementById('views-count').textContent=views[postPath];
 document.addEventListener('keydown',function(e){{if(e.key==='r'||e.key==='к')goRandom();if(e.key==='Escape'){{const lb=document.getElementById('lightbox');if(lb)lb.classList.remove('active')}}if(e.key==='h'||e.key==='р')window.location.href='index.html';if(e.key==='t'||e.key==='е')toggleTheme();if(e.key==='ArrowLeft'){{const p=document.querySelector('.prev-post');if(p)p.click()}}if(e.key==='ArrowRight'){{const p=document.querySelector('.next-post');if(p)p.click()}}}});
 </script></body></html>"""
 
@@ -456,8 +463,7 @@ def render_tag_page(tag, posts):
 <title>#{h(tag)} — Old Picture Art</title>
 <link rel="stylesheet" href="style.css">
 </head><body class="tag-page">
-<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
-<button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх">↑</button>
+<button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх"><span class="icon-arrow-up"></span></button>
 <a href="index.html" class="back">← На главную</a>
 <h1>#{h(tag)} ({len(posts)})</h1>
 <div class="grid">{''.join(cards)}</div>
@@ -545,7 +551,7 @@ def render_index(all_posts):
     }
     pm_js = json.dumps(post_map_data, ensure_ascii=False)
     
-    fav_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-fav" onclick="toggleSection(this)">Избранное <span id="fav-count" class="count" style="font-size:.68rem;opacity:.6"></span></div><div class="sidebar-content collapsed"><ul id="fav-list"><li style="color:var(--muted);font-size:.8rem;padding:.5rem">Нажмите ♥ на странице картины</li></ul></div></div>'
+    fav_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-fav" onclick="toggleSection(this)">Избранное <span id="fav-count" class="count" style="font-size:.68rem;opacity:.6"></span></div><div class="sidebar-content collapsed"><ul id="fav-list"><li style="color:var(--muted);font-size:.8rem;padding:.5rem">Нажмите <span class="icon-heart" style="display:inline-block;width:14px;height:14px;vertical-align:middle"></span> на странице картины</li></ul></div></div>'
     theme_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-theme" style="cursor:pointer" onclick="toggleTheme()">Тема</div></div>'
     map_link_html = '<div class="sidebar-section"><a href="museums.html" class="map-link sidebar-icon icon-map">Карта музеев</a></div>'
     
@@ -560,12 +566,12 @@ def render_index(all_posts):
 <button class="menu-toggle" onclick="toggleMenu()">☰ Меню</button>
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 <button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх">↑</button>
-<header><h1>🎨 Old Picture Art</h1>
+<header><h1><span class="icon-logo"></span> Old Picture Art</h1>
 <div class="subtitle">{len(ps)} {plural_ru(len(ps), 'картина', 'картины', 'картин')} · {len(authors)} {plural_ru(len(authors), 'художник', 'художника', 'художников')} · {len(museums)} {plural_ru(len(museums), 'музей', 'музея', 'музеев')} · {year_range}</div>
-<a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная картина</a></header>
+<a href="#" class="random-btn" onclick="goRandom()"><span class="icon-random-white"></span> Случайная картина</a></header>
 <div class="layout"><aside class="sidebar">
-<div class="sidebar-section" style="padding: 8px 12px;"><input type="text" class="search-box" placeholder="🔍 Поиск..." id="search" style="width:100%"></div>
-<a href="#" id="reset-filter" class="filter-reset" style="display:none">✕ Сбросить все фильтры</a>
+<div class="sidebar-section" style="padding: 8px 12px;"><input type="text" class="search-box" placeholder="Поиск..." id="search" style="width:100%"></div>
+<a href="#" id="reset-filter" class="filter-reset" style="display:none">Сбросить все фильтры</a>
 <div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-archive" onclick="toggleSection(this)">Архив</div><div class="sidebar-content collapsed"><ul>{arh}</ul></div></div>
 <div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-decades" onclick="toggleSection(this)">Декады</div><div class="sidebar-content collapsed"><ul>{dech}</ul></div></div>
 <div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-artists" onclick="toggleSection(this)">Художники</div><div class="sidebar-content collapsed"><ul>{ah}</ul></div></div>
