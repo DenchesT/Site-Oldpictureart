@@ -432,7 +432,7 @@ def render_index(all_posts):
 </head><body class="index-page">
 <button class="theme-toggle" onclick="toggleTheme()">🌓 Тема</button>
 <button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх">↑</button>
-<header><h1>🎨 Old Picture Art</h1><div class="subtitle">Картин в коллекции: <strong>{len(ps)}</strong></div><a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная картина</a><input type="text" class="search-box" placeholder="🔍 Поиск по художнику или картине…" id="search"></header>
+<header><h1>🎨 Old Picture Art</h1><div class="subtitle">Картин в коллекции: <strong>{len(ps)}</strong></div><a href="#" class="random-btn" onclick="goRandom()">🎲 Случайная картина</a><input type="text" class="search-box" placeholder="🔍 Поиск по художнику, картине, музею, технике…" id="search"></header>
 <div class="layout"><aside class="sidebar">
 <a href="#" id="reset-filter" class="filter-reset">✕ Сбросить все фильтры</a>
 <div class="sidebar-section"><div class="sidebar-title" onclick="toggleSection(this)">📅 Архив</div><div class="sidebar-content"><ul>{arh}</ul></div></div>
@@ -449,10 +449,32 @@ function toggleSection(el){{el.classList.toggle('collapsed');el.nextElementSibli
 window.addEventListener('scroll',function(){{const b=document.querySelector('.scroll-top');if(b)b.classList.toggle('visible',window.scrollY>400)}});
 const si=document.getElementById('search'),cards=document.querySelectorAll('.card'),fl=document.querySelectorAll('.filter-link'),rb=document.getElementById('reset-filter');
 let afilt={{type:null,val:null,year:null}};
-function updateView(){{const q=si.value.toLowerCase();cards.forEach(c=>{{let s=true;if(q){{const t=(c.querySelector('.card-artist')?.textContent||'')+' '+(c.querySelector('.card-title')?.textContent||'');if(!t.toLowerCase().includes(q))s=false}}if(s&&afilt.type){{if(afilt.type==='artist'&&c.dataset.artist!==afilt.val)s=false;if(afilt.type==='museum'&&c.dataset.museum!==afilt.val)s=false;if(afilt.type==='material'&&c.dataset.material!==afilt.val)s=false;if(afilt.type==='technique'){{if(!c.dataset.techniques.includes(afilt.val))s=false}}if(afilt.type==='year'&&c.dataset.year!==afilt.val)s=false;if(afilt.type==='month'&&(c.dataset.year!==afilt.year||c.dataset.month!==afilt.val))s=false}}c.style.display=s?'':'none'}});fl.forEach(l=>{{let ia=false;if(afilt.type===l.dataset.type){{if(afilt.type==='month')ia=(l.dataset.val===afilt.val&&l.dataset.year===afilt.year);else ia=(l.dataset.val===afilt.val)}}l.classList.toggle('active',ia)}});rb.style.display=afilt.type?'block':'none'}}
+function updateView(){{
+  const q=si.value.toLowerCase();
+  cards.forEach(c=>{{
+    let s=true;
+    if(q){{
+      const artist=(c.querySelector('.card-artist')?.textContent||'').toLowerCase();
+      const title=(c.querySelector('.card-title')?.textContent||'').toLowerCase();
+      const museum=(c.querySelector('.card-museum')?.textContent||'').toLowerCase();
+      const info=(c.querySelector('.card-info')?.textContent||'').toLowerCase();
+      const all=artist+' '+title+' '+museum+' '+info;
+      if(!all.includes(q))s=false;
+    }}
+    if(s&&afilt.type){{
+      if(afilt.type==='artist'&&c.dataset.artist!==afilt.val)s=false;
+      if(afilt.type==='museum'&&c.dataset.museum!==afilt.val)s=false;
+      if(afilt.type==='material'&&c.dataset.material!==afilt.val)s=false;
+      if(afilt.type==='technique'){{if(!c.dataset.techniques.includes(afilt.val))s=false}}
+      if(afilt.type==='year'&&c.dataset.year!==afilt.val)s=false;
+      if(afilt.type==='month'&&(c.dataset.year!==afilt.year||c.dataset.month!==afilt.val))s=false;
+    }}
+    c.style.display=s?'':'none';
+  }});
 si.addEventListener('input',updateView);fl.forEach(l=>{{l.addEventListener('click',e=>{{e.preventDefault();afilt.type=l.dataset.type;afilt.val=l.dataset.val;if(afilt.type==='month')afilt.year=l.dataset.year;updateView()}})}});
 rb.addEventListener('click',e=>{{e.preventDefault();afilt={{type:null,val:null,year:null}};si.value='';updateView()}});
-document.querySelectorAll('.sidebar-title').forEach((t,i)=>{{if(i>0){{t.classList.add('collapsed');t.nextElementSibling.classList.add('collapsed')}}}});</script></body></html>"""
+document.querySelectorAll('.sidebar-title').forEach((t,i)=>{{t.classList.add('collapsed');t.nextElementSibling.classList.add('collapsed')}});
+</script></body></html>"""
 
 # ===================== TELEGRAM =====================
 

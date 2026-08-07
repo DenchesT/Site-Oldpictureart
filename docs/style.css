@@ -67,8 +67,9 @@ time { color: var(--muted); font-size: .9rem; display: block; margin-top: .5rem;
   box-shadow: 0 2px 8px var(--shadow);
 }
 .random-btn {
-  display: inline-block; padding: .3rem 1rem; background: var(--link);
-  color: #fff; text-decoration: none; border-radius: 4px; font-size: .95rem;
+  display: inline-block; padding: .5rem 1.5rem; background: var(--active);
+  color: #fff; text-decoration: none; border-radius: 20px; font-size: 1rem;
+  transition: opacity .2s; margin-bottom: 1.5rem;
 }
 .scroll-top {
   position: fixed; bottom: 1.5rem; right: 1.5rem; width: 44px; height: 44px;
