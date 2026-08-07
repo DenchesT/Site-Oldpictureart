@@ -453,10 +453,11 @@ def render_post_page(post: dict) -> str:
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>{artist} — {title}</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 :root{{--bg:#fafafa;--text:#222;--card-bg:#fff;--tag-bg:#eee;--tag-text:#555;--border:#ddd;--muted:#555;--link:#0366d6;--shadow:rgba(0,0,0,.15);--history-bg:#f3eedb;--history-border:#b8a86a}}
 [data-theme="dark"]{{--bg:#1a1a2e;--text:#e0e0e0;--card-bg:#16213e;--tag-bg:#0f3460;--tag-text:#e0e0e0;--border:#333;--muted:#aaa;--link:#64b5f6;--shadow:rgba(0,0,0,.5);--history-bg:#2d2d1a;--history-border:#8b7a2e}}
 *{{box-sizing:border-box}}
-body{{max-width:900px;margin:0 auto;padding:1.5rem;font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.55;transition:background .3s,color .3s;-webkit-tap-highlight-color:transparent}}
+body{{max-width:900px;margin:0 auto;padding:1.5rem;font-family:'EB Garamond',Georgia,serif;background:var(--bg);color:var(--text);line-height:1.55;transition:background .3s,color .3s;-webkit-tap-highlight-color:transparent}}
 .painting{{max-width:100%;max-height:70vh;display:block;margin:1.5rem auto;box-shadow:0 4px 20px var(--shadow);border-radius:4px;transition:transform .2s;cursor:pointer}}
 .painting:active{{transform:scale(1.02)}}
 h1{{font-size:1.8rem;margin:0 0 .3rem;line-height:1.2}}
@@ -570,10 +571,11 @@ def render_tag_page(tag: str, posts: list) -> str:
 <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
 <title>#{h(tag)} — Old Picture Art</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 :root{{--bg:#fafafa;--text:#222;--card-bg:#fff;--border:#ddd;--muted:#666}}
 [data-theme="dark"]{{--bg:#1a1a2e;--text:#e0e0e0;--card-bg:#16213e;--border:#333;--muted:#aaa}}
 *{{box-sizing:border-box}}
-body{{max-width:1200px;margin:0 auto;padding:1.5rem;font-family:Georgia,serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s;-webkit-tap-highlight-color:transparent}}
+body{{max-width:1200px;margin:0 auto;padding:1.5rem;font-family:'EB Garamond',Georgia,serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s;-webkit-tap-highlight-color:transparent}}
 h1{{text-align:center;margin-bottom:2rem;font-size:1.8rem}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}}
 .card{{background:var(--card-bg);text-decoration:none;color:var(--text);border-radius:6px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.1);transition:transform .15s;border:1px solid var(--border)}}
@@ -725,10 +727,11 @@ def render_index(all_posts) -> str:
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Old Picture Art — Галерея</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 :root{{--bg:#fafafa;--text:#222;--card-bg:#fff;--sidebar-bg:#fff;--border:#ddd;--muted:#777;--link:#555;--active:#0366d6;--shadow:rgba(0,0,0,.08);--reset-bg:#ffeef0;--reset-text:#d73a49;--input-border:#ccc}}
 [data-theme="dark"]{{--bg:#1a1a2e;--text:#e0e0e0;--card-bg:#16213e;--sidebar-bg:#0f3460;--border:#333;--muted:#aaa;--link:#64b5f6;--active:#90caf9;--shadow:rgba(0,0,0,.3);--reset-bg:#3d1a1a;--reset-text:#ef9a9a;--input-border:#444}}
 *{{box-sizing:border-box}}
-body{{max-width:1400px;margin:0 auto;padding:1.5rem;font-family:Georgia,serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s;-webkit-tap-highlight-color:transparent}}
+body{{max-width:1400px;margin:0 auto;padding:1.5rem;font-family:'EB Garamond',Georgia,serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s;-webkit-tap-highlight-color:transparent}}
 header{{margin-bottom:2rem;text-align:center}}
 h1{{font-size:2.2rem;margin:0 0 .5rem}}
 .subtitle{{color:var(--muted);margin-bottom:1.5rem}}
