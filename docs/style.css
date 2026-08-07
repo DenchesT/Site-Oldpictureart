@@ -81,8 +81,9 @@ time { color: var(--muted); font-size: .9rem; display: block; margin-top: .5rem;
   font-size: .95rem;
 }
 .post-nav a:hover { background: var(--border); border-color: var(--active); }
-.prev-post::before { content: '\2190 '; }
-.next-post::after { content: ' \2192'; }
+.prev-post, .next-post {
+  display: inline-flex; align-items: center;
+}
 
 /* Кнопка лайка */
 .like-btn {
@@ -226,6 +227,35 @@ header { margin-bottom: 1.5rem; text-align: center; }
 .icon-location { width: 16px; height: 16px; margin-right: 2px; vertical-align: middle; }
 .icon-search-small { width: 14px; height: 14px; margin-right: 3px; vertical-align: middle; }
 
+/* Иконки для навигации */
+.icon-back {
+  display: inline-block; width: 16px; height: 16px;
+  background-size: contain; background-repeat: no-repeat;
+  background-position: center; vertical-align: middle; margin-right: 4px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E");
+}
+
+.icon-prev {
+  display: inline-block; width: 16px; height: 16px;
+  background-size: contain; background-repeat: no-repeat;
+  background-position: center; vertical-align: middle; margin-right: 4px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E");
+}
+
+.icon-next {
+  display: inline-block; width: 16px; height: 16px;
+  background-size: contain; background-repeat: no-repeat;
+  background-position: center; vertical-align: middle; margin-left: 4px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E");
+}
+
+.icon-map-inline {
+  display: inline-block; width: 16px; height: 16px;
+  background-size: contain; background-repeat: no-repeat;
+  background-position: center; vertical-align: middle; margin-right: 6px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Cpath d='M1 6v16l7-5 8 5 7-5V2l-7 5-8-5-7 5z'/%3E%3C/svg%3E");
+}
+
 /* SVG для светлой темы */
 .icon-material-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E"); }
 .icon-technique-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='m12 19 7-7 3 3-7 7-3-3z'/%3E%3Cpath d='m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z'/%3E%3C/svg%3E"); }
@@ -335,7 +365,7 @@ header { margin-bottom: 1.5rem; text-align: center; }
 
 /* ========== ССЫЛКА НА КАРТУ ========== */
 .map-link {
-  display: flex; align-items: center; gap: 8px; padding: .6rem;
+  display: flex; align-items: center; gap: 6px; padding: .6rem .8rem;
   background: var(--card-bg); border: 1px solid var(--border);
   border-radius: 8px; color: var(--active) !important;
   font-weight: 600; text-decoration: none; font-size: .9rem; transition: all .2s;

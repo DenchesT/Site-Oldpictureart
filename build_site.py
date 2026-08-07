@@ -384,10 +384,10 @@ def render_post_page(post, all_posts=None):
         current_idx = next((i for i, p in enumerate(sorted_posts) if p.get("id") == post.get("id")), -1)
         if current_idx > 0:
             prev_post = sorted_posts[current_idx - 1]
-            prev_link = f'<a href="{h(prev_post["filename"])}" class="prev-post" title="{h(prev_post["artist"])} — {h(prev_post["title"])}">← Предыдущая</a>'
+            prev_link = f'<a href="{h(prev_post["filename"])}" class="prev-post" title="{h(prev_post["artist"])} — {h(prev_post["title"])}"><span class="icon-prev"></span> Предыдущая</a>'
         if current_idx < len(sorted_posts) - 1 and current_idx != -1:
             next_post = sorted_posts[current_idx + 1]
-            next_link = f'<a href="{h(next_post["filename"])}" class="next-post" title="{h(next_post["artist"])} — {h(next_post["title"])}">Следующая →</a>'
+            next_link = f'<a href="{h(next_post["filename"])}" class="next-post" title="{h(next_post["artist"])} — {h(next_post["title"])}">Следующая <span class="icon-next"></span></a>'
     post_nav = f'<nav class="post-nav">{prev_link}{next_link}</nav>' if (prev_link or next_link) else ""
 
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
@@ -406,7 +406,7 @@ def render_post_page(post, all_posts=None):
 </head><body class="post-page">
 <header class="painting-topbar">
   <div class="painting-topbar-inner">
-    <a href="index.html" class="topbar-back">← Галерея</a>
+    <a href="index.html" class="topbar-back"><span class="icon-back"></span> Галерея</a>
     <div class="topbar-actions">
       <button onclick="goRandom()" class="topbar-btn" title="Случайная картина"><span class="icon-random"></span></button>
       <button onclick="sharePage()" class="topbar-btn" title="Поделиться"><span class="icon-share"></span></button>
@@ -464,7 +464,7 @@ def render_tag_page(tag, posts):
 <link rel="stylesheet" href="style.css">
 </head><body class="tag-page">
 <button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх"><span class="icon-arrow-up"></span></button>
-<a href="index.html" class="back">← На главную</a>
+<a href="index.html" class="back"><span class="icon-back"></span> На главную</a>
 <h1>#{h(tag)} ({len(posts)})</h1>
 <div class="grid">{''.join(cards)}</div>
 <script>function toggleTheme(){{const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}}
@@ -553,7 +553,7 @@ def render_index(all_posts):
     
     fav_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-fav" onclick="toggleSection(this)">Избранное <span id="fav-count" class="count" style="font-size:.68rem;opacity:.6"></span></div><div class="sidebar-content collapsed"><ul id="fav-list"><li style="color:var(--muted);font-size:.8rem;padding:.5rem">Нажмите <span class="icon-heart" style="display:inline-block;width:14px;height:14px;vertical-align:middle"></span> на странице картины</li></ul></div></div>'
     theme_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-theme" style="cursor:pointer" onclick="toggleTheme()">Тема</div></div>'
-    map_link_html = '<div class="sidebar-section"><a href="museums.html" class="map-link sidebar-icon icon-map">Карта музеев</a></div>'
+    map_link_html = '<div class="sidebar-section"><a href="museums.html" class="map-link sidebar-icon icon-map"><span class="icon-map-inline"></span> Карта музеев</a></div>'
     
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
