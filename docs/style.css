@@ -213,6 +213,7 @@ header { margin-bottom: 1.5rem; text-align: center; }
 .sidebar-title.open::after { transform: rotate(180deg); color: var(--active); }
 .sidebar-title.no-arrow {
     gap: 8px;
+    justify-content: flex-start;
 }
 .sidebar-title.no-arrow::after {
     display: none !important;
@@ -290,22 +291,80 @@ header { margin-bottom: 1.5rem; text-align: center; }
 .card-date { font-size: .7rem; color: var(--muted); opacity: 0.7; }
 
 /* ========== ТАЙМЛАЙН ========== */
-.timeline-container { max-width: 900px; margin: 0 auto; padding: 1.5rem; }
-.timeline-header { text-align: center; margin-bottom: 2rem; }
-.timeline-blocks { display: flex; flex-direction: column; align-items: center; gap: 2rem; }
+.timeline-container { 
+  max-width: 900px; 
+  margin: 0 auto; 
+  padding: 1.5rem; 
+  width: 100%;
+}
+
+.timeline-header { 
+  text-align: center; 
+  margin-bottom: 2rem; 
+}
+
+.timeline-blocks { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  gap: 2rem; 
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
 .timeline-block { 
-  width: 100%; max-width: 600px; background: var(--card-bg); 
-  border: 1px solid var(--border); border-radius: 8px; 
-  padding: 1.5rem; box-shadow: 0 2px 8px var(--shadow);
+  width: 100%; 
+  max-width: 600px; 
+  background: var(--card-bg); 
+  border: 1px solid var(--border); 
+  border-radius: 8px; 
+  padding: 1.5rem; 
+  box-shadow: 0 2px 8px var(--shadow);
   transition: transform .2s, box-shadow .2s;
 }
-.timeline-block:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow); }
-.timeline-year { font-size: 2rem; font-weight: 700; color: var(--active); margin-bottom: 1rem; text-align: center; }
-.timeline-paintings { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
-.timeline-painting { width: 120px; text-align: center; }
-.timeline-painting img { width: 100%; border-radius: 4px; transition: transform .2s; }
-.timeline-painting img:hover { transform: scale(1.1); }
-.timeline-painting a { text-decoration: none; color: var(--text); font-size: .85rem; }
+
+.timeline-block:hover { 
+  transform: translateY(-2px); 
+  box-shadow: 0 4px 12px var(--shadow); 
+}
+
+.timeline-year { 
+  font-size: 2rem; 
+  font-weight: 700; 
+  color: var(--active); 
+  margin-bottom: 1rem; 
+  text-align: center; 
+}
+
+.timeline-paintings { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 1rem; 
+  justify-content: center; 
+}
+
+.timeline-painting { 
+  width: 120px; 
+  text-align: center; 
+}
+
+.timeline-painting img { 
+  width: 100%; 
+  border-radius: 4px; 
+  transition: transform .2s; 
+}
+
+.timeline-painting img:hover { 
+  transform: scale(1.1); 
+}
+
+.timeline-painting a { 
+  text-decoration: none; 
+  color: var(--text); 
+  font-size: .85rem; 
+  display: block;
+}
 
 /* ========== КВИЗ ========== */
 .quiz-container { max-width: 800px; margin: 0 auto; padding: 1.5rem; }
@@ -567,6 +626,48 @@ header { margin-bottom: 1.5rem; text-align: center; }
   border-color: #ddd !important;
 }
 
+/* ========== ЦЕНТРИРОВАНИЕ СПЕЦИАЛЬНЫХ СТРАНИЦ ========== */
+body:has(.timeline-container) .sidebar,
+body:has(.quiz-container) .sidebar,
+body:has(.tag-page) .sidebar,
+body:has(.museums-grid) .sidebar {
+  display: none !important;
+}
+
+body:has(.timeline-container) .layout,
+body:has(.quiz-container) .layout,
+body:has(.tag-page) .layout,
+body:has(.museums-grid) .layout {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+body:has(.timeline-container) .main-content,
+body:has(.quiz-container) .main-content,
+body:has(.tag-page) .main-content,
+body:has(.museums-grid) .main-content {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  flex: none !important;
+}
+
+.timeline-container,
+.quiz-container,
+.tag-page,
+.museums-grid {
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.timeline-container { max-width: 900px !important; }
+.quiz-container { max-width: 800px !important; }
+.tag-page { max-width: 1200px !important; }
+.museums-grid { max-width: 1200px !important; }
+
 /* ========== МЕДИА-ЗАПРОСЫ ========== */
 @media (min-width: 769px) { 
   .scroll-top.visible { display: flex; } 
@@ -632,64 +733,4 @@ header { margin-bottom: 1.5rem; text-align: center; }
   .timeline-year { font-size: 1.5rem; }
   .quiz-container { padding: .8rem; }
   .quiz-question { padding: 1rem; }
-}
-
-/* ========== ЦЕНТРИРОВАНИЕ СПЕЦИАЛЬНЫХ СТРАНИЦ ========== */
-
-/* На страницах темы, карты музеев, квиза и таймлайна
-   полностью убираем влияние сайдбара */
-body:has(.timeline-container) .sidebar,
-body:has(.quiz-container) .sidebar,
-body:has(.tag-page) .sidebar,
-body:has(.museums-grid) .sidebar {
-  display: none !important;
-}
-
-/* Главный layout этих страниц занимает всю ширину */
-body:has(.timeline-container) .layout,
-body:has(.quiz-container) .layout,
-body:has(.tag-page) .layout,
-body:has(.museums-grid) .layout {
-  display: block !important;
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-}
-
-/* Убираем flex-grow, который может давать смещение */
-body:has(.timeline-container) .main-content,
-body:has(.quiz-container) .main-content,
-body:has(.tag-page) .main-content,
-body:has(.museums-grid) .main-content {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 auto !important;
-  flex: none !important;
-}
-
-/* Само содержимое — строго по центру */
-.timeline-container,
-.quiz-container,
-.tag-page,
-.museums-grid {
-  width: 100% !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-
-/* Ограничиваем ширину содержимого */
-.timeline-container {
-  max-width: 900px !important;
-}
-
-.quiz-container {
-  max-width: 800px !important;
-}
-
-.tag-page {
-  max-width: 1200px !important;
-}
-
-.museums-grid {
-  max-width: 1200px !important;
 }
