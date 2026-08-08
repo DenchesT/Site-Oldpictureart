@@ -195,6 +195,10 @@ header { margin-bottom: 1.5rem; text-align: center; }
   content: '\25BE'; font-size: .75rem; transition: transform .3s ease; color: var(--muted);
 }
 .sidebar-title.open::after { transform: rotate(180deg); color: var(--active); }
+.sidebar-title.no-arrow {
+    justify-content: flex-start !important;
+    gap: 8px;
+}
 
 .sidebar-title.no-arrow::after {
     display: none !important;
