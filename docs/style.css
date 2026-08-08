@@ -48,7 +48,12 @@ h2 { font-size: 1.5rem; font-style: italic; font-weight: 400; color: var(--muted
 /* ========== ОБЩИЕ КОМПОНЕНТЫ ========== */
 .back { color: var(--link); text-decoration: none; font-size: 1rem; display: inline-flex; align-items: center; gap: 4px; }
 .back:hover { opacity: 0.8; }
-time { color: var(--muted); font-size: .9rem; display: block; margin-top: .5rem; }
+time { 
+  color: var(--muted); 
+  font-size: 1rem; /* было .9rem */
+  display: block; 
+  margin-top: .5rem; 
+}
 .views-count { color: var(--muted); font-size: .8rem; margin-left: 1rem; }
 
 /* Кнопки */
@@ -89,7 +94,7 @@ time { color: var(--muted); font-size: .9rem; display: block; margin-top: .5rem;
 .like-btn.liked { color: var(--like-color); border-color: var(--like-color); background: rgba(231,76,60,.1); }
 
 /* ========== СТРАНИЦА КАРТИНЫ ========== */
-.post-page { max-width: 900px; margin: 0 auto; padding: 1.5rem; font-size: 20px; }
+.post-page { max-width: 900px; margin: 0 auto; padding: 1.5rem; font-size: 21px; }
 .painting { max-width: 100%; max-height: 70vh; display: block; margin: 1.5rem auto;
   box-shadow: 0 4px 20px var(--shadow); border-radius: 4px; cursor: pointer; 
   transition: transform .2s; }
@@ -103,26 +108,53 @@ time { color: var(--muted); font-size: .9rem; display: block; margin-top: .5rem;
   font-size: 1rem; color: var(--muted); border: 1px solid var(--border);
   justify-content: center; text-align: center; max-width: fit-content;
 }
-.museum { font-style: italic; color: var(--muted); margin: .3rem 0; font-size: 1.1rem; display: flex; align-items: center; gap: 4px; }
-.description { margin: 1.5rem 0; text-align: justify; }
-.description p { margin: .6rem 0; line-height: 1.7; }
-.history {
-  margin: 1.8rem 0; padding: 1rem 1.25rem; background: var(--history-bg);
-  border-left: 3px solid var(--history-border); border-radius: 4px;
+.museum { 
+  font-style: italic; 
+  color: var(--muted); 
+  margin: .3rem 0; 
+  font-size: 1.15rem; /* было 1.1rem */
+  display: flex; 
+  align-items: center; 
+  gap: 4px; 
 }
-.history h3 { margin: 0 0 .6rem; font-size: 1.1rem; color: #5a4f2a; }
-[data-theme="dark"] .history h3 { color: #d4c87a; }
-.history ul { margin: 0; padding-left: 1.2rem; }
-.history li { margin: .4rem 0; color: #4a4a4a; font-size: 1rem; }
+.description { margin: 1.5rem 0; text-align: justify; font-size: 1.05rem; line-height: 1.8; }
+.description p {margin: .6rem 0; line-height: 1.8; }
+.history { 
+  margin: 1.8rem 0; 
+  padding: 1rem 1.25rem; 
+  background: var(--history-bg);
+  border-left: 3px solid var(--history-border); 
+  border-radius: 4px;
+}
+.history h3 { 
+  margin: 0 0 .6rem; 
+  font-size: 1.15rem; /* было 1.1rem */
+  color: #5a4f2a; 
+}
+.history li { 
+  margin: .4rem 0; 
+  color: #4a4a4a; 
+  font-size: 1rem; /* было 1rem, оставляем */
+}
 [data-theme="dark"] .history li { color: #ccc; }
-.source a, .source-list a { color: var(--link); word-break: break-all; overflow-wrap: break-word; }
-.source { max-width: 100%; overflow: hidden; font-size: .95rem; }
+.source a, .source-list a { 
+  color: var(--link); 
+  word-break: break-all; 
+  overflow-wrap: break-word; 
+  font-size: 1rem; /* добавляем */
+}
+.source { 
+  max-width: 100%; 
+  overflow: hidden; 
+  font-size: 1rem; /* было .95rem */
+}
 .tags { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);
   display: flex; flex-wrap: wrap; gap: .4rem; }
 .tag {
   display: inline-block; background: var(--tag-bg); color: var(--tag-text);
   text-decoration: none; padding: .3rem .7rem; border-radius: 4px;
-  font-size: .9rem; transition: all .2s;
+  font-size: 1rem; /* было .9rem */
+  transition: all .2s;
 }
 .tag:hover { background: var(--link); color: #fff; transform: translateY(-1px); }
 .tag:active { background: var(--active); color: #fff; }
@@ -705,18 +737,24 @@ body:has(.museums-grid) .main-content {
 
 @media (max-width: 768px) {
   .scroll-top { display: none !important; }
-  .post-page { padding: .8rem; font-size: 18px; }
+  .post-page { padding: .8rem; font-size: 19px; }
   .post-page h1 { font-size: 1.8rem; }
-  .post-page h2 { font-size: 1.2rem; }
+  .post-page h2 { font-size: 1.3rem; }
   .painting { max-height: 50vh; }
-  .medium-details { flex-direction: column; gap: .3rem; padding: .6rem; font-size: .9rem; }
+  .medium-details {
+  display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin: 1rem auto;
+  padding: .8rem 1.2rem; background: var(--card-bg); border-radius: 6px;
+  font-size: 1.1rem; /* было 1rem */
+  color: var(--muted); border: 1px solid var(--border);
+  justify-content: center; text-align: center; max-width: fit-content;
+}
   .tag { padding: .25rem .6rem; font-size: .8rem; }
 }
 
 @media (max-width: 480px) {
-  .post-page { padding: .5rem; font-size: 16px; }
-  .post-page h1 { font-size: 1.4rem; }
-  .post-page h2 { font-size: 1.1rem; }
+  .post-page { padding: .5rem; font-size: 17px; }
+  .post-page h1 { font-size: 1.5rem; }
+  .post-page h2 { font-size: 1.15rem; }
   .painting { max-height: 40vh; }
   .index-page { padding: .4rem; font-size: 15px; padding-top: 3.5rem; }
   .index-page h1 { font-size: 1.4rem; }
