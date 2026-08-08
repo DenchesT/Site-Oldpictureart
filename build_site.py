@@ -807,10 +807,10 @@ def render_index(all_posts):
     pm_js = json.dumps(post_map_data, ensure_ascii=False)
     
     fav_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-fav" onclick="toggleSection(this)">Избранное <span id="fav-count" class="count" style="font-size:.68rem;opacity:.6"></span></div><div class="sidebar-content collapsed"><ul id="fav-list"><li style="color:var(--muted);font-size:.8rem;padding:.5rem">Нажмите <span class="icon-heart" style="display:inline-block;width:14px;height:14px;vertical-align:middle"></span> на странице картины</li></ul></div></div>'
-    theme_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-theme" style="cursor:pointer" onclick="toggleTheme()">Тема</div></div>'
-    quiz_link_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-quiz" onclick="location.href=\'quiz.html\'">Квиз</div></div>'
-    timeline_link_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-timeline" onclick="location.href=\'timeline.html\'">Таймлайн</div></div>'
-    map_link_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-map" onclick="location.href=\'museums.html\'">Карта музеев</div></div>'
+    theme_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-theme no-arrow" style="cursor:pointer" onclick="toggleTheme()">Тема</div></div>'
+    quiz_link_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-quiz no-arrow" onclick="location.href=\'quiz.html\'">Квиз</div></div>'
+    timeline_link_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-timeline no-arrow" onclick="location.href=\'timeline.html\'">Таймлайн</div></div>'
+    map_link_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-map no-arrow" onclick="location.href=\'museums.html\'">Карта музеев</div></div>'
     
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
