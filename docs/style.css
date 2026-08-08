@@ -634,9 +634,10 @@ header { margin-bottom: 1.5rem; text-align: center; }
   .quiz-question { padding: 1rem; }
 }
 
-/* ========== ИСПРАВЛЕНИЕ ЦЕНТРИРОВАНИЯ СПЕЦИАЛЬНЫХ СТРАНИЦ ========== */
+/* ========== ЦЕНТРИРОВАНИЕ СПЕЦИАЛЬНЫХ СТРАНИЦ ========== */
 
-/* Скрываем сайдбар на страницах таймлайна, квиза, карты музеев и тегов/тем */
+/* На страницах темы, карты музеев, квиза и таймлайна
+   полностью убираем влияние сайдбара */
 body:has(.timeline-container) .sidebar,
 body:has(.quiz-container) .sidebar,
 body:has(.tag-page) .sidebar,
@@ -644,20 +645,51 @@ body:has(.museums-grid) .sidebar {
   display: none !important;
 }
 
-/* Отключаем flex-раскладку макета, чтобы контент занимал всю ширину */
+/* Главный layout этих страниц занимает всю ширину */
 body:has(.timeline-container) .layout,
 body:has(.quiz-container) .layout,
 body:has(.tag-page) .layout,
 body:has(.museums-grid) .layout {
   display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
 }
 
-/* Гарантируем центрирование контейнеров на весь экран (как .post-page) */
+/* Убираем flex-grow, который может давать смещение */
+body:has(.timeline-container) .main-content,
+body:has(.quiz-container) .main-content,
+body:has(.tag-page) .main-content,
+body:has(.museums-grid) .main-content {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  flex: none !important;
+}
+
+/* Само содержимое — строго по центру */
 .timeline-container,
 .quiz-container,
 .tag-page,
 .museums-grid {
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Ограничиваем ширину содержимого */
+.timeline-container {
+  max-width: 900px !important;
+}
+
+.quiz-container {
+  max-width: 800px !important;
+}
+
+.tag-page {
+  max-width: 1200px !important;
+}
+
+.museums-grid {
+  max-width: 1200px !important;
 }
