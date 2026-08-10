@@ -7,6 +7,12 @@ html {
 }
 
 :root {
+  --fs-base: 18px; 
+  --fs-sm: 0.85rem;   /* Для мелких подписей */
+  --fs-md: 1rem;      /* Основной текст */
+  --fs-lg: 1.25rem;   /* Заголовки разделов */
+  --fs-xl: 1.56rem;   /* H2 */
+  --fs-xxl: 1.95rem;  /* H1 */
   --bg: #fafafa; --text: #222; --card-bg: #fff; --tag-bg: #eee;
   --tag-text: #555; --border: #ddd; --muted: #555; --link: #0366d6;
   --shadow: rgba(0,0,0,.15); --history-bg: #f3eedb; --history-border: #b8a86a;
@@ -27,14 +33,17 @@ html {
 * { box-sizing: border-box; }
 body {
   font-family: 'EB Garamond', Georgia, serif;
-  background: var(--bg); color: var(--text);
+  font-size: var(--fs-base);
+  line-height: 1.7;
+  background: var(--bg); 
+  color: var(--text);
   line-height: 1.65; transition: background .3s, color .3s;
   -webkit-tap-highlight-color: transparent; margin: 0;
 }
 body:has(.sidebar.open) { overflow: hidden; }
 
-h1 { font-size: 2.4rem; margin: 0 0 .3rem; line-height: 1.2; font-weight: 700; }
-h2 { font-size: 1.5rem; font-style: italic; font-weight: 400; color: var(--muted); margin: 0 0 1rem; }
+h1 { font-size: var(--fs-xxl); margin: 0 0 1rem; line-height: 1.2; font-weight: 700; }
+h2 { font-size: var(--fs-xl); font-style: italic; font-weight: 400; color: var(--muted); margin: 0 0 1rem; }
 
 /* ========== СКРОЛЛБАР ========== */
 ::-webkit-scrollbar { width: 8px; }
