@@ -237,6 +237,65 @@ time {
   font-size: 20px;
 }
 
+.post-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.post-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.post-topbar-right {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.topbar-back {
+  color: var(--link);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: opacity .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.topbar-back:hover { opacity: .7; }
+
+.topbar-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: .4rem .9rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: .95rem;
+  color: var(--text);
+  transition: all .2s;
+  font-family: inherit;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.topbar-btn:hover { background: var(--border); border-color: var(--active); }
+
+.topbar-like { font-size: 1rem; padding: .3rem .8rem; }
+.topbar-like .icon-heart { transition: transform 0.2s ease; }
+.topbar-like.liked {
+  color: var(--like-color);
+  border-color: var(--like-color);
+  background: rgba(231,76,60,.1);
+}
+.topbar-like.liked .icon-heart { transform: scale(1.1); }
+
 .painting {
   max-width: 100%;
   max-height: 70vh;
@@ -406,76 +465,6 @@ time {
   border-color: var(--active);
   transform: translateY(-1px);
 }
-
-/* Верхняя панель картины */
-.painting-topbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--card-bg);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  margin-bottom: 1.5rem;
-}
-
-.painting-topbar-inner {
-  max-width: 800px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: .6rem 0;
-}
-
-.topbar-back {
-  color: var(--link);
-  text-decoration: none;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: opacity .2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.topbar-back:hover { opacity: .7; }
-
-.topbar-actions {
-  display: flex;
-  gap: .5rem;
-  align-items: center;
-}
-
-.topbar-btn {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  padding: .4rem .9rem;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: .95rem;
-  color: var(--text);
-  transition: all .2s;
-  font-family: inherit;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.topbar-btn:hover { background: var(--border); border-color: var(--active); }
-
-.topbar-like { font-size: 1rem; padding: .3rem .8rem; }
-
-.topbar-like .icon-heart { transition: transform 0.2s ease; }
-
-.topbar-like.liked {
-  color: var(--like-color);
-  border-color: var(--like-color);
-  background: rgba(231,76,60,.1);
-}
-
-.topbar-like.liked .icon-heart { transform: scale(1.1); }
 
 /* ========== ГЛАВНАЯ СТРАНИЦА ========== */
 .index-page {
@@ -679,7 +668,7 @@ header { margin-bottom: 1.5rem; text-align: center; }
   overflow: hidden;
   box-shadow: 0 2px 8px var(--shadow);
   border: 1px solid var(--border);
-  transition: box-shadow 0.2s ease, opacity 0.3s ease; /* убрали transform */
+  transition: box-shadow 0.2s ease, opacity 0.3s ease;
   animation: fadeInUp .4s ease backwards;
 }
 
@@ -698,12 +687,9 @@ header { margin-bottom: 1.5rem; text-align: center; }
 .card:nth-child(8) { animation-delay: 0.35s; }
 
 .card:hover { 
-  box-shadow: 0 4px 12px var(--shadow);
+  box-shadow: 0 4px 16px var(--shadow);
 }
-.museum-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 2px 8px var(--shadow);
-}
+
 .card:active { transform: scale(.98); }
 .card[style*="display: none"] { opacity: 0; transform: scale(0.95); }
 
@@ -721,8 +707,6 @@ header { margin-bottom: 1.5rem; text-align: center; }
   display: block;
 }
 
-.card:hover .card-img img { transform: none; }
-
 .card-body {
   padding: .9rem 1.1rem;
   display: flex;
@@ -733,7 +717,7 @@ header { margin-bottom: 1.5rem; text-align: center; }
 .card-artist { font-weight: 700; font-size: 1.1rem; color: var(--text); }
 .card-title { font-style: italic; color: var(--muted); font-size: 0.95rem; }
 .card-medium { font-size: .78rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.card-museum { font-size: 0.85rem; color: var(--muted); word-break: break-word; display: flex; align-items: center; gap: 4px; }
+.card-museum { font-size: 0.85rem; color: var(--muted); word-break: break-word; }
 .card-date { font-size: .7rem; color: var(--muted); opacity: 0.7; }
 
 /* ========== ТАЙМЛАЙН ========== */
