@@ -424,7 +424,8 @@ time {
 }
 
 .source-list li::marker {
-  color: var(--border);
+  color: #333;
+  font-weight: bold;
 }
 
 .source-list a {
@@ -441,7 +442,8 @@ time {
 }
 
 [data-theme="dark"] .source-list li::marker {
-  color: #555;
+  color: #ccc;
+  font-weight: bold;
 }
 
 .tags {
