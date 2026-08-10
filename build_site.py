@@ -414,7 +414,7 @@ def render_post_page(post, all_posts=None):
     if urls:
         if len(urls) == 1:
             u = urls[0]
-            src_html = f'<p class="source"><span class="icon-info-small"></span> Источник: <a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></p>'
+            src_html = f'<p class="source">Источник: <a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></p>'
         else:
             its = "".join(f'<li><a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></li>' for u in urls)
             src_html = f'<div class="sources"><strong>Источники:</strong><ul class="source-list">{its}</ul></div>'
@@ -838,7 +838,7 @@ def render_index(all_posts):
         <div class="card-artist">{artist_name}</div>
         <div class="card-title">{title_name}</div>
         {f'<div class="card-medium">{medium_str}</div>' if medium_str else ''}
-        {f'<div class="card-museum"><span class="icon-museum-small"></span> {museum_name}</div>' if museum_name else ''}
+        {f'<div class="card-museum">{museum_name}</div>' if museum_name else ''}
         <div class="card-date">{pub_date}</div>
     </div>
     </a>""")
