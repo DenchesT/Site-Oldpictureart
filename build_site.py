@@ -836,7 +836,6 @@ def render_index(all_posts):
     <div class="card-img"><img src="{cv}" alt="" loading="lazy"></div>
     <div class="card-body">
         <div class="card-artist">{artist_name}</div>
-        <div class="card-title">{title_name}</div>
         {f'<div class="card-medium">{medium_str}</div>' if medium_str else ''}
         {f'<div class="card-museum">{museum_name}</div>' if museum_name else ''}
         <div class="card-date">{pub_date}</div>

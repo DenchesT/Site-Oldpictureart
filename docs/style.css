@@ -679,8 +679,7 @@ header { margin-bottom: 1.5rem; text-align: center; }
   overflow: hidden;
   box-shadow: 0 2px 8px var(--shadow);
   border: 1px solid var(--border);
-  transition: transform .1s ease, box-shadow .1s ease, opacity 0.3s ease;
-  will-change: transform;
+  transition: box-shadow 0.2s ease, opacity 0.3s ease; /* убрали transform */
   animation: fadeInUp .4s ease backwards;
 }
 
@@ -698,7 +697,9 @@ header { margin-bottom: 1.5rem; text-align: center; }
 .card:nth-child(7) { animation-delay: 0.3s; }
 .card:nth-child(8) { animation-delay: 0.35s; }
 
-.card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px var(--shadow); }
+.card:hover { 
+  box-shadow: 0 4px 12px var(--shadow);
+}
 .museum-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 2px 8px var(--shadow);
@@ -718,10 +719,9 @@ header { margin-bottom: 1.5rem; text-align: center; }
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform .3s;
 }
 
-.card:hover .card-img img { transform: scale(1.05); }
+.card:hover .card-img img { transform: none; }
 
 .card-body {
   padding: .9rem 1.1rem;
