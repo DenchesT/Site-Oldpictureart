@@ -381,21 +381,67 @@ time {
 
 [data-theme="dark"] .history li { color: #d0d0d0; }
 
-.source {
-  max-width: 100%;
-  overflow: hidden;
-  font-size: 1rem;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
+/* ========== СЕКЦИЯ ИСТОЧНИКОВ ========== */
+.source-section {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--border);
+}
+
+.source-section strong {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.8rem;
+  letter-spacing: -0.01em;
+}
+
+.source-section a {
+  color: var(--link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.source-section a:hover {
+  opacity: 0.8;
+}
+
+.source-list {
+  margin: 0.5rem 0 0 0;
+  padding-left: 1.5rem;
+  list-style-type: disc;
+}
+
+.source-list li {
+  margin-bottom: 0.4rem;
   color: var(--muted);
 }
 
-.source a, .source-list a {
-  color: var(--link);
-  word-break: break-all;
-  overflow-wrap: break-word;
-  font-size: 0.95rem;
+.source-list li::marker {
+  color: var(--border);
+}
+
+.source-list a {
+  font-size: 1.05rem;
+}
+
+/* Тёмная тема */
+[data-theme="dark"] .source-section strong {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .source-section a {
+  color: #7cb8f6;
+}
+
+[data-theme="dark"] .source-list li::marker {
+  color: #555;
 }
 
 .tags {

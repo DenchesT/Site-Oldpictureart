@@ -414,10 +414,10 @@ def render_post_page(post, all_posts=None):
     if urls:
         if len(urls) == 1:
             u = urls[0]
-            src_html = f'<p class="source">Источник: <a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></p>'
+            src_html = f'<div class="source-section"><strong>Источник:</strong><br><a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></div>'
         else:
             its = "".join(f'<li><a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></li>' for u in urls)
-            src_html = f'<div class="sources"><strong>Источники:</strong><ul class="source-list">{its}</ul></div>'
+            src_html = f'<div class="source-section"><strong>Источники:</strong><ul class="source-list">{its}</ul></div>'
 
     # Prev/Next навигация
     prev_link = ""
