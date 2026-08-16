@@ -27,7 +27,7 @@
 <button class="theme-toggle" onclick="toggleTheme()"><span class="icon-theme-toggle"></span></button>
 <a href="index.html" class="back" style="padding:1rem;display:inline-block"><span class="icon-back"></span> На главную</a>
 <h1 style="text-align:center"><span class="icon-map-header"></span> Карта музеев</h1>
-<p style="text-align:center;color:var(--muted)">50 музеев в коллекции (11 на карте)</p>
+<p style="text-align:center;color:var(--muted)">50 музеев в коллекции (12 на карте)</p>
 <div style="max-width:1200px;margin:0 auto;padding:0 1.5rem">
   <div id="map"></div>
 </div>
@@ -102,20 +102,6 @@
           </div>
           <button class="show-more-btn" onclick="toggleMuseumPosts('гмии-им-ас-пушкина-москва')">Показать все 6 картин ▾</button>
         </div>
-        <div class="museum-card" id="museum-грм-санкт-петербург">
-          <h3><span class="icon-museum-small"></span> ГРМ, Санкт-Петербург</h3>
-          
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-06-14-валентин-александрович-серов.html">Валентин Александрович Серов — Солдатушки, бравы ребятушки, где же ваша слава?, 1905</a></li>
-          </ul>
-          <div class="" id="hidden-грм-санкт-петербург" style="display:none">
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
         <div class="museum-card" id="museum-государственная-третьяковская-галерея-москва">
           <h3><span class="icon-museum-small"></span> Государственная Третьяковская галерея, Москва</h3>
           <p class="museum-location"><span class="icon-location"></span> Третьяковская галерея, Россия</p>
@@ -124,6 +110,20 @@
             <li><a href="2025-03-06-николай-александрович-тархов.html">Николай Александрович Тархов — Козы на солнце, 1904</a></li><li><a href="2025-03-12-александр-иванович-морозов.html">Александр Иванович Морозов — Выход из церкви в Пскове, 1864</a></li><li><a href="2025-03-14-николай-дмитриевич-кузнецов.html">Николай Дмитриевич Кузнецов — В праздник, 1879</a></li><li><a href="2025-03-25-архип-иванович-куинджи.html">Архип Иванович Куинджи — Берёзовая роща, 1879</a></li><li><a href="2025-12-06-карл-павлович-брюллов.html">Карл Павлович Брюллов — Вид форта Пику на острове Мадейра (Неоконченная картина), 1849–1850</a></li>
           </ul>
           <div class="" id="hidden-государственная-третьяковская-галерея-москва" style="display:none">
+            <ul class="museum-posts-list">
+              
+            </ul>
+          </div>
+          
+        </div>
+        <div class="museum-card" id="museum-государственный-русский-музей-санкт-петербург">
+          <h3><span class="icon-museum-small"></span> Государственный Русский музей, Санкт-Петербург</h3>
+          <p class="museum-location"><span class="icon-location"></span> Русский музей, Россия</p>
+          <p class="museum-count">2 картины</p>
+          <ul class="museum-posts-list">
+            <li><a href="2025-06-14-валентин-александрович-серов.html">Валентин Александрович Серов — Солдатушки, бравы ребятушки, где же ваша слава?, 1905</a></li><li><a href="2026-08-16-илья-ефимович-репин.html">Илья Ефимович Репин — На дерновой скамье, 1876</a></li>
+          </ul>
+          <div class="" id="hidden-государственный-русский-музей-санкт-петербург" style="display:none">
             <ul class="museum-posts-list">
               
             </ul>
@@ -745,6 +745,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 L.marker([55.755323, 37.6178815]).addTo(map).bindPopup(`<b>ГИМ, Москва</b><br>Исторический музей, Россия<br>1 картина<br><a href="#museum-гим-москва" onclick="scrollToMuseum('гим-москва')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
             L.marker([55.7413613, 37.6202196]).addTo(map).bindPopup(`<b>Государственная Третьяковская галерея, Москва</b><br>Третьяковская галерея, Россия<br>5 картин<br><a href="#museum-государственная-третьяковская-галерея-москва" onclick="scrollToMuseum('государственная-третьяковская-галерея-москва')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
+            L.marker([59.9385848, 30.3288929]).addTo(map).bindPopup(`<b>Государственный Русский музей, Санкт-Петербург</b><br>Русский музей, Россия<br>2 картины<br><a href="#museum-государственный-русский-музей-санкт-петербург" onclick="scrollToMuseum('государственный-русский-музей-санкт-петербург')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
             L.marker([52.395233, 13.0618998]).addTo(map).bindPopup(`<b>Музей Барберини, Потсдам</b><br>Museum Barberini, Германия<br>1 картина<br><a href="#museum-музей-барберини-потсдам" onclick="scrollToMuseum('музей-барберини-потсдам')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
             L.marker([51.234998, 6.7731045]).addTo(map).bindPopup(`<b>Музей Кунстпаласт, Дюссельдорф</b><br>Museum Kunstpalast, Германия<br>1 картина<br><a href="#museum-музей-кунстпаласт-дюссельдорф" onclick="scrollToMuseum('музей-кунстпаласт-дюссельдорф')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
             L.marker([48.2025896, 16.3590667]).addTo(map).bindPopup(`<b>Музей Леопольда, Вена</b><br>Музей Леопольда, Австрия<br>1 картина<br><a href="#museum-музей-леопольда-вена" onclick="scrollToMuseum('музей-леопольда-вена')" style="color:var(--active)"><span class="icon-search-small"></span> Показать в списке</a>`);
