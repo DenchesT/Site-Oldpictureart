@@ -7,7 +7,9 @@ import shutil
 import subprocess
 import logging
 import random
-from datetime import datetime
+from datetime import datetime, timezone
+from email.utils import format_datetime
+from urllib.parse import quote
 from collections import defaultdict
 from html import escape as h
 from pathlib import Path
@@ -27,16 +29,27 @@ def auto_update_modules():
     except Exception as e:
         logger.warning(f"Ошибка: {e}")
 
-auto_update_modules()
+# Модули обновляем только при реальном запуске парсера. Раньше pip дёргался
+# при любом импорте файла, из-за чего страницы нельзя было пересобрать офлайн.
+if __name__ == "__main__" and "--no-update" not in sys.argv:
+    auto_update_modules()
 
-from telethon import TelegramClient
-import TelethonFakeTLS
+try:
+    from telethon import TelegramClient
+    import TelethonFakeTLS
+    TELETHON_AVAILABLE = True
+except ImportError:
+    TelegramClient = None
+    TelethonFakeTLS = None
+    TELETHON_AVAILABLE = False
 
 try:
     from PIL import Image
     PIL_AVAILABLE = True
 except ImportError:
     PIL_AVAILABLE = False
+
+from site_common import head_common, scroll_top_button, theme_button, COMMON_JS, SCROLL_TOP_JS, BASE_URL
 
 def load_dotenv(path=".env"):
     if not os.path.exists(path): return
@@ -49,14 +62,19 @@ def load_dotenv(path=".env"):
 
 load_dotenv()
 
-try:
-    API_ID = int(os.environ["API_ID"])
-    API_HASH = os.environ["API_HASH"]
-    PHONE = os.environ["PHONE"]
-except KeyError:
-    raise SystemExit("✕ Нужен .env с API_ID, API_HASH, PHONE")
+API_ID = os.environ.get("API_ID")
+API_HASH = os.environ.get("API_HASH")
+PHONE = os.environ.get("PHONE")
 
-logger.info(f"Аккаунт: {PHONE}")
+
+def require_credentials():
+    """Проверяем .env только перед походом в Telegram, а не при импорте файла."""
+    if not (API_ID and API_HASH and PHONE):
+        raise SystemExit("✕ Нужен .env с API_ID, API_HASH, PHONE")
+    if not TELETHON_AVAILABLE:
+        raise SystemExit("✕ Не установлены telethon / TelethonFakeTLS")
+    logger.info(f"Аккаунт: {PHONE}")
+    return int(API_ID), API_HASH, PHONE
 
 CHANNEL_URL = "https://t.me/oldpictureart"
 OUTPUT_DIR = "docs"
@@ -379,7 +397,13 @@ def render_post_page(post, all_posts=None):
     hl = post.get("hires", [])
     for i, src in enumerate(post["images"]):
         lh = hl[i] if i < len(hl) else src
-        parts.append(f'<a href="{h(lh)}" target="_blank" title="Оригинал"><img src="{h(src)}" alt="{artist} — {title}" class="painting" loading="lazy"></a>')
+        # Первая картина — главный элемент страницы (LCP): грузим её сразу,
+        # остальные ленимся. Раньше lazy стоял на всех, включая первую.
+        loading = 'fetchpriority="high" decoding="async"' if i == 0 else 'loading="lazy" decoding="async"'
+        parts.append(
+            f'<a href="{h(lh)}" target="_blank" rel="noopener" title="Открыть оригинал в новой вкладке">'
+            f'<img src="{h(src)}" alt="{artist} — {title}" class="painting" {loading}></a>'
+        )
     img_html = "\n".join(parts)
 
     mat = f'<span class="detail-item"><span class="detail-icon icon-material-card"></span> {h(post.get("material","").capitalize())}</span>' if post.get("material") else ""
@@ -433,122 +457,168 @@ def render_post_page(post, all_posts=None):
             next_link = f'<a href="{h(next_post["filename"])}" class="next-post" title="{h(next_post["artist"])} — {h(next_post["title"])}">Следующая <span class="icon-next"></span></a>'
     post_nav = f'<nav class="post-nav">{prev_link}{next_link}</nav>' if (prev_link or next_link) else ""
 
+    page_desc = (desc[:200] if desc else f"{post.get('artist','')} — {post.get('title','')}. {post.get('museum','')}").strip()
+    head = head_common(
+        title=f"{artist} — {title}",
+        description=page_desc,
+        og_image=f"{BASE_URL}/{cover_image}" if cover_image else "",
+        canonical=f"{BASE_URL}/{post.get('filename','')}",
+        og_type="article",
+    )
+
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes,viewport-fit=cover">
-<meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta property="og:title" content="{artist} — {title}">
-<meta property="og:description" content="{h(desc[:200]) if desc else artist + ' — ' + title}">
-<meta property="og:image" content="{h(cover_image)}">
-<meta property="og:type" content="article">
-<meta property="og:site_name" content="Old Picture Art">
-<meta name="twitter:card" content="summary_large_image">
-<title>{artist} — {title}</title>
-<link rel="stylesheet" href="style.css">
+{head}
 </head><body class="post-page">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.5rem">
-  <a href="index.html" class="topbar-back"><span class="icon-back"></span> Галерея</a>
-  <div style="display:flex;gap:0.5rem;align-items:center">
-    <button onclick="goRandom()" class="topbar-btn" title="Случайная картина"><span class="icon-random"></span></button>
-    <button onclick="sharePage()" class="topbar-btn" title="Поделиться"><span class="icon-share"></span></button>
-    <button id="like-btn" data-post-id="{post_id}" onclick="toggleLike()" class="topbar-btn topbar-like"><span class="icon-heart"></span></button>
-    <button id="auth-btn" class="topbar-btn" title="Войти"><span class="icon-login"></span> Войти</button>
+<a href="#main" class="skip-link">К содержанию</a>
+<div class="post-topbar">
+  <a href="index.html" class="topbar-back"><span class="icon-back" aria-hidden="true"></span> Галерея</a>
+  <div class="post-topbar-right">
+    <button type="button" onclick="goRandom()" class="topbar-btn" aria-label="Случайная картина" title="Случайная картина"><span class="icon-random" aria-hidden="true"></span></button>
+    <button type="button" onclick="sharePage()" class="topbar-btn" aria-label="Поделиться" title="Поделиться"><span class="icon-share" aria-hidden="true"></span></button>
+    <button type="button" id="like-btn" data-post-id="{post_id}" onclick="toggleLike()" class="topbar-btn topbar-like" aria-pressed="false" aria-label="В избранное" title="В избранное"><span class="icon-heart" aria-hidden="true"></span></button>
+    <button type="button" class="topbar-btn" data-theme-toggle onclick="toggleTheme()" aria-label="Переключить тему" title="Светлая / тёмная тема"><span class="icon-theme-toggle" aria-hidden="true"></span></button>
+    <button type="button" id="auth-btn" class="topbar-btn" title="Войти"><span class="icon-login" aria-hidden="true"></span> Войти</button>
   </div>
 </div>
-<button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх"><span class="icon-arrow-up"></span></button>
-<article><h1>{artist}</h1><h2>{title}</h2>{img_html}
-<div class="color-palette" id="color-palette" style="display:flex;justify-content:center;gap:8px;margin:1rem 0;flex-wrap:wrap;"></div>
+{scroll_top_button()}
+<article id="main"><h1>{artist}</h1><h2>{title}</h2>{img_html}
+<div class="color-palette" id="color-palette"></div>
 {mdet}<p class="museum"><span class="icon-museum-inline"></span> {museum}</p>{desc_html}{hist_html}{src_html}<time>{h(post['date'])}</time><span class="views-count" id="views-count"></span>{tags_html}</article>
 {post_nav}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+{SCROLL_TOP_JS}
+{COMMON_JS}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js" defer></script>
 <script>
-// Палитра цветов
+// ---------- Палитра цветов ----------
+// Раньше палитра вешалась только на событие load: если картинка бралась из
+// кэша, load уже прошёл и палитра не появлялась никогда. Теперь проверяем
+// img.complete, а сам скрипт ждём через window load (color-thief стоит defer).
 (function() {{
-    var paintingImg = document.querySelector('.painting');
-    if (paintingImg && window.ColorThief) {{
-        paintingImg.addEventListener('load', function() {{
-            try {{
-                var colorThief = new ColorThief();
-                var palette = colorThief.getPalette(paintingImg, 5);
-                var container = document.getElementById('color-palette');
-                if (container && palette) {{
-                    palette.forEach(function(color) {{
-                        var hex = '#' + color.map(function(c) {{ return c.toString(16).padStart(2,'0'); }}).join('');
-                        var swatch = document.createElement('span');
-                        swatch.style.cssText = 'display:inline-block;width:32px;height:32px;background:' + hex + ';border-radius:50%;cursor:pointer;border:2px solid var(--border);transition:transform .2s;';
-                        swatch.title = hex;
-                        swatch.onmouseenter = function() {{ this.style.transform = 'scale(1.2)'; }};
-                        swatch.onmouseleave = function() {{ this.style.transform = 'scale(1)'; }};
-                        swatch.onclick = function() {{ navigator.clipboard.writeText(hex).then(function() {{ var t = this; t.style.boxShadow = '0 0 10px ' + hex; setTimeout(function() {{ t.style.boxShadow = ''; }}, 600); }}.bind(this)); }};
-                        container.appendChild(swatch);
-                    }});
-                }}
-            }} catch(e) {{ console.log('Color palette:', e); }}
-        }});
+    function buildPalette() {{
+        var img = document.querySelector('.painting');
+        var container = document.getElementById('color-palette');
+        if (!img || !container || !window.ColorThief) return;
+        try {{
+            var palette = new ColorThief().getPalette(img, 5);
+            if (!palette) return;
+            palette.forEach(function(color) {{
+                var hex = '#' + color.map(function(c) {{ return c.toString(16).padStart(2, '0'); }}).join('');
+                var swatch = document.createElement('button');
+                swatch.type = 'button';
+                swatch.className = 'palette-swatch';
+                swatch.style.background = hex;
+                swatch.title = hex + ' — скопировать';
+                swatch.setAttribute('aria-label', 'Скопировать цвет ' + hex);
+                swatch.addEventListener('click', function() {{
+                    var self = this;
+                    function flash() {{
+                        self.classList.add('copied');
+                        setTimeout(function() {{ self.classList.remove('copied'); }}, 700);
+                    }}
+                    if (navigator.clipboard && navigator.clipboard.writeText) {{
+                        navigator.clipboard.writeText(hex).then(flash).catch(function() {{ flash(); }});
+                    }} else {{ flash(); }}
+                }});
+                container.appendChild(swatch);
+            }});
+        }} catch (e) {{ /* картинка с другого домена или ещё не декодирована */ }}
     }}
+    function start() {{
+        var img = document.querySelector('.painting');
+        if (!img) return;
+        if (img.complete && img.naturalWidth) buildPalette();
+        else img.addEventListener('load', buildPalette, {{once: true}});
+    }}
+    if (document.readyState === 'complete') start();
+    else window.addEventListener('load', start);
 }})();
 
-function toggleTheme() {{
-    var h = document.documentElement;
-    var c = h.getAttribute('data-theme');
-    var n = c === 'light' ? 'dark' : 'light';
-    h.setAttribute('data-theme', n);
-    localStorage.setItem('theme', n);
-}}
-
-(function() {{
-    var s = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', s);
-}})();
-
+// ---------- Случайная картина ----------
+// Список страниц кладёт главная. Если человек пришёл сразу на карточку и
+// списка нет — раньше кнопка молча не работала, теперь уводим на главную.
 function goRandom() {{
-    var p = JSON.parse(localStorage.getItem('allPosts') || '[]');
-    if (p.length) location.href = p[Math.floor(Math.random() * p.length)];
+    var p = [];
+    try {{ p = JSON.parse(localStorage.getItem('allPosts') || '[]'); }} catch (e) {{}}
+    if (p && p.length) location.href = p[Math.floor(Math.random() * p.length)];
+    else location.href = 'index.html?random=1';
 }}
 
 function sharePage() {{
+    var url = window.location.href;
     if (navigator.share) {{
-        navigator.share({{title: document.title, url: window.location.href}});
+        navigator.share({{title: document.title, url: url}}).catch(function() {{}});
+        return;
+    }}
+    if (navigator.clipboard && navigator.clipboard.writeText) {{
+        navigator.clipboard.writeText(url)
+            .then(function() {{ toast('Ссылка скопирована'); }})
+            .catch(function() {{ window.prompt('Скопируйте ссылку:', url); }});
     }} else {{
-        navigator.clipboard.writeText(window.location.href);
-        alert('Ссылка скопирована!');
+        window.prompt('Скопируйте ссылку:', url);
     }}
 }}
 
-window.addEventListener('scroll', function() {{
-    var b = document.querySelector('.scroll-top');
-    if (b) b.classList.toggle('visible', window.scrollY > 400);
-}});
+function toast(text) {{
+    var el = document.createElement('div');
+    el.className = 'toast';
+    el.setAttribute('role', 'status');
+    el.textContent = text;
+    document.body.appendChild(el);
+    setTimeout(function() {{ el.classList.add('hide'); }}, 1800);
+    setTimeout(function() {{ el.remove(); }}, 2200);
+}}
 
-// Счетчик просмотров
+// ---------- Счётчик просмотров (локальный) ----------
 (function() {{
-    var postPath = window.location.pathname;
-    var views = JSON.parse(localStorage.getItem('pageViews') || '{{}}');
-    views[postPath] = (views[postPath] || 0) + 1;
-    localStorage.setItem('pageViews', JSON.stringify(views));
-    var viewsElement = document.getElementById('views-count');
-    if (viewsElement) {{
-        viewsElement.innerHTML = '<span class="icon-views"></span> ' + views[postPath];
-    }}
+    try {{
+        var key = window.location.pathname;
+        var views = JSON.parse(localStorage.getItem('pageViews') || '{{}}');
+        views[key] = (views[key] || 0) + 1;
+        localStorage.setItem('pageViews', JSON.stringify(views));
+        var el = document.getElementById('views-count');
+        if (el) {{
+            el.innerHTML = '<span class="icon-views" aria-hidden="true"></span> ';
+            el.appendChild(document.createTextNode(views[key]));
+            el.title = 'Вы открывали эту страницу ' + views[key] + ' раз(а)';
+        }}
+    }} catch (e) {{}}
 }})();
 
-// Горячие клавиши
+// ---------- Локальное состояние лайка ----------
+// Раньше «сердечко» подсвечивалось только после входа в аккаунт: без входа
+// лайк ставился, но после перезагрузки кнопка снова была пустой.
+(function() {{
+    try {{
+        var btn = document.getElementById('like-btn');
+        if (!btn) return;
+        var likes = JSON.parse(localStorage.getItem('likes') || '{{}}');
+        var on = !!likes[btn.dataset.postId];
+        btn.classList.toggle('liked', on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }} catch (e) {{}}
+}})();
+
+// ---------- Горячие клавиши ----------
 document.addEventListener('keydown', function(e) {{
-    if (e.key === 'r' || e.key === 'к') goRandom();
-    if (e.key === 'Escape') {{
-        var lb = document.getElementById('lightbox');
-        if (lb) lb.classList.remove('active');
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target;
+    // не мешаем набору текста в полях (форма входа)
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    var k = e.key;
+    if (k === 'r' || k === 'к') goRandom();
+    else if (k === 'h' || k === 'р') window.location.href = 'index.html';
+    else if (k === 't' || k === 'е') toggleTheme();
+    else if (k === 'Escape') {{
+        var m = document.querySelector('.auth-modal-overlay');
+        if (m) m.remove();
     }}
-    if (e.key === 'h' || e.key === 'р') window.location.href = 'index.html';
-    if (e.key === 't' || e.key === 'е') toggleTheme();
-    if (e.key === 'ArrowLeft') {{
+    else if (k === 'ArrowLeft') {{
         var p = document.querySelector('.prev-post');
         if (p) p.click();
     }}
-    if (e.key === 'ArrowRight') {{
-        var p = document.querySelector('.next-post');
-        if (p) p.click();
+    else if (k === 'ArrowRight') {{
+        var n = document.querySelector('.next-post');
+        if (n) n.click();
     }}
 }});
 </script>
@@ -557,27 +627,43 @@ document.addEventListener('keydown', function(e) {{
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script>
-// Инициализация Firebase
-firebase.initializeApp(firebaseConfig);
-var auth = firebase.auth();
-var db = firebase.firestore();
-var currentUser = null;
-
-// Отслеживание состояния аутентификации
-auth.onAuthStateChanged(function(user) {{
-    currentUser = user;
-    var btn = document.getElementById('auth-btn');
-    if (btn) {{
-        if (user) {{
-            btn.innerHTML = '<span class="icon-user"></span> ' + (user.email ? user.email.split('@')[0] : 'User');
-            btn.onclick = function() {{ auth.signOut(); }};
-        }} else {{
-            btn.innerHTML = '<span class="icon-login"></span> Войти';
-            btn.onclick = showAuthForm;
-        }}
+// ---------- Firebase ----------
+// Инициализацию оборачиваем в try: если скрипты Google заблокированы
+// (расширение, корпоративная сеть, офлайн), страница раньше падала целиком
+// и переставали работать ВСЕ кнопки. Теперь лайки просто остаются локальными.
+var auth = null, db = null, currentUser = null;
+var FIREBASE_OK = false;
+try {{
+    if (typeof firebase !== 'undefined' && typeof firebaseConfig !== 'undefined') {{
+        firebase.initializeApp(firebaseConfig);
+        auth = firebase.auth();
+        db = firebase.firestore();
+        FIREBASE_OK = true;
     }}
-    if (user) loadLikesFromCloud();
-}});
+}} catch (e) {{ console.warn('Firebase недоступен, избранное работает локально:', e.message); }}
+
+if (FIREBASE_OK) {{
+    auth.onAuthStateChanged(function(user) {{
+        currentUser = user;
+        var btn = document.getElementById('auth-btn');
+        if (btn) {{
+            if (user) {{
+                btn.innerHTML = '<span class="icon-user" aria-hidden="true"></span> ';
+                btn.appendChild(document.createTextNode(user.email ? user.email.split('@')[0] : 'Профиль'));
+                btn.title = 'Выйти из аккаунта';
+                btn.onclick = function() {{ auth.signOut(); }};
+            }} else {{
+                btn.innerHTML = '<span class="icon-login" aria-hidden="true"></span> Войти';
+                btn.title = 'Войти';
+                btn.onclick = showAuthForm;
+            }}
+        }}
+        if (user) loadLikesFromCloud();
+    }});
+}} else {{
+    var authBtnOffline = document.getElementById('auth-btn');
+    if (authBtnOffline) authBtnOffline.style.display = 'none';
+}}
 
 // Функция показа формы авторизации
 function showAuthForm() {{
@@ -603,10 +689,10 @@ function showAuthForm() {{
         '</form>' +
         '<div class="auth-error" id="auth-error"></div>' +
         '<div class="auth-switch">' +
-        'Нет аккаунта? <a id="auth-switch-link">Создать</a>' +
+        'Нет аккаунта? <button type="button" class="auth-link" id="auth-switch-link">Создать</button>' +
         '</div>' +
-        '<div class="auth-switch" style="margin-top:0.2rem;display:none" id="auth-reset-container">' +
-        '<a id="auth-reset-link">Забыли пароль?</a>' +
+        '<div class="auth-switch auth-reset-row" id="auth-reset-container">' +
+        '<button type="button" class="auth-link" id="auth-reset-link">Забыли пароль?</button>' +
         '</div>' +
         '</div>';
     
@@ -686,10 +772,12 @@ function showAuthForm() {{
   
 // Синхронизация лайков
 async function syncLike(postId, liked) {{
-    var local = JSON.parse(localStorage.getItem('likes') || '{{}}');
-    local[postId] = liked;
-    localStorage.setItem('likes', JSON.stringify(local));
-    if (currentUser) {{
+    try {{
+        var local = JSON.parse(localStorage.getItem('likes') || '{{}}');
+        local[postId] = liked;
+        localStorage.setItem('likes', JSON.stringify(local));
+    }} catch (e) {{}}
+    if (FIREBASE_OK && currentUser) {{
         try {{
             await db.collection('likes').doc(currentUser.uid + '_' + postId).set({{
                 userId: currentUser.uid,
@@ -697,38 +785,45 @@ async function syncLike(postId, liked) {{
                 liked: liked,
                 time: firebase.firestore.FieldValue.serverTimestamp()
             }});
-        }} catch(e) {{ console.error(e); }}
+        }} catch(e) {{ console.warn('Не удалось сохранить лайк в облако:', e.message); }}
     }}
 }}
 
 // Загрузка лайков из облака
 async function loadLikesFromCloud() {{
-    if (!currentUser) return;
-    var snap = await db.collection('likes')
-        .where('userId', '==', currentUser.uid)
-        .where('liked', '==', true)
-        .get();
-    var cloud = {{}};
-    snap.forEach(function(d) {{ cloud[d.data().postId] = true; }});
-    var local = JSON.parse(localStorage.getItem('likes') || '{{}}');
-    var merged = Object.assign({{}}, local, cloud);
-    localStorage.setItem('likes', JSON.stringify(merged));
-    var btn = document.getElementById('like-btn');
-    if (btn && merged[btn.dataset.postId]) btn.classList.add('liked');
+    if (!FIREBASE_OK || !currentUser) return;
+    try {{
+        var snap = await db.collection('likes')
+            .where('userId', '==', currentUser.uid)
+            .where('liked', '==', true)
+            .get();
+        var cloud = {{}};
+        snap.forEach(function(d) {{ cloud[d.data().postId] = true; }});
+        var local = JSON.parse(localStorage.getItem('likes') || '{{}}');
+        var merged = Object.assign({{}}, local, cloud);
+        localStorage.setItem('likes', JSON.stringify(merged));
+        var btn = document.getElementById('like-btn');
+        if (btn && merged[btn.dataset.postId]) {{
+            btn.classList.add('liked');
+            btn.setAttribute('aria-pressed', 'true');
+        }}
+    }} catch (e) {{ console.warn('Не удалось загрузить избранное:', e.message); }}
 }}
 
-// Переключение лайка
+// Переключение лайка — работает и без аккаунта, и без Firebase
 async function toggleLike() {{
     var btn = document.getElementById('like-btn');
+    if (!btn) return;
     var pid = btn.dataset.postId;
-    var likes = JSON.parse(localStorage.getItem('likes') || '{{}}');
+    var likes = {{}};
+    try {{ likes = JSON.parse(localStorage.getItem('likes') || '{{}}'); }} catch (e) {{}}
     var newState = !likes[pid];
-    await syncLike(pid, newState);
     btn.classList.toggle('liked', newState);
+    btn.setAttribute('aria-pressed', newState ? 'true' : 'false');
+    btn.setAttribute('aria-label', newState ? 'Убрать из избранного' : 'В избранное');
+    await syncLike(pid, newState);
     try {{
-        if (window.opener && window.opener.updateFavList) {{
-            window.opener.updateFavList();
-        }}
+        if (window.opener && window.opener.updateFavList) window.opener.updateFavList();
     }} catch(e) {{}}
 }}
 </script></body></html>"""
@@ -746,21 +841,35 @@ def render_tag_page(tag, posts):
         elif p.get("images"): cv = p["images"][0]
         cv = h(cv)
         museum_name = h(p.get('museum', ''))
-        cards.append(f'<a class="card" href="{h(p["filename"])}"><div class="card-img"><img src="{cv}" alt="" loading="lazy"></div><div class="card-body"><div class="card-artist">{h(p["artist"])}</div><div class="card-title">{h(p["title"])}</div>{f"<div class=\"card-museum\">{museum_name}</div>" if museum_name else ""}</div></a>')
+        artist_name = h(p["artist"])
+        title_name = h(p["title"])
+        # Экранированные кавычки внутри f-строки требуют Python 3.12+,
+        # на 3.11 это была синтаксическая ошибка. Собираем строку заранее.
+        museum_html = f'<div class="card-museum">{museum_name}</div>' if museum_name else ''
+        cards.append(
+            f'<a class="card" href="{h(p["filename"])}">'
+            f'<div class="card-img"><img src="{cv}" alt="{artist_name} — {title_name}" loading="lazy" decoding="async"></div>'
+            f'<div class="card-body"><div class="card-artist">{artist_name}</div>'
+            f'<div class="card-title">{title_name}</div>{museum_html}</div></a>'
+        )
+    head = head_common(
+        title=f"#{h(tag)} — Old Picture Art",
+        description=f"Картины по тегу #{tag} — подборка из {len(posts)} работ в галерее Old Picture Art.",
+        canonical=f"{BASE_URL}/tag-{tag}.html",
+    )
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
-<meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
-<title>#{h(tag)} — Old Picture Art</title>
-<link rel="stylesheet" href="style.css">
+{head}
 </head><body class="tag-page">
-<button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх"><span class="icon-arrow-up"></span></button>
-<a href="index.html" class="back"><span class="icon-back"></span> На главную</a>
-<h1>#{h(tag)} ({len(posts)})</h1>
+<div class="tag-topbar">
+  <a href="index.html" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
+  {theme_button('theme-toggle-inline')}
+</div>
+{scroll_top_button()}
+<h1>#{h(tag)} <span class="tag-count">({len(posts)})</span></h1>
 <div class="grid">{''.join(cards)}</div>
-<script>function toggleTheme(){{const h=document.documentElement;const c=h.getAttribute('data-theme');const n=c==='light'?'dark':'light';h.setAttribute('data-theme',n);localStorage.setItem('theme',n)}}
-(()=>{{const s=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',s)}})();
-window.addEventListener('scroll',function(){{const b=document.querySelector('.scroll-top');if(b)b.classList.toggle('visible',window.scrollY>400)}});</script></body></html>"""
+{SCROLL_TOP_JS}
+{COMMON_JS}
+</body></html>"""
 
 def render_index(all_posts):
     MONTHS = {"01":"Январь","02":"Февраль","03":"Март","04":"Апрель","05":"Май","06":"Июнь","07":"Июль","08":"Август","09":"Сентябрь","10":"Октябрь","11":"Ноябрь","12":"Декабрь"}
@@ -830,10 +939,20 @@ def render_index(all_posts):
         # Дата публикации
         pub_date = p.get('date', '')[:10] if p.get('date') else ''
 
-        cards.append(f"""<a class="card" href="{h(p['filename'])}" data-artist="{h(p['artist'].lower())}" data-year="{y}" data-month="{m}" data-museum="{h(slugify(p.get('museum','')))}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}" {decade_attr}>
-    <div class="card-img"><img src="{cv}" alt="" loading="lazy"></div>
+        # data-search собирает всё, по чему ищем: раньше поиск шёл по
+        # видимому тексту карточки, а названия картины в нём нет — искать
+        # по названию было невозможно.
+        search_blob = " ".join(filter(None, [
+            p.get('artist', ''), p.get('title', ''), p.get('museum', ''),
+            p.get('material', ''), " ".join(p.get('techniques', [])),
+            " ".join(p.get('tags', [])), pub_date,
+        ])).lower()
+
+        cards.append(f"""<a class="card" href="{h(p['filename'])}" data-artist="{h(p['artist'].lower())}" data-year="{y}" data-month="{m}" data-museum="{h(slugify(p.get('museum','')))}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}" data-search="{h(search_blob)}" {decade_attr}>
+    <div class="card-img"><img src="{cv}" alt="{artist_name} — {title_name}" loading="lazy" decoding="async"></div>
     <div class="card-body">
         <div class="card-artist">{artist_name}</div>
+        <div class="card-title">{title_name}</div>
         {f'<div class="card-medium">{medium_str}</div>' if medium_str else ''}
         {f'<div class="card-museum">{museum_name}</div>' if museum_name else ''}
         <div class="card-date">{pub_date}</div>
@@ -870,180 +989,247 @@ def render_index(all_posts):
     }
     pm_js = json.dumps(post_map_data, ensure_ascii=False)
     
-    fav_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-fav" onclick="toggleSection(this)">Избранное <span id="fav-count" class="count" style="font-size:.68rem;opacity:.6"></span></div><div class="sidebar-content collapsed"><ul id="fav-list"><li style="color:var(--muted);font-size:.8rem;padding:.5rem">Нажмите <span class="icon-heart" style="display:inline-block;width:14px;height:14px;vertical-align:middle"></span> на странице картины</li></ul></div></div>'
-    theme_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-theme no-arrow" style="cursor:pointer" onclick="toggleTheme()">Тема</div></div>'
-    quiz_link_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-quiz no-arrow" onclick="location.href=\'quiz.html\'">Квиз</div></div>'
-    timeline_link_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-timeline no-arrow" onclick="location.href=\'timeline.html\'">Таймлайн</div></div>'
-    map_link_html = '<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-map no-arrow" onclick="location.href=\'museums.html\'">Карта музеев</div></div>'
+    # Разделы сайдбара. Заголовки-«аккордеоны» теперь настоящие <button>:
+    # раньше это были <div onclick>, недоступные с клавиатуры и для скринридеров.
+    empty_fav = ('<li class="fav-empty">Нажмите <span class="icon-heart" aria-hidden="true"></span>'
+                 ' на странице картины</li>')
+    fav_html = ('<div class="sidebar-section"><button type="button" class="sidebar-title sidebar-icon icon-fav" '
+                'aria-expanded="false" onclick="toggleSection(this)">Избранное '
+                '<span id="fav-count" class="count"></span></button>'
+                f'<div class="sidebar-content collapsed"><ul id="fav-list">{empty_fav}</ul></div></div>')
+    theme_html = ('<div class="sidebar-section"><button type="button" class="sidebar-title sidebar-icon icon-theme no-arrow" '
+                  'data-theme-toggle aria-pressed="false" onclick="toggleTheme()">Тема</button></div>')
+    quiz_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-quiz no-arrow" '
+                      'href="quiz.html">Квиз</a></div>')
+    timeline_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-timeline no-arrow" '
+                          'href="timeline.html">Таймлайн</a></div>')
+    map_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-map no-arrow" '
+                     'href="museums.html">Карта музеев</a></div>')
     
+    head = head_common(
+        title="Old Picture Art — Галерея",
+        description=(f"Галерея из {len(ps)} картин: {len(authors)} художников, {len(museums)} музеев. "
+                     "Поиск по художникам, музеям, технике и десятилетиям."),
+        canonical=f"{BASE_URL}/",
+    )
+
+    def section(icon, label, content):
+        return (f'<div class="sidebar-section"><button type="button" class="sidebar-title sidebar-icon {icon}" '
+                f'aria-expanded="false" onclick="toggleSection(this)">{label}</button>'
+                f'<div class="sidebar-content collapsed"><ul>{content}</ul></div></div>')
+
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
-<meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>Old Picture Art — Галерея</title>
-<link rel="stylesheet" href="style.css">
+{head}
 </head><body class="index-page">
-<button class="menu-toggle" onclick="toggleMenu()"><span class="icon-menu"></span> Меню</button>
-<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-<button class="scroll-top" onclick="window.scrollTo({{top:0,behavior:'smooth'}})" title="Наверх">↑</button>
-<header><h1><span class="icon-logo"></span> Old Picture Art</h1>
+<a href="#cards" class="skip-link">К галерее</a>
+<button type="button" class="menu-toggle" id="menu-toggle" onclick="toggleMenu()" aria-expanded="false" aria-controls="sidebar"><span class="icon-menu" aria-hidden="true"></span> Меню</button>
+<div class="overlay" id="overlay" onclick="toggleMenu()" aria-hidden="true" hidden></div>
+{scroll_top_button()}
+<header><h1><span class="icon-logo" aria-hidden="true"></span> Old Picture Art</h1>
 <div class="subtitle">{len(ps)} {plural_ru(len(ps), 'картина', 'картины', 'картин')} · {len(authors)} {plural_ru(len(authors), 'художник', 'художника', 'художников')} · {len(museums)} {plural_ru(len(museums), 'музей', 'музея', 'музеев')} · {year_range}</div>
-<a href="#" class="random-btn" onclick="goRandom()"><span class="icon-random-white"></span> Случайная картина</a></header>
-<div class="layout"><aside class="sidebar">
-<div class="sidebar-section" style="padding: 8px 12px;"><input type="text" class="search-box" placeholder="Поиск..." id="search" style="width:100%"></div>
-<a href="#" id="reset-filter" class="filter-reset" style="display:none">Сбросить все фильтры</a>
-<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-archive" onclick="toggleSection(this)">Архив</div><div class="sidebar-content collapsed"><ul>{arh}</ul></div></div>
-<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-decades" onclick="toggleSection(this)">Декады</div><div class="sidebar-content collapsed"><ul>{dech}</ul></div></div>
-<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-artists" onclick="toggleSection(this)">Художники</div><div class="sidebar-content collapsed"><ul>{ah}</ul></div></div>
-<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-museums" onclick="toggleSection(this)">Музеи</div><div class="sidebar-content collapsed"><ul>{mh}</ul></div></div>
-<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-material" onclick="toggleSection(this)">Материал</div><div class="sidebar-content collapsed"><ul>{mth}</ul></div></div>
-<div class="sidebar-section"><div class="sidebar-title sidebar-icon icon-technique" onclick="toggleSection(this)">Техника</div><div class="sidebar-content collapsed"><ul>{th}</ul></div></div>
+<button type="button" class="random-btn" onclick="goRandom()"><span class="icon-random-white" aria-hidden="true"></span> Случайная картина</button></header>
+<div class="layout"><aside class="sidebar" id="sidebar" aria-label="Фильтры">
+<div class="sidebar-section sidebar-search">
+  <label class="visually-hidden" for="search">Поиск по галерее</label>
+  <input type="search" class="search-box" placeholder="Поиск по художнику, картине, музею…" id="search" autocomplete="off">
+</div>
+<button type="button" id="reset-filter" class="filter-reset">Сбросить все фильтры</button>
+{section('icon-archive', 'Архив', arh)}
+{section('icon-decades', 'Декады', dech)}
+{section('icon-artists', 'Художники', ah)}
+{section('icon-museums', 'Музеи', mh)}
+{section('icon-material', 'Материал', mth)}
+{section('icon-technique', 'Техника', th)}
 {fav_html}
 {theme_html}
 {map_link_html}
 {quiz_link_html}
 {timeline_link_html}
-</aside><main class="main-content"><div class="grid" id='cards'>{''.join(cards)}</div></main></div>
+</aside><main class="main-content">
+<div class="results-bar"><span id="results-count" class="results-count" role="status" aria-live="polite"></span></div>
+<div class="grid" id="cards">{''.join(cards)}</div>
+<p class="no-results" id="no-results" hidden>Ничего не найдено. Попробуйте изменить запрос или <button type="button" class="linklike" onclick="resetAllFilters()">сбросить фильтры</button>.</p>
+</main></div>
+{SCROLL_TOP_JS}
+{COMMON_JS}
 <script>
 const ALL_POSTS = {af};
 const POSTS_DATA = {pm_js};
 
-function toggleTheme() {{
-    const h = document.documentElement;
-    const c = h.getAttribute('data-theme');
-    const n = c === 'light' ? 'dark' : 'light';
-    h.setAttribute('data-theme', n);
-    localStorage.setItem('theme', n);
-}}
-
-(() => {{
-    const s = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', s);
-    localStorage.setItem('allPosts', JSON.stringify(ALL_POSTS));
-    updateFavList();
-}})();
-
-function updateFavList() {{
-    const likes = JSON.parse(localStorage.getItem('likes') || '{{}}');
-    const favList = document.getElementById('fav-list');
-    const favCount = document.getElementById('fav-count');
-    if (favList) {{
-        const likedIds = Object.entries(likes).filter(function(e) {{ return e[1]; }}).map(function(e) {{ return e[0]; }});
-        if (favCount) favCount.textContent = '(' + likedIds.length + ')';
-        if (likedIds.length > 0) {{
-            favList.innerHTML = likedIds.map(function(id) {{
-                const info = POSTS_DATA[id];
-                if (info) {{
-                    return '<li><a href="' + info.file + '" style="font-size:.8rem" title="' + info.title + '"><span class="icon-painting-small"></span> ' + info.title + '</a></li>';
-                }} else {{
-                    return '<li><a href="#" style="font-size:.8rem"><span class="icon-painting-small"></span> Картина #' + id + '</a></li>';
-                }}
-            }}).join('');
-        }} else {{
-            favList.innerHTML = '<li style="color:var(--muted);font-size:.8rem;padding:.5rem">Нажмите <span class="icon-heart" style="display:inline-block;width:14px;height:14px;vertical-align:middle"></span> на странице картины</li>';
-        }}
-    }}
-}}
+try {{ localStorage.setItem('allPosts', JSON.stringify(ALL_POSTS)); }} catch (e) {{}}
 
 function goRandom() {{
     if (ALL_POSTS.length) location.href = ALL_POSTS[Math.floor(Math.random() * ALL_POSTS.length)];
 }}
 
-function toggleSection(el) {{
-    const content = el.nextElementSibling;
-    if (content) {{
-        content.classList.toggle('collapsed');
-    }}
+// Переход с карточки: «случайная картина» без сохранённого списка ведёт сюда
+if (location.search.indexOf('random=1') !== -1 && ALL_POSTS.length) {{
+    location.replace(ALL_POSTS[Math.floor(Math.random() * ALL_POSTS.length)]);
 }}
 
-function toggleMenu() {{
-    document.querySelector('.sidebar').classList.toggle('open');
-    document.getElementById('overlay').classList.toggle('visible');
+function updateFavList() {{
+    let likes = {{}};
+    try {{ likes = JSON.parse(localStorage.getItem('likes') || '{{}}'); }} catch (e) {{}}
+    const favList = document.getElementById('fav-list');
+    const favCount = document.getElementById('fav-count');
+    if (!favList) return;
+    const likedIds = Object.keys(likes).filter(id => likes[id]);
+    if (favCount) favCount.textContent = likedIds.length ? '(' + likedIds.length + ')' : '';
+    favList.textContent = '';
+    if (!likedIds.length) {{
+        const li = document.createElement('li');
+        li.className = 'fav-empty';
+        li.innerHTML = 'Нажмите <span class="icon-heart" aria-hidden="true"></span> на странице картины';
+        favList.appendChild(li);
+        return;
+    }}
+    likedIds.forEach(id => {{
+        const info = POSTS_DATA[id];
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = info ? info.file : '#';
+        a.title = info ? info.title : ('Картина #' + id);
+        // textContent, а не innerHTML: названия картин приходят из данных
+        a.innerHTML = '<span class="icon-painting-small" aria-hidden="true"></span> ';
+        a.appendChild(document.createTextNode(info ? info.title : ('Картина #' + id)));
+        li.appendChild(a);
+        favList.appendChild(li);
+    }});
+}}
+
+// Аккордеон сайдбара: класс open нужен, чтобы стрелка ▾ поворачивалась —
+// раньше он не ставился нигде и стрелка всегда смотрела вниз.
+function toggleSection(el) {{
+    const content = el.nextElementSibling;
+    if (!content) return;
+    const willOpen = content.classList.contains('collapsed');
+    content.classList.toggle('collapsed', !willOpen);
+    el.classList.toggle('open', willOpen);
+    el.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+}}
+
+function toggleMenu(force) {{
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const btn = document.getElementById('menu-toggle');
+    if (!sidebar) return;
+    const open = typeof force === 'boolean' ? force : !sidebar.classList.contains('open');
+    sidebar.classList.toggle('open', open);
+    if (overlay) {{ overlay.classList.toggle('visible', open); overlay.hidden = !open; }}
+    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}}
+
+function isMobile() {{ return window.matchMedia('(max-width: 900px)').matches; }}
+
+let activeFilters = {{ search: '', type: null, val: null, year: null }};
+
+function resetAllFilters() {{
+    activeFilters = {{ search: '', type: null, val: null, year: null }};
+    const searchBox = document.getElementById('search');
+    if (searchBox) searchBox.value = '';
+    document.querySelectorAll('.filter-link.active').forEach(l => {{
+        l.classList.remove('active');
+        l.removeAttribute('aria-current');
+    }});
+    applyFilters();
+}}
+
+function applyFilters() {{
+    const cards = document.querySelectorAll('.card');
+    let visible = 0;
+    cards.forEach(card => {{
+        let show = true;
+        if (activeFilters.search) {{
+            const blob = card.dataset.search || card.textContent.toLowerCase();
+            if (blob.indexOf(activeFilters.search) === -1) show = false;
+        }}
+        if (show && activeFilters.type) {{
+            const t = activeFilters.type, v = activeFilters.val;
+            if (t === 'artist') show = card.dataset.artist === v;
+            else if (t === 'museum') show = card.dataset.museum === v;
+            else if (t === 'material') show = card.dataset.material === v;
+            else if (t === 'technique') show = (card.dataset.techniques || '').split(' ').indexOf(v) !== -1;
+            else if (t === 'decade') show = card.dataset.decade === v;
+            else if (t === 'year') show = card.dataset.year === v;
+            else if (t === 'month') show = card.dataset.year === activeFilters.year && card.dataset.month === v;
+        }}
+        card.hidden = !show;
+        if (show) visible++;
+    }});
+
+    const hasActive = !!(activeFilters.search || activeFilters.type);
+    const resetBtn = document.getElementById('reset-filter');
+    if (resetBtn) resetBtn.classList.toggle('visible', hasActive);
+
+    const counter = document.getElementById('results-count');
+    if (counter) counter.textContent = hasActive ? (visible + ' ' + plural(visible, 'картина', 'картины', 'картин')) : '';
+
+    const empty = document.getElementById('no-results');
+    if (empty) empty.hidden = visible !== 0;
+}}
+
+function plural(n, one, few, many) {{
+    const n10 = n % 10, n100 = n % 100;
+    if (n10 === 1 && n100 !== 11) return one;
+    if (n10 >= 2 && n10 <= 4 && (n100 < 10 || n100 >= 20)) return few;
+    return many;
 }}
 
 document.addEventListener('DOMContentLoaded', function() {{
+    updateFavList();
+
     const searchBox = document.getElementById('search');
-    const resetBtn = document.getElementById('reset-filter');
-    const filterLinks = document.querySelectorAll('.filter-link');
-    const cards = document.querySelectorAll('.card');
-
-    let activeFilters = {{
-        search: '',
-        type: null,
-        val: null,
-        year: null
-    }};
-
-    function checkResetVisibility() {{
-        const hasActive = activeFilters.search || activeFilters.type || activeFilters.val || activeFilters.year;
-        if (hasActive) {{
-            resetBtn.style.display = 'block';
-        }} else {{
-            resetBtn.style.display = 'none';
-        }}
-    }}
-
-    function applyFilters() {{
-        cards.forEach(card => {{
-            let show = true;
-            
-            if (activeFilters.search) {{
-                const text = card.textContent.toLowerCase();
-                if (!text.includes(activeFilters.search)) {{
-                    show = false;
-                }}
-            }}
-
-            if (show && activeFilters.type) {{
-                if (activeFilters.type === 'artist') {{
-                    if (card.dataset.artist !== activeFilters.val) show = false;
-                }} else if (activeFilters.type === 'museum') {{
-                    if (card.dataset.museum !== activeFilters.val) show = false;
-                }} else if (activeFilters.type === 'material') {{
-                    if (card.dataset.material !== activeFilters.val) show = false;
-                }} else if (activeFilters.type === 'technique') {{
-                    const techs = card.dataset.techniques ? card.dataset.techniques.split(' ') : [];
-                    if (!techs.includes(activeFilters.val)) show = false;
-                }} else if (activeFilters.type === 'decade') {{
-                    if (card.dataset.decade !== activeFilters.val) show = false;
-                }} else if (activeFilters.type === 'year') {{
-                    if (card.dataset.year !== activeFilters.val) show = false;
-                }} else if (activeFilters.type === 'month') {{
-                    if (card.dataset.year !== activeFilters.year || card.dataset.month !== activeFilters.val) show = false;
-                }}
-            }}
-
-            card.style.display = show ? '' : 'none';
-        }});
-        checkResetVisibility();
-    }}
-
     if (searchBox) {{
+        let t = null;
         searchBox.addEventListener('input', function(e) {{
-            activeFilters.search = e.target.value.toLowerCase().trim();
-            applyFilters();
+            const v = e.target.value.toLowerCase().trim();
+            clearTimeout(t);
+            // debounce: 195 карточек пересчитывать на каждую букву незачем
+            t = setTimeout(function() {{ activeFilters.search = v; applyFilters(); }}, 120);
         }});
     }}
 
-    filterLinks.forEach(link => {{
+    document.querySelectorAll('.filter-link').forEach(link => {{
         link.addEventListener('click', function(e) {{
             e.preventDefault();
-            activeFilters.type = this.dataset.type;
-            activeFilters.val = this.dataset.val;
-            activeFilters.year = this.dataset.year || null;
+            const same = this.classList.contains('active');
+            document.querySelectorAll('.filter-link.active').forEach(l => {{
+                l.classList.remove('active');
+                l.removeAttribute('aria-current');
+            }});
+            if (same) {{
+                // повторный клик по тому же фильтру — снимаем его
+                activeFilters.type = activeFilters.val = activeFilters.year = null;
+            }} else {{
+                this.classList.add('active');
+                this.setAttribute('aria-current', 'true');
+                activeFilters.type = this.dataset.type;
+                activeFilters.val = this.dataset.val;
+                activeFilters.year = this.dataset.year || null;
+            }}
             applyFilters();
+            // на телефоне меню перекрывает результат — закрываем его
+            if (isMobile()) toggleMenu(false);
+            document.getElementById('cards').scrollIntoView({{block: 'start', behavior: 'auto'}});
         }});
     }});
 
-    if (resetBtn) {{
-        resetBtn.addEventListener('click', function(e) {{
+    const resetBtn = document.getElementById('reset-filter');
+    if (resetBtn) resetBtn.addEventListener('click', function(e) {{ e.preventDefault(); resetAllFilters(); }});
+
+    document.addEventListener('keydown', function(e) {{
+        if (e.key === 'Escape') {{
+            if (document.getElementById('sidebar').classList.contains('open')) toggleMenu(false);
+            else if (document.activeElement === searchBox && searchBox.value) resetAllFilters();
+        }}
+        if (e.key === '/' && document.activeElement !== searchBox) {{
             e.preventDefault();
-            activeFilters = {{ search: '', type: null, val: null, year: null }};
-            if (searchBox) searchBox.value = '';
-            applyFilters();
-        }});
-    }}
+            if (isMobile()) toggleMenu(true);
+            if (searchBox) searchBox.focus();
+        }}
+    }});
+
+    applyFilters();
 }});
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -1051,24 +1237,30 @@ document.addEventListener('DOMContentLoaded', function() {{
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script>
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-auth.onAuthStateChanged(user => {{
-  if (user) {{
-    db.collection('likes')
-      .where('userId', '==', user.uid)
-      .where('liked', '==', true).get()
-      .then(snap => {{
-        const cloud = {{}};
-        snap.forEach(d => cloud[d.data().postId] = true);
-        const local = JSON.parse(localStorage.getItem('likes') || '{{}}');
-        localStorage.setItem('likes', JSON.stringify({{...local, ...cloud}}));
-        updateFavList();
-      }});
+// Firebase — необязательная часть: если скрипты Google не загрузились,
+// главная должна продолжать работать (раньше падала вся страница).
+try {{
+  if (typeof firebase !== 'undefined' && typeof firebaseConfig !== 'undefined') {{
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    auth.onAuthStateChanged(user => {{
+      if (!user) return;
+      db.collection('likes')
+        .where('userId', '==', user.uid)
+        .where('liked', '==', true).get()
+        .then(snap => {{
+          const cloud = {{}};
+          snap.forEach(d => cloud[d.data().postId] = true);
+          let local = {{}};
+          try {{ local = JSON.parse(localStorage.getItem('likes') || '{{}}'); }} catch (e) {{}}
+          localStorage.setItem('likes', JSON.stringify({{...local, ...cloud}}));
+          updateFavList();
+        }})
+        .catch(e => console.warn('Избранное из облака недоступно:', e.message));
+    }});
   }}
-}});
+}} catch (e) {{ console.warn('Firebase недоступен:', e.message); }}
 </script></body></html>"""
 
 # ===================== TELEGRAM =====================
@@ -1129,11 +1321,36 @@ def generate_tag_pages(all_posts):
     logger.info(f"Сгенерировано {c} страниц тегов")
     return tp
 
+def render_404():
+    """Раньше 404 была пустой страницей с meta refresh: без заголовка,
+    без объяснения, и на вложенных адресах редирект вёл в никуда."""
+    head = head_common(
+        title="Страница не найдена — Old Picture Art",
+        description="Такой страницы нет. Вернитесь в галерею Old Picture Art.",
+    )
+    return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
+{head}
+</head><body class="error-page">
+<main class="error-box">
+  <p class="error-code">404</p>
+  <h1>Страница не найдена</h1>
+  <p class="error-text">Возможно, картину переименовали или ссылка устарела.</p>
+  <p><a class="random-btn" href="index.html">В галерею</a></p>
+  <p class="error-links"><a href="quiz.html">Квиз</a> · <a href="timeline.html">Таймлайн</a> · <a href="museums.html">Карта музеев</a></p>
+</main>
+{COMMON_JS}
+</body></html>"""
+
+
 def generate_sitemap(all_posts):
     logger.info("Sitemap...")
-    bu = "https://denchest.github.io/Site-Oldpictureart"
+    bu = BASE_URL
+    # Имена файлов кириллические — в sitemap.xml адреса обязаны быть
+    # процентно-закодированы, иначе поисковики игнорируют строки.
+    def u(path):
+        return quote(path, safe="/")
     urls = [f"  <url><loc>{bu}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>"]
-    for p in all_posts: urls.append(f"  <url><loc>{bu}/{p['filename']}</loc><lastmod>{p['date']}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>")
+    for p in all_posts: urls.append(f"  <url><loc>{bu}/{u(p['filename'])}</loc><lastmod>{p['date']}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>")
     urls.append(f"  <url><loc>{bu}/feed.xml</loc><changefreq>daily</changefreq><priority>0.6</priority></url>")
     urls.append(f"  <url><loc>{bu}/museums.html</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>")
     urls.append(f"  <url><loc>{bu}/quiz.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>")
@@ -1141,29 +1358,75 @@ def generate_sitemap(all_posts):
     at = set()
     for p in all_posts:
         for t in p.get("tags",[]): at.add(t)
-    for t in at: urls.append(f"  <url><loc>{bu}/tag-{t}.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>")
+    for t in sorted(at): urls.append(f"  <url><loc>{bu}/{u('tag-' + t + '.html')}</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>")
     with open(os.path.join(OUTPUT_DIR, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + '\n</urlset>')
     logger.info(f"Sitemap ({len(urls)} URL)")
 
+def generate_icons():
+    """Иконки для manifest.json. Раньше манифест ссылался на файлы,
+    которых в репозитории не было, — установка как приложения не работала."""
+    if not PIL_AVAILABLE:
+        return []
+    from PIL import ImageDraw
+    made = []
+    for size in (192, 512):
+        path = os.path.join(IMAGES_DIR, f"icon-{size}.png")
+        s = size / 32.0
+        img = Image.new("RGBA", (size, size), (47, 47, 58, 255))
+        d = ImageDraw.Draw(img)
+        d.rectangle([6*s, 7*s, 26*s, 25*s], fill=(250, 250, 250, 255))
+        d.polygon([(8*s, 21*s), (13*s, 15*s), (17*s, 19*s), (20*s, 16*s), (24*s, 21*s)], fill=(107, 142, 107, 255))
+        d.ellipse([18*s, 10*s, 22*s, 14*s], fill=(224, 176, 80, 255))
+        img.save(path, "PNG")
+        made.append(f"images/icon-{size}.png")
+    return made
+
+
 def generate_manifest():
+    icons = [{"src": src, "sizes": f"{n}x{n}", "type": "image/png", "purpose": "any maskable"}
+             for src, n in zip(generate_icons(), (192, 512))]
+    data = {
+        "name": "Old Picture Art",
+        "short_name": "OldPictureArt",
+        "description": "Галерея картин из старых музейных собраний",
+        "start_url": "./",
+        "scope": "./",
+        "display": "standalone",
+        "lang": "ru",
+        "background_color": "#fafafa",
+        "theme_color": "#fafafa",
+        "icons": icons,
+    }
     with open(os.path.join(OUTPUT_DIR, "manifest.json"), "w", encoding="utf-8") as f:
-        json.dump({"name":"Old Picture Art","short_name":"OldPictureArt","description":"Галерея картин","start_url":"/Site-Oldpictureart/","display":"standalone","background_color":"#fafafa","theme_color":"#fafafa","icons":[{"src":"images/icon-192.png","sizes":"192x192","type":"image/png"},{"src":"images/icon-512.png","sizes":"512x512","type":"image/png"}]}, f, ensure_ascii=False, indent=2)
-    logger.info("manifest.json")
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    logger.info(f"manifest.json ({len(icons)} иконок)")
+
+def rfc822(date_str):
+    """RSS 2.0 требует дату в формате RFC-822. Раньше отдавали 2025-11-26,
+    и часть читалок такие записи отбрасывала или сортировала как попало."""
+    try:
+        return format_datetime(datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=timezone.utc))
+    except Exception:
+        return format_datetime(datetime.now(timezone.utc))
+
 
 def generate_rss(all_posts):
     logger.info("Генерация RSS...")
-    base_url = "https://denchest.github.io/Site-Oldpictureart"
+    base_url = BASE_URL
     items = []
     for p in sorted(all_posts, key=lambda x: x["date"], reverse=True)[:50]:
-        desc = p.get("description", "")[:500]
-        img = p.get("images", [""])[0]
+        desc = (p.get("description") or "")[:500]
+        imgs = p.get("images") or [""]
+        img = quote(imgs[0], safe="/") if imgs[0] else ""
+        link = f"{base_url}/{quote(p['filename'], safe='/')}"
+        img_tag = f'<img src="{base_url}/{img}" style="max-width:100%" alt=""/><br>' if img else ""
         items.append(f"""    <item>
       <title>{h(p['artist'])} — {h(p['title'])}</title>
-      <link>{base_url}/{p['filename']}</link>
-      <description><![CDATA[<img src="{base_url}/{img}" style="max-width:100%"/><br>{h(desc)}]]></description>
-      <pubDate>{p['date']}</pubDate>
-      <guid>{base_url}/{p['filename']}</guid>
+      <link>{link}</link>
+      <description><![CDATA[{img_tag}{h(desc)}]]></description>
+      <pubDate>{rfc822(p['date'])}</pubDate>
+      <guid isPermaLink="true">{link}</guid>
     </item>""")
     rss = f"""<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -1219,7 +1482,8 @@ async def main():
     processed_ids = set(load_json(PROCESSED_FILE, []))
     all_posts = load_json(META_FILE, [])
     logger.info("Подключение к Telegram...")
-    client = await connect_with_proxy(API_ID, API_HASH, PHONE, PROXY_LIST)
+    api_id, api_hash, phone = require_credentials()
+    client = await connect_with_proxy(api_id, api_hash, phone, PROXY_LIST)
     try: accepted = await fetch_new_posts(client, processed_ids)
     except Exception as e: logger.error(f"Ошибка сканирования: {e}"); await client.disconnect(); return
     for i, (mm, group, parsed) in enumerate(accepted, 1):
@@ -1279,7 +1543,7 @@ async def main():
     except Exception as e:
         logger.error(f"Ошибка генерации таймлайна: {e}")
     with open(os.path.join(OUTPUT_DIR, "index.html"), "w", encoding="utf-8") as f: f.write(render_index(all_posts))
-    with open(os.path.join(OUTPUT_DIR, "404.html"), "w", encoding="utf-8") as f: f.write('<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0;url=index.html"></head><body></body></html>')
+    with open(os.path.join(OUTPUT_DIR, "404.html"), "w", encoding="utf-8") as f: f.write(render_404())
     logger.info(f"Новых постов: {len(accepted)}. Всего: {len(all_posts)}")
     push_to_github()
 

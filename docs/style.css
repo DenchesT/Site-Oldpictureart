@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+/* Шрифт подключён через <link rel="preconnect"> + <link rel="stylesheet"> в <head>.
+   Раньше здесь был @import: браузер сначала целиком качал style.css и только
+   потом узнавал про шрифт — лишний последовательный запрос на каждой странице. */
 
 /* ========== БАЗОВЫЕ НАСТРОЙКИ ========== */
 html {
@@ -477,14 +479,15 @@ time {
 
 .tag:active { background: var(--active); color: #fff; }
 
-.color-palette span {
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
+.color-palette {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 1rem 0;
+  flex-wrap: wrap;
 }
 
-.color-palette span:hover {
-  transform: scale(1.3);
-  box-shadow: 0 2px 8px var(--shadow);
-}
+.color-palette:empty { margin: 0; }
 
 /* Навигация Prev/Next */
 .post-nav {
@@ -643,7 +646,7 @@ header { margin-bottom: 1.5rem; text-align: center; }
   display: block;
   padding: .3rem .5rem;
   border-radius: 6px;
-  word-break: break-word;
+  overflow-wrap: break-word;
   transition: all .1s ease;
 }
 
@@ -739,7 +742,6 @@ header { margin-bottom: 1.5rem; text-align: center; }
 }
 
 .card:active { transform: scale(.98); }
-.card[style*="display: none"] { opacity: 0; transform: scale(0.95); }
 
 .card-img {
   width: 100%;
@@ -765,7 +767,7 @@ header { margin-bottom: 1.5rem; text-align: center; }
 .card-artist { font-weight: 700; font-size: 1.1rem; color: var(--text); }
 .card-title { font-style: italic; color: var(--muted); font-size: 0.95rem; }
 .card-medium { font-size: .78rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.card-museum { font-size: 0.85rem; color: var(--muted); word-break: break-word; }
+.card-museum { font-size: 0.85rem; color: var(--muted); overflow-wrap: break-word; }
 .card-date { font-size: .7rem; color: var(--muted); opacity: 0.7; }
 
 /* ========== ТАЙМЛАЙН ========== */
@@ -1059,17 +1061,46 @@ header { margin-bottom: 1.5rem; text-align: center; }
 /* ========== SVG ИКОНКИ (светлая тема) ========== */
 .icon-back, .icon-prev { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E"); }
 .icon-next { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E"); }
-.icon-menu { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cline x1='3' y1='6' x2='21' y2='6'/%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cline x1='3' y1='18' x2='21' y2='18'/%3E%3C/svg%3E"); }
+.icon-menu {
+  background-image: none;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cline x1='3' y1='6' x2='21' y2='6'/%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cline x1='3' y1='18' x2='21' y2='18'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cline x1='3' y1='6' x2='21' y2='6'/%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cline x1='3' y1='18' x2='21' y2='18'/%3E%3C/svg%3E") center / contain no-repeat;
+}
 .icon-logo { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); }
-.icon-random { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M18 4h3v3'/%3E%3Cpath d='M21 4l-3.5 3.5'/%3E%3Cpath d='M6 20H3v-3'/%3E%3Cpath d='M3 20l3.5-3.5'/%3E%3C/svg%3E"); }
-.icon-share { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cpath d='M8.59 13.51l6.83 3.98'/%3E%3Cpath d='M15.41 6.51l-6.82 3.98'/%3E%3C/svg%3E"); }
-.icon-heart { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/%3E%3C/svg%3E"); }
-.topbar-like.liked .icon-heart { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e74c3c' stroke='%23e74c3c' stroke-width='2'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/%3E%3C/svg%3E"); transform: scale(1.1); }
+.icon-random {
+  background-image: none;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M18 4h3v3'/%3E%3Cpath d='M21 4l-3.5 3.5'/%3E%3Cpath d='M6 20H3v-3'/%3E%3Cpath d='M3 20l3.5-3.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M18 4h3v3'/%3E%3Cpath d='M21 4l-3.5 3.5'/%3E%3Cpath d='M6 20H3v-3'/%3E%3Cpath d='M3 20l3.5-3.5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.icon-share {
+  background-image: none;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cpath d='M8.59 13.51l6.83 3.98'/%3E%3Cpath d='M15.41 6.51l-6.82 3.98'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cpath d='M8.59 13.51l6.83 3.98'/%3E%3Cpath d='M15.41 6.51l-6.82 3.98'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.icon-heart {
+  background-image: none;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.topbar-like.liked .icon-heart {
+  background-color: var(--like-color);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e74c3c' stroke='%23e74c3c' stroke-width='2'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e74c3c' stroke='%23e74c3c' stroke-width='2'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
 .icon-arrow-up { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E"); }
 .icon-random-white { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M18 4h3v3'/%3E%3Cpath d='M21 4l-3.5 3.5'/%3E%3Cpath d='M6 20H3v-3'/%3E%3Cpath d='M3 20l3.5-3.5'/%3E%3C/svg%3E"); }
 .icon-views { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); }
 .icon-map-header, .icon-map-inline { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Cpath d='M1 6v16l7-5 8 5 7-5V2l-7 5-8-5-7 5z'/%3E%3C/svg%3E"); }
-.icon-theme-toggle { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='5'/%3E%3Cpath d='M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42'/%3E%3C/svg%3E"); }
+.icon-theme-toggle {
+  background-image: none;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='5'/%3E%3Cpath d='M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='5'/%3E%3Cpath d='M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42'/%3E%3C/svg%3E") center / contain no-repeat;
+}
 .icon-museum-inline, .icon-museum-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M3 21h18'/%3E%3Cpath d='M5 21V7l8-4v18'/%3E%3Cpath d='M19 21V11l-6-4'/%3E%3C/svg%3E"); }
 .icon-painting-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'/%3E%3Cpath d='m21 15-5-5L5 21'/%3E%3C/svg%3E"); }
 .icon-location { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E"); }
@@ -1077,8 +1108,18 @@ header { margin-bottom: 1.5rem; text-align: center; }
 .icon-quiz-inline { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E"); }
 .icon-timeline-inline { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cpolyline points='8 5 3 12 8 19'/%3E%3Cpolyline points='16 5 21 12 16 19'/%3E%3C/svg%3E"); }
 .icon-info-small { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='16' x2='12' y2='12'/%3E%3Cline x1='12' y1='8' x2='12.01' y2='8'/%3E%3C/svg%3E"); }
-.icon-login { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4'/%3E%3Cpolyline points='10 17 15 12 10 7'/%3E%3Cline x1='15' y1='12' x2='3' y2='12'/%3E%3C/svg%3E"); }
-.icon-user { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E"); }
+.icon-login {
+  background-image: none;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4'/%3E%3Cpolyline points='10 17 15 12 10 7'/%3E%3Cline x1='15' y1='12' x2='3' y2='12'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4'/%3E%3Cpolyline points='10 17 15 12 10 7'/%3E%3Cline x1='15' y1='12' x2='3' y2='12'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.icon-user {
+  background-image: none;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E") center / contain no-repeat;
+}
 .icon-material-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E"); }
 .icon-technique-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='m12 19 7-7 3 3-7 7-3-3z'/%3E%3Cpath d='m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z'/%3E%3C/svg%3E"); }
 .icon-size-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M15 3h6v6'/%3E%3Cpath d='M9 21H3v-6'/%3E%3Cpath d='M21 3 14 10'/%3E%3Cpath d='M3 21 10 14'/%3E%3C/svg%3E"); }
@@ -1253,57 +1294,34 @@ header { margin-bottom: 1.5rem; text-align: center; }
   border-color: #ddd !important;
 }
 
-/* ========== ЦЕНТРИРОВАНИЕ СПЕЦИАЛЬНЫХ СТРАНИЦ ========== */
-body:has(.timeline-container) .sidebar,
-body:has(.quiz-container) .sidebar,
-body:has(.tag-page) .sidebar,
-body:has(.museums-grid) .sidebar {
-  display: none !important;
-}
-
-body:has(.timeline-container) .layout,
-body:has(.quiz-container) .layout,
-body:has(.tag-page) .layout,
-body:has(.museums-grid) .layout {
-  display: block !important;
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-}
-
-body:has(.timeline-container) .main-content,
-body:has(.quiz-container) .main-content,
-body:has(.tag-page) .main-content,
-body:has(.museums-grid) .main-content {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 auto !important;
-  flex: none !important;
-}
-
+/* ========== ЦЕНТРИРОВАНИЕ СПЕЦИАЛЬНЫХ СТРАНИЦ ==========
+   Раньше здесь был блок из десятка правил с !important вида
+   body:has(.tag-page) .sidebar { display: none !important }.
+   Он не работал: .tag-page — это сам <body>, элемент не может содержать себя,
+   а на квизе и таймлайне никакого .sidebar в разметке нет вовсе.
+   Заодно !important-ы перебивали max-width, заданный на самих страницах. */
 .timeline-container,
 .quiz-container,
-.tag-page,
 .museums-grid {
-  width: 100% !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.timeline-container { max-width: 900px !important; }
-.quiz-container { max-width: 800px !important; }
-.tag-page { max-width: 1200px !important; }
-.museums-grid { max-width: 1200px !important; }
+.timeline-container { max-width: 1100px; }
+.quiz-container { max-width: 800px; }
+.museums-grid { max-width: 1200px; }
 
 /* ========== МЕДИА-ЗАПРОСЫ ========== */
-@media (min-width: 769px) {
-  .scroll-top.visible { display: flex; }
-}
+/* Кнопка «наверх» показывается на всех экранах.
+   Раньше она была скрыта на ≤768px (display:none !important) — то есть
+   именно там, где длинная лента прокрутки и нужна такая кнопка. */
+.scroll-top.visible { display: flex; }
 
 @media (max-width: 900px) {
-  .menu-toggle { display: block; }
+  .menu-toggle { display: inline-flex; }
   .theme-toggle { top: 1rem; right: 1rem; }
-  .index-page { padding: .8rem; font-size: 16px; padding-top: 3.5rem; }
+  .index-page { padding: .8rem; font-size: 16px; padding-top: 3.6rem; }
   .index-page h1 { font-size: 1.8rem; }
   .layout { flex-direction: column; gap: .5rem; }
   .sidebar {
@@ -1313,14 +1331,21 @@ body:has(.museums-grid) .main-content {
     width: 85%;
     max-width: 350px;
     height: 100vh;
+    height: 100dvh; /* иначе нижняя часть меню уезжает под панель браузера */
     z-index: 2000;
     border-radius: 0 12px 12px 0;
     padding-top: 4rem;
+    padding-bottom: max(1.2rem, env(safe-area-inset-bottom));
     transition: left .35s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 4px 0 20px rgba(0,0,0,.3);
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .sidebar.open { left: 0; }
+  /* пальцем попасть в пункт меню высотой 22px невозможно */
+  .sidebar a, .sidebar-title { min-height: 44px; }
+  .sidebar-title { padding: .7rem .8rem; }
+  .sidebar a { display: flex; align-items: center; }
   .overlay {
     display: none;
     position: fixed;
@@ -1345,8 +1370,15 @@ body:has(.museums-grid) .main-content {
 }
 
 @media (max-width: 768px) {
-  .scroll-top { display: none !important; }
+  .scroll-top {
+    width: 48px;
+    height: 48px;
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    right: max(1rem, env(safe-area-inset-right));
+  }
   .post-page { padding: .8rem; font-size: 19px; }
+  .post-topbar { gap: .4rem; }
+  .topbar-btn { min-height: 44px; padding: .5rem .8rem; }
   .post-page h1 { font-size: 1.8rem; }
   .post-page h2 { font-size: 1.3rem; }
   .painting { max-height: 50vh; }
@@ -1379,4 +1411,208 @@ body:has(.museums-grid) .main-content {
   .timeline-year { font-size: 1.5rem; }
   .quiz-container { padding: .8rem; }
   .quiz-question { padding: 1rem; }
+  .card-body { padding: .6rem .7rem; }
+  .card-artist { font-size: .95rem; }
+  .card-title { font-size: .82rem; }
+  .card-medium, .card-museum { font-size: .72rem; }
+  .post-topbar-right { gap: .3rem; }
+  .post-nav a { width: 100%; justify-content: center; }
+  .source-list { padding-left: 1rem; }
+  .results-bar { padding: 0 .2rem; }
 }
+
+/* Очень узкие экраны (от 320px): две колонки уже не влезают. */
+@media (max-width: 359px) {
+  .grid { grid-template-columns: 1fr; }
+  .card-img { aspect-ratio: 4/3; }
+}
+
+/* Планшет в альбомной ориентации и низкие окна */
+@media (max-height: 480px) and (orientation: landscape) {
+  .painting { max-height: 70vh; }
+  .sidebar { padding-top: 3rem; }
+}
+
+/* ========== ДОСТУПНОСТЬ И ДОБАВЛЕННЫЕ КОМПОНЕНТЫ ========== */
+
+/* Видимый фокус с клавиатуры. Раньше во всём файле не было ни одного
+   правила :focus-visible — при навигации табом было не видно, где ты. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--active);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Уважение к системной настройке «меньше движения» */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .card { animation: none; }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 3000;
+  background: var(--card-bg);
+  color: var(--link);
+  padding: .6rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0 0 8px 0;
+}
+.skip-link:focus { left: 0; }
+
+/* Картинки и длинные строки не должны распирать страницу вширь */
+img, svg, video { max-width: 100%; height: auto; }
+pre, code { overflow-x: auto; max-width: 100%; }
+.card-museum, .sidebar a { overflow-wrap: anywhere; word-break: normal; }
+
+/* Скрытые фильтром карточки */
+.card[hidden] { display: none !important; }
+
+/* Панель результатов и пустое состояние поиска */
+.results-bar { min-height: 1.4rem; margin-bottom: .6rem; }
+.results-count { color: var(--muted); font-size: .9rem; }
+
+.no-results {
+  text-align: center;
+  color: var(--muted);
+  padding: 3rem 1rem;
+  font-size: 1.05rem;
+}
+
+.linklike {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--link);
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Кнопка сброса фильтров: показывается классом, а не inline-стилем */
+.filter-reset { display: none; width: 100%; cursor: pointer; font-family: inherit; }
+.filter-reset.visible { display: block; }
+
+.sidebar-search { padding: 8px 12px; }
+
+/* Заголовки-ссылки в сайдбаре (Квиз, Таймлайн, Карта) — теперь настоящие
+   <a>, поэтому им нужен свой размер, иначе их перебивает правило .sidebar a */
+.sidebar a.sidebar-title,
+.sidebar button.sidebar-title {
+  font-size: .95rem;
+  padding: .6rem .8rem;
+  color: var(--text);
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  text-decoration: none;
+}
+.sidebar a.sidebar-title:hover,
+.sidebar button.sidebar-title:hover { color: var(--text); }
+
+.fav-empty { color: var(--muted); font-size: .8rem; padding: .5rem; }
+.fav-empty .icon-heart { display: inline-block; width: 14px; height: 14px; vertical-align: middle; }
+
+/* Палитра цветов на странице картины */
+.palette-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  padding: 0;
+  transition: transform .2s ease, box-shadow .3s ease;
+}
+.palette-swatch:hover { transform: scale(1.2); }
+.palette-swatch.copied { box-shadow: 0 0 0 4px var(--active); }
+
+/* Всплывающее уведомление вместо alert() */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 2rem;
+  transform: translateX(-50%);
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px var(--shadow);
+  padding: .6rem 1.2rem;
+  border-radius: 20px;
+  z-index: 3000;
+  font-size: .9rem;
+  opacity: 1;
+  transition: opacity .35s ease;
+}
+.toast.hide { opacity: 0; }
+
+/* Шапки вспомогательных страниц */
+.tag-topbar, .quiz-topbar, .timeline-topbar, .map-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .5rem;
+}
+.theme-toggle-inline {
+  position: static;
+  top: auto;
+  right: auto;
+  z-index: auto;
+  flex-shrink: 0;
+}
+.tag-count { color: var(--muted); font-weight: 400; }
+.map-h1, .timeline-h1 { text-align: center; }
+.map-subtitle { text-align: center; color: var(--muted); }
+.museum-highlight { box-shadow: 0 0 0 3px var(--active); }
+.popup-link { color: var(--active); }
+.quiz-link { color: var(--active); margin-left: .2rem; }
+
+/* Ссылки-кнопки в модалке входа: были <a> без href — не нажимались с клавиатуры */
+.auth-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--link);
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.auth-reset-row { display: none; margin-top: .2rem; }
+
+/* Страница 404 */
+.error-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.error-box { text-align: center; max-width: 520px; }
+.error-code { font-size: 4rem; font-weight: 700; color: var(--muted); margin: 0; line-height: 1; }
+.error-text { color: var(--muted); }
+.error-links { font-size: .9rem; }
+.error-links a { color: var(--link); }

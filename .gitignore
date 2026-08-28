@@ -1,12 +1,14 @@
-# Пересоздаем .gitignore без index.html
-@"
 # Секреты и конфигурации
 .env
-my_session.session
-processed_ids.json
 *.key
 *.pem
 *.secret
+
+# Файлы сессии Telegram (защита)
+*.session
+*.session-journal
+my_session.session
+processed_ids.json
 
 # Системные файлы
 .idea/
@@ -16,6 +18,8 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
+.DS_Store
+Thumbs.db
 
 # Логи и временные файлы
 *.log
@@ -31,15 +35,10 @@ __pycache__/
 output/
 posts/
 
-# Файлы сессии Telegram (защита)
-*.session
-*.session-journal
-
 # Виртуальное окружение
 venv/
 env/
 ENV/
-.env/
 .venv/
 
 # Git
@@ -50,4 +49,3 @@ ENV/
 *.bak
 *.backup
 *~
-"@ | Out-File -FilePath .gitignore -Encoding utf8

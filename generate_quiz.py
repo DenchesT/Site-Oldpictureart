@@ -9,6 +9,8 @@ import os
 import random
 from html import escape as h
 
+from site_common import head_common, theme_button, COMMON_JS, BASE_URL
+
 META_FILE = "posts_meta.json"
 OUTPUT_DIR = "docs"
 
@@ -26,13 +28,15 @@ def generate_quiz_page():
         print("Недостаточно постов для квиза")
         return
     
+    head = head_common(
+        title="Квиз — Old Picture Art",
+        description="Угадайте художника по картине: небольшая игра по коллекции Old Picture Art.",
+        canonical=f"{BASE_URL}/quiz.html",
+    )
+
     html = f"""<!DOCTYPE html>
 <html lang="ru" data-theme="light"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
-<meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
-<title>Квиз — Old Picture Art</title>
-<link rel="stylesheet" href="style.css">
+{head}
 <style>
 * {{ box-sizing: border-box; }}
 
@@ -41,6 +45,7 @@ def generate_quiz_page():
   margin: 0 auto;
   padding: 0 1rem 0.5rem;
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }}
@@ -272,24 +277,29 @@ def generate_quiz_page():
     padding: 0.25rem 0.8rem;
   }}
 }}
+.quiz-topbar {{ display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding: .4rem 1rem; }}
 </style>
-</head><body>
-<a href="index.html" class="back" style="padding:0.4rem 1rem;display:inline-flex;align-items:center;gap:4px"><span class="icon-back"></span> На главную</a>
+</head><body class="quiz-page">
+<div class="quiz-topbar">
+  <a href="index.html" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
+  {theme_button('theme-toggle-inline')}
+</div>
 <div class="quiz-wrapper">
   <div class="quiz-container">
-    <h1>Квиз: Угадай художника</h1>
+    <h1>Квиз: угадай художника</h1>
     <p class="quiz-score">Счёт: <span id="score">0</span> / <span id="total">0</span></p>
-    <img id="quiz-image" class="quiz-painting" src="" alt="Картина" style="display:none">
+    <img id="quiz-image" class="quiz-painting" alt="" hidden src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
     <p id="quiz-title" class="quiz-title"></p>
     <div id="quiz-answers" class="quiz-answers"></div>
-    <p id="quiz-feedback" class="quiz-result"></p>
-    <button id="quiz-next" class="quiz-next" onclick="newQuestion()">Следующий вопрос</button>
+    <p id="quiz-feedback" class="quiz-result" role="status" aria-live="polite"></p>
+    <button type="button" id="quiz-next" class="quiz-next" onclick="newQuestion()">Следующий вопрос</button>
     <div class="quiz-buttons">
-      <button class="random-btn" onclick="startNewGame()">Новая игра</button>
-      <button class="quiz-reset-btn" onclick="resetQuiz()">Сбросить счёт</button>
+      <button type="button" class="random-btn" onclick="startNewGame()">Новая игра</button>
+      <button type="button" class="quiz-reset-btn" onclick="resetQuiz()">Сбросить счёт</button>
     </div>
   </div>
 </div>
+{COMMON_JS}
 <script>
 const ALL_POSTS = {json.dumps(valid_posts, ensure_ascii=False)};
 
@@ -311,80 +321,96 @@ function shuffle(arr) {{
 }}
 
 function newQuestion() {{
-    document.getElementById('quiz-feedback').textContent = '';
+    const feedback = document.getElementById('quiz-feedback');
+    feedback.textContent = '';
     document.getElementById('quiz-next').style.display = 'none';
-    document.querySelectorAll('.quiz-btn').forEach(b => b.disabled = false);
-    
+
     const available = ALL_POSTS.filter(p => p.artist && p.images && p.images.length > 0);
-    if (available.length < 4) {{
-        document.getElementById('quiz-feedback').textContent = 'Недостаточно картин для игры';
+    const uniqueArtists = new Set(available.map(p => p.artist));
+    if (available.length < 4 || uniqueArtists.size < 2) {{
+        feedback.textContent = 'Недостаточно картин для игры';
         return;
     }}
-    
+
     currentPost = available[Math.floor(Math.random() * available.length)];
-    const artists = new Set([currentPost.artist]);
-    
-    while (artists.size < 4) {{
-        const r = available[Math.floor(Math.random() * available.length)];
-        artists.add(r.artist);
-    }}
-    
-    const shuffledArtists = shuffle([...artists]);
-    
-    document.getElementById('quiz-image').src = currentPost.images[0];
-    document.getElementById('quiz-image').style.display = 'block';
+
+    // Варианты ответа. Раньше цикл крутился, пока не наберётся 4 разных
+    // художника — при малом числе авторов это был вечный цикл и зависание.
+    const others = shuffle([...uniqueArtists].filter(a => a !== currentPost.artist));
+    const options = shuffle([currentPost.artist].concat(others.slice(0, 3)));
+
+    const img = document.getElementById('quiz-image');
+    img.src = currentPost.images[0];
+    img.alt = 'Картина: ' + (currentPost.title || 'без названия');
+    img.hidden = false;
     document.getElementById('quiz-title').textContent = currentPost.title || '';
-    
+
+    // Кнопки строим через DOM, а не склейкой HTML: имя художника с кавычкой
+    // или угловой скобкой раньше ломало разметку и обработчик клика.
     const answersDiv = document.getElementById('quiz-answers');
-    answersDiv.innerHTML = shuffledArtists.map(artist => 
-        '<button class="quiz-btn" onclick="checkAnswer(this, \\'' + artist.replace(/'/g, "\\'") + '\\')">' + artist + '</button>'
-    ).join('');
+    answersDiv.textContent = '';
+    options.forEach(artist => {{
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'quiz-btn';
+        b.textContent = artist;
+        b.addEventListener('click', function() {{ checkAnswer(b, artist); }});
+        answersDiv.appendChild(b);
+    }});
 }}
 
 function checkAnswer(btn, answer) {{
+    if (btn.disabled) return;
     total++;
     document.getElementById('total').textContent = total;
-    
+
     const correct = answer === currentPost.artist;
     const allBtns = document.querySelectorAll('.quiz-btn');
     allBtns.forEach(b => b.disabled = true);
-    
+
+    const feedback = document.getElementById('quiz-feedback');
+    feedback.textContent = '';
     if (correct) {{
         score++;
         document.getElementById('score').textContent = score;
         btn.classList.add('correct');
-        document.getElementById('quiz-feedback').innerHTML = '✓ Правильно! <a href="' + currentPost.filename + '" style="color:var(--active)">Посмотреть картину</a>';
+        feedback.appendChild(document.createTextNode('✓ Правильно! '));
     }} else {{
         btn.classList.add('wrong');
         allBtns.forEach(b => {{ if (b.textContent === currentPost.artist) b.classList.add('correct'); }});
-        document.getElementById('quiz-feedback').innerHTML = '✗ Неправильно. Правильный ответ: ' + currentPost.artist + ' <a href="' + currentPost.filename + '" style="color:var(--active)">Посмотреть картину</a>';
+        feedback.appendChild(document.createTextNode('✗ Неправильно. Правильный ответ: ' + currentPost.artist + '. '));
     }}
-    
-    localStorage.setItem('quizProgress', JSON.stringify({{score: score, total: total}}));
+    const link = document.createElement('a');
+    link.href = currentPost.filename;
+    link.className = 'quiz-link';
+    link.textContent = 'Посмотреть картину';
+    feedback.appendChild(link);
+
+    try {{ localStorage.setItem('quizProgress', JSON.stringify({{score: score, total: total}})); }} catch (e) {{}}
     document.getElementById('quiz-next').style.display = 'inline-block';
+    document.getElementById('quiz-next').focus();
+}}
+
+function resetScore() {{
+    score = 0;
+    total = 0;
+    document.getElementById('score').textContent = '0';
+    document.getElementById('total').textContent = '0';
+    document.getElementById('quiz-feedback').textContent = '';
+    try {{ localStorage.removeItem('quizProgress'); }} catch (e) {{}}
 }}
 
 function startNewGame() {{
-    score = 0;
-    total = 0;
-    document.getElementById('score').textContent = '0';
-    document.getElementById('total').textContent = '0';
-    document.getElementById('quiz-feedback').textContent = '';
-    localStorage.removeItem('quizProgress');
+    resetScore();
     newQuestion();
 }}
 
+// «Сбросить счёт» обнуляет счёт, но оставляет игру идти.
+// Раньше кнопка стирала картинку и варианты и оставляла пустой экран,
+// с которого можно было выйти только через «Новую игру».
 function resetQuiz() {{
-    score = 0;
-    total = 0;
-    document.getElementById('score').textContent = '0';
-    document.getElementById('total').textContent = '0';
-    document.getElementById('quiz-feedback').textContent = '';
-    localStorage.removeItem('quizProgress');
-    document.getElementById('quiz-next').style.display = 'none';
-    document.getElementById('quiz-image').style.display = 'none';
-    document.getElementById('quiz-title').textContent = '';
-    document.getElementById('quiz-answers').innerHTML = '';
+    resetScore();
+    newQuestion();
 }}
 
 newQuestion();
