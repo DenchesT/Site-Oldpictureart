@@ -50,7 +50,7 @@
     <section class="history"><h3>Происхождение</h3><ul><li>1) Коллекция Mme Marin, дочери художника</li><li>2) До 1934 года в коллекции M. Marin, внука художника</li><li>3) 1934 г., приобретена musée du Louvre у внука художника (совет от 06.02.1934, постановление от 07.03.1934)</li><li>4) 1934 г., передана musée du Louvre</li><li>5) С 1934 по 1947 гг., musée du Louvre, Париж</li><li>6) С 1947 по 1986 гг., musée du Louvre, galerie du Jeu de Paume, Париж</li><li>7) 1986 г., передана в musée d&#x27;Orsay, Париж</li></ul></section>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Год</span><b>1874</b></div><div><span>Основа</span><b>Холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>46 x 65 см</b></div><div><span>Собрание</span><b>Музей д’Орсе, Париж</b></div></div>
+    <div class="spec-table"><div><span>Год</span><b>1874</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>46 x 65 см</b></div><div><span>Собрание</span><b><a href="museums.html#museum-музей-дорсе-париж">Музей д’Орсе, Париж</a></b></div></div>
     <div class="aside-block"><h3>Источник</h3><ul class="source-list"><li><a href="https://www.musee-orsay.fr/en/artworks/la-terrasse-au-bord-de-la-seine-melun-21625" target="_blank" rel="noopener">https://www.musee-orsay.fr/en/artworks/la-terrasse-au-bord-de-la-seine-melun-21625</a></li></ul></div>
     <div class="aside-block"><h3>Теги</h3><div class="tags"><a href="tag-dorsay.html" class="tag">#dorsay</a> <a href="tag-rouart.html" class="tag">#rouart</a> <a href="tag-картина.html" class="tag">#картина</a></div></div>
     <div class="aside-block">
@@ -82,10 +82,18 @@ function toggleTheme(){
   var btn=document.querySelector('.scroll-top');
   if(!btn) return;
   var ticking=false;
-  function upd(){ btn.classList.toggle('visible', window.scrollY>400); ticking=false; }
+  function upd(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var y = window.scrollY;
+    btn.classList.toggle('visible', y > 400);
+    // Кольцо вокруг стрелки показывает долю пройденной страницы
+    btn.style.setProperty('--progress', max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0);
+    ticking=false;
+  }
   window.addEventListener('scroll', function(){
     if(!ticking){ ticking=true; window.requestAnimationFrame(upd); }
   }, {passive:true});
+  window.addEventListener('resize', upd, {passive:true});
   upd();
 })();
 </script>

@@ -50,7 +50,7 @@
     <section class="history"><h3>Происхождение</h3><ul><li>1) Вероятно, Anna Cornelia van Gogh-Carbentus, мать художника, Нюэнен/Бреда, ноябрь 1885 г./ апрель 1886 г.</li><li>2) A. Schrauwen, Бреда, 1886 г.</li><li>3) J.C. и J.M. Couvreurр, Бреда</li><li>4) Willem van Bakel и Kees Mouwen, Бреда, 1902 г.</li><li>5) Отправлена в 1904 г. в Kunsthandel Oldenzeel, Роттердам</li><li>6) Приобретена в 1905 г. Jan Smit, Киндердейк, Амблассердам, Нидерланды</li><li>7) Продажа A. Mak, Амстердам, 10 февраля 1919 г.</li><li>8) John Enthoven (W. Brinkman, Шиплайден, Нидерланды) в 1954 г.</li><li>9) Frank Perls Gallery, Уэстбери, Лонг-Айленд</li><li>10) В 1954 г. на совместном счёте с (M. Knoedler &amp; Co., Нью-Йорк)</li><li>11) Продана в январе 1955 г. Mr. Paul Mellon, Аппервилл, Вирджиния</li><li>12) Подарена в 1983 г. NGA</li></ul></section>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Год</span><b>1883</b></div><div><span>Основа</span><b>Холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>48,9 x 66 см</b></div><div><span>Собрание</span><b>Национальная галерея искусства, Вашингтон</b></div></div>
+    <div class="spec-table"><div><span>Год</span><b>1883</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>48,9 x 66 см</b></div><div><span>Собрание</span><b><a href="museums.html#museum-национальная-галерея-искусства-вашингтон">Национальная галерея искусства, Вашингтон</a></b></div></div>
     <div class="aside-block"><h3>Источник</h3><ul class="source-list"><li><a href="https://www.nga.gov/artworks/61371-flower-beds-holland" target="_blank" rel="noopener">https://www.nga.gov/artworks/61371-flower-beds-holland</a></li></ul></div>
     <div class="aside-block"><h3>Теги</h3><div class="tags"><a href="tag-gogh.html" class="tag">#gogh</a> <a href="tag-nga.html" class="tag">#nga</a> <a href="tag-картина.html" class="tag">#картина</a></div></div>
     <div class="aside-block">
@@ -82,10 +82,18 @@ function toggleTheme(){
   var btn=document.querySelector('.scroll-top');
   if(!btn) return;
   var ticking=false;
-  function upd(){ btn.classList.toggle('visible', window.scrollY>400); ticking=false; }
+  function upd(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var y = window.scrollY;
+    btn.classList.toggle('visible', y > 400);
+    // Кольцо вокруг стрелки показывает долю пройденной страницы
+    btn.style.setProperty('--progress', max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0);
+    ticking=false;
+  }
   window.addEventListener('scroll', function(){
     if(!ticking){ ticking=true; window.requestAnimationFrame(upd); }
   }, {passive:true});
+  window.addEventListener('resize', upd, {passive:true});
   upd();
 })();
 </script>

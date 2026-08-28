@@ -31,7 +31,7 @@
 </div>
 <button type="button" class="scroll-top" onclick="scrollToTop()" aria-label="Наверх" title="Наверх"><span class="icon-arrow-up" aria-hidden="true"></span></button>
 <h1>#toulouse_lautrec <span class="tag-count">(1)</span></h1>
-<div class="grid list"><a class="card" href="2025-09-17-анри-мари-раймон-де-тулуз-лотрек-монфа.html"><span class="card-no">046</span><div class="card-img"><img src="images/thumbs/2025-09-17-анри-мари-раймон-де-тулуз-лотрек-монфа.jpg" alt="Анри Мари Раймон де Тулуз-Лотрек-Монфа — Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888" loading="lazy" decoding="async"></div><div class="card-body"><div class="card-artist">Анри Мари Раймон де Тулуз-Лотрек-Монфа</div><div class="card-title">Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888</div><div class="card-museum">Частная коллекция, Монте-Карло</div></div><div class="card-facts"><div><span>Год</span><b>1888</b></div><div><span>Основа</span><b>Холст</b></div><div><span>Размер</span><b>80 x 51 см</b></div></div></a></div>
+<div class="grid list"><article class="card"><span class="card-no">046</span><div class="card-img"><img src="images/thumbs/2025-09-17-анри-мари-раймон-де-тулуз-лотрек-монфа.jpg" alt="Анри Мари Раймон де Тулуз-Лотрек-Монфа — Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888" loading="lazy" decoding="async"></div><div class="card-body"><div class="card-artist"><a class="card-link" href="2025-09-17-анри-мари-раймон-де-тулуз-лотрек-монфа.html">Анри Мари Раймон де Тулуз-Лотрек-Монфа</a></div><div class="card-title">Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888</div><div class="card-museum"><a href="museums.html#museum-частная-коллекция-монте-карло" title="Показать музей на карте">Частная коллекция, Монте-Карло</a></div></div><div class="card-facts"><div><span>Год</span><b>1888</b></div><div><span>Материал</span><b>холст</b></div><div><span>Размер</span><b>80 x 51 см</b></div></div></article></div>
 <script>
 function scrollToTop(){
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -54,10 +54,18 @@ function toggleTheme(){
   var btn=document.querySelector('.scroll-top');
   if(!btn) return;
   var ticking=false;
-  function upd(){ btn.classList.toggle('visible', window.scrollY>400); ticking=false; }
+  function upd(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var y = window.scrollY;
+    btn.classList.toggle('visible', y > 400);
+    // Кольцо вокруг стрелки показывает долю пройденной страницы
+    btn.style.setProperty('--progress', max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0);
+    ticking=false;
+  }
   window.addEventListener('scroll', function(){
     if(!ticking){ ticking=true; window.requestAnimationFrame(upd); }
   }, {passive:true});
+  window.addEventListener('resize', upd, {passive:true});
   upd();
 })();
 </script>

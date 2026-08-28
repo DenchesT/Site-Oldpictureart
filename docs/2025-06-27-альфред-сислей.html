@@ -50,7 +50,7 @@
     <section class="history"><h3>Происхождение</h3><ul><li>1) Возможно, в коллекции François Depeaux, Руан</li><li>2) До 1972 г. в коллекции доктора Eduardo Mollard, Париж</li><li>3) В 1972 г. принята государством в качестве наследства от Enriqueta Alsop от имени доктора Eduardo Mollard в Национальные музеи для музея Жё-де-Пом</li><li>4) В 1972 г. передана в Лувр, Париж</li><li>5) С 1972 по 1986 гг. Лувр, Галерея Жё-де-Пом, Париж</li><li>6) В 1986 г. передана в Музей д’Орсе, Париж</li></ul></section>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Год</span><b>1893</b></div><div><span>Основа</span><b>Холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>73,5 x 92 см</b></div><div><span>Собрание</span><b>Музей д’Орсе, Париж</b></div></div>
+    <div class="spec-table"><div><span>Год</span><b>1893</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>73,5 x 92 см</b></div><div><span>Собрание</span><b><a href="museums.html#museum-музей-дорсе-париж">Музей д’Орсе, Париж</a></b></div></div>
     <div class="aside-block"><h3>Источник</h3><ul class="source-list"><li><a href="https://www.musee-orsay.fr/en/artworks/le-pont-de-moret-597" target="_blank" rel="noopener">https://www.musee-orsay.fr/en/artworks/le-pont-de-moret-597</a></li></ul></div>
     <div class="aside-block"><h3>Теги</h3><div class="tags"><a href="tag-dorsay.html" class="tag">#dorsay</a> <a href="tag-sisley.html" class="tag">#sisley</a> <a href="tag-картина.html" class="tag">#картина</a></div></div>
     <div class="aside-block">
@@ -82,10 +82,18 @@ function toggleTheme(){
   var btn=document.querySelector('.scroll-top');
   if(!btn) return;
   var ticking=false;
-  function upd(){ btn.classList.toggle('visible', window.scrollY>400); ticking=false; }
+  function upd(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var y = window.scrollY;
+    btn.classList.toggle('visible', y > 400);
+    // Кольцо вокруг стрелки показывает долю пройденной страницы
+    btn.style.setProperty('--progress', max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0);
+    ticking=false;
+  }
   window.addEventListener('scroll', function(){
     if(!ticking){ ticking=true; window.requestAnimationFrame(upd); }
   }, {passive:true});
+  window.addEventListener('resize', upd, {passive:true});
   upd();
 })();
 </script>

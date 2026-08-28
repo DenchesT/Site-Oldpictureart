@@ -50,7 +50,7 @@
     <section class="history"><h3>Происхождение</h3><ul><li>1) Приобретено у Маргариды Лемуш Гомеш, 2003 г.</li></ul></section>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Год</span><b>1849</b></div><div><span>Основа</span><b>Холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>64 x 76,5 см</b></div><div><span>Собрание</span><b>Государственная Третьяковская галерея, Москва</b></div></div>
+    <div class="spec-table"><div><span>Год</span><b>1849</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>64 x 76,5 см</b></div><div><span>Собрание</span><b><a href="museums.html#museum-государственная-третьяковская-галерея-москва">Государственная Третьяковская галерея, Москва</a></b></div></div>
     <div class="aside-block"><h3>Источник</h3><ul class="source-list"><li><a href="https://my.tretyakov.ru/app/masterpiece/45701" target="_blank" rel="noopener">https://my.tretyakov.ru/app/masterpiece/45701</a></li></ul></div>
     <div class="aside-block"><h3>Теги</h3><div class="tags"><a href="tag-брюллов.html" class="tag">#брюллов</a> <a href="tag-гтг.html" class="tag">#гтг</a> <a href="tag-картина.html" class="tag">#картина</a></div></div>
     <div class="aside-block">
@@ -82,10 +82,18 @@ function toggleTheme(){
   var btn=document.querySelector('.scroll-top');
   if(!btn) return;
   var ticking=false;
-  function upd(){ btn.classList.toggle('visible', window.scrollY>400); ticking=false; }
+  function upd(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var y = window.scrollY;
+    btn.classList.toggle('visible', y > 400);
+    // Кольцо вокруг стрелки показывает долю пройденной страницы
+    btn.style.setProperty('--progress', max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0);
+    ticking=false;
+  }
   window.addEventListener('scroll', function(){
     if(!ticking){ ticking=true; window.requestAnimationFrame(upd); }
   }, {passive:true});
+  window.addEventListener('resize', upd, {passive:true});
   upd();
 })();
 </script>

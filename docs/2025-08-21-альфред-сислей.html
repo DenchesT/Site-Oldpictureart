@@ -50,7 +50,7 @@
     <section class="history"><h3>Происхождение</h3><ul><li>1) Maurice Leclanché, Париж</li><li>2) Аукцион, организованный Maurice Leclanché, отель Друо, Париж, 6 ноября 1924 г.</li><li>3) Allard Coll, Париж (приобретена на вышеуказанном аукционе)</li><li>4)  Lord Clark, Лондон</li><li>5) Wildenstein &amp; Co.</li><li>6) Mrs. A. L. Leopold Williams, Лондон</li><li>7) David Carrit Ltd., Лондон</li><li>8) Приобретено НМЗИ в 1982 г.</li></ul></section>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Год</span><b>1873</b></div><div><span>Основа</span><b>Холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>54 x 73 см</b></div><div><span>Собрание</span><b>Национальный музей западного искусства, Токио</b></div></div>
+    <div class="spec-table"><div><span>Год</span><b>1873</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>54 x 73 см</b></div><div><span>Собрание</span><b><a href="museums.html#museum-национальный-музей-западного-искусства-токио">Национальный музей западного искусства, Токио</a></b></div></div>
     <div class="aside-block"><h3>Источник</h3><ul class="source-list"><li><a href="https://collection.nmwa.go.jp/en/P.1981-0004.html" target="_blank" rel="noopener">https://collection.nmwa.go.jp/en/P.1981-0004.html</a></li></ul></div>
     <div class="aside-block"><h3>Теги</h3><div class="tags"><a href="tag-nmwa.html" class="tag">#nmwa</a> <a href="tag-sisley.html" class="tag">#sisley</a> <a href="tag-картина.html" class="tag">#картина</a></div></div>
     <div class="aside-block">
@@ -82,10 +82,18 @@ function toggleTheme(){
   var btn=document.querySelector('.scroll-top');
   if(!btn) return;
   var ticking=false;
-  function upd(){ btn.classList.toggle('visible', window.scrollY>400); ticking=false; }
+  function upd(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var y = window.scrollY;
+    btn.classList.toggle('visible', y > 400);
+    // Кольцо вокруг стрелки показывает долю пройденной страницы
+    btn.style.setProperty('--progress', max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0);
+    ticking=false;
+  }
   window.addEventListener('scroll', function(){
     if(!ticking){ ticking=true; window.requestAnimationFrame(upd); }
   }, {passive:true});
+  window.addEventListener('resize', upd, {passive:true});
   upd();
 })();
 </script>

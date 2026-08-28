@@ -275,6 +275,12 @@ def parse_post(text):
         logger.error(f"Ошибка парсинга: {e}")
         return {}
 
+def lower_first(text):
+    """«Холст» → «холст». Опускаем только первую букву: внутри значения
+    может стоять имя собственное, которое трогать нельзя."""
+    return (text[:1].lower() + text[1:]) if text else text
+
+
 def slugify(text):
     t = text.lower()
     t = re.sub(r"[^\w\s-]","",t,flags=re.UNICODE)
@@ -422,14 +428,17 @@ def render_post_page(post, all_posts=None):
     # это главный справочный блок, а не строчка под заголовком.
     spec_rows = [
         ("Год", str(post.get("creation_year")) if post.get("creation_year") else ""),
-        ("Основа", post.get("material", "")),
+        ("Материал", lower_first(post.get("material", ""))),
         ("Техника", ", ".join(post.get("techniques", []))),
         ("Размер", post.get("size", "")),
-        ("Собрание", post.get("museum", "")),
     ]
-    spec_html = ('<div class="spec-table">' +
-                 "".join(f'<div><span>{h(k)}</span><b>{h(v)}</b></div>' for k, v in spec_rows if v) +
-                 '</div>')
+    spec_html = '<div class="spec-table">' + "".join(
+        f'<div><span>{h(k)}</span><b>{h(v)}</b></div>' for k, v in spec_rows if v)
+    if post.get("museum"):
+        # Собрание — ссылка на карту музеев с якорем на нужную карточку
+        spec_html += (f'<div><span>Собрание</span><b><a href="museums.html#museum-'
+                      f'{h(slugify(post["museum"]))}">{h(post["museum"])}</a></b></div>')
+    spec_html += '</div>'
 
     tags_html = ""
     if post["tags"]:
@@ -879,20 +888,22 @@ def render_tag_page(tag, posts, cat_no=None, cat_width=3):
         title_name = h(p["title"])
         # Экранированные кавычки внутри f-строки требуют Python 3.12+,
         # на 3.11 это была синтаксическая ошибка. Собираем строку заранее.
-        museum_html = f'<div class="card-museum">{museum_name}</div>' if museum_name else ''
+        museum_html = (f'<div class="card-museum"><a href="museums.html#museum-{h(slugify(p.get("museum","")))}"'
+                       f' title="Показать музей на карте">{museum_name}</a></div>') if museum_name else ''
         no = cat_no.get(p.get("filename"))
         no_html = f'<span class="card-no">{no:0{cat_width}d}</span>' if no else '<span class="card-no"></span>'
         facts = [("Год", str(p.get("creation_year")) if p.get("creation_year") else ""),
-                 ("Основа", p.get("material", "")),
+                 ("Материал", lower_first(p.get("material", ""))),
                  ("Техника", ", ".join(p.get("techniques", []))),
                  ("Размер", p.get("size", ""))]
         facts_html = "".join(f'<div><span>{h(k)}</span><b>{h(v)}</b></div>' for k, v in facts if v)
         cards.append(
-            f'<a class="card" href="{h(p["filename"])}">{no_html}'
+            f'<article class="card">{no_html}'
             f'<div class="card-img"><img src="{cv}" alt="{artist_name} — {title_name}" loading="lazy" decoding="async"></div>'
-            f'<div class="card-body"><div class="card-artist">{artist_name}</div>'
+            f'<div class="card-body">'
+            f'<div class="card-artist"><a class="card-link" href="{h(p["filename"])}">{artist_name}</a></div>'
             f'<div class="card-title">{title_name}</div>{museum_html}</div>'
-            f'<div class="card-facts">{facts_html}</div></a>'
+            f'<div class="card-facts">{facts_html}</div></article>'
         )
     head = head_common(
         title=f"#{h(tag)} — Old Picture Art",
@@ -989,23 +1000,30 @@ def render_index(all_posts):
         # Сведения о работе: в описи это столбец таблицы, в плитках —
         # строчка через точку. Разметка одна, раскладку задаёт CSS.
         facts = [("Год", str(creation_year) if creation_year else ""),
-                 ("Основа", p.get('material', '')),
+                 ("Материал", lower_first(p.get('material', ''))),
                  ("Техника", ", ".join(p.get('techniques', []))),
                  ("Размер", p.get('size', ''))]
         facts_html = "".join(
             f'<div><span>{h(k)}</span><b>{h(v)}</b></div>' for k, v in facts if v)
 
-        cards.append(f"""<a class="card" href="{h(p['filename'])}" data-artist="{h(p['artist'].lower())}" data-year="{y}" data-month="{m}" data-museum="{h(slugify(p.get('museum','')))}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}" data-search="{h(search_blob)}" data-no="{cat_no[id(p)]}" {decade_attr}>
+        # Карточка — <article>, а не <a>: внутри должна быть вторая ссылка,
+        # на музей, а ссылку в ссылку вкладывать нельзя. Вся карточка всё
+        # равно кликабельна — за счёт растянутой на неё .card-link.
+        museum_slug = slugify(p.get('museum', ''))
+        museum_html = (f'<div class="card-museum"><a href="museums.html#museum-{h(museum_slug)}"'
+                       f' title="Показать музей на карте">{museum_name}</a></div>') if museum_name else ''
+
+        cards.append(f"""<article class="card" data-artist="{h(p['artist'].lower())}" data-title="{h(p['title'].lower())}" data-year="{y}" data-month="{m}" data-cyear="{creation_year or ''}" data-museum="{h(museum_slug)}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}" data-search="{h(search_blob)}" data-no="{cat_no[id(p)]}" {decade_attr}>
     <span class="card-no">{cat_no[id(p)]:0{cat_width}d}</span>
     <div class="card-img"><img src="{cv}" alt="{artist_name} — {title_name}" loading="lazy" decoding="async"></div>
     <div class="card-body">
-        <div class="card-artist">{artist_name}</div>
+        <div class="card-artist"><a class="card-link" href="{h(p['filename'])}">{artist_name}</a></div>
         <div class="card-title">{title_name}</div>
-        {f'<div class="card-museum">{museum_name}</div>' if museum_name else ''}
+        {museum_html}
         <div class="card-date">{pub_date}</div>
     </div>
     <div class="card-facts">{facts_html}</div>
-    </a>""")
+    </article>""")
     
     artist_count = defaultdict(int)
     museum_count = defaultdict(int)
@@ -1022,7 +1040,37 @@ def render_index(all_posts):
     mh = "".join(f'<li><a href="#" class="filter-link" data-type="museum" data-val="{h(slugify(m))}">{h(m)} <span class="count">({museum_count[m]})</span></a></li>' for m in museums if m)
     mth = "".join(f'<li><a href="#" class="filter-link" data-type="material" data-val="{h(slugify(m))}">{h(m)} <span class="count">({material_count[m]})</span></a></li>' for m in materials)
     th = "".join(f'<li><a href="#" class="filter-link" data-type="technique" data-val="{h(slugify(t))}">{h(t)} <span class="count">({technique_count[t]})</span></a></li>' for t in techniques)
-    dech = "".join(f'<li><a href="#" class="filter-link" data-type="decade" data-val="{h(d)}">{h(d)} <span class="count">({decades.get(d,0)})</span></a></li>' for d in decades_sorted)
+    # Годы: столбики по десятилетиям вместо простого списка. Высота — сколько
+    # работ, клик по столбику выбирает десятилетие, а поля «от / до» задают
+    # точный диапазон. Один ряд данных, поэтому легенда не нужна: подпись
+    # под гистограммой словами говорит, что именно сейчас выбрано.
+    hist_max = max(decades.values()) if decades else 1
+    bars = []
+    for d in decades_sorted:
+        start = int(d.split("–")[0])
+        n = decades.get(d, 0)
+        pct = max(6, round(n / hist_max * 100))
+        bars.append(
+            f'<button type="button" class="hbar" data-decade="{start}" style="--h:{pct}%" '
+            f'title="{h(d)} — {n} {plural_ru(n, "работа", "работы", "работ")}" '
+            f'aria-label="{h(d)}, {n} {plural_ru(n, "работа", "работы", "работ")}">'
+            f'<span class="hbar-fill"></span></button>'
+        )
+    decade_starts = [int(d.split("–")[0]) for d in decades_sorted]
+    opts_from = "".join(f'<option value="{v}">{v}</option>' for v in decade_starts)
+    opts_to = "".join(f'<option value="{v + 9}">{v + 9}</option>' for v in decade_starts)
+    dech = f'''<div class="year-filter">
+      <div class="histogram" id="year-hist">{''.join(bars)}</div>
+      <div class="hist-axis"><span>{decade_starts[0] if decade_starts else ''}</span><span>{(decade_starts[-1] + 9) if decade_starts else ''}</span></div>
+      <div class="year-range">
+        <label class="visually-hidden" for="year-from">Год от</label>
+        <select id="year-from" class="year-select"><option value="">любой</option>{opts_from}</select>
+        <span class="year-dash">—</span>
+        <label class="visually-hidden" for="year-to">Год до</label>
+        <select id="year-to" class="year-select"><option value="">любой</option>{opts_to}</select>
+      </div>
+      <p class="year-caption" id="year-caption" role="status" aria-live="polite"></p>
+    </div>'''
     
     arh = ""
     for y, ms_list in ars.items():
@@ -1083,7 +1131,7 @@ def render_index(all_posts):
 </div>
 <button type="button" id="reset-filter" class="filter-reset">Сбросить все фильтры</button>
 {section('icon-archive', 'Архив', arh)}
-{section('icon-decades', 'Декады', dech)}
+<div class="sidebar-section"><button type="button" class="sidebar-title sidebar-icon icon-decades" aria-expanded="false" onclick="toggleSection(this)">Годы</button><div class="sidebar-content collapsed">{dech}</div></div>
 {section('icon-artists', 'Художники', ah)}
 {section('icon-museums', 'Музеи', mh)}
 {section('icon-material', 'Материал', mth)}
@@ -1096,9 +1144,19 @@ def render_index(all_posts):
 </aside><main class="main-content">
 <div class="results-bar">
   <span id="results-count" class="results-count" role="status" aria-live="polite"></span>
+  <div class="bar-controls">
+  <label class="visually-hidden" for="sort">Порядок записей</label>
+  <select id="sort" class="sort-select">
+    <option value="new">Сначала новые</option>
+    <option value="cyear">По году создания</option>
+    <option value="cyear-desc">По году создания, новые сверху</option>
+    <option value="artist">По художнику</option>
+    <option value="title">По названию</option>
+  </select>
   <div class="view-switch" role="group" aria-label="Вид списка">
     <button type="button" id="view-list" aria-pressed="true" onclick="setView('list')">Опись</button>
     <button type="button" id="view-grid" aria-pressed="false" onclick="setView('grid')">Плитки</button>
+  </div>
   </div>
 </div>
 <div class="grid list" id="cards">{''.join(cards)}</div>
@@ -1193,18 +1251,76 @@ function toggleMenu(force) {{
 
 function isMobile() {{ return window.matchMedia('(max-width: 900px)').matches; }}
 
-let activeFilters = {{ search: '', type: null, val: null, year: null }};
+let activeFilters = {{ search: '', type: null, val: null, year: null, from: null, to: null }};
 
 function resetAllFilters() {{
-    activeFilters = {{ search: '', type: null, val: null, year: null }};
+    activeFilters = {{ search: '', type: null, val: null, year: null, from: null, to: null }};
     const searchBox = document.getElementById('search');
     if (searchBox) searchBox.value = '';
     document.querySelectorAll('.filter-link.active').forEach(l => {{
         l.classList.remove('active');
         l.removeAttribute('aria-current');
     }});
+    const f = document.getElementById('year-from'), t = document.getElementById('year-to');
+    if (f) f.value = ''; if (t) t.value = '';
+    syncHistogram();
     applyFilters();
 }}
+
+// Подсветка столбиков и подпись под гистограммой. Выбор показан не только
+// цветом: под столбиками стоит строка словами.
+function syncHistogram() {{
+    const from = activeFilters.from, to = activeFilters.to;
+    document.querySelectorAll('.hbar').forEach(b => {{
+        const d = +b.dataset.decade;
+        const on = (from === null && to === null) ||
+                   ((from === null || d + 9 >= from) && (to === null || d <= to));
+        b.classList.toggle('dim', !(from === null && to === null) && !on);
+        b.setAttribute('aria-pressed', (from !== null || to !== null) && on ? 'true' : 'false');
+    }});
+    const cap = document.getElementById('year-caption');
+    if (!cap) return;
+    if (from === null && to === null) cap.textContent = 'Все годы';
+    else if (from !== null && to !== null) cap.textContent = from + '—' + to;
+    else if (from !== null) cap.textContent = 'с ' + from;
+    else cap.textContent = 'по ' + to;
+}}
+
+function setYearRange(from, to) {{
+    activeFilters.from = from;
+    activeFilters.to = to;
+    const f = document.getElementById('year-from'), t = document.getElementById('year-to');
+    if (f) f.value = from === null ? '' : String(from);
+    if (t) t.value = to === null ? '' : String(to);
+    syncHistogram();
+    applyFilters();
+}}
+
+// Порядок записей. Каталожные номера при этом не пересчитываются:
+// номер закреплён за работой и показывает её место в хронологии собрания.
+function sortCards(mode) {{
+    const grid = document.getElementById('cards');
+    if (!grid) return;
+    const cards = Array.prototype.slice.call(grid.querySelectorAll('.card'));
+    const byText = (a, b, key) => (a.dataset[key] || '').localeCompare(b.dataset[key] || '', 'ru');
+    const year = el => parseInt(el.dataset.cyear, 10) || 0;
+    cards.sort((a, b) => {{
+        if (mode === 'cyear') return year(a) - year(b) || byText(a, b, 'artist');
+        if (mode === 'cyear-desc') return year(b) - year(a) || byText(a, b, 'artist');
+        if (mode === 'artist') return byText(a, b, 'artist') || year(a) - year(b);
+        if (mode === 'title') return byText(a, b, 'title');
+        return (+b.dataset.no) - (+a.dataset.no) === 0 ? 0 : 0;  // «сначала новые» — исходный порядок
+    }});
+    if (mode === 'new') {{
+        cards.sort((a, b) => ORDER.indexOf(a) - ORDER.indexOf(b));
+    }}
+    const frag = document.createDocumentFragment();
+    cards.forEach(c => frag.appendChild(c));
+    grid.appendChild(frag);
+    try {{ localStorage.setItem('cardSort', mode); }} catch (e) {{}}
+}}
+
+let ORDER = [];
 
 function applyFilters() {{
     const cards = document.querySelectorAll('.card');
@@ -1214,6 +1330,12 @@ function applyFilters() {{
         if (activeFilters.search) {{
             const blob = card.dataset.search || card.textContent.toLowerCase();
             if (blob.indexOf(activeFilters.search) === -1) show = false;
+        }}
+        if (show && (activeFilters.from !== null || activeFilters.to !== null)) {{
+            const cy = parseInt(card.dataset.cyear, 10);
+            if (!cy) show = false;
+            else if (activeFilters.from !== null && cy < activeFilters.from) show = false;
+            else if (activeFilters.to !== null && cy > activeFilters.to) show = false;
         }}
         if (show && activeFilters.type) {{
             const t = activeFilters.type, v = activeFilters.val;
@@ -1229,7 +1351,8 @@ function applyFilters() {{
         if (show) visible++;
     }});
 
-    const hasActive = !!(activeFilters.search || activeFilters.type);
+    const hasActive = !!(activeFilters.search || activeFilters.type ||
+                         activeFilters.from !== null || activeFilters.to !== null);
     const resetBtn = document.getElementById('reset-filter');
     if (resetBtn) resetBtn.classList.toggle('visible', hasActive);
 
@@ -1249,6 +1372,41 @@ function plural(n, one, few, many) {{
 
 document.addEventListener('DOMContentLoaded', function() {{
     updateFavList();
+
+    // Исходный порядок запоминаем один раз — к нему возвращает «сначала новые»
+    ORDER = Array.prototype.slice.call(document.querySelectorAll('#cards .card'));
+
+    const sortSel = document.getElementById('sort');
+    if (sortSel) {{
+        let savedSort = null;
+        try {{ savedSort = localStorage.getItem('cardSort'); }} catch (e) {{}}
+        if (savedSort && [...sortSel.options].some(o => o.value === savedSort)) {{
+            sortSel.value = savedSort;
+            sortCards(savedSort);
+        }}
+        sortSel.addEventListener('change', function () {{ sortCards(this.value); }});
+    }}
+
+    // Гистограмма: клик по столбику — это десятилетие целиком
+    document.querySelectorAll('.hbar').forEach(bar => {{
+        bar.addEventListener('click', function () {{
+            const d = +this.dataset.decade;
+            if (activeFilters.from === d && activeFilters.to === d + 9) setYearRange(null, null);
+            else setYearRange(d, d + 9);
+        }});
+    }});
+
+    const yf = document.getElementById('year-from'), yt = document.getElementById('year-to');
+    [yf, yt].forEach(el => {{
+        if (!el) return;
+        el.addEventListener('change', function () {{
+            let from = yf && yf.value ? +yf.value : null;
+            let to = yt && yt.value ? +yt.value : null;
+            if (from !== null && to !== null && from > to) {{ const x = from; from = to; to = x; }}
+            setYearRange(from, to);
+        }});
+    }});
+    syncHistogram();
 
     const searchBox = document.getElementById('search');
     if (searchBox) {{

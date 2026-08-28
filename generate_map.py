@@ -320,7 +320,7 @@ MAP_CONFIG_TEMPLATE = """// Ключи картографических серв
 //
 // Этот файл сборка не перезаписывает: ключ переживёт пересборку сайта.
 window.MAP_KEYS = {
-  yandex: "c6177821-36d6-44b0-a906-84aa56316fde"
+  yandex: ""
 };
 """
 
@@ -495,6 +495,16 @@ MUSEUMS_CSS = """
 .popup-link { color: var(--active); }
 .popup-place { color: #555; font-size: .85rem; }
 
+/* Тёмная карта. Инверсия с поворотом оттенка — вода остаётся синеватой,
+   а не становится оранжевой, как при простом invert. */
+#map.map-dark .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(.92) contrast(.9) saturate(.85);
+}
+/* Метки и подписи инвертировать не нужно — они наши, а не с тайлов */
+#map.map-dark .leaflet-marker-pane,
+#map.map-dark .leaflet-popup-pane,
+#map.map-dark .leaflet-control-container { filter: none; }
+
 /* маркер приблизительного расположения */
 .marker-approx { opacity: .55; }
 
@@ -521,24 +531,66 @@ MUSEUMS_CSS = """
 # ============================= СКРИПТ СТРАНИЦЫ ================================
 MUSEUMS_JS = """
 // ------------------------------------------------ слои карты
-// Никаких ключей эти четыре слоя не требуют. Тёмная схема нужна,
-// потому что обычная карта в тёмной теме сайта светит белым прямоугольником.
+// Все подложки, кроме Яндекса, работают без ключей и регистрации.
+// Тёмной подложки в списке нет намеренно: бесплатные тёмные тайлы имеют
+// привычку внезапно требовать ключ — так и случилось с CARTO, чьи схемы
+// стояли здесь раньше и в один день начали отдавать «API key required».
+// Поэтому тёмный режим делается CSS-фильтром поверх любой схематичной
+// карты: зависимостей нет, отвалиться нечему.
 var BASE_LAYERS = [
-  {id: 'light', name: 'Светлая', url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-   attr: '&copy; OpenStreetMap, &copy; CARTO', max: 20},
-  {id: 'dark', name: 'Тёмная', url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-   attr: '&copy; OpenStreetMap, &copy; CARTO', max: 20},
-  {id: 'osm', name: 'Подробная', url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-   attr: '&copy; OpenStreetMap', max: 19},
+  {id: 'osm', name: 'Схема',
+   url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+   attr: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+   max: 19, dark: true},
+
+  {id: 'gray', name: 'Минимальная',
+   url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+   labels: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+   attr: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+   max: 19, nativeMax: 16, dark: true},
+
+  {id: 'topo', name: 'Рельеф',
+   url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+   attr: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, ' +
+         'SRTM | &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
+   max: 17, dark: true},
+
   {id: 'sat', name: 'Спутник',
    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-   attr: 'Esri, Maxar, Earthstar Geographics', max: 19}
+   attr: 'Tiles &copy; Esri &mdash; Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP',
+   max: 19, dark: false}
 ];
 
-var map = null, markers = {}, layers = {}, layerControl = null, userPickedLayer = false;
+var map = null, markers = {}, layers = {}, layerControl = null;
 
 function currentTheme() {
   return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+}
+
+function makeLayer(cfg) {
+  var opts = {attribution: cfg.attr, maxZoom: cfg.max};
+  if (cfg.nativeMax) opts.maxNativeZoom = cfg.nativeMax;
+  var base = L.tileLayer(cfg.url, opts);
+  // У серой подложки Esri подписи городов лежат отдельным слоем сверху.
+  // Если он не загрузится, останется просто карта без надписей.
+  var layer = cfg.labels
+    ? L.layerGroup([base, L.tileLayer(cfg.labels, {maxZoom: cfg.max, maxNativeZoom: cfg.nativeMax})])
+    : base;
+  layer._opaId = cfg.id;
+  layer._opaDark = cfg.dark !== false;
+  return layer;
+}
+
+// Тёмная карта = инверсия цветов подложки. На спутнике это выглядело бы
+// дико, поэтому там фильтр не применяется.
+function updateMapTheme() {
+  var box = document.getElementById('map');
+  if (!box || !map) return;
+  var allowed = true;
+  Object.keys(layers).forEach(function (name) {
+    if (map.hasLayer(layers[name]) && layers[name]._opaDark === false) allowed = false;
+  });
+  box.classList.toggle('map-dark', currentTheme() === 'dark' && allowed);
 }
 
 function initMap() {
@@ -550,42 +602,29 @@ function initMap() {
 
   map = L.map('map', {scrollWheelZoom: true}).setView([48, 10], 4);
 
-  BASE_LAYERS.forEach(function (cfg) {
-    layers[cfg.name] = L.tileLayer(cfg.url, {attribution: cfg.attr, maxZoom: cfg.max});
-    layers[cfg.name]._opaId = cfg.id;
-  });
+  BASE_LAYERS.forEach(function (cfg) { layers[cfg.name] = makeLayer(cfg); });
 
   var saved = null;
   try { saved = localStorage.getItem('mapLayer'); } catch (e) {}
   var startName = null;
-  if (saved) {
-    BASE_LAYERS.forEach(function (c) { if (c.id === saved) startName = c.name; });
-    // Яндекса среди BASE_LAYERS нет, он добавляется позже — но выбор
-    // всё равно считаем осознанным, чтобы тема его не перебила.
-    userPickedLayer = !!startName || saved === 'yandex';
-  }
-  if (!startName) startName = currentTheme() === 'dark' ? 'Тёмная' : 'Светлая';
-  layers[startName].addTo(map);
+  if (saved) BASE_LAYERS.forEach(function (c) { if (c.id === saved) startName = c.name; });
+  if (!startName && saved !== 'yandex') startName = 'Схема';
+  if (startName) layers[startName].addTo(map);
 
   layerControl = L.control.layers(layers, null, {position: 'topright'}).addTo(map);
 
   map.on('baselayerchange', function (e) {
-    userPickedLayer = true;
     try { localStorage.setItem('mapLayer', e.layer._opaId || ''); } catch (err) {}
+    updateMapTheme();
   });
 
-  // Пока человек сам не выбрал слой, карта следует за темой сайта
-  new MutationObserver(function () {
-    if (userPickedLayer || !map) return;
-    var want = currentTheme() === 'dark' ? 'Тёмная' : 'Светлая';
-    Object.keys(layers).forEach(function (name) {
-      if (name === want) { if (!map.hasLayer(layers[name])) map.addLayer(layers[name]); }
-      else if (map.hasLayer(layers[name])) map.removeLayer(layers[name]);
-    });
-  }).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+  // карта темнеет и светлеет вместе с сайтом
+  new MutationObserver(updateMapTheme)
+    .observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
 
   addMarkers();
   addYandexLayer();
+  updateMapTheme();
 }
 
 function addMarkers() {
@@ -645,6 +684,7 @@ function addYandexLayer() {
       maxZoom: 20
     });
     yandex._opaId = 'yandex';
+    yandex._opaDark = true;
     layers['Яндекс'] = yandex;
     layerControl.addBaseLayer(yandex, 'Яндекс');
 
@@ -657,6 +697,7 @@ function addYandexLayer() {
         if (n !== 'Яндекс' && map.hasLayer(layers[n])) map.removeLayer(layers[n]);
       });
       map.addLayer(yandex);
+      updateMapTheme();
     }
 
     // Ключ мог быть не от того продукта или домен не разрешён — тогда тайлы
@@ -771,6 +812,16 @@ function sortMuseums(mode) {
 
 document.addEventListener('DOMContentLoaded', function () {
   initMap();
+
+  // Пришли по ссылке museums.html#museum-… со страницы картины или из описи:
+  // подсвечиваем нужный музей и подводим к нему карту.
+  if (location.hash.indexOf('#museum-') === 0) {
+    var wanted = decodeURIComponent(location.hash.slice(8));
+    setTimeout(function () {
+      focusCard(wanted);
+      if (markers[wanted]) focusMuseum(wanted);
+    }, 400);
+  }
 
   var search = document.getElementById('museum-search');
   if (search) {
@@ -924,6 +975,12 @@ def generate_museums_page(retry_failed=False, offline=False):
             location_html = '<p class="museum-location museum-nomap">Нет на карте</p>'
 
         search_blob = " ".join([museum, city, country]).lower()
+
+        # Официальный сайт берём из ручного справочника: в данных постов его
+        # нет, а угадывать адрес по названию — верный способ ошибиться.
+        site = (overrides.get(museum) or {}).get("site", "")
+        site_html = (f'<p class="museum-site"><a href="{h(site)}" target="_blank" rel="noopener">'
+                     f'Сайт музея ↗</a></p>') if site else ""
         mapped = "1" if (lat and lon) else "0"
 
         cards.append(
@@ -934,6 +991,7 @@ def generate_museums_page(retry_failed=False, offline=False):
             f'  <header class="museum-card-head"><h3>{h(museum)}</h3>'
             f'<span class="museum-badge">{len(posts)}</span></header>\n'
             f'  {location_html}\n'
+            f'  {site_html}\n'
             f'  {thumbs_block}\n'
             f'  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-{museum_id}"\n'
             f'          onclick="toggleMuseumPosts(this, \'{museum_id}\')">Список картин ▾</button>\n'

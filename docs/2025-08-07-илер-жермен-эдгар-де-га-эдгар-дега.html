@@ -50,7 +50,7 @@
     <section class="history"><h3>Происхождение</h3><ul><li>1) 2-я продажа картин, пастелей и рисунков Эдгара Дега из его мастерской, Париж, Галерея Жоржа Пети, 11-13 декабря 1918 г.</li><li>2) В коллекции Fiquet, приобретена за 8600 франков на распродаже 13 декабря 1918 г.</li><li>3) Галерея Nunès et Fiquet, Париж</li><li>4) Коллекция Friedmann, Париж</li><li>5) В 1989 г. принята государством в качестве подарка в качестве платы за право наследования для национальных музеев</li><li>6) В 1989 г. передана музею Орсе, Париж</li></ul></section>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Год</span><b>1892</b></div><div><span>Основа</span><b>Холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>50,7 x 65,5 см</b></div><div><span>Собрание</span><b>Музей д’Орсе, Париж</b></div></div>
+    <div class="spec-table"><div><span>Год</span><b>1892</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>50,7 x 65,5 см</b></div><div><span>Собрание</span><b><a href="museums.html#museum-музей-дорсе-париж">Музей д’Орсе, Париж</a></b></div></div>
     <div class="aside-block"><h3>Источник</h3><ul class="source-list"><li><a href="https://www.musee-orsay.fr/fr/oeuvres/salle-de-billard-au-menil-hubert-25611" target="_blank" rel="noopener">https://www.musee-orsay.fr/fr/oeuvres/salle-de-billard-au-menil-hubert-25611</a></li></ul></div>
     <div class="aside-block"><h3>Теги</h3><div class="tags"><a href="tag-degas.html" class="tag">#degas</a> <a href="tag-dorsay.html" class="tag">#dorsay</a> <a href="tag-картина.html" class="tag">#картина</a></div></div>
     <div class="aside-block">
@@ -82,10 +82,18 @@ function toggleTheme(){
   var btn=document.querySelector('.scroll-top');
   if(!btn) return;
   var ticking=false;
-  function upd(){ btn.classList.toggle('visible', window.scrollY>400); ticking=false; }
+  function upd(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var y = window.scrollY;
+    btn.classList.toggle('visible', y > 400);
+    // Кольцо вокруг стрелки показывает долю пройденной страницы
+    btn.style.setProperty('--progress', max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0);
+    ticking=false;
+  }
   window.addEventListener('scroll', function(){
     if(!ticking){ ticking=true; window.requestAnimationFrame(upd); }
   }, {passive:true});
+  window.addEventListener('resize', upd, {passive:true});
   upd();
 })();
 </script>

@@ -50,7 +50,7 @@
     <section class="history"><h3>Происхождение</h3><ul><li>1) Работа находилась в коллекциях A.A. Бахрушина, И.И. Ильина и З.З. Рабиновича (Москва)</li><li>2) Анонимная продажа Christie&#x27;s, Лондон, 14 июня 1995 г.</li></ul></section>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Год</span><b>1896</b></div><div><span>Основа</span><b>Доска</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>62,2 x 85,7 см</b></div><div><span>Собрание</span><b>Частная коллекция, США</b></div></div>
+    <div class="spec-table"><div><span>Год</span><b>1896</b></div><div><span>Материал</span><b>доска</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>62,2 x 85,7 см</b></div><div><span>Собрание</span><b><a href="museums.html#museum-частная-коллекция-сша">Частная коллекция, США</a></b></div></div>
     <div class="aside-block"><h3>Источник</h3><ul class="source-list"><li><a href="https://www.christies.com/en/lot/lot-5006560" target="_blank" rel="noopener">https://www.christies.com/en/lot/lot-5006560</a></li></ul></div>
     <div class="aside-block"><h3>Теги</h3><div class="tags"><a href="tag-pc.html" class="tag">#pc</a> <a href="tag-картина.html" class="tag">#картина</a> <a href="tag-левитан.html" class="tag">#левитан</a></div></div>
     <div class="aside-block">
@@ -82,10 +82,18 @@ function toggleTheme(){
   var btn=document.querySelector('.scroll-top');
   if(!btn) return;
   var ticking=false;
-  function upd(){ btn.classList.toggle('visible', window.scrollY>400); ticking=false; }
+  function upd(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var y = window.scrollY;
+    btn.classList.toggle('visible', y > 400);
+    // Кольцо вокруг стрелки показывает долю пройденной страницы
+    btn.style.setProperty('--progress', max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0);
+    ticking=false;
+  }
   window.addEventListener('scroll', function(){
     if(!ticking){ ticking=true; window.requestAnimationFrame(upd); }
   }, {passive:true});
+  window.addEventListener('resize', upd, {passive:true});
   upd();
 })();
 </script>

@@ -1,46 +1,188 @@
 {
   "_комментарий": "Ручной справочник музеев. Всегда важнее автопоиска. Три формы записи: {\"query\": \"название на родном языке\"} — искать по этой строке вместо русской; {\"lat\": 48.86, \"lon\": 2.33} — готовые координаты, ничего не искать; {\"skip\": true} — не ставить метку на карту (музей останется в списке под картой). Названия слева должны совпадать с полем museum в posts_meta.json дословно.",
   "_как_дополнить": "После запуска generate_map.py в конце лога выводится список музеев без координат в готовом для вставки виде. Скопируйте строки сюда и подставьте значения.",
-
-  "Базельский художественный музей, Базель": {"query": "Kunstmuseum Basel"},
-  "Британская галерея Тейт, Лондон": {"query": "Tate Britain"},
-  "Винтертурский художественный музей, Винтертур": {"query": "Kunstmuseum Winterthur"},
-  "ГМИИ им. А.С. Пушкина, Москва": {"query": "Государственный музей изобразительных искусств имени А. С. Пушкина"},
-  "ГРМ, Санкт-Петербург": {"query": "Государственный Русский музей"},
-  "Государственный музей Тюрингии, Хайдексбург": {"query": "Schloss Heidecksburg"},
-  "Государственный музей истории религии, Санкт-Петербург": {"query": "Государственный музей истории религии"},
-  "Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург": {"query": "SUNY Plattsburgh Art Museum"},
-  "Гётеборгский художественный музей, Гётеборг": {"query": "Göteborgs konstmuseum"},
-  "Институт искусств Миннеаполиса, Миннеаполис": {"query": "Minneapolis Institute of Art"},
-  "Институт искусств Стерлинга и Франсин Кларк, Уильямстаун": {"query": "Clark Art Institute"},
-  "Коллекции Версальского дворца, Версаль": {"query": "Château de Versailles"},
-  "Королевский музей изящных искусств, Брюссель": {"query": "Royal Museums of Fine Arts of Belgium"},
-  "Лувр, Париж (в запаснике)": {"query": "Musée du Louvre"},
-  "Малый дворец, музей изящных искусств города Парижа, Париж": {"query": "Petit Palais"},
-  "Метрополитен-музей, Нью-Йорк": {"query": "Metropolitan Museum of Art"},
-  "Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн": {"query": "Wallraf-Richartz-Museum"},
-  "Музей Гетти, Лос-Анджелес": {"query": "Getty Center"},
-  "Музей Скагена, Скаген": {"query": "Skagens Museum"},
-  "Музей Фабра, Монпелье": {"query": "Musée Fabre"},
-  "Музей Эжена Будена, Онфлёр": {"query": "Musée Eugène Boudin"},
-  "Музей изящных искусств, Гент": {"query": "Museum voor Schone Kunsten Gent"},
-  "Музей искусств Охара, Курасики": {"query": "Ohara Museum of Art"},
-  "Музей современного искусства Андре Мальро, Гавр": {"query": "Musée d'art moderne André Malraux"},
-  "Национальная галерея искусства, Вашингтон": {"query": "National Gallery of Art Washington"},
-  "Национальный музей Прадо, Мадрид": {"query": "Museo del Prado"},
-  "Национальный художественный музей Республики Беларусь, Минск": {"query": "Нацыянальны мастацкі музей Рэспублікі Беларусь"},
-  "Отдел личных коллекций, ГМИИ им. А.С. Пушкина, Москва": {"query": "Отдел личных коллекций ГМИИ имени Пушкина"},
-  "Портлендский художественный музей, Портленд": {"query": "Portland Art Museum"},
-  "Собрание Фонда Эмиля Бюрле, Цюрих": {"query": "Sammlung Emil Bührle"},
-  "Собрание Хиршпрунга, Копенгаген": {"query": "Den Hirschsprungske Samling"},
-  "Художественная галерея Южной Австралии, Аделаида": {"query": "Art Gallery of South Australia"},
-  "Художественный музей колледжа Смит, Нортхемптон": {"query": "Smith College Museum of Art"},
-  "Чикагский институт искусств, Чикаго": {"query": "Art Institute of Chicago"},
-  "Штеделевский художественный институт, Франкфурт-на-Майне": {"query": "Städel Museum"},
-
-  "Частная коллекция": {"skip": true},
-  "Частная коллекция, Монте-Карло": {"skip": true},
-  "Частная коллекция, США": {"skip": true},
-  "Частная коллекция, Франция": {"skip": true},
-  "Частная коллекция, Швейцария": {"skip": true}
+  "Базельский художественный музей, Базель": {
+    "query": "Kunstmuseum Basel",
+    "site": "https://kunstmuseumbasel.ch"
+  },
+  "Британская галерея Тейт, Лондон": {
+    "query": "Tate Britain",
+    "site": "https://www.tate.org.uk"
+  },
+  "Винтертурский художественный музей, Винтертур": {
+    "query": "Kunstmuseum Winterthur",
+    "site": "https://www.kmw.ch"
+  },
+  "ГМИИ им. А.С. Пушкина, Москва": {
+    "query": "Государственный музей изобразительных искусств имени А. С. Пушкина",
+    "site": "https://pushkinmuseum.art"
+  },
+  "ГРМ, Санкт-Петербург": {
+    "query": "Государственный Русский музей"
+  },
+  "Государственный музей Тюрингии, Хайдексбург": {
+    "query": "Schloss Heidecksburg"
+  },
+  "Государственный музей истории религии, Санкт-Петербург": {
+    "query": "Государственный музей истории религии",
+    "site": "https://gmir.ru"
+  },
+  "Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург": {
+    "query": "SUNY Plattsburgh Art Museum"
+  },
+  "Гётеборгский художественный музей, Гётеборг": {
+    "query": "Göteborgs konstmuseum",
+    "site": "https://goteborgskonstmuseum.se"
+  },
+  "Институт искусств Миннеаполиса, Миннеаполис": {
+    "query": "Minneapolis Institute of Art",
+    "site": "https://new.artsmia.org"
+  },
+  "Институт искусств Стерлинга и Франсин Кларк, Уильямстаун": {
+    "query": "Clark Art Institute",
+    "site": "https://www.clarkart.edu"
+  },
+  "Коллекции Версальского дворца, Версаль": {
+    "query": "Château de Versailles",
+    "site": "https://www.chateauversailles.fr"
+  },
+  "Королевский музей изящных искусств, Брюссель": {
+    "query": "Royal Museums of Fine Arts of Belgium",
+    "site": "https://www.fine-arts-museum.be"
+  },
+  "Лувр, Париж (в запаснике)": {
+    "query": "Musée du Louvre",
+    "site": "https://www.louvre.fr"
+  },
+  "Малый дворец, музей изящных искусств города Парижа, Париж": {
+    "query": "Petit Palais",
+    "site": "https://www.petitpalais.paris.fr"
+  },
+  "Метрополитен-музей, Нью-Йорк": {
+    "query": "Metropolitan Museum of Art",
+    "site": "https://www.metmuseum.org"
+  },
+  "Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн": {
+    "query": "Wallraf-Richartz-Museum",
+    "site": "https://www.wallraf.museum"
+  },
+  "Музей Гетти, Лос-Анджелес": {
+    "query": "Getty Center",
+    "site": "https://www.getty.edu"
+  },
+  "Музей Скагена, Скаген": {
+    "query": "Skagens Museum",
+    "site": "https://skagenskunstmuseer.dk"
+  },
+  "Музей Фабра, Монпелье": {
+    "query": "Musée Fabre",
+    "site": "https://museefabre.montpellier3m.fr"
+  },
+  "Музей Эжена Будена, Онфлёр": {
+    "query": "Musée Eugène Boudin"
+  },
+  "Музей изящных искусств, Гент": {
+    "query": "Museum voor Schone Kunsten Gent",
+    "site": "https://www.mskgent.be"
+  },
+  "Музей искусств Охара, Курасики": {
+    "query": "Ohara Museum of Art",
+    "site": "https://www.ohara.or.jp"
+  },
+  "Музей современного искусства Андре Мальро, Гавр": {
+    "query": "Musée d'art moderne André Malraux",
+    "site": "https://www.muma-lehavre.fr"
+  },
+  "Национальная галерея искусства, Вашингтон": {
+    "query": "National Gallery of Art Washington",
+    "site": "https://www.nga.gov"
+  },
+  "Национальный музей Прадо, Мадрид": {
+    "query": "Museo del Prado",
+    "site": "https://www.museodelprado.es"
+  },
+  "Национальный художественный музей Республики Беларусь, Минск": {
+    "query": "Нацыянальны мастацкі музей Рэспублікі Беларусь",
+    "site": "https://www.artmuseum.by"
+  },
+  "Отдел личных коллекций, ГМИИ им. А.С. Пушкина, Москва": {
+    "query": "Отдел личных коллекций ГМИИ имени Пушкина",
+    "site": "https://pushkinmuseum.art"
+  },
+  "Портлендский художественный музей, Портленд": {
+    "query": "Portland Art Museum",
+    "site": "https://portlandartmuseum.org"
+  },
+  "Собрание Фонда Эмиля Бюрле, Цюрих": {
+    "query": "Sammlung Emil Bührle"
+  },
+  "Собрание Хиршпрунга, Копенгаген": {
+    "query": "Den Hirschsprungske Samling",
+    "site": "https://hirschsprung.dk"
+  },
+  "Художественная галерея Южной Австралии, Аделаида": {
+    "query": "Art Gallery of South Australia",
+    "site": "https://www.agsa.sa.gov.au"
+  },
+  "Художественный музей колледжа Смит, Нортхемптон": {
+    "query": "Smith College Museum of Art",
+    "site": "https://scma.smith.edu"
+  },
+  "Чикагский институт искусств, Чикаго": {
+    "query": "Art Institute of Chicago",
+    "site": "https://www.artic.edu"
+  },
+  "Штеделевский художественный институт, Франкфурт-на-Майне": {
+    "query": "Städel Museum",
+    "site": "https://www.staedelmuseum.de"
+  },
+  "Частная коллекция": {
+    "skip": true
+  },
+  "Частная коллекция, Монте-Карло": {
+    "skip": true
+  },
+  "Частная коллекция, США": {
+    "skip": true
+  },
+  "Частная коллекция, Франция": {
+    "skip": true
+  },
+  "Частная коллекция, Швейцария": {
+    "skip": true
+  },
+  "Государственная Третьяковская галерея, Москва": {
+    "site": "https://www.tretyakovgallery.ru"
+  },
+  "Государственный Русский музей, Санкт-Петербург": {
+    "site": "https://rusmuseum.ru"
+  },
+  "ГИМ, Москва": {
+    "site": "https://shm.ru"
+  },
+  "Пермская государственная художественная галерея, Пермь": {
+    "site": "https://permartmuseum.ru"
+  },
+  "Музей д’Орсе, Париж": {
+    "site": "https://www.musee-orsay.fr"
+  },
+  "Национальная галерея Шотландии, Эдинбург": {
+    "site": "https://www.nationalgalleries.org"
+  },
+  "Старая национальная галерея, Берлин": {
+    "site": "https://www.smb.museum"
+  },
+  "Музей Барберини, Потсдам": {
+    "site": "https://www.museum-barberini.de"
+  },
+  "Музей Кунстпаласт, Дюссельдорф": {
+    "site": "https://www.kunstpalast.de"
+  },
+  "Музей Леопольда, Вена": {
+    "site": "https://www.leopoldmuseum.org"
+  },
+  "Национальный музей западного искусства, Токио": {
+    "site": "https://www.nmwa.go.jp"
+  },
+  "_сайты": "Поле site — официальный сайт музея, показывается ссылкой в карточке на странице карты. Добавляйте так же, как query или lat/lon."
 }

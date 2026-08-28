@@ -50,7 +50,7 @@
     
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Год</span><b>1880</b></div><div><span>Основа</span><b>Холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>24 x 32 см</b></div><div><span>Собрание</span><b>Лувр, Париж (в запаснике)</b></div></div>
+    <div class="spec-table"><div><span>Год</span><b>1880</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>24 x 32 см</b></div><div><span>Собрание</span><b><a href="museums.html#museum-лувр-париж-в-запаснике">Лувр, Париж (в запаснике)</a></b></div></div>
     <div class="aside-block"><h3>Источники</h3><ul class="source-list"><li><a href="https://collections.louvre.fr/en/ark:/53355/cl010061564" target="_blank" rel="noopener">https://collections.louvre.fr/en/ark:/53355/cl010061564</a></li><li><a href="https://pop.culture.gouv.fr/notice/joconde/00000104600" target="_blank" rel="noopener">https://pop.culture.gouv.fr/notice/joconde/00000104600</a></li></ul></div>
     <div class="aside-block"><h3>Теги</h3><div class="tags"><a href="tag-brun.html" class="tag">#brun</a> <a href="tag-картина.html" class="tag">#картина</a></div></div>
     <div class="aside-block">
@@ -82,10 +82,18 @@ function toggleTheme(){
   var btn=document.querySelector('.scroll-top');
   if(!btn) return;
   var ticking=false;
-  function upd(){ btn.classList.toggle('visible', window.scrollY>400); ticking=false; }
+  function upd(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var y = window.scrollY;
+    btn.classList.toggle('visible', y > 400);
+    // Кольцо вокруг стрелки показывает долю пройденной страницы
+    btn.style.setProperty('--progress', max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0);
+    ticking=false;
+  }
   window.addEventListener('scroll', function(){
     if(!ticking){ ticking=true; window.requestAnimationFrame(upd); }
   }, {passive:true});
+  window.addEventListener('resize', upd, {passive:true});
   upd();
 })();
 </script>

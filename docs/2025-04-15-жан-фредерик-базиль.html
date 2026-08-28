@@ -50,7 +50,7 @@
     <section class="history"><h3>Происхождение</h3><ul><li>1) В 1985 г. картина была приобретена городом Монпелье для музея Фабра при поддержке FRAM Лангедок-Руссильон и любезности семьи Marchand-Leenhardt</li></ul></section>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Год</span><b>1865</b></div><div><span>Основа</span><b>Холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>80 x 65 см</b></div><div><span>Собрание</span><b>Музей Фабра, Монпелье</b></div></div>
+    <div class="spec-table"><div><span>Год</span><b>1865</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>80 x 65 см</b></div><div><span>Собрание</span><b><a href="museums.html#museum-музей-фабра-монпелье">Музей Фабра, Монпелье</a></b></div></div>
     <div class="aside-block"><h3>Источник</h3><ul class="source-list"><li><a href="https://www.museefabre.fr/recherche/musee%3AMUS_BIEN%3A3503?is_search_page=1&amp;search=L%27Atelier%20de%20la%20rue%20de%20Furstenberg&amp;currentPage=1" target="_blank" rel="noopener">https://www.museefabre.fr/recherche/musee%3AMUS_BIEN%3A3503?is_search_page=1&amp;search=L%27Atelier%20de%20la%20rue%20de%20Furstenberg&amp;currentPage=1</a></li></ul></div>
     <div class="aside-block"><h3>Теги</h3><div class="tags"><a href="tag-bazille.html" class="tag">#bazille</a> <a href="tag-muséefabre.html" class="tag">#muséefabre</a> <a href="tag-картина.html" class="tag">#картина</a></div></div>
     <div class="aside-block">
@@ -82,10 +82,18 @@ function toggleTheme(){
   var btn=document.querySelector('.scroll-top');
   if(!btn) return;
   var ticking=false;
-  function upd(){ btn.classList.toggle('visible', window.scrollY>400); ticking=false; }
+  function upd(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var y = window.scrollY;
+    btn.classList.toggle('visible', y > 400);
+    // Кольцо вокруг стрелки показывает долю пройденной страницы
+    btn.style.setProperty('--progress', max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0);
+    ticking=false;
+  }
   window.addEventListener('scroll', function(){
     if(!ticking){ ticking=true; window.requestAnimationFrame(upd); }
   }, {passive:true});
+  window.addEventListener('resize', upd, {passive:true});
   upd();
 })();
 </script>

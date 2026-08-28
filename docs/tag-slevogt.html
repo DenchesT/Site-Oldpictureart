@@ -31,7 +31,7 @@
 </div>
 <button type="button" class="scroll-top" onclick="scrollToTop()" aria-label="Наверх" title="Наверх"><span class="icon-arrow-up" aria-hidden="true"></span></button>
 <h1>#slevogt <span class="tag-count">(1)</span></h1>
-<div class="grid list"><a class="card" href="2025-06-02-франц-теодор-макс-слефогт.html"><span class="card-no">075</span><div class="card-img"><img src="images/thumbs/2025-06-02-франц-теодор-макс-слефогт.jpg" alt="Франц Теодор Макс Слефогт — Unter den Linden (Унтер-ден-Линден), 1913" loading="lazy" decoding="async"></div><div class="card-body"><div class="card-artist">Франц Теодор Макс Слефогт</div><div class="card-title">Unter den Linden (Унтер-ден-Линден), 1913</div><div class="card-museum">Старая национальная галерея, Берлин</div></div><div class="card-facts"><div><span>Год</span><b>1913</b></div><div><span>Основа</span><b>Холст</b></div><div><span>Техника</span><b>масло</b></div></div></a></div>
+<div class="grid list"><article class="card"><span class="card-no">075</span><div class="card-img"><img src="images/thumbs/2025-06-02-франц-теодор-макс-слефогт.jpg" alt="Франц Теодор Макс Слефогт — Unter den Linden (Унтер-ден-Линден), 1913" loading="lazy" decoding="async"></div><div class="card-body"><div class="card-artist"><a class="card-link" href="2025-06-02-франц-теодор-макс-слефогт.html">Франц Теодор Макс Слефогт</a></div><div class="card-title">Unter den Linden (Унтер-ден-Линден), 1913</div><div class="card-museum"><a href="museums.html#museum-старая-национальная-галерея-берлин" title="Показать музей на карте">Старая национальная галерея, Берлин</a></div></div><div class="card-facts"><div><span>Год</span><b>1913</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div></div></article></div>
 <script>
 function scrollToTop(){
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -54,10 +54,18 @@ function toggleTheme(){
   var btn=document.querySelector('.scroll-top');
   if(!btn) return;
   var ticking=false;
-  function upd(){ btn.classList.toggle('visible', window.scrollY>400); ticking=false; }
+  function upd(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var y = window.scrollY;
+    btn.classList.toggle('visible', y > 400);
+    // Кольцо вокруг стрелки показывает долю пройденной страницы
+    btn.style.setProperty('--progress', max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0);
+    ticking=false;
+  }
   window.addEventListener('scroll', function(){
     if(!ticking){ ticking=true; window.requestAnimationFrame(upd); }
   }, {passive:true});
+  window.addEventListener('resize', upd, {passive:true});
   upd();
 })();
 </script>

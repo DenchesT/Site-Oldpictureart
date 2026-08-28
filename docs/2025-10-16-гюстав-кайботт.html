@@ -50,7 +50,7 @@
     <section class="history"><h3>Происхождение</h3><ul><li>1) До 1894 г., Albert Courtier, Мо, Франция, подарок художника, происходившего оттуда по происхождению</li><li>2) Поместье Albert Courtier</li><li>3) До 1950-1951 гг., Galerie de l’Elysée (Париж), продана Wildenstein &amp; Co., 1951</li><li>4) 1951-1995 гг., Wildenstein &amp; Co. (Нью-Йорк) продана Edwin L. Cox, Даллас, 26 июня 1995 г.</li><li>5) 1995-2020 гг., Edwin L. Cox Даллас</li><li>6) Имущество Edwin L. Cox, (продана на распродаже коллекции Cox, Christie&#x27;s, Нью-Йорк, 11 ноября 2021 г., музею  J. Paul Getty Museum)</li></ul></section>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Год</span><b>1876</b></div><div><span>Основа</span><b>Холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>116 x 81 см</b></div><div><span>Собрание</span><b>Музей Гетти, Лос-Анджелес</b></div></div>
+    <div class="spec-table"><div><span>Год</span><b>1876</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>116 x 81 см</b></div><div><span>Собрание</span><b><a href="museums.html#museum-музей-гетти-лос-анджелес">Музей Гетти, Лос-Анджелес</a></b></div></div>
     <div class="aside-block"><h3>Источник</h3><ul class="source-list"><li><a href="https://www.getty.edu/art/collection/object/10A2Y1" target="_blank" rel="noopener">https://www.getty.edu/art/collection/object/10A2Y1</a></li></ul></div>
     <div class="aside-block"><h3>Теги</h3><div class="tags"><a href="tag-caillebotte.html" class="tag">#caillebotte</a> <a href="tag-getty.html" class="tag">#getty</a> <a href="tag-картина.html" class="tag">#картина</a></div></div>
     <div class="aside-block">
@@ -82,10 +82,18 @@ function toggleTheme(){
   var btn=document.querySelector('.scroll-top');
   if(!btn) return;
   var ticking=false;
-  function upd(){ btn.classList.toggle('visible', window.scrollY>400); ticking=false; }
+  function upd(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var y = window.scrollY;
+    btn.classList.toggle('visible', y > 400);
+    // Кольцо вокруг стрелки показывает долю пройденной страницы
+    btn.style.setProperty('--progress', max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0);
+    ticking=false;
+  }
   window.addEventListener('scroll', function(){
     if(!ticking){ ticking=true; window.requestAnimationFrame(upd); }
   }, {passive:true});
+  window.addEventListener('resize', upd, {passive:true});
   upd();
 })();
 </script>

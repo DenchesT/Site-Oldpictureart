@@ -31,7 +31,7 @@
 </div>
 <button type="button" class="scroll-top" onclick="scrollToTop()" aria-label="Наверх" title="Наверх"><span class="icon-arrow-up" aria-hidden="true"></span></button>
 <h1>#thaulow <span class="tag-count">(2)</span></h1>
-<div class="grid list"><a class="card" href="2025-07-24-йохан-фредерик-фриц-таулов.html"><span class="card-no">065</span><div class="card-img"><img src="images/thumbs/2025-07-24-йохан-фредерик-фриц-таулов.jpg" alt="Йохан Фредерик Фриц Таулов — A Stream in Springtime (Ручей в весеннее время), 1901" loading="lazy" decoding="async"></div><div class="card-body"><div class="card-artist">Йохан Фредерик Фриц Таулов</div><div class="card-title">A Stream in Springtime (Ручей в весеннее время), 1901</div><div class="card-museum">Частная коллекция</div></div><div class="card-facts"><div><span>Год</span><b>1901</b></div><div><span>Основа</span><b>Холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>46,4 x 54,3 см</b></div></div></a><a class="card" href="2025-06-05-йохан-фредерик-фриц-таулов.html"><span class="card-no">043</span><div class="card-img"><img src="images/thumbs/2025-06-05-йохан-фредерик-фриц-таулов.jpg" alt="Йохан Фредерик Фриц Таулов — Горная речка, между 1887 и 1890 годами" loading="lazy" decoding="async"></div><div class="card-body"><div class="card-artist">Йохан Фредерик Фриц Таулов</div><div class="card-title">Горная речка, между 1887 и 1890 годами</div><div class="card-museum">ГМИИ им. А.С. Пушкина, Москва</div></div><div class="card-facts"><div><span>Год</span><b>1887</b></div><div><span>Основа</span><b>Холст</b></div><div><span>Техника</span><b>пастель</b></div><div><span>Размер</span><b>59,5 x 80 см</b></div></div></a></div>
+<div class="grid list"><article class="card"><span class="card-no">065</span><div class="card-img"><img src="images/thumbs/2025-07-24-йохан-фредерик-фриц-таулов.jpg" alt="Йохан Фредерик Фриц Таулов — A Stream in Springtime (Ручей в весеннее время), 1901" loading="lazy" decoding="async"></div><div class="card-body"><div class="card-artist"><a class="card-link" href="2025-07-24-йохан-фредерик-фриц-таулов.html">Йохан Фредерик Фриц Таулов</a></div><div class="card-title">A Stream in Springtime (Ручей в весеннее время), 1901</div><div class="card-museum"><a href="museums.html#museum-частная-коллекция" title="Показать музей на карте">Частная коллекция</a></div></div><div class="card-facts"><div><span>Год</span><b>1901</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>46,4 x 54,3 см</b></div></div></article><article class="card"><span class="card-no">043</span><div class="card-img"><img src="images/thumbs/2025-06-05-йохан-фредерик-фриц-таулов.jpg" alt="Йохан Фредерик Фриц Таулов — Горная речка, между 1887 и 1890 годами" loading="lazy" decoding="async"></div><div class="card-body"><div class="card-artist"><a class="card-link" href="2025-06-05-йохан-фредерик-фриц-таулов.html">Йохан Фредерик Фриц Таулов</a></div><div class="card-title">Горная речка, между 1887 и 1890 годами</div><div class="card-museum"><a href="museums.html#museum-гмии-им-ас-пушкина-москва" title="Показать музей на карте">ГМИИ им. А.С. Пушкина, Москва</a></div></div><div class="card-facts"><div><span>Год</span><b>1887</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>пастель</b></div><div><span>Размер</span><b>59,5 x 80 см</b></div></div></article></div>
 <script>
 function scrollToTop(){
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -54,10 +54,18 @@ function toggleTheme(){
   var btn=document.querySelector('.scroll-top');
   if(!btn) return;
   var ticking=false;
-  function upd(){ btn.classList.toggle('visible', window.scrollY>400); ticking=false; }
+  function upd(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var y = window.scrollY;
+    btn.classList.toggle('visible', y > 400);
+    // Кольцо вокруг стрелки показывает долю пройденной страницы
+    btn.style.setProperty('--progress', max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0);
+    ticking=false;
+  }
   window.addEventListener('scroll', function(){
     if(!ticking){ ticking=true; window.requestAnimationFrame(upd); }
   }, {passive:true});
+  window.addEventListener('resize', upd, {passive:true});
   upd();
 })();
 </script>

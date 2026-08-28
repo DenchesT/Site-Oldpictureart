@@ -35,6 +35,9 @@ def generate_timeline_page():
     # Данные для JavaScript
     timeline_data = {}
     for decade, posts in decades.items():
+        # Внутри десятилетия работы идут по возрастанию года создания:
+        # раньше порядок был случайным — как легли посты в канале.
+        posts = sorted(posts, key=lambda x: (x.get("creation_year") or decade, x.get("title", "")))
         timeline_data[str(decade)] = [
             {
                 "artist": p["artist"],

@@ -50,7 +50,7 @@
     <section class="history"><h3>Происхождение</h3><ul><li>1) Из коллекции художника, 1917 г.</li><li>2) Продано в галерею Жоржа Пети, Париж, 2-4 июля 1919 г.</li><li>3)  L. Wolff, Гамбург</li><li>4) Неизвестный частный коллекционер, до 1932 г. (хотя на аукционе 1932 г. были представлены коллекции Simon и Silberberg, остаётся неясным, кому принадлежал этот конкретный лот. Это могли быть Simon, Silberberg или неизвестное третье лицо)</li><li>5) Продано в галерею Жоржа Пети, Париж, 9 июня 1932 г. доктору Helmut Lutjens, директору амстердамского отделения Paul Cassirer, для Friedrich и Louise Gutmann, Хемстеде, Голландия</li><li>6) Отправлено Friedrich Gutmann Paul Graupe, Париж, 1939 г.</li><li>7) Отправлено на склад Wacker-Bondy на бульваре Распай к 1945 г.</li><li>8) Hans Wendland, Париж, своему зятю Hans Fritz Fankhauser, Базель</li><li>9) Продан Hans Fritz Fankhauser Emile Wolf, Нью-Йорк, 1951 г.</li><li>10) Продано Emile Wolf через Margo Pollins Schab, Нью-Йорк, Daniel Searle, Уиннетка, Иллинойс, 1987 г.</li><li>11) Подарено Daniel Searle и продано семьей Goodman (ранее Gutmann) Художественному институту в 1998 г.</li></ul></section>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Год</span><b>1890</b></div><div><span>Основа</span><b>Текстурированная кремовая бумага</b></div><div><span>Техника</span><b>пастель, монотипия</b></div><div><span>Размер</span><b>31,7 x 41,6 см</b></div><div><span>Собрание</span><b>Чикагский институт искусств, Чикаго</b></div></div>
+    <div class="spec-table"><div><span>Год</span><b>1890</b></div><div><span>Материал</span><b>текстурированная кремовая бумага</b></div><div><span>Техника</span><b>пастель, монотипия</b></div><div><span>Размер</span><b>31,7 x 41,6 см</b></div><div><span>Собрание</span><b><a href="museums.html#museum-чикагский-институт-искусств-чикаго">Чикагский институт искусств, Чикаго</a></b></div></div>
     <div class="aside-block"><h3>Источник</h3><ul class="source-list"><li><a href="https://www.artic.edu/artworks/151507/landscape-with-smokestacks" target="_blank" rel="noopener">https://www.artic.edu/artworks/151507/landscape-with-smokestacks</a></li></ul></div>
     <div class="aside-block"><h3>Теги</h3><div class="tags"><a href="tag-aic.html" class="tag">#aic</a> <a href="tag-degas.html" class="tag">#degas</a> <a href="tag-картина.html" class="tag">#картина</a></div></div>
     <div class="aside-block">
@@ -82,10 +82,18 @@ function toggleTheme(){
   var btn=document.querySelector('.scroll-top');
   if(!btn) return;
   var ticking=false;
-  function upd(){ btn.classList.toggle('visible', window.scrollY>400); ticking=false; }
+  function upd(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var y = window.scrollY;
+    btn.classList.toggle('visible', y > 400);
+    // Кольцо вокруг стрелки показывает долю пройденной страницы
+    btn.style.setProperty('--progress', max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0);
+    ticking=false;
+  }
   window.addEventListener('scroll', function(){
     if(!ticking){ ticking=true; window.requestAnimationFrame(upd); }
   }, {passive:true});
+  window.addEventListener('resize', upd, {passive:true});
   upd();
 })();
 </script>
