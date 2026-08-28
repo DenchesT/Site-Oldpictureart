@@ -27,739 +27,787 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <style>
-#map { height: 500px; border-radius: 8px; margin-bottom: 2rem; border: 1px solid var(--border); z-index: 1; }
-.museum-location { color: var(--muted); font-size: .85rem; margin: .2rem 0; }
-.museum-count { color: var(--active); font-weight: 600; font-size: .9rem; }
-.museum-posts-list { margin: .3rem 0; padding-left: 1.2rem; font-size: .85rem; }
-.museum-posts-list li { margin-bottom: .15rem; }
+
+.museums-hero { text-align: center; padding: .5rem 1.5rem 0; }
+.museums-hero h1 { font-size: 2rem; justify-content: center; display: flex; align-items: center; gap: 10px; }
+.museums-stats { color: var(--muted); font-size: .95rem; margin: .3rem 0 0; }
+.museums-stats b { color: var(--text); }
+
+/* ---------- панель поиска и сортировки ---------- */
+.museums-toolbar {
+  max-width: 1500px;
+  margin: 1.2rem auto .8rem;
+  padding: 0 1.5rem;
+  display: flex;
+  gap: .6rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.museums-toolbar .search-box { flex: 1 1 260px; min-width: 0; }
+.museum-sort {
+  padding: .7rem .9rem;
+  font-size: .9rem;
+  font-family: inherit;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--text);
+  cursor: pointer;
+}
+.museums-toolbar .results-count { flex: 0 0 auto; }
+
+/* ---------- две колонки: карта закреплена, список едет ---------- */
+.museums-layout {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 1.5rem 2rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.museums-map-col { position: sticky; top: 1rem; }
+
+.map-shell {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px var(--shadow);
+}
+
+#map { height: calc(100vh - 8rem); min-height: 420px; z-index: 1; background: var(--border); }
+
+.map-expand {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 500;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.map-expand:hover { background: var(--border); }
+
+/* развёрнутая карта */
+.map-shell.fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  border-radius: 0;
+  border: none;
+}
+.map-shell.fullscreen #map { height: 100vh; height: 100dvh; }
+
+.map-fallback { padding: 2rem 1rem; text-align: center; color: var(--muted); }
+
+/* ---------- карточки музеев ---------- */
+.museums-list-col { display: flex; flex-direction: column; gap: .9rem; min-width: 0; }
+
+.museum-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  transition: border-color .2s, box-shadow .2s, transform .2s;
+  cursor: pointer;
+  scroll-margin-top: 1rem;
+}
+.museum-card:hover { border-color: var(--active); box-shadow: 0 4px 14px var(--shadow); }
+.museum-card.active {
+  border-color: var(--active);
+  box-shadow: 0 0 0 2px var(--active), 0 6px 18px var(--shadow);
+}
+
+.museum-card-head { display: flex; align-items: flex-start; gap: .6rem; justify-content: space-between; }
+.museum-card h3 { margin: 0; font-size: 1.08rem; line-height: 1.3; font-weight: 700; }
+
+.museum-badge {
+  flex-shrink: 0;
+  background: var(--tag-bg);
+  color: var(--tag-text);
+  border-radius: 20px;
+  padding: .15rem .6rem;
+  font-size: .8rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.museum-card.active .museum-badge { background: var(--active); color: #fff; }
+
+.museum-location { color: var(--muted); font-size: .85rem; margin: .35rem 0 0; }
+.museum-nomap { opacity: .65; font-style: italic; }
+
+/* мозаика миниатюр */
+.museum-thumbs { display: flex; gap: 6px; margin-top: .7rem; flex-wrap: wrap; }
+.museum-thumb {
+  width: 62px;
+  height: 62px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: block;
+  flex-shrink: 0;
+  background: var(--border);
+  transition: transform .15s;
+}
+.museum-thumb:hover { transform: scale(1.06); }
+.museum-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.museum-thumb-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: .85rem;
+  font-weight: 600;
+  border: 1px dashed var(--border);
+  background: none;
+}
+
+.museum-toggle {
+  margin-top: .7rem;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--link);
+  padding: .3rem .8rem;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: .8rem;
+  font-family: inherit;
+  transition: background .2s;
+}
+.museum-toggle:hover { background: var(--border); }
+
+.museum-posts-list { margin: .6rem 0 0; padding-left: 1.2rem; font-size: .85rem; }
+.museum-posts-list li { margin-bottom: .2rem; }
 .museum-posts-list a { color: var(--link); text-decoration: none; }
 .museum-posts-list a:hover { text-decoration: underline; }
-.show-more-btn {
-  background: none; border: 1px solid var(--border); color: var(--link);
-  padding: .3rem .8rem; border-radius: 15px; cursor: pointer;
-  font-size: .8rem; margin-top: .3rem; transition: all .2s;
-  font-family: inherit;
+
+/* всплывающее окно на карте */
+.leaflet-popup-content { margin: .8rem 1rem; font-family: inherit; }
+.leaflet-popup-content b { font-size: .95rem; }
+.popup-link { color: var(--active); }
+.popup-place { color: #555; font-size: .85rem; }
+
+/* маркер приблизительного расположения */
+.marker-approx { opacity: .55; }
+
+/* ---------- телефон и планшет ---------- */
+@media (max-width: 1000px) {
+  .museums-layout { grid-template-columns: 1fr; gap: 1rem; padding: 0 .8rem 2rem; }
+  .museums-map-col { position: static; }
+  #map { height: 320px; min-height: 0; }
+  .museums-toolbar { padding: 0 .8rem; }
+  .museums-hero h1 { font-size: 1.5rem; }
 }
-.show-more-btn:hover { background: var(--border); }
-.map-topbar { display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding: .6rem 1.5rem; }
-.map-wrap { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
-.map-fallback { padding: 1rem; text-align: center; color: var(--muted); }
-@media (max-width: 768px) { #map { height: 350px; } .map-wrap { padding: 0 .8rem; } .map-topbar { padding: .6rem .8rem; } }
+
+@media (max-width: 480px) {
+  .museums-hero { padding: .3rem .8rem 0; }
+  .museums-hero h1 { font-size: 1.25rem; }
+  .museums-stats { font-size: .85rem; }
+  .museum-card { padding: .8rem .9rem; }
+  .museum-card h3 { font-size: 1rem; }
+  .museum-thumb { width: 54px; height: 54px; }
+  .museum-sort { flex: 1 1 100%; }
+}
+
 </style>
 </head><body class="museums-page">
 <div class="map-topbar">
   <a href="index.html" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
   <button type="button" class="theme-toggle theme-toggle-inline" data-theme-toggle onclick="toggleTheme()" aria-label="Переключить тему" title="Светлая / тёмная тема"><span class="icon-theme-toggle" aria-hidden="true"></span></button>
 </div>
-<h1 class="map-h1"><span class="icon-map-header" aria-hidden="true"></span> Карта музеев</h1>
-<p class="map-subtitle">50 музеев в коллекции (45 на карте)</p>
-<div class="map-wrap">
-  <div id="map"></div>
+
+<header class="museums-hero">
+  <h1><span class="icon-map-header" aria-hidden="true"></span> Карта музеев</h1>
+  <p class="museums-stats"><b>50</b> музеев · <b>81</b> картина · <b>14</b> стран · 45 на карте</p>
+</header>
+
+<div class="museums-toolbar">
+  <label class="visually-hidden" for="museum-search">Поиск по музеям</label>
+  <input type="search" id="museum-search" class="search-box" autocomplete="off"
+         placeholder="Музей, город или страна…">
+  <label class="visually-hidden" for="museum-sort">Сортировка</label>
+  <select id="museum-sort" class="museum-sort">
+    <option value="count">Сначала где больше картин</option>
+    <option value="name">По названию</option>
+    <option value="country">По стране</option>
+  </select>
+  <span id="museum-found" class="results-count" role="status" aria-live="polite"></span>
 </div>
-<div class="museums-grid">
-        <div class="museum-card" id="museum-базельский-художественный-музей-базель">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Базельский художественный музей, Базель</h3>
-          
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-08-01-илер-жермен-эдгар-де-га-эдгар-дега.html">Илер-Жермен-Эдгар де Га (Эдгар Дега) — Jockey blessé (Раненый жокей), 1896-1898</a></li>
-          </ul>
-          <div class="" id="hidden-базельский-художественный-музей-базель" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-британская-галерея-тейт-лондон">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Британская галерея Тейт, Лондон</h3>
-          
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-12-16-джон-сингер-сарджент.html">Джон Сингер Сарджент — Claude Monet Painting by the Edge of a Wood (Картина Клода Моне «На опушке леса»), 1885</a></li>
-          </ul>
-          <div class="" id="hidden-британская-галерея-тейт-лондон" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-винтертурский-художественный-музей-винтертур">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Винтертурский художественный музей, Винтертур</h3>
-          
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-07-12-фердинанд-ходлер.html">Фердинанд Ходлер — Die Strasse nach Evordes (Дорога в Эвордес), 1890</a></li>
-          </ul>
-          <div class="" id="hidden-винтертурский-художественный-музей-винтертур" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-гим-москва">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> ГИМ, Москва</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Исторический музей, Россия</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-05-09-константин-фёдорович-юон.html">Константин Фёдорович Юон — Парад на Красной площади 7 ноября 1941 года, 1949</a></li>
-          </ul>
-          <div class="" id="hidden-гим-москва" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-гмии-им-ас-пушкина-москва">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> ГМИИ им. А.С. Пушкина, Москва</h3>
-          
-          <p class="museum-count">6 картин</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-03-29-никола-пуссен.html">Никола Пуссен — Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660</a></li><li><a href="2025-04-11-альфред-сислей.html">Альфред Сислей — La gelée à Louvecienne (Мороз в Лувесьенне), 1873</a></li><li><a href="2025-04-28-луиджи-алоис-франсуа-жозеф-луар.html">Луиджи Алоис-Франсуа-Жозеф Луар — Smoke on the Paris Circuit Line (Дым окружной парижской железной дороги), 1885</a></li><li><a href="2025-06-05-йохан-фредерик-фриц-таулов.html">Йохан Фредерик Фриц Таулов — Горная речка, между 1887 и 1890 годами</a></li><li><a href="2025-06-21-жан-луи-форен.html">Жан Луи Форен — Les courses (Скачки), 1888</a></li>
-          </ul>
-          <div class="hidden-posts" id="hidden-гмии-им-ас-пушкина-москва" hidden>
-            <ul class="museum-posts-list">
-              <li><a href="2026-04-30-аксели-галлен-каллела.html">Аксели Галлен-Каллела — Ruovesi (Озеро Руовеси), 1896</a></li>
-            </ul>
-          </div>
-          <button type="button" class="show-more-btn" aria-expanded="false" aria-controls="hidden-гмии-им-ас-пушкина-москва" onclick="toggleMuseumPosts(this, 'гмии-им-ас-пушкина-москва')">Показать все 6 картин ▾</button>
-        </div>
-        <div class="museum-card" id="museum-государственная-третьяковская-галерея-москва">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Государственная Третьяковская галерея, Москва</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Третьяковская галерея, Россия</p>
-          <p class="museum-count">5 картин</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-03-06-николай-александрович-тархов.html">Николай Александрович Тархов — Козы на солнце, 1904</a></li><li><a href="2025-03-12-александр-иванович-морозов.html">Александр Иванович Морозов — Выход из церкви в Пскове, 1864</a></li><li><a href="2025-03-14-николай-дмитриевич-кузнецов.html">Николай Дмитриевич Кузнецов — В праздник, 1879</a></li><li><a href="2025-03-25-архип-иванович-куинджи.html">Архип Иванович Куинджи — Берёзовая роща, 1879</a></li><li><a href="2025-12-06-карл-павлович-брюллов.html">Карл Павлович Брюллов — Вид форта Пику на острове Мадейра (Неоконченная картина), 1849–1850</a></li>
-          </ul>
-          <div class="" id="hidden-государственная-третьяковская-галерея-москва" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-государственный-русский-музей-санкт-петербург">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Государственный Русский музей, Санкт-Петербург</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Русский музей, Россия</p>
-          <p class="museum-count">2 картины</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-06-14-валентин-александрович-серов.html">Валентин Александрович Серов — Солдатушки, бравы ребятушки, где же ваша слава?, 1905</a></li><li><a href="2026-08-16-илья-ефимович-репин.html">Илья Ефимович Репин — На дерновой скамье, 1876</a></li>
-          </ul>
-          <div class="" id="hidden-государственный-русский-музей-санкт-петербург" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-государственный-музей-тюрингии-хайдексбург">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Государственный музей Тюрингии, Хайдексбург</h3>
-          
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-02-18-каспар-давид-фридрих.html">Каспар Давид Фридрих — Morgennebel im Gebirge (Утренний туман в горах), 1808</a></li>
-          </ul>
-          <div class="" id="hidden-государственный-музей-тюрингии-хайдексбург" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-государственный-музей-истории-религии-санкт-петербург">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Государственный музей истории религии, Санкт-Петербург</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Гродненский государственный музей истории религии, Беларусь</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2026-07-29-владимир-егорович-маковский.html">Владимир Егорович Маковский — Освящение публичного дома (эскиз), 1900</a></li>
-          </ul>
-          <div class="" id="hidden-государственный-музей-истории-религии-санкт-петербург" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-государственный-художественный-музей-платтсбурга-галерея-рок">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург</h3>
-          
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-10-11-рокуэлл-кент.html">Рокуэлл Кент — Cranberrying, Monhegan (Сбор клюквы, Монхиган),1907</a></li>
-          </ul>
-          <div class="" id="hidden-государственный-художественный-музей-платтсбурга-галерея-рок" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-гётеборгский-художественный-музей-гётеборг">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Гётеборгский художественный музей, Гётеборг</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Göteborgs konstmuseum, Швеция</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2026-07-04-андерс-леонард-цорн.html">Андерс Леонард Цорн — Impressions de Londres (Впечатления от Лондона), 1890</a></li>
-          </ul>
-          <div class="" id="hidden-гётеборгский-художественный-музей-гётеборг" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-институт-искусств-миннеаполиса-миннеаполис">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Институт искусств Миннеаполиса, Миннеаполис</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Minneapolis Institute of Art, Соединённые Штаты Америки</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-07-21-жан-фредерик-базиль.html">Жан Фредерик Базиль — Paysage au bord du Lez (Пейзаж на берегу Лез), 1870</a></li>
-          </ul>
-          <div class="" id="hidden-институт-искусств-миннеаполиса-миннеаполис" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-институт-искусств-стерлинга-и-франсин-кларк-уильямстаун">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Институт искусств Стерлинга и Франсин Кларк, Уильямстаун</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Clark Art Institute Orientation Center, Соединённые Штаты Америки</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2026-02-11-альфред-сислей.html">Альфред Сислей — Nature morte, pommes et raisins (Натюрморт, яблоки и виноград), 1880-81</a></li>
-          </ul>
-          <div class="" id="hidden-институт-искусств-стерлинга-и-франсин-кларк-уильямстаун" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-коллекции-версальского-дворца-версаль">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Коллекции Версальского дворца, Версаль</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Версальский дворец, Франция</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2026-02-04-жан-батист-эдуар-детай.html">Жан Батист Эдуар Детай — Inauguration de l&#x27;Opéra de Paris, 5 janvier 1875 (Открытие Парижской оперы, 5 января 1875 года), 1878</a></li>
-          </ul>
-          <div class="" id="hidden-коллекции-версальского-дворца-версаль" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-королевский-музей-изящных-искусств-брюссель">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Королевский музей изящных искусств, Брюссель</h3>
-          
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-11-04-иньяс-анри-жан-теодор-фантен-латур.html">Иньяс-Анри-Жан-Теодор Фантен-Латур — La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879</a></li>
-          </ul>
-          <div class="" id="hidden-королевский-музей-изящных-искусств-брюссель" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-лувр-париж-в-запаснике">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Лувр, Париж (в запаснике)</h3>
-          
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-04-13-александр-жан-батист-брюн.html">Александр Жан-Батист Брюн — Vue du Salon Carré au Louvre (Вид на Салон Карре в Лувре), 1880</a></li>
-          </ul>
-          <div class="" id="hidden-лувр-париж-в-запаснике" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-малый-дворец-музей-изящных-искусств-города-парижа-париж">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Малый дворец, музей изящных искусств города Парижа, Париж</h3>
-          
-          <p class="museum-count">2 картины</p>
-          <ul class="museum-posts-list">
-            <li><a href="2026-03-16-анонимные-художники-феликс-огюстен-милиус-александр-огюст-ро.html">Анонимные художники, Феликс Огюстен Милиус, Александр-Огюст Розе, Альфред Адольф Ленгле, Огюст Русслен, Огюст Александр Хирш, Эмиль-Анри Лапорт, Огюст Ренуар, Поль Милье, Леонс-Люсьен Кордье, Альбер Дарье — Quarante-trois portraits de peintres de l&#x27;atelier Gleyre (Сорок три портрета художников мастерской Глейра), между 1856 и 1868 годами</a></li><li><a href="2026-08-10-альфред-сислей.html">Альфред Сислей — Lisière de la forêt de Fontainebleau (Опушка леса Фонтенбло), 1865</a></li>
-          </ul>
-          <div class="" id="hidden-малый-дворец-музей-изящных-искусств-города-парижа-париж" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-метрополитен-музей-нью-йорк">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Метрополитен-музей, Нью-Йорк</h3>
-          
-          <p class="museum-count">2 картины</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-06-07-альфред-сислей.html">Альфред Сислей — Rue Eugène Moussoir à Moret: L&#x27;hiver (Улица Эжена Муссуара в Море: Зима), 1891</a></li><li><a href="2025-07-09-каспар-давид-фридрих.html">Каспар Давид Фридрих — Ansicht der Ostküste Rügens mit einem Schäfer (Вид на восточный берег острова Рюген с пастухом), 1805–06</a></li>
-          </ul>
-          <div class="" id="hidden-метрополитен-музей-нью-йорк" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-музей-барберини-потсдам">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Музей Барберини, Потсдам</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Museum Barberini, Германия</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-10-02-жан-батист-арман-гийомен.html">Жан-Батист Арман Гийомен — Vue du Puy-de-Dôme (Вид на Пюи-де-Дом), 1899</a></li>
-          </ul>
-          <div class="" id="hidden-музей-барберини-потсдам" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-музей-вальрафа-рихарца-и-фонд-корбо-кёльн">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн</h3>
-          
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-02-14-пьер-огюст-ренуар.html">Пьер Огюст Ренуар — Les Fiancés (Пара), около 1868</a></li>
-          </ul>
-          <div class="" id="hidden-музей-вальрафа-рихарца-и-фонд-корбо-кёльн" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-музей-гетти-лос-анджелес">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Музей Гетти, Лос-Анджелес</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Nino&#x27;s Getty, Соединённые Штаты Америки</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-10-16-гюстав-кайботт.html">Гюстав Кайботт — Jeune homme à sa fenêtre (Молодой человек у окна), 1876</a></li>
-          </ul>
-          <div class="" id="hidden-музей-гетти-лос-анджелес" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-музей-кунстпаласт-дюссельдорф">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Музей Кунстпаласт, Дюссельдорф</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Museum Kunstpalast, Германия</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-05-04-макс-либерман.html">Макс Либерман — Die Kartoffelernte (Собирание картофеля), 1875</a></li>
-          </ul>
-          <div class="" id="hidden-музей-кунстпаласт-дюссельдорф" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-музей-леопольда-вена">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Музей Леопольда, Вена</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Музей Леопольда, Австрия</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2026-06-04-рудольф-фон-альт.html">Рудольф фон Альт — Die alte Fichte in Bad Gastein (Старая ель в Бад-Гастайне), 1899</a></li>
-          </ul>
-          <div class="" id="hidden-музей-леопольда-вена" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-музей-скагена-скаген">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Музей Скагена, Скаген</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Skagens Museum, Дания</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-12-10-ялмар-эйлиф-эммануэл-петерссен.html">Ялмар Эйлиф Эммануэл Петерссен — Måneopgang over klitterne (Восход луны над дюнами), 1883</a></li>
-          </ul>
-          <div class="" id="hidden-музей-скагена-скаген" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-музей-фабра-монпелье">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Музей Фабра, Монпелье</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Musée Fabre, Франция</p>
-          <p class="museum-count">2 картины</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-04-15-жан-фредерик-базиль.html">Жан Фредерик Базиль — L’atelier de la rue de Furstenberg (Мастерская художника на улице Фюрстенберг), 1865</a></li><li><a href="2025-06-10-жан-дезире-гюстав-курбе.html">Жан Дезире Гюстав Курбе — La Rencontre ou Bonjour Monsieur Courbet (Встреча или Здравствуйте, мистер Курбе), 1854</a></li>
-          </ul>
-          <div class="" id="hidden-музей-фабра-монпелье" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-музей-эжена-будена-онфлёр">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Музей Эжена Будена, Онфлёр</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Musée Eugène Boudin, Франция</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-11-22-эжен-луи-буден.html">Эжен Луи Буден — Le Clocher de Sainte-Catherine, Honfleur (Колокольня Святой Екатерины, Онфлёр), 1897</a></li>
-          </ul>
-          <div class="" id="hidden-музей-эжена-будена-онфлёр" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-музей-дорсе-париж">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Музей д’Орсе, Париж</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Музей Орсе, Франция</p>
-          <p class="museum-count">3 картины</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-06-27-альфред-сислей.html">Альфред Сислей — Le Pont de Moret (Мост в Морэ), 1893</a></li><li><a href="2025-08-07-илер-жермен-эдгар-де-га-эдгар-дега.html">Илер-Жермен-Эдгар де Га (Эдгар Дега) — Salle de billard au Ménil-Hubert (Бильярдная в Мениль-Юбер), 1892</a></li><li><a href="2025-12-01-станислас-анри-руар.html">Станислас Анри Руар — La Terrasse au bord de la Seine à Melun (Терраса на берегу Сены в Мелуне), 1874</a></li>
-          </ul>
-          <div class="" id="hidden-музей-дорсе-париж" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-музей-изящных-искусств-гент">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Музей изящных искусств, Гент</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Museum voor Schone Kunsten, Бельгия</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2026-05-15-николай-егорович-сверчков.html">Николай Егорович Сверчков — Зимний пейзаж с санями, запряженными лошадьми, 1868</a></li>
-          </ul>
-          <div class="" id="hidden-музей-изящных-искусств-гент" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-музей-искусств-охара-курасики">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Музей искусств Охара, Курасики</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> 大原美術館, Япония</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-12-24-жан-франсуа-милле.html">Жан-Франсуа Милле — Falaises de Gréville (Скалы Гревиля), 1871</a></li>
-          </ul>
-          <div class="" id="hidden-музей-искусств-охара-курасики" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-музей-современного-искусства-андре-мальро-гавр">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Музей современного искусства Андре Мальро, Гавр</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Musée d&#x27;Art Moderne André Malraux, Франция</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2026-03-22-жан-батист-арман-гийомен.html">Жан-Батист Арман Гийомен — Paysage de neige à Crozant (Снежный пейзаж в Крозанте), 1895</a></li>
-          </ul>
-          <div class="" id="hidden-музей-современного-искусства-андре-мальро-гавр" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-национальная-галерея-шотландии-эдинбург">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Национальная галерея Шотландии, Эдинбург</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Национальная портретная галерея Шотландии, Соединённое Королевство</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-06-18-фердинан-виктор-эжен-делакруа.html">Фердинан Виктор Эжен Делакруа — Bouquet de fleurs (Ваза с цветами), 1833</a></li>
-          </ul>
-          <div class="" id="hidden-национальная-галерея-шотландии-эдинбург" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-национальная-галерея-искусства-вашингтон">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Национальная галерея искусства, Вашингтон</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> National Gallery of Art, Соединённые Штаты Америки</p>
-          <p class="museum-count">4 картины</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-09-02-жакоб-абраам-камиль-писсарро.html">Жакоб Абраам Камиль Писсарро — Une Crique a Saint-Thomas (Antilles) (Бухта на острове Сент-Томас (Антильские острова)), 1856</a></li><li><a href="2025-11-17-жан-луи-форен.html">Жан Луи Форен — Aux Courses à Longchamp (На скачках в Лоншане), 1891</a></li><li><a href="2026-03-26-альфред-сислей.html">Альфред Сислей — La Prairie (Луг), 1875</a></li><li><a href="2026-04-16-винсент-виллем-ван-гог.html">Винсент Виллем ван Гог — Bloembedden in Holland (Цветники в Голландии), 1883</a></li>
-          </ul>
-          <div class="" id="hidden-национальная-галерея-искусства-вашингтон" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-национальный-музей-прадо-мадрид">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Национальный музей Прадо, Мадрид</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> музей Прадо, Испания</p>
-          <p class="museum-count">2 картины</p>
-          <ul class="museum-posts-list">
-            <li><a href="2026-02-16-аурелиано-де-беруэте.html">Аурелиано де Беруэте — Paisaje de Torrelodones (Пейзаж Торрелодонес), 1891</a></li><li><a href="2026-08-06-элисео-мейфрен-и-роч.html">Элисео Мейфрен-и-Роч — Plaza de París (Площадь Парижа), 1887</a></li>
-          </ul>
-          <div class="" id="hidden-национальный-музей-прадо-мадрид" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-национальный-музей-западного-искусства-токио">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Национальный музей западного искусства, Токио</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Национальный музей западного искусства, Япония</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-08-21-альфред-сислей.html">Альфред Сислей — Landscape at Louveciennes (Пейзаж в Лувесьене), 1873</a></li>
-          </ul>
-          <div class="" id="hidden-национальный-музей-западного-искусства-токио" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-национальный-художественный-музей-республики-беларусь-минск">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Национальный художественный музей Республики Беларусь, Минск</h3>
-          
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2026-03-10-станислав-юлианович-жуковский.html">Станислав Юлианович Жуковский — Былое. Комната старого дома, 1912</a></li>
-          </ul>
-          <div class="" id="hidden-национальный-художественный-музей-республики-беларусь-минск" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-отдел-личных-коллекций-гмии-им-ас-пушкина-москва">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Отдел личных коллекций, ГМИИ им. А.С. Пушкина, Москва</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Галерея искусства стран Европы и Америки XIX—XX веков, Россия</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-04-24-илья-ефимович-репин.html">Илья Ефимович Репин — Летний пейзаж (В.А.Репина на мостике в Абрамцеве), 1879</a></li>
-          </ul>
-          <div class="" id="hidden-отдел-личных-коллекций-гмии-им-ас-пушкина-москва" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-пермская-государственная-художественная-галерея-пермь">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Пермская государственная художественная галерея, Пермь</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Пермская Государственная Художественная Галерея, Россия</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-09-24-константин-аполлонович-савицкий.html">Константин Аполлонович Савицкий — У мирового суда, XIX век</a></li>
-          </ul>
-          <div class="" id="hidden-пермская-государственная-художественная-галерея-пермь" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-портлендский-художественный-музей-портленд">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Портлендский художественный музей, Портленд</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Portland Art Museum, Соединённые Штаты Америки</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2026-04-04-жакоб-абраам-камиль-писсарро.html">Жакоб Абраам Камиль Писсарро — La Maison Rouge (Красный дом), 1873</a></li>
-          </ul>
-          <div class="" id="hidden-портлендский-художественный-музей-портленд" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-собрание-фонда-эмиля-бюрле-цюрих">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Собрание Фонда Эмиля Бюрле, Цюрих</h3>
-          
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2026-01-16-эдуард-мане.html">Эдуард Мане — Le Suicidé (Самоубийство), 1877</a></li>
-          </ul>
-          <div class="" id="hidden-собрание-фонда-эмиля-бюрле-цюрих" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-собрание-хиршпрунга-копенгаген">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Собрание Хиршпрунга, Копенгаген</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Den Hirschsprungske Samling, Дания</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-12-31-вигго-юхансен.html">Вигго Юхансен — Glade jul (Счастливого Рождества), 1891</a></li>
-          </ul>
-          <div class="" id="hidden-собрание-хиршпрунга-копенгаген" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-старая-национальная-галерея-берлин">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Старая национальная галерея, Берлин</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Старая национальная галерея, Германия</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-06-02-франц-теодор-макс-слефогт.html">Франц Теодор Макс Слефогт — Unter den Linden (Унтер-ден-Линден), 1913</a></li>
-          </ul>
-          <div class="" id="hidden-старая-национальная-галерея-берлин" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-художественная-галерея-южной-австралии-аделаида">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Художественная галерея Южной Австралии, Аделаида</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Art Gallery of South Australia, Австралия</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-05-06-джон-гловер.html">Джон Гловер — A view of the artist&#x27;s house and garden, in Mills Plains, Van Diemen&#x27;s Land (Вид на дом и сад художника в Миллс-Плейнс, Земля Ван-Димена), 1835</a></li>
-          </ul>
-          <div class="" id="hidden-художественная-галерея-южной-австралии-аделаида" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-художественный-музей-колледжа-смит-нортхемптон">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Художественный музей колледжа Смит, Нортхемптон</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Smith College Museum of Art, Соединённые Штаты Америки</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-03-17-фредерик-чайльд-гассам.html">Фредерик Чайльд Гассам — Union Square in Spring (Юнион-сквер весной), 1896</a></li>
-          </ul>
-          <div class="" id="hidden-художественный-музей-колледжа-смит-нортхемптон" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-частная-коллекция">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Частная коллекция</h3>
-          
-          <p class="museum-count">11 картин</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-03-22-гюстав-кайботт.html">Гюстав Кайботт — Chemin montant (Восходящая дорога), 1881</a></li><li><a href="2025-05-23-геркулес-сегерс.html">Геркулес Сегерс — Woodland Path (Лесная тропа), около 1618-20</a></li><li><a href="2025-05-25-игорь-эммануилович-грабарь.html">Игорь Эммануилович Грабарь — Весенний пейзаж. Апрель, 1939</a></li><li><a href="2025-05-31-ханс-даль.html">Ханс Даль — Норвежский фьорд с козами, 1910-е</a></li><li><a href="2025-07-03-альберт-бирштадт.html">Альберт Бирштадт — A River Landscape, Westphalia (Речной пейзаж, Вестфалия), 1855</a></li>
-          </ul>
-          <div class="hidden-posts" id="hidden-частная-коллекция" hidden>
-            <ul class="museum-posts-list">
-              <li><a href="2025-07-24-йохан-фредерик-фриц-таулов.html">Йохан Фредерик Фриц Таулов — A Stream in Springtime (Ручей в весеннее время), 1901</a></li><li><a href="2025-10-06-поль-сезар-эллё.html">Поль Сезар Эллё — Le Grand Pavois (Гранд Павуа), 1901</a></li><li><a href="2025-11-07-фрэнсис-кэмпбелл-буало-каделл.html">Фрэнсис Кэмпбелл Буало Каделл — Florian&#x27;s café, Venice (Кафе Флориан, Венеция), 1910</a></li><li><a href="2025-11-09-эмильен-мюло-дюриваж.html">Эмильен Мюло-Дюриваж — Paysage du Cotentin, près des bords de l&#x27;Ouve (Пейзаж в Котантене на берегу реки Уве), XIX в.</a></li><li><a href="2026-01-07-борис-михайлович-кустодиев.html">Борис Михайлович Кустодиев — Крещенское водосвятие, 1921</a></li><li><a href="2026-05-22-эдуард-мане.html">Эдуард Мане — Le Chien Minnay (Собака Минней), 1879</a></li>
-            </ul>
-          </div>
-          <button type="button" class="show-more-btn" aria-expanded="false" aria-controls="hidden-частная-коллекция" onclick="toggleMuseumPosts(this, 'частная-коллекция')">Показать все 11 картин ▾</button>
-        </div>
-        <div class="museum-card" id="museum-частная-коллекция-монте-карло">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Частная коллекция, Монте-Карло</h3>
-          
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-09-17-анри-мари-раймон-де-тулуз-лотрек-монфа.html">Анри Мари Раймон де Тулуз-Лотрек-Монфа — Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888</a></li>
-          </ul>
-          <div class="" id="hidden-частная-коллекция-монте-карло" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-частная-коллекция-сша">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Частная коллекция, США</h3>
-          
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-11-26-исаак-ильич-левитан.html">Исаак Ильич Левитан — Иллюминация Кремля, 1896</a></li>
-          </ul>
-          <div class="" id="hidden-частная-коллекция-сша" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-частная-коллекция-франция">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Частная коллекция, Франция</h3>
-          
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-05-17-анри-жан-гийом-мартен.html">Анри Жан Гийом Мартен — Le paysan et la bergère (Крестьянин и пастушка), 1903</a></li>
-          </ul>
-          <div class="" id="hidden-частная-коллекция-франция" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-частная-коллекция-швейцария">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Частная коллекция, Швейцария</h3>
-          
-          <p class="museum-count">2 картины</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-04-19-франц-фон-штук.html">Франц фон Штук — Sternschnuppen (Franz und Mary Stuck) (Падающие звёзды), 1912</a></li><li><a href="2026-08-27-роберт-герман-штерль.html">Роберт Герман Штерль — Feuerwerk über dem Kreml (Фейерверк над Кремлём), 1914</a></li>
-          </ul>
-          <div class="" id="hidden-частная-коллекция-швейцария" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-чикагский-институт-искусств-чикаго">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Чикагский институт искусств, Чикаго</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> The Art Institute of Chicago, Соединённые Штаты Америки</p>
-          <p class="museum-count">2 картины</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-04-17-илер-жермен-эдгар-де-га-эдгар-дега.html">Илер-Жермен-Эдгар де Га (Эдгар Дега) — Paysage Avec Fumée de Cheminées (Пейзаж с дымовыми трубами), 1890-1893</a></li><li><a href="2025-07-15-констан-тройон.html">Констан Тройон — Le Marais (Болото), 1840</a></li>
-          </ul>
-          <div class="" id="hidden-чикагский-институт-искусств-чикаго" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div>
-        <div class="museum-card" id="museum-штеделевский-художественный-институт-франкфурт-на-майне">
-          <h3><span class="icon-museum-small" aria-hidden="true"></span> Штеделевский художественный институт, Франкфурт-на-Майне</h3>
-          <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Städel Museum, Германия</p>
-          <p class="museum-count">1 картина</p>
-          <ul class="museum-posts-list">
-            <li><a href="2025-04-23-жан-дезире-гюстав-курбе.html">Жан Дезире Гюстав Курбе — Dorfausgang im Winter (Окраина деревни зимой), 1868</a></li>
-          </ul>
-          <div class="" id="hidden-штеделевский-художественный-институт-франкфурт-на-майне" hidden>
-            <ul class="museum-posts-list">
-              
-            </ul>
-          </div>
-          
-        </div></div>
+
+<div class="museums-layout">
+  <div class="museums-map-col">
+    <div class="map-shell">
+      <div id="map"></div>
+      <button type="button" class="map-expand" onclick="toggleMapFullscreen(this)"
+              aria-label="Развернуть карту" title="Развернуть карту">⛶</button>
+    </div>
+  </div>
+  <div class="museums-list-col" id="museum-list">
+<article class="museum-card" id="museum-частная-коллекция" data-id="частная-коллекция"
+         data-search="частная коллекция  " data-count="11"
+         data-name="частная коллекция" data-country=""
+         data-mapped="0">
+  <header class="museum-card-head"><h3>Частная коллекция</h3><span class="museum-badge">11</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-05-22-эдуард-мане.html" title="Эдуард Мане — Le Chien Minnay (Собака Минней), 1879"><img src="images/thumbs/2026-05-22-эдуард-мане.jpg" alt="Эдуард Мане — Le Chien Minnay (Собака Минней), 1879" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2026-01-07-борис-михайлович-кустодиев.html" title="Борис Михайлович Кустодиев — Крещенское водосвятие, 1921"><img src="images/thumbs/2026-01-07-борис-михайлович-кустодиев.jpg" alt="Борис Михайлович Кустодиев — Крещенское водосвятие, 1921" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-11-09-эмильен-мюло-дюриваж.html" title="Эмильен Мюло-Дюриваж — Paysage du Cotentin, près des bords de l&#x27;Ouve (Пейзаж в Котантене на берегу реки Уве), XIX в."><img src="images/thumbs/2025-11-09-эмильен-мюло-дюриваж.jpg" alt="Эмильен Мюло-Дюриваж — Paysage du Cotentin, près des bords de l&#x27;Ouve (Пейзаж в Котантене на берегу реки Уве), XIX в." loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-11-07-фрэнсис-кэмпбелл-буало-каделл.html" title="Фрэнсис Кэмпбелл Буало Каделл — Florian&#x27;s café, Venice (Кафе Флориан, Венеция), 1910"><img src="images/thumbs/2025-11-07-фрэнсис-кэмпбелл-буало-каделл.jpg" alt="Фрэнсис Кэмпбелл Буало Каделл — Florian&#x27;s café, Venice (Кафе Флориан, Венеция), 1910" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-10-06-поль-сезар-эллё.html" title="Поль Сезар Эллё — Le Grand Pavois (Гранд Павуа), 1901"><img src="images/thumbs/2025-10-06-поль-сезар-эллё.jpg" alt="Поль Сезар Эллё — Le Grand Pavois (Гранд Павуа), 1901" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-07-24-йохан-фредерик-фриц-таулов.html" title="Йохан Фредерик Фриц Таулов — A Stream in Springtime (Ручей в весеннее время), 1901"><img src="images/thumbs/2025-07-24-йохан-фредерик-фриц-таулов.jpg" alt="Йохан Фредерик Фриц Таулов — A Stream in Springtime (Ручей в весеннее время), 1901" loading="lazy" decoding="async"></a><span class="museum-thumb museum-thumb-more">+5</span></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-частная-коллекция"
+          onclick="toggleMuseumPosts(this, 'частная-коллекция')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-частная-коллекция" hidden><li><a href="2026-05-22-эдуард-мане.html">Эдуард Мане — Le Chien Minnay (Собака Минней), 1879</a></li><li><a href="2026-01-07-борис-михайлович-кустодиев.html">Борис Михайлович Кустодиев — Крещенское водосвятие, 1921</a></li><li><a href="2025-11-09-эмильен-мюло-дюриваж.html">Эмильен Мюло-Дюриваж — Paysage du Cotentin, près des bords de l&#x27;Ouve (Пейзаж в Котантене на берегу реки Уве), XIX в.</a></li><li><a href="2025-11-07-фрэнсис-кэмпбелл-буало-каделл.html">Фрэнсис Кэмпбелл Буало Каделл — Florian&#x27;s café, Venice (Кафе Флориан, Венеция), 1910</a></li><li><a href="2025-10-06-поль-сезар-эллё.html">Поль Сезар Эллё — Le Grand Pavois (Гранд Павуа), 1901</a></li><li><a href="2025-07-24-йохан-фредерик-фриц-таулов.html">Йохан Фредерик Фриц Таулов — A Stream in Springtime (Ручей в весеннее время), 1901</a></li><li><a href="2025-07-03-альберт-бирштадт.html">Альберт Бирштадт — A River Landscape, Westphalia (Речной пейзаж, Вестфалия), 1855</a></li><li><a href="2025-05-31-ханс-даль.html">Ханс Даль — Норвежский фьорд с козами, 1910-е</a></li><li><a href="2025-05-25-игорь-эммануилович-грабарь.html">Игорь Эммануилович Грабарь — Весенний пейзаж. Апрель, 1939</a></li><li><a href="2025-05-23-геркулес-сегерс.html">Геркулес Сегерс — Woodland Path (Лесная тропа), около 1618-20</a></li><li><a href="2025-03-22-гюстав-кайботт.html">Гюстав Кайботт — Chemin montant (Восходящая дорога), 1881</a></li></ul>
+</article>
+<article class="museum-card" id="museum-гмии-им-ас-пушкина-москва" data-id="гмии-им-ас-пушкина-москва"
+         data-search="гмии им. а.с. пушкина, москва  " data-count="6"
+         data-name="гмии им. а.с. пушкина, москва" data-country=""
+         data-mapped="1">
+  <header class="museum-card-head"><h3>ГМИИ им. А.С. Пушкина, Москва</h3><span class="museum-badge">6</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-04-30-аксели-галлен-каллела.html" title="Аксели Галлен-Каллела — Ruovesi (Озеро Руовеси), 1896"><img src="images/thumbs/2026-04-30-аксели-галлен-каллела.jpg" alt="Аксели Галлен-Каллела — Ruovesi (Озеро Руовеси), 1896" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-06-21-жан-луи-форен.html" title="Жан Луи Форен — Les courses (Скачки), 1888"><img src="images/thumbs/2025-06-21-жан-луи-форен.jpg" alt="Жан Луи Форен — Les courses (Скачки), 1888" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-06-05-йохан-фредерик-фриц-таулов.html" title="Йохан Фредерик Фриц Таулов — Горная речка, между 1887 и 1890 годами"><img src="images/thumbs/2025-06-05-йохан-фредерик-фриц-таулов.jpg" alt="Йохан Фредерик Фриц Таулов — Горная речка, между 1887 и 1890 годами" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-04-28-луиджи-алоис-франсуа-жозеф-луар.html" title="Луиджи Алоис-Франсуа-Жозеф Луар — Smoke on the Paris Circuit Line (Дым окружной парижской железной дороги), 1885"><img src="images/thumbs/2025-04-28-луиджи-алоис-франсуа-жозеф-луар.jpg" alt="Луиджи Алоис-Франсуа-Жозеф Луар — Smoke on the Paris Circuit Line (Дым окружной парижской железной дороги), 1885" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-04-11-альфред-сислей.html" title="Альфред Сислей — La gelée à Louvecienne (Мороз в Лувесьенне), 1873"><img src="images/thumbs/2025-04-11-альфред-сислей.jpg" alt="Альфред Сислей — La gelée à Louvecienne (Мороз в Лувесьенне), 1873" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-03-29-никола-пуссен.html" title="Никола Пуссен — Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660"><img src="images/thumbs/2025-03-29-никола-пуссен.jpg" alt="Никола Пуссен — Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-гмии-им-ас-пушкина-москва"
+          onclick="toggleMuseumPosts(this, 'гмии-им-ас-пушкина-москва')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-гмии-им-ас-пушкина-москва" hidden><li><a href="2026-04-30-аксели-галлен-каллела.html">Аксели Галлен-Каллела — Ruovesi (Озеро Руовеси), 1896</a></li><li><a href="2025-06-21-жан-луи-форен.html">Жан Луи Форен — Les courses (Скачки), 1888</a></li><li><a href="2025-06-05-йохан-фредерик-фриц-таулов.html">Йохан Фредерик Фриц Таулов — Горная речка, между 1887 и 1890 годами</a></li><li><a href="2025-04-28-луиджи-алоис-франсуа-жозеф-луар.html">Луиджи Алоис-Франсуа-Жозеф Луар — Smoke on the Paris Circuit Line (Дым окружной парижской железной дороги), 1885</a></li><li><a href="2025-04-11-альфред-сислей.html">Альфред Сислей — La gelée à Louvecienne (Мороз в Лувесьенне), 1873</a></li><li><a href="2025-03-29-никола-пуссен.html">Никола Пуссен — Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660</a></li></ul>
+</article>
+<article class="museum-card" id="museum-государственная-третьяковская-галерея-москва" data-id="государственная-третьяковская-галерея-москва"
+         data-search="государственная третьяковская галерея, москва третьяковская галерея россия" data-count="5"
+         data-name="государственная третьяковская галерея, москва" data-country="россия"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Государственная Третьяковская галерея, Москва</h3><span class="museum-badge">5</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Третьяковская галерея, Россия</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-12-06-карл-павлович-брюллов.html" title="Карл Павлович Брюллов — Вид форта Пику на острове Мадейра (Неоконченная картина), 1849–1850"><img src="images/thumbs/2025-12-06-карл-павлович-брюллов.jpg" alt="Карл Павлович Брюллов — Вид форта Пику на острове Мадейра (Неоконченная картина), 1849–1850" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-03-25-архип-иванович-куинджи.html" title="Архип Иванович Куинджи — Берёзовая роща, 1879"><img src="images/thumbs/2025-03-25-архип-иванович-куинджи.jpg" alt="Архип Иванович Куинджи — Берёзовая роща, 1879" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-03-14-николай-дмитриевич-кузнецов.html" title="Николай Дмитриевич Кузнецов — В праздник, 1879"><img src="images/thumbs/2025-03-14-николай-дмитриевич-кузнецов.jpg" alt="Николай Дмитриевич Кузнецов — В праздник, 1879" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-03-12-александр-иванович-морозов.html" title="Александр Иванович Морозов — Выход из церкви в Пскове, 1864"><img src="images/thumbs/2025-03-12-александр-иванович-морозов.jpg" alt="Александр Иванович Морозов — Выход из церкви в Пскове, 1864" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-03-06-николай-александрович-тархов.html" title="Николай Александрович Тархов — Козы на солнце, 1904"><img src="images/thumbs/2025-03-06-николай-александрович-тархов.jpg" alt="Николай Александрович Тархов — Козы на солнце, 1904" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-государственная-третьяковская-галерея-москва"
+          onclick="toggleMuseumPosts(this, 'государственная-третьяковская-галерея-москва')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-государственная-третьяковская-галерея-москва" hidden><li><a href="2025-12-06-карл-павлович-брюллов.html">Карл Павлович Брюллов — Вид форта Пику на острове Мадейра (Неоконченная картина), 1849–1850</a></li><li><a href="2025-03-25-архип-иванович-куинджи.html">Архип Иванович Куинджи — Берёзовая роща, 1879</a></li><li><a href="2025-03-14-николай-дмитриевич-кузнецов.html">Николай Дмитриевич Кузнецов — В праздник, 1879</a></li><li><a href="2025-03-12-александр-иванович-морозов.html">Александр Иванович Морозов — Выход из церкви в Пскове, 1864</a></li><li><a href="2025-03-06-николай-александрович-тархов.html">Николай Александрович Тархов — Козы на солнце, 1904</a></li></ul>
+</article>
+<article class="museum-card" id="museum-национальная-галерея-искусства-вашингтон" data-id="национальная-галерея-искусства-вашингтон"
+         data-search="национальная галерея искусства, вашингтон national gallery of art соединённые штаты америки" data-count="4"
+         data-name="национальная галерея искусства, вашингтон" data-country="соединённые штаты америки"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Национальная галерея искусства, Вашингтон</h3><span class="museum-badge">4</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> National Gallery of Art, Соединённые Штаты Америки</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-04-16-винсент-виллем-ван-гог.html" title="Винсент Виллем ван Гог — Bloembedden in Holland (Цветники в Голландии), 1883"><img src="images/thumbs/2026-04-16-винсент-виллем-ван-гог.jpg" alt="Винсент Виллем ван Гог — Bloembedden in Holland (Цветники в Голландии), 1883" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2026-03-26-альфред-сислей.html" title="Альфред Сислей — La Prairie (Луг), 1875"><img src="images/thumbs/2026-03-26-альфред-сислей.jpg" alt="Альфред Сислей — La Prairie (Луг), 1875" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-11-17-жан-луи-форен.html" title="Жан Луи Форен — Aux Courses à Longchamp (На скачках в Лоншане), 1891"><img src="images/thumbs/2025-11-17-жан-луи-форен.jpg" alt="Жан Луи Форен — Aux Courses à Longchamp (На скачках в Лоншане), 1891" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-09-02-жакоб-абраам-камиль-писсарро.html" title="Жакоб Абраам Камиль Писсарро — Une Crique a Saint-Thomas (Antilles) (Бухта на острове Сент-Томас (Антильские острова)), 1856"><img src="images/thumbs/2025-09-02-жакоб-абраам-камиль-писсарро.jpg" alt="Жакоб Абраам Камиль Писсарро — Une Crique a Saint-Thomas (Antilles) (Бухта на острове Сент-Томас (Антильские острова)), 1856" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-национальная-галерея-искусства-вашингтон"
+          onclick="toggleMuseumPosts(this, 'национальная-галерея-искусства-вашингтон')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-национальная-галерея-искусства-вашингтон" hidden><li><a href="2026-04-16-винсент-виллем-ван-гог.html">Винсент Виллем ван Гог — Bloembedden in Holland (Цветники в Голландии), 1883</a></li><li><a href="2026-03-26-альфред-сислей.html">Альфред Сислей — La Prairie (Луг), 1875</a></li><li><a href="2025-11-17-жан-луи-форен.html">Жан Луи Форен — Aux Courses à Longchamp (На скачках в Лоншане), 1891</a></li><li><a href="2025-09-02-жакоб-абраам-камиль-писсарро.html">Жакоб Абраам Камиль Писсарро — Une Crique a Saint-Thomas (Antilles) (Бухта на острове Сент-Томас (Антильские острова)), 1856</a></li></ul>
+</article>
+<article class="museum-card" id="museum-музей-дорсе-париж" data-id="музей-дорсе-париж"
+         data-search="музей д’орсе, париж музей орсе франция" data-count="3"
+         data-name="музей д’орсе, париж" data-country="франция"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Музей д’Орсе, Париж</h3><span class="museum-badge">3</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Музей Орсе, Франция</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-12-01-станислас-анри-руар.html" title="Станислас Анри Руар — La Terrasse au bord de la Seine à Melun (Терраса на берегу Сены в Мелуне), 1874"><img src="images/thumbs/2025-12-01-станислас-анри-руар.jpg" alt="Станислас Анри Руар — La Terrasse au bord de la Seine à Melun (Терраса на берегу Сены в Мелуне), 1874" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-08-07-илер-жермен-эдгар-де-га-эдгар-дега.html" title="Илер-Жермен-Эдгар де Га (Эдгар Дега) — Salle de billard au Ménil-Hubert (Бильярдная в Мениль-Юбер), 1892"><img src="images/thumbs/2025-08-07-илер-жермен-эдгар-де-га-эдгар-дега.jpg" alt="Илер-Жермен-Эдгар де Га (Эдгар Дега) — Salle de billard au Ménil-Hubert (Бильярдная в Мениль-Юбер), 1892" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-06-27-альфред-сислей.html" title="Альфред Сислей — Le Pont de Moret (Мост в Морэ), 1893"><img src="images/thumbs/2025-06-27-альфред-сислей.jpg" alt="Альфред Сислей — Le Pont de Moret (Мост в Морэ), 1893" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-музей-дорсе-париж"
+          onclick="toggleMuseumPosts(this, 'музей-дорсе-париж')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-музей-дорсе-париж" hidden><li><a href="2025-12-01-станислас-анри-руар.html">Станислас Анри Руар — La Terrasse au bord de la Seine à Melun (Терраса на берегу Сены в Мелуне), 1874</a></li><li><a href="2025-08-07-илер-жермен-эдгар-де-га-эдгар-дега.html">Илер-Жермен-Эдгар де Га (Эдгар Дега) — Salle de billard au Ménil-Hubert (Бильярдная в Мениль-Юбер), 1892</a></li><li><a href="2025-06-27-альфред-сислей.html">Альфред Сислей — Le Pont de Moret (Мост в Морэ), 1893</a></li></ul>
+</article>
+<article class="museum-card" id="museum-государственный-русский-музей-санкт-петербург" data-id="государственный-русский-музей-санкт-петербург"
+         data-search="государственный русский музей, санкт-петербург русский музей россия" data-count="2"
+         data-name="государственный русский музей, санкт-петербург" data-country="россия"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Государственный Русский музей, Санкт-Петербург</h3><span class="museum-badge">2</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Русский музей, Россия</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-08-16-илья-ефимович-репин.html" title="Илья Ефимович Репин — На дерновой скамье, 1876"><img src="images/thumbs/2026-08-16-илья-ефимович-репин.jpg" alt="Илья Ефимович Репин — На дерновой скамье, 1876" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-06-14-валентин-александрович-серов.html" title="Валентин Александрович Серов — Солдатушки, бравы ребятушки, где же ваша слава?, 1905"><img src="images/thumbs/2025-06-14-валентин-александрович-серов.jpg" alt="Валентин Александрович Серов — Солдатушки, бравы ребятушки, где же ваша слава?, 1905" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-государственный-русский-музей-санкт-петербург"
+          onclick="toggleMuseumPosts(this, 'государственный-русский-музей-санкт-петербург')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-государственный-русский-музей-санкт-петербург" hidden><li><a href="2026-08-16-илья-ефимович-репин.html">Илья Ефимович Репин — На дерновой скамье, 1876</a></li><li><a href="2025-06-14-валентин-александрович-серов.html">Валентин Александрович Серов — Солдатушки, бравы ребятушки, где же ваша слава?, 1905</a></li></ul>
+</article>
+<article class="museum-card" id="museum-малый-дворец-музей-изящных-искусств-города-парижа-париж" data-id="малый-дворец-музей-изящных-искусств-города-парижа-париж"
+         data-search="малый дворец, музей изящных искусств города парижа, париж  " data-count="2"
+         data-name="малый дворец, музей изящных искусств города парижа, париж" data-country=""
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Малый дворец, музей изящных искусств города Парижа, Париж</h3><span class="museum-badge">2</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-08-10-альфред-сислей.html" title="Альфред Сислей — Lisière de la forêt de Fontainebleau (Опушка леса Фонтенбло), 1865"><img src="images/thumbs/2026-08-10-альфред-сислей.jpg" alt="Альфред Сислей — Lisière de la forêt de Fontainebleau (Опушка леса Фонтенбло), 1865" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2026-03-16-анонимные-художники-феликс-огюстен-милиус-александр-огюст-ро.html" title="Анонимные художники, Феликс Огюстен Милиус, Александр-Огюст Розе, Альфред Адольф Ленгле, Огюст Русслен, Огюст Александр Хирш, Эмиль-Анри Лапорт, Огюст Ренуар, Поль Милье, Леонс-Люсьен Кордье, Альбер Дарье — Quarante-trois portraits de peintres de l&#x27;atelier Gleyre (Сорок три портрета художников мастерской Глейра), между 1856 и 1868 годами"><img src="images/thumbs/2026-03-16-анонимные-художники-феликс-огюстен-милиус-александр-огюст-ро.jpg" alt="Анонимные художники, Феликс Огюстен Милиус, Александр-Огюст Розе, Альфред Адольф Ленгле, Огюст Русслен, Огюст Александр Хирш, Эмиль-Анри Лапорт, Огюст Ренуар, Поль Милье, Леонс-Люсьен Кордье, Альбер Дарье — Quarante-trois portraits de peintres de l&#x27;atelier Gleyre (Сорок три портрета художников мастерской Глейра), между 1856 и 1868 годами" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-малый-дворец-музей-изящных-искусств-города-парижа-париж"
+          onclick="toggleMuseumPosts(this, 'малый-дворец-музей-изящных-искусств-города-парижа-париж')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-малый-дворец-музей-изящных-искусств-города-парижа-париж" hidden><li><a href="2026-08-10-альфред-сислей.html">Альфред Сислей — Lisière de la forêt de Fontainebleau (Опушка леса Фонтенбло), 1865</a></li><li><a href="2026-03-16-анонимные-художники-феликс-огюстен-милиус-александр-огюст-ро.html">Анонимные художники, Феликс Огюстен Милиус, Александр-Огюст Розе, Альфред Адольф Ленгле, Огюст Русслен, Огюст Александр Хирш, Эмиль-Анри Лапорт, Огюст Ренуар, Поль Милье, Леонс-Люсьен Кордье, Альбер Дарье — Quarante-trois portraits de peintres de l&#x27;atelier Gleyre (Сорок три портрета художников мастерской Глейра), между 1856 и 1868 годами</a></li></ul>
+</article>
+<article class="museum-card" id="museum-метрополитен-музей-нью-йорк" data-id="метрополитен-музей-нью-йорк"
+         data-search="метрополитен-музей, нью-йорк metropolitan museum of art таиланд" data-count="2"
+         data-name="метрополитен-музей, нью-йорк" data-country="таиланд"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Метрополитен-музей, Нью-Йорк</h3><span class="museum-badge">2</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Metropolitan Museum Of Art, Таиланд</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-07-09-каспар-давид-фридрих.html" title="Каспар Давид Фридрих — Ansicht der Ostküste Rügens mit einem Schäfer (Вид на восточный берег острова Рюген с пастухом), 1805–06"><img src="images/thumbs/2025-07-09-каспар-давид-фридрих.jpg" alt="Каспар Давид Фридрих — Ansicht der Ostküste Rügens mit einem Schäfer (Вид на восточный берег острова Рюген с пастухом), 1805–06" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-06-07-альфред-сислей.html" title="Альфред Сислей — Rue Eugène Moussoir à Moret: L&#x27;hiver (Улица Эжена Муссуара в Море: Зима), 1891"><img src="images/thumbs/2025-06-07-альфред-сислей.jpg" alt="Альфред Сислей — Rue Eugène Moussoir à Moret: L&#x27;hiver (Улица Эжена Муссуара в Море: Зима), 1891" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-метрополитен-музей-нью-йорк"
+          onclick="toggleMuseumPosts(this, 'метрополитен-музей-нью-йорк')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-метрополитен-музей-нью-йорк" hidden><li><a href="2025-07-09-каспар-давид-фридрих.html">Каспар Давид Фридрих — Ansicht der Ostküste Rügens mit einem Schäfer (Вид на восточный берег острова Рюген с пастухом), 1805–06</a></li><li><a href="2025-06-07-альфред-сислей.html">Альфред Сислей — Rue Eugène Moussoir à Moret: L&#x27;hiver (Улица Эжена Муссуара в Море: Зима), 1891</a></li></ul>
+</article>
+<article class="museum-card" id="museum-музей-фабра-монпелье" data-id="музей-фабра-монпелье"
+         data-search="музей фабра, монпелье musée fabre франция" data-count="2"
+         data-name="музей фабра, монпелье" data-country="франция"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Музей Фабра, Монпелье</h3><span class="museum-badge">2</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Musée Fabre, Франция</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-06-10-жан-дезире-гюстав-курбе.html" title="Жан Дезире Гюстав Курбе — La Rencontre ou Bonjour Monsieur Courbet (Встреча или Здравствуйте, мистер Курбе), 1854"><img src="images/thumbs/2025-06-10-жан-дезире-гюстав-курбе.jpg" alt="Жан Дезире Гюстав Курбе — La Rencontre ou Bonjour Monsieur Courbet (Встреча или Здравствуйте, мистер Курбе), 1854" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-04-15-жан-фредерик-базиль.html" title="Жан Фредерик Базиль — L’atelier de la rue de Furstenberg (Мастерская художника на улице Фюрстенберг), 1865"><img src="images/thumbs/2025-04-15-жан-фредерик-базиль.jpg" alt="Жан Фредерик Базиль — L’atelier de la rue de Furstenberg (Мастерская художника на улице Фюрстенберг), 1865" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-музей-фабра-монпелье"
+          onclick="toggleMuseumPosts(this, 'музей-фабра-монпелье')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-музей-фабра-монпелье" hidden><li><a href="2025-06-10-жан-дезире-гюстав-курбе.html">Жан Дезире Гюстав Курбе — La Rencontre ou Bonjour Monsieur Courbet (Встреча или Здравствуйте, мистер Курбе), 1854</a></li><li><a href="2025-04-15-жан-фредерик-базиль.html">Жан Фредерик Базиль — L’atelier de la rue de Furstenberg (Мастерская художника на улице Фюрстенберг), 1865</a></li></ul>
+</article>
+<article class="museum-card" id="museum-национальный-музей-прадо-мадрид" data-id="национальный-музей-прадо-мадрид"
+         data-search="национальный музей прадо, мадрид музей прадо испания" data-count="2"
+         data-name="национальный музей прадо, мадрид" data-country="испания"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Национальный музей Прадо, Мадрид</h3><span class="museum-badge">2</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> музей Прадо, Испания</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-08-06-элисео-мейфрен-и-роч.html" title="Элисео Мейфрен-и-Роч — Plaza de París (Площадь Парижа), 1887"><img src="images/thumbs/2026-08-06-элисео-мейфрен-и-роч.jpg" alt="Элисео Мейфрен-и-Роч — Plaza de París (Площадь Парижа), 1887" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2026-02-16-аурелиано-де-беруэте.html" title="Аурелиано де Беруэте — Paisaje de Torrelodones (Пейзаж Торрелодонес), 1891"><img src="images/thumbs/2026-02-16-аурелиано-де-беруэте.jpg" alt="Аурелиано де Беруэте — Paisaje de Torrelodones (Пейзаж Торрелодонес), 1891" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-национальный-музей-прадо-мадрид"
+          onclick="toggleMuseumPosts(this, 'национальный-музей-прадо-мадрид')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-национальный-музей-прадо-мадрид" hidden><li><a href="2026-08-06-элисео-мейфрен-и-роч.html">Элисео Мейфрен-и-Роч — Plaza de París (Площадь Парижа), 1887</a></li><li><a href="2026-02-16-аурелиано-де-беруэте.html">Аурелиано де Беруэте — Paisaje de Torrelodones (Пейзаж Торрелодонес), 1891</a></li></ul>
+</article>
+<article class="museum-card" id="museum-частная-коллекция-швейцария" data-id="частная-коллекция-швейцария"
+         data-search="частная коллекция, швейцария  " data-count="2"
+         data-name="частная коллекция, швейцария" data-country=""
+         data-mapped="0">
+  <header class="museum-card-head"><h3>Частная коллекция, Швейцария</h3><span class="museum-badge">2</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-08-27-роберт-герман-штерль.html" title="Роберт Герман Штерль — Feuerwerk über dem Kreml (Фейерверк над Кремлём), 1914"><img src="images/thumbs/2026-08-27-роберт-герман-штерль.jpg" alt="Роберт Герман Штерль — Feuerwerk über dem Kreml (Фейерверк над Кремлём), 1914" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-04-19-франц-фон-штук.html" title="Франц фон Штук — Sternschnuppen (Franz und Mary Stuck) (Падающие звёзды), 1912"><img src="images/thumbs/2025-04-19-франц-фон-штук.jpg" alt="Франц фон Штук — Sternschnuppen (Franz und Mary Stuck) (Падающие звёзды), 1912" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-частная-коллекция-швейцария"
+          onclick="toggleMuseumPosts(this, 'частная-коллекция-швейцария')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-частная-коллекция-швейцария" hidden><li><a href="2026-08-27-роберт-герман-штерль.html">Роберт Герман Штерль — Feuerwerk über dem Kreml (Фейерверк над Кремлём), 1914</a></li><li><a href="2025-04-19-франц-фон-штук.html">Франц фон Штук — Sternschnuppen (Franz und Mary Stuck) (Падающие звёзды), 1912</a></li></ul>
+</article>
+<article class="museum-card" id="museum-чикагский-институт-искусств-чикаго" data-id="чикагский-институт-искусств-чикаго"
+         data-search="чикагский институт искусств, чикаго the art institute of chicago соединённые штаты америки" data-count="2"
+         data-name="чикагский институт искусств, чикаго" data-country="соединённые штаты америки"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Чикагский институт искусств, Чикаго</h3><span class="museum-badge">2</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> The Art Institute of Chicago, Соединённые Штаты Америки</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-07-15-констан-тройон.html" title="Констан Тройон — Le Marais (Болото), 1840"><img src="images/thumbs/2025-07-15-констан-тройон.jpg" alt="Констан Тройон — Le Marais (Болото), 1840" loading="lazy" decoding="async"></a><a class="museum-thumb" href="2025-04-17-илер-жермен-эдгар-де-га-эдгар-дега.html" title="Илер-Жермен-Эдгар де Га (Эдгар Дега) — Paysage Avec Fumée de Cheminées (Пейзаж с дымовыми трубами), 1890-1893"><img src="images/thumbs/2025-04-17-илер-жермен-эдгар-де-га-эдгар-дега.jpg" alt="Илер-Жермен-Эдгар де Га (Эдгар Дега) — Paysage Avec Fumée de Cheminées (Пейзаж с дымовыми трубами), 1890-1893" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-чикагский-институт-искусств-чикаго"
+          onclick="toggleMuseumPosts(this, 'чикагский-институт-искусств-чикаго')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-чикагский-институт-искусств-чикаго" hidden><li><a href="2025-07-15-констан-тройон.html">Констан Тройон — Le Marais (Болото), 1840</a></li><li><a href="2025-04-17-илер-жермен-эдгар-де-га-эдгар-дега.html">Илер-Жермен-Эдгар де Га (Эдгар Дега) — Paysage Avec Fumée de Cheminées (Пейзаж с дымовыми трубами), 1890-1893</a></li></ul>
+</article>
+<article class="museum-card" id="museum-базельский-художественный-музей-базель" data-id="базельский-художественный-музей-базель"
+         data-search="базельский художественный музей, базель  " data-count="1"
+         data-name="базельский художественный музей, базель" data-country=""
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Базельский художественный музей, Базель</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-08-01-илер-жермен-эдгар-де-га-эдгар-дега.html" title="Илер-Жермен-Эдгар де Га (Эдгар Дега) — Jockey blessé (Раненый жокей), 1896-1898"><img src="images/thumbs/2025-08-01-илер-жермен-эдгар-де-га-эдгар-дега.jpg" alt="Илер-Жермен-Эдгар де Га (Эдгар Дега) — Jockey blessé (Раненый жокей), 1896-1898" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-базельский-художественный-музей-базель"
+          onclick="toggleMuseumPosts(this, 'базельский-художественный-музей-базель')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-базельский-художественный-музей-базель" hidden><li><a href="2025-08-01-илер-жермен-эдгар-де-га-эдгар-дега.html">Илер-Жермен-Эдгар де Га (Эдгар Дега) — Jockey blessé (Раненый жокей), 1896-1898</a></li></ul>
+</article>
+<article class="museum-card" id="museum-британская-галерея-тейт-лондон" data-id="британская-галерея-тейт-лондон"
+         data-search="британская галерея тейт, лондон  " data-count="1"
+         data-name="британская галерея тейт, лондон" data-country=""
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Британская галерея Тейт, Лондон</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-12-16-джон-сингер-сарджент.html" title="Джон Сингер Сарджент — Claude Monet Painting by the Edge of a Wood (Картина Клода Моне «На опушке леса»), 1885"><img src="images/thumbs/2025-12-16-джон-сингер-сарджент.jpg" alt="Джон Сингер Сарджент — Claude Monet Painting by the Edge of a Wood (Картина Клода Моне «На опушке леса»), 1885" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-британская-галерея-тейт-лондон"
+          onclick="toggleMuseumPosts(this, 'британская-галерея-тейт-лондон')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-британская-галерея-тейт-лондон" hidden><li><a href="2025-12-16-джон-сингер-сарджент.html">Джон Сингер Сарджент — Claude Monet Painting by the Edge of a Wood (Картина Клода Моне «На опушке леса»), 1885</a></li></ul>
+</article>
+<article class="museum-card" id="museum-винтертурский-художественный-музей-винтертур" data-id="винтертурский-художественный-музей-винтертур"
+         data-search="винтертурский художественный музей, винтертур  " data-count="1"
+         data-name="винтертурский художественный музей, винтертур" data-country=""
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Винтертурский художественный музей, Винтертур</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-07-12-фердинанд-ходлер.html" title="Фердинанд Ходлер — Die Strasse nach Evordes (Дорога в Эвордес), 1890"><img src="images/thumbs/2025-07-12-фердинанд-ходлер.jpg" alt="Фердинанд Ходлер — Die Strasse nach Evordes (Дорога в Эвордес), 1890" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-винтертурский-художественный-музей-винтертур"
+          onclick="toggleMuseumPosts(this, 'винтертурский-художественный-музей-винтертур')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-винтертурский-художественный-музей-винтертур" hidden><li><a href="2025-07-12-фердинанд-ходлер.html">Фердинанд Ходлер — Die Strasse nach Evordes (Дорога в Эвордес), 1890</a></li></ul>
+</article>
+<article class="museum-card" id="museum-гим-москва" data-id="гим-москва"
+         data-search="гим, москва исторический музей россия" data-count="1"
+         data-name="гим, москва" data-country="россия"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>ГИМ, Москва</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Исторический музей, Россия</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-05-09-константин-фёдорович-юон.html" title="Константин Фёдорович Юон — Парад на Красной площади 7 ноября 1941 года, 1949"><img src="images/thumbs/2025-05-09-константин-фёдорович-юон.jpg" alt="Константин Фёдорович Юон — Парад на Красной площади 7 ноября 1941 года, 1949" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-гим-москва"
+          onclick="toggleMuseumPosts(this, 'гим-москва')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-гим-москва" hidden><li><a href="2025-05-09-константин-фёдорович-юон.html">Константин Фёдорович Юон — Парад на Красной площади 7 ноября 1941 года, 1949</a></li></ul>
+</article>
+<article class="museum-card" id="museum-государственный-музей-истории-религии-санкт-петербург" data-id="государственный-музей-истории-религии-санкт-петербург"
+         data-search="государственный музей истории религии, санкт-петербург гродненский государственный музей истории религии беларусь" data-count="1"
+         data-name="государственный музей истории религии, санкт-петербург" data-country="беларусь"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Государственный музей истории религии, Санкт-Петербург</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Гродненский государственный музей истории религии, Беларусь</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-07-29-владимир-егорович-маковский.html" title="Владимир Егорович Маковский — Освящение публичного дома (эскиз), 1900"><img src="images/thumbs/2026-07-29-владимир-егорович-маковский.jpg" alt="Владимир Егорович Маковский — Освящение публичного дома (эскиз), 1900" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-государственный-музей-истории-религии-санкт-петербург"
+          onclick="toggleMuseumPosts(this, 'государственный-музей-истории-религии-санкт-петербург')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-государственный-музей-истории-религии-санкт-петербург" hidden><li><a href="2026-07-29-владимир-егорович-маковский.html">Владимир Егорович Маковский — Освящение публичного дома (эскиз), 1900</a></li></ul>
+</article>
+<article class="museum-card" id="museum-государственный-музей-тюрингии-хайдексбург" data-id="государственный-музей-тюрингии-хайдексбург"
+         data-search="государственный музей тюрингии, хайдексбург  " data-count="1"
+         data-name="государственный музей тюрингии, хайдексбург" data-country=""
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Государственный музей Тюрингии, Хайдексбург</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-02-18-каспар-давид-фридрих.html" title="Каспар Давид Фридрих — Morgennebel im Gebirge (Утренний туман в горах), 1808"><img src="images/thumbs/2025-02-18-каспар-давид-фридрих.jpg" alt="Каспар Давид Фридрих — Morgennebel im Gebirge (Утренний туман в горах), 1808" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-государственный-музей-тюрингии-хайдексбург"
+          onclick="toggleMuseumPosts(this, 'государственный-музей-тюрингии-хайдексбург')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-государственный-музей-тюрингии-хайдексбург" hidden><li><a href="2025-02-18-каспар-давид-фридрих.html">Каспар Давид Фридрих — Morgennebel im Gebirge (Утренний туман в горах), 1808</a></li></ul>
+</article>
+<article class="museum-card" id="museum-государственный-художественный-музей-платтсбурга-галерея-рок" data-id="государственный-художественный-музей-платтсбурга-галерея-рок"
+         data-search="государственный художественный музей платтсбурга, галерея рокуэлла кента, платтсбург  " data-count="1"
+         data-name="государственный художественный музей платтсбурга, галерея рокуэлла кента, платтсбург" data-country=""
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-10-11-рокуэлл-кент.html" title="Рокуэлл Кент — Cranberrying, Monhegan (Сбор клюквы, Монхиган),1907"><img src="images/thumbs/2025-10-11-рокуэлл-кент.jpg" alt="Рокуэлл Кент — Cranberrying, Monhegan (Сбор клюквы, Монхиган),1907" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-государственный-художественный-музей-платтсбурга-галерея-рок"
+          onclick="toggleMuseumPosts(this, 'государственный-художественный-музей-платтсбурга-галерея-рок')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-государственный-художественный-музей-платтсбурга-галерея-рок" hidden><li><a href="2025-10-11-рокуэлл-кент.html">Рокуэлл Кент — Cranberrying, Monhegan (Сбор клюквы, Монхиган),1907</a></li></ul>
+</article>
+<article class="museum-card" id="museum-гётеборгский-художественный-музей-гётеборг" data-id="гётеборгский-художественный-музей-гётеборг"
+         data-search="гётеборгский художественный музей, гётеборг göteborgs konstmuseum швеция" data-count="1"
+         data-name="гётеборгский художественный музей, гётеборг" data-country="швеция"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Гётеборгский художественный музей, Гётеборг</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Göteborgs konstmuseum, Швеция</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-07-04-андерс-леонард-цорн.html" title="Андерс Леонард Цорн — Impressions de Londres (Впечатления от Лондона), 1890"><img src="images/thumbs/2026-07-04-андерс-леонард-цорн.jpg" alt="Андерс Леонард Цорн — Impressions de Londres (Впечатления от Лондона), 1890" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-гётеборгский-художественный-музей-гётеборг"
+          onclick="toggleMuseumPosts(this, 'гётеборгский-художественный-музей-гётеборг')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-гётеборгский-художественный-музей-гётеборг" hidden><li><a href="2026-07-04-андерс-леонард-цорн.html">Андерс Леонард Цорн — Impressions de Londres (Впечатления от Лондона), 1890</a></li></ul>
+</article>
+<article class="museum-card" id="museum-институт-искусств-миннеаполиса-миннеаполис" data-id="институт-искусств-миннеаполиса-миннеаполис"
+         data-search="институт искусств миннеаполиса, миннеаполис minneapolis institute of art соединённые штаты америки" data-count="1"
+         data-name="институт искусств миннеаполиса, миннеаполис" data-country="соединённые штаты америки"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Институт искусств Миннеаполиса, Миннеаполис</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Minneapolis Institute of Art, Соединённые Штаты Америки</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-07-21-жан-фредерик-базиль.html" title="Жан Фредерик Базиль — Paysage au bord du Lez (Пейзаж на берегу Лез), 1870"><img src="images/thumbs/2025-07-21-жан-фредерик-базиль.jpg" alt="Жан Фредерик Базиль — Paysage au bord du Lez (Пейзаж на берегу Лез), 1870" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-институт-искусств-миннеаполиса-миннеаполис"
+          onclick="toggleMuseumPosts(this, 'институт-искусств-миннеаполиса-миннеаполис')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-институт-искусств-миннеаполиса-миннеаполис" hidden><li><a href="2025-07-21-жан-фредерик-базиль.html">Жан Фредерик Базиль — Paysage au bord du Lez (Пейзаж на берегу Лез), 1870</a></li></ul>
+</article>
+<article class="museum-card" id="museum-институт-искусств-стерлинга-и-франсин-кларк-уильямстаун" data-id="институт-искусств-стерлинга-и-франсин-кларк-уильямстаун"
+         data-search="институт искусств стерлинга и франсин кларк, уильямстаун  " data-count="1"
+         data-name="институт искусств стерлинга и франсин кларк, уильямстаун" data-country=""
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Институт искусств Стерлинга и Франсин Кларк, Уильямстаун</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-02-11-альфред-сислей.html" title="Альфред Сислей — Nature morte, pommes et raisins (Натюрморт, яблоки и виноград), 1880-81"><img src="images/thumbs/2026-02-11-альфред-сислей.jpg" alt="Альфред Сислей — Nature morte, pommes et raisins (Натюрморт, яблоки и виноград), 1880-81" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-институт-искусств-стерлинга-и-франсин-кларк-уильямстаун"
+          onclick="toggleMuseumPosts(this, 'институт-искусств-стерлинга-и-франсин-кларк-уильямстаун')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-институт-искусств-стерлинга-и-франсин-кларк-уильямстаун" hidden><li><a href="2026-02-11-альфред-сислей.html">Альфред Сислей — Nature morte, pommes et raisins (Натюрморт, яблоки и виноград), 1880-81</a></li></ul>
+</article>
+<article class="museum-card" id="museum-коллекции-версальского-дворца-версаль" data-id="коллекции-версальского-дворца-версаль"
+         data-search="коллекции версальского дворца, версаль  " data-count="1"
+         data-name="коллекции версальского дворца, версаль" data-country=""
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Коллекции Версальского дворца, Версаль</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-02-04-жан-батист-эдуар-детай.html" title="Жан Батист Эдуар Детай — Inauguration de l&#x27;Opéra de Paris, 5 janvier 1875 (Открытие Парижской оперы, 5 января 1875 года), 1878"><img src="images/thumbs/2026-02-04-жан-батист-эдуар-детай.jpg" alt="Жан Батист Эдуар Детай — Inauguration de l&#x27;Opéra de Paris, 5 janvier 1875 (Открытие Парижской оперы, 5 января 1875 года), 1878" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-коллекции-версальского-дворца-версаль"
+          onclick="toggleMuseumPosts(this, 'коллекции-версальского-дворца-версаль')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-коллекции-версальского-дворца-версаль" hidden><li><a href="2026-02-04-жан-батист-эдуар-детай.html">Жан Батист Эдуар Детай — Inauguration de l&#x27;Opéra de Paris, 5 janvier 1875 (Открытие Парижской оперы, 5 января 1875 года), 1878</a></li></ul>
+</article>
+<article class="museum-card" id="museum-королевский-музей-изящных-искусств-брюссель" data-id="королевский-музей-изящных-искусств-брюссель"
+         data-search="королевский музей изящных искусств, брюссель  " data-count="1"
+         data-name="королевский музей изящных искусств, брюссель" data-country=""
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Королевский музей изящных искусств, Брюссель</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-11-04-иньяс-анри-жан-теодор-фантен-латур.html" title="Иньяс-Анри-Жан-Теодор Фантен-Латур — La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879"><img src="images/thumbs/2025-11-04-иньяс-анри-жан-теодор-фантен-латур.jpg" alt="Иньяс-Анри-Жан-Теодор Фантен-Латур — La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-королевский-музей-изящных-искусств-брюссель"
+          onclick="toggleMuseumPosts(this, 'королевский-музей-изящных-искусств-брюссель')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-королевский-музей-изящных-искусств-брюссель" hidden><li><a href="2025-11-04-иньяс-анри-жан-теодор-фантен-латур.html">Иньяс-Анри-Жан-Теодор Фантен-Латур — La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879</a></li></ul>
+</article>
+<article class="museum-card" id="museum-лувр-париж-в-запаснике" data-id="лувр-париж-в-запаснике"
+         data-search="лувр, париж (в запаснике)  " data-count="1"
+         data-name="лувр, париж (в запаснике)" data-country=""
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Лувр, Париж (в запаснике)</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-04-13-александр-жан-батист-брюн.html" title="Александр Жан-Батист Брюн — Vue du Salon Carré au Louvre (Вид на Салон Карре в Лувре), 1880"><img src="images/thumbs/2025-04-13-александр-жан-батист-брюн.jpg" alt="Александр Жан-Батист Брюн — Vue du Salon Carré au Louvre (Вид на Салон Карре в Лувре), 1880" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-лувр-париж-в-запаснике"
+          onclick="toggleMuseumPosts(this, 'лувр-париж-в-запаснике')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-лувр-париж-в-запаснике" hidden><li><a href="2025-04-13-александр-жан-батист-брюн.html">Александр Жан-Батист Брюн — Vue du Salon Carré au Louvre (Вид на Салон Карре в Лувре), 1880</a></li></ul>
+</article>
+<article class="museum-card" id="museum-музей-барберини-потсдам" data-id="музей-барберини-потсдам"
+         data-search="музей барберини, потсдам museum barberini германия" data-count="1"
+         data-name="музей барберини, потсдам" data-country="германия"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Музей Барберини, Потсдам</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Museum Barberini, Германия</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-10-02-жан-батист-арман-гийомен.html" title="Жан-Батист Арман Гийомен — Vue du Puy-de-Dôme (Вид на Пюи-де-Дом), 1899"><img src="images/thumbs/2025-10-02-жан-батист-арман-гийомен.jpg" alt="Жан-Батист Арман Гийомен — Vue du Puy-de-Dôme (Вид на Пюи-де-Дом), 1899" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-музей-барберини-потсдам"
+          onclick="toggleMuseumPosts(this, 'музей-барберини-потсдам')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-музей-барберини-потсдам" hidden><li><a href="2025-10-02-жан-батист-арман-гийомен.html">Жан-Батист Арман Гийомен — Vue du Puy-de-Dôme (Вид на Пюи-де-Дом), 1899</a></li></ul>
+</article>
+<article class="museum-card" id="museum-музей-вальрафа-рихарца-и-фонд-корбо-кёльн" data-id="музей-вальрафа-рихарца-и-фонд-корбо-кёльн"
+         data-search="музей вальрафа-рихарца и фонд корбо, кёльн wallraf-richartz-museum &amp; fondation corboud германия" data-count="1"
+         data-name="музей вальрафа-рихарца и фонд корбо, кёльн" data-country="германия"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Wallraf-Richartz-Museum &amp; Fondation Corboud, Германия</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-02-14-пьер-огюст-ренуар.html" title="Пьер Огюст Ренуар — Les Fiancés (Пара), около 1868"><img src="images/thumbs/2025-02-14-пьер-огюст-ренуар.jpg" alt="Пьер Огюст Ренуар — Les Fiancés (Пара), около 1868" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-музей-вальрафа-рихарца-и-фонд-корбо-кёльн"
+          onclick="toggleMuseumPosts(this, 'музей-вальрафа-рихарца-и-фонд-корбо-кёльн')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-музей-вальрафа-рихарца-и-фонд-корбо-кёльн" hidden><li><a href="2025-02-14-пьер-огюст-ренуар.html">Пьер Огюст Ренуар — Les Fiancés (Пара), около 1868</a></li></ul>
+</article>
+<article class="museum-card" id="museum-музей-гетти-лос-анджелес" data-id="музей-гетти-лос-анджелес"
+         data-search="музей гетти, лос-анджелес nino&#x27;s getty соединённые штаты америки" data-count="1"
+         data-name="музей гетти, лос-анджелес" data-country="соединённые штаты америки"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Музей Гетти, Лос-Анджелес</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Nino&#x27;s Getty, Соединённые Штаты Америки</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-10-16-гюстав-кайботт.html" title="Гюстав Кайботт — Jeune homme à sa fenêtre (Молодой человек у окна), 1876"><img src="images/thumbs/2025-10-16-гюстав-кайботт.jpg" alt="Гюстав Кайботт — Jeune homme à sa fenêtre (Молодой человек у окна), 1876" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-музей-гетти-лос-анджелес"
+          onclick="toggleMuseumPosts(this, 'музей-гетти-лос-анджелес')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-музей-гетти-лос-анджелес" hidden><li><a href="2025-10-16-гюстав-кайботт.html">Гюстав Кайботт — Jeune homme à sa fenêtre (Молодой человек у окна), 1876</a></li></ul>
+</article>
+<article class="museum-card" id="museum-музей-изящных-искусств-гент" data-id="музей-изящных-искусств-гент"
+         data-search="музей изящных искусств, гент museum voor schone kunsten бельгия" data-count="1"
+         data-name="музей изящных искусств, гент" data-country="бельгия"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Музей изящных искусств, Гент</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Museum voor Schone Kunsten, Бельгия</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-05-15-николай-егорович-сверчков.html" title="Николай Егорович Сверчков — Зимний пейзаж с санями, запряженными лошадьми, 1868"><img src="images/thumbs/2026-05-15-николай-егорович-сверчков.jpg" alt="Николай Егорович Сверчков — Зимний пейзаж с санями, запряженными лошадьми, 1868" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-музей-изящных-искусств-гент"
+          onclick="toggleMuseumPosts(this, 'музей-изящных-искусств-гент')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-музей-изящных-искусств-гент" hidden><li><a href="2026-05-15-николай-егорович-сверчков.html">Николай Егорович Сверчков — Зимний пейзаж с санями, запряженными лошадьми, 1868</a></li></ul>
+</article>
+<article class="museum-card" id="museum-музей-искусств-охара-курасики" data-id="музей-искусств-охара-курасики"
+         data-search="музей искусств охара, курасики 大原美術館 япония" data-count="1"
+         data-name="музей искусств охара, курасики" data-country="япония"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Музей искусств Охара, Курасики</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> 大原美術館, Япония</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-12-24-жан-франсуа-милле.html" title="Жан-Франсуа Милле — Falaises de Gréville (Скалы Гревиля), 1871"><img src="images/thumbs/2025-12-24-жан-франсуа-милле.jpg" alt="Жан-Франсуа Милле — Falaises de Gréville (Скалы Гревиля), 1871" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-музей-искусств-охара-курасики"
+          onclick="toggleMuseumPosts(this, 'музей-искусств-охара-курасики')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-музей-искусств-охара-курасики" hidden><li><a href="2025-12-24-жан-франсуа-милле.html">Жан-Франсуа Милле — Falaises de Gréville (Скалы Гревиля), 1871</a></li></ul>
+</article>
+<article class="museum-card" id="museum-музей-кунстпаласт-дюссельдорф" data-id="музей-кунстпаласт-дюссельдорф"
+         data-search="музей кунстпаласт, дюссельдорф museum kunstpalast германия" data-count="1"
+         data-name="музей кунстпаласт, дюссельдорф" data-country="германия"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Музей Кунстпаласт, Дюссельдорф</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Museum Kunstpalast, Германия</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-05-04-макс-либерман.html" title="Макс Либерман — Die Kartoffelernte (Собирание картофеля), 1875"><img src="images/thumbs/2025-05-04-макс-либерман.jpg" alt="Макс Либерман — Die Kartoffelernte (Собирание картофеля), 1875" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-музей-кунстпаласт-дюссельдорф"
+          onclick="toggleMuseumPosts(this, 'музей-кунстпаласт-дюссельдорф')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-музей-кунстпаласт-дюссельдорф" hidden><li><a href="2025-05-04-макс-либерман.html">Макс Либерман — Die Kartoffelernte (Собирание картофеля), 1875</a></li></ul>
+</article>
+<article class="museum-card" id="museum-музей-леопольда-вена" data-id="музей-леопольда-вена"
+         data-search="музей леопольда, вена музей леопольда австрия" data-count="1"
+         data-name="музей леопольда, вена" data-country="австрия"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Музей Леопольда, Вена</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Музей Леопольда, Австрия</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-06-04-рудольф-фон-альт.html" title="Рудольф фон Альт — Die alte Fichte in Bad Gastein (Старая ель в Бад-Гастайне), 1899"><img src="images/thumbs/2026-06-04-рудольф-фон-альт.jpg" alt="Рудольф фон Альт — Die alte Fichte in Bad Gastein (Старая ель в Бад-Гастайне), 1899" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-музей-леопольда-вена"
+          onclick="toggleMuseumPosts(this, 'музей-леопольда-вена')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-музей-леопольда-вена" hidden><li><a href="2026-06-04-рудольф-фон-альт.html">Рудольф фон Альт — Die alte Fichte in Bad Gastein (Старая ель в Бад-Гастайне), 1899</a></li></ul>
+</article>
+<article class="museum-card" id="museum-музей-скагена-скаген" data-id="музей-скагена-скаген"
+         data-search="музей скагена, скаген skagens museum дания" data-count="1"
+         data-name="музей скагена, скаген" data-country="дания"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Музей Скагена, Скаген</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Skagens Museum, Дания</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-12-10-ялмар-эйлиф-эммануэл-петерссен.html" title="Ялмар Эйлиф Эммануэл Петерссен — Måneopgang over klitterne (Восход луны над дюнами), 1883"><img src="images/thumbs/2025-12-10-ялмар-эйлиф-эммануэл-петерссен.jpg" alt="Ялмар Эйлиф Эммануэл Петерссен — Måneopgang over klitterne (Восход луны над дюнами), 1883" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-музей-скагена-скаген"
+          onclick="toggleMuseumPosts(this, 'музей-скагена-скаген')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-музей-скагена-скаген" hidden><li><a href="2025-12-10-ялмар-эйлиф-эммануэл-петерссен.html">Ялмар Эйлиф Эммануэл Петерссен — Måneopgang over klitterne (Восход луны над дюнами), 1883</a></li></ul>
+</article>
+<article class="museum-card" id="museum-музей-современного-искусства-андре-мальро-гавр" data-id="музей-современного-искусства-андре-мальро-гавр"
+         data-search="музей современного искусства андре мальро, гавр musée d&#x27;art moderne andré malraux франция" data-count="1"
+         data-name="музей современного искусства андре мальро, гавр" data-country="франция"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Музей современного искусства Андре Мальро, Гавр</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Musée d&#x27;Art Moderne André Malraux, Франция</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-03-22-жан-батист-арман-гийомен.html" title="Жан-Батист Арман Гийомен — Paysage de neige à Crozant (Снежный пейзаж в Крозанте), 1895"><img src="images/thumbs/2026-03-22-жан-батист-арман-гийомен.jpg" alt="Жан-Батист Арман Гийомен — Paysage de neige à Crozant (Снежный пейзаж в Крозанте), 1895" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-музей-современного-искусства-андре-мальро-гавр"
+          onclick="toggleMuseumPosts(this, 'музей-современного-искусства-андре-мальро-гавр')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-музей-современного-искусства-андре-мальро-гавр" hidden><li><a href="2026-03-22-жан-батист-арман-гийомен.html">Жан-Батист Арман Гийомен — Paysage de neige à Crozant (Снежный пейзаж в Крозанте), 1895</a></li></ul>
+</article>
+<article class="museum-card" id="museum-музей-эжена-будена-онфлёр" data-id="музей-эжена-будена-онфлёр"
+         data-search="музей эжена будена, онфлёр musée eugène boudin франция" data-count="1"
+         data-name="музей эжена будена, онфлёр" data-country="франция"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Музей Эжена Будена, Онфлёр</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Musée Eugène Boudin, Франция</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-11-22-эжен-луи-буден.html" title="Эжен Луи Буден — Le Clocher de Sainte-Catherine, Honfleur (Колокольня Святой Екатерины, Онфлёр), 1897"><img src="images/thumbs/2025-11-22-эжен-луи-буден.jpg" alt="Эжен Луи Буден — Le Clocher de Sainte-Catherine, Honfleur (Колокольня Святой Екатерины, Онфлёр), 1897" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-музей-эжена-будена-онфлёр"
+          onclick="toggleMuseumPosts(this, 'музей-эжена-будена-онфлёр')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-музей-эжена-будена-онфлёр" hidden><li><a href="2025-11-22-эжен-луи-буден.html">Эжен Луи Буден — Le Clocher de Sainte-Catherine, Honfleur (Колокольня Святой Екатерины, Онфлёр), 1897</a></li></ul>
+</article>
+<article class="museum-card" id="museum-национальная-галерея-шотландии-эдинбург" data-id="национальная-галерея-шотландии-эдинбург"
+         data-search="национальная галерея шотландии, эдинбург национальная портретная галерея шотландии соединённое королевство" data-count="1"
+         data-name="национальная галерея шотландии, эдинбург" data-country="соединённое королевство"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Национальная галерея Шотландии, Эдинбург</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Национальная портретная галерея Шотландии, Соединённое Королевство</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-06-18-фердинан-виктор-эжен-делакруа.html" title="Фердинан Виктор Эжен Делакруа — Bouquet de fleurs (Ваза с цветами), 1833"><img src="images/thumbs/2025-06-18-фердинан-виктор-эжен-делакруа.jpg" alt="Фердинан Виктор Эжен Делакруа — Bouquet de fleurs (Ваза с цветами), 1833" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-национальная-галерея-шотландии-эдинбург"
+          onclick="toggleMuseumPosts(this, 'национальная-галерея-шотландии-эдинбург')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-национальная-галерея-шотландии-эдинбург" hidden><li><a href="2025-06-18-фердинан-виктор-эжен-делакруа.html">Фердинан Виктор Эжен Делакруа — Bouquet de fleurs (Ваза с цветами), 1833</a></li></ul>
+</article>
+<article class="museum-card" id="museum-национальный-музей-западного-искусства-токио" data-id="национальный-музей-западного-искусства-токио"
+         data-search="национальный музей западного искусства, токио национальный музей западного искусства япония" data-count="1"
+         data-name="национальный музей западного искусства, токио" data-country="япония"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Национальный музей западного искусства, Токио</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Национальный музей западного искусства, Япония</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-08-21-альфред-сислей.html" title="Альфред Сислей — Landscape at Louveciennes (Пейзаж в Лувесьене), 1873"><img src="images/thumbs/2025-08-21-альфред-сислей.jpg" alt="Альфред Сислей — Landscape at Louveciennes (Пейзаж в Лувесьене), 1873" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-национальный-музей-западного-искусства-токио"
+          onclick="toggleMuseumPosts(this, 'национальный-музей-западного-искусства-токио')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-национальный-музей-западного-искусства-токио" hidden><li><a href="2025-08-21-альфред-сислей.html">Альфред Сислей — Landscape at Louveciennes (Пейзаж в Лувесьене), 1873</a></li></ul>
+</article>
+<article class="museum-card" id="museum-национальный-художественный-музей-республики-беларусь-минск" data-id="национальный-художественный-музей-республики-беларусь-минск"
+         data-search="национальный художественный музей республики беларусь, минск  " data-count="1"
+         data-name="национальный художественный музей республики беларусь, минск" data-country=""
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Национальный художественный музей Республики Беларусь, Минск</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-03-10-станислав-юлианович-жуковский.html" title="Станислав Юлианович Жуковский — Былое. Комната старого дома, 1912"><img src="images/thumbs/2026-03-10-станислав-юлианович-жуковский.jpg" alt="Станислав Юлианович Жуковский — Былое. Комната старого дома, 1912" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-национальный-художественный-музей-республики-беларусь-минск"
+          onclick="toggleMuseumPosts(this, 'национальный-художественный-музей-республики-беларусь-минск')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-национальный-художественный-музей-республики-беларусь-минск" hidden><li><a href="2026-03-10-станислав-юлианович-жуковский.html">Станислав Юлианович Жуковский — Былое. Комната старого дома, 1912</a></li></ul>
+</article>
+<article class="museum-card" id="museum-отдел-личных-коллекций-гмии-им-ас-пушкина-москва" data-id="отдел-личных-коллекций-гмии-им-ас-пушкина-москва"
+         data-search="отдел личных коллекций, гмии им. а.с. пушкина, москва галерея искусства стран европы и америки xix—xx веков россия" data-count="1"
+         data-name="отдел личных коллекций, гмии им. а.с. пушкина, москва" data-country="россия"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Отдел личных коллекций, ГМИИ им. А.С. Пушкина, Москва</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Галерея искусства стран Европы и Америки XIX—XX веков, Россия</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-04-24-илья-ефимович-репин.html" title="Илья Ефимович Репин — Летний пейзаж (В.А.Репина на мостике в Абрамцеве), 1879"><img src="images/thumbs/2025-04-24-илья-ефимович-репин.jpg" alt="Илья Ефимович Репин — Летний пейзаж (В.А.Репина на мостике в Абрамцеве), 1879" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-отдел-личных-коллекций-гмии-им-ас-пушкина-москва"
+          onclick="toggleMuseumPosts(this, 'отдел-личных-коллекций-гмии-им-ас-пушкина-москва')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-отдел-личных-коллекций-гмии-им-ас-пушкина-москва" hidden><li><a href="2025-04-24-илья-ефимович-репин.html">Илья Ефимович Репин — Летний пейзаж (В.А.Репина на мостике в Абрамцеве), 1879</a></li></ul>
+</article>
+<article class="museum-card" id="museum-пермская-государственная-художественная-галерея-пермь" data-id="пермская-государственная-художественная-галерея-пермь"
+         data-search="пермская государственная художественная галерея, пермь пермская государственная художественная галерея россия" data-count="1"
+         data-name="пермская государственная художественная галерея, пермь" data-country="россия"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Пермская государственная художественная галерея, Пермь</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Пермская Государственная Художественная Галерея, Россия</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-09-24-константин-аполлонович-савицкий.html" title="Константин Аполлонович Савицкий — У мирового суда, XIX век"><img src="images/thumbs/2025-09-24-константин-аполлонович-савицкий.jpg" alt="Константин Аполлонович Савицкий — У мирового суда, XIX век" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-пермская-государственная-художественная-галерея-пермь"
+          onclick="toggleMuseumPosts(this, 'пермская-государственная-художественная-галерея-пермь')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-пермская-государственная-художественная-галерея-пермь" hidden><li><a href="2025-09-24-константин-аполлонович-савицкий.html">Константин Аполлонович Савицкий — У мирового суда, XIX век</a></li></ul>
+</article>
+<article class="museum-card" id="museum-портлендский-художественный-музей-портленд" data-id="портлендский-художественный-музей-портленд"
+         data-search="портлендский художественный музей, портленд portland art museum соединённые штаты америки" data-count="1"
+         data-name="портлендский художественный музей, портленд" data-country="соединённые штаты америки"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Портлендский художественный музей, Портленд</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Portland Art Museum, Соединённые Штаты Америки</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-04-04-жакоб-абраам-камиль-писсарро.html" title="Жакоб Абраам Камиль Писсарро — La Maison Rouge (Красный дом), 1873"><img src="images/thumbs/2026-04-04-жакоб-абраам-камиль-писсарро.jpg" alt="Жакоб Абраам Камиль Писсарро — La Maison Rouge (Красный дом), 1873" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-портлендский-художественный-музей-портленд"
+          onclick="toggleMuseumPosts(this, 'портлендский-художественный-музей-портленд')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-портлендский-художественный-музей-портленд" hidden><li><a href="2026-04-04-жакоб-абраам-камиль-писсарро.html">Жакоб Абраам Камиль Писсарро — La Maison Rouge (Красный дом), 1873</a></li></ul>
+</article>
+<article class="museum-card" id="museum-собрание-фонда-эмиля-бюрле-цюрих" data-id="собрание-фонда-эмиля-бюрле-цюрих"
+         data-search="собрание фонда эмиля бюрле, цюрих  " data-count="1"
+         data-name="собрание фонда эмиля бюрле, цюрих" data-country=""
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Собрание Фонда Эмиля Бюрле, Цюрих</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2026-01-16-эдуард-мане.html" title="Эдуард Мане — Le Suicidé (Самоубийство), 1877"><img src="images/thumbs/2026-01-16-эдуард-мане.jpg" alt="Эдуард Мане — Le Suicidé (Самоубийство), 1877" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-собрание-фонда-эмиля-бюрле-цюрих"
+          onclick="toggleMuseumPosts(this, 'собрание-фонда-эмиля-бюрле-цюрих')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-собрание-фонда-эмиля-бюрле-цюрих" hidden><li><a href="2026-01-16-эдуард-мане.html">Эдуард Мане — Le Suicidé (Самоубийство), 1877</a></li></ul>
+</article>
+<article class="museum-card" id="museum-собрание-хиршпрунга-копенгаген" data-id="собрание-хиршпрунга-копенгаген"
+         data-search="собрание хиршпрунга, копенгаген den hirschsprungske samling дания" data-count="1"
+         data-name="собрание хиршпрунга, копенгаген" data-country="дания"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Собрание Хиршпрунга, Копенгаген</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Den Hirschsprungske Samling, Дания</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-12-31-вигго-юхансен.html" title="Вигго Юхансен — Glade jul (Счастливого Рождества), 1891"><img src="images/thumbs/2025-12-31-вигго-юхансен.jpg" alt="Вигго Юхансен — Glade jul (Счастливого Рождества), 1891" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-собрание-хиршпрунга-копенгаген"
+          onclick="toggleMuseumPosts(this, 'собрание-хиршпрунга-копенгаген')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-собрание-хиршпрунга-копенгаген" hidden><li><a href="2025-12-31-вигго-юхансен.html">Вигго Юхансен — Glade jul (Счастливого Рождества), 1891</a></li></ul>
+</article>
+<article class="museum-card" id="museum-старая-национальная-галерея-берлин" data-id="старая-национальная-галерея-берлин"
+         data-search="старая национальная галерея, берлин старая национальная галерея германия" data-count="1"
+         data-name="старая национальная галерея, берлин" data-country="германия"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Старая национальная галерея, Берлин</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Старая национальная галерея, Германия</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-06-02-франц-теодор-макс-слефогт.html" title="Франц Теодор Макс Слефогт — Unter den Linden (Унтер-ден-Линден), 1913"><img src="images/thumbs/2025-06-02-франц-теодор-макс-слефогт.jpg" alt="Франц Теодор Макс Слефогт — Unter den Linden (Унтер-ден-Линден), 1913" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-старая-национальная-галерея-берлин"
+          onclick="toggleMuseumPosts(this, 'старая-национальная-галерея-берлин')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-старая-национальная-галерея-берлин" hidden><li><a href="2025-06-02-франц-теодор-макс-слефогт.html">Франц Теодор Макс Слефогт — Unter den Linden (Унтер-ден-Линден), 1913</a></li></ul>
+</article>
+<article class="museum-card" id="museum-художественная-галерея-южной-австралии-аделаида" data-id="художественная-галерея-южной-австралии-аделаида"
+         data-search="художественная галерея южной австралии, аделаида art gallery of south australia австралия" data-count="1"
+         data-name="художественная галерея южной австралии, аделаида" data-country="австралия"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Художественная галерея Южной Австралии, Аделаида</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Art Gallery of South Australia, Австралия</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-05-06-джон-гловер.html" title="Джон Гловер — A view of the artist&#x27;s house and garden, in Mills Plains, Van Diemen&#x27;s Land (Вид на дом и сад художника в Миллс-Плейнс, Земля Ван-Димена), 1835"><img src="images/thumbs/2025-05-06-джон-гловер.jpg" alt="Джон Гловер — A view of the artist&#x27;s house and garden, in Mills Plains, Van Diemen&#x27;s Land (Вид на дом и сад художника в Миллс-Плейнс, Земля Ван-Димена), 1835" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-художественная-галерея-южной-австралии-аделаида"
+          onclick="toggleMuseumPosts(this, 'художественная-галерея-южной-австралии-аделаида')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-художественная-галерея-южной-австралии-аделаида" hidden><li><a href="2025-05-06-джон-гловер.html">Джон Гловер — A view of the artist&#x27;s house and garden, in Mills Plains, Van Diemen&#x27;s Land (Вид на дом и сад художника в Миллс-Плейнс, Земля Ван-Димена), 1835</a></li></ul>
+</article>
+<article class="museum-card" id="museum-художественный-музей-колледжа-смит-нортхемптон" data-id="художественный-музей-колледжа-смит-нортхемптон"
+         data-search="художественный музей колледжа смит, нортхемптон smith college museum of art соединённые штаты америки" data-count="1"
+         data-name="художественный музей колледжа смит, нортхемптон" data-country="соединённые штаты америки"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Художественный музей колледжа Смит, Нортхемптон</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Smith College Museum of Art, Соединённые Штаты Америки</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-03-17-фредерик-чайльд-гассам.html" title="Фредерик Чайльд Гассам — Union Square in Spring (Юнион-сквер весной), 1896"><img src="images/thumbs/2025-03-17-фредерик-чайльд-гассам.jpg" alt="Фредерик Чайльд Гассам — Union Square in Spring (Юнион-сквер весной), 1896" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-художественный-музей-колледжа-смит-нортхемптон"
+          onclick="toggleMuseumPosts(this, 'художественный-музей-колледжа-смит-нортхемптон')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-художественный-музей-колледжа-смит-нортхемптон" hidden><li><a href="2025-03-17-фредерик-чайльд-гассам.html">Фредерик Чайльд Гассам — Union Square in Spring (Юнион-сквер весной), 1896</a></li></ul>
+</article>
+<article class="museum-card" id="museum-частная-коллекция-монте-карло" data-id="частная-коллекция-монте-карло"
+         data-search="частная коллекция, монте-карло  " data-count="1"
+         data-name="частная коллекция, монте-карло" data-country=""
+         data-mapped="0">
+  <header class="museum-card-head"><h3>Частная коллекция, Монте-Карло</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-09-17-анри-мари-раймон-де-тулуз-лотрек-монфа.html" title="Анри Мари Раймон де Тулуз-Лотрек-Монфа — Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888"><img src="images/thumbs/2025-09-17-анри-мари-раймон-де-тулуз-лотрек-монфа.jpg" alt="Анри Мари Раймон де Тулуз-Лотрек-Монфа — Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-частная-коллекция-монте-карло"
+          onclick="toggleMuseumPosts(this, 'частная-коллекция-монте-карло')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-частная-коллекция-монте-карло" hidden><li><a href="2025-09-17-анри-мари-раймон-де-тулуз-лотрек-монфа.html">Анри Мари Раймон де Тулуз-Лотрек-Монфа — Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888</a></li></ul>
+</article>
+<article class="museum-card" id="museum-частная-коллекция-сша" data-id="частная-коллекция-сша"
+         data-search="частная коллекция, сша  " data-count="1"
+         data-name="частная коллекция, сша" data-country=""
+         data-mapped="0">
+  <header class="museum-card-head"><h3>Частная коллекция, США</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-11-26-исаак-ильич-левитан.html" title="Исаак Ильич Левитан — Иллюминация Кремля, 1896"><img src="images/thumbs/2025-11-26-исаак-ильич-левитан.jpg" alt="Исаак Ильич Левитан — Иллюминация Кремля, 1896" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-частная-коллекция-сша"
+          onclick="toggleMuseumPosts(this, 'частная-коллекция-сша')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-частная-коллекция-сша" hidden><li><a href="2025-11-26-исаак-ильич-левитан.html">Исаак Ильич Левитан — Иллюминация Кремля, 1896</a></li></ul>
+</article>
+<article class="museum-card" id="museum-частная-коллекция-франция" data-id="частная-коллекция-франция"
+         data-search="частная коллекция, франция  " data-count="1"
+         data-name="частная коллекция, франция" data-country=""
+         data-mapped="0">
+  <header class="museum-card-head"><h3>Частная коллекция, Франция</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location museum-nomap">Нет на карте</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-05-17-анри-жан-гийом-мартен.html" title="Анри Жан Гийом Мартен — Le paysan et la bergère (Крестьянин и пастушка), 1903"><img src="images/thumbs/2025-05-17-анри-жан-гийом-мартен.jpg" alt="Анри Жан Гийом Мартен — Le paysan et la bergère (Крестьянин и пастушка), 1903" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-частная-коллекция-франция"
+          onclick="toggleMuseumPosts(this, 'частная-коллекция-франция')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-частная-коллекция-франция" hidden><li><a href="2025-05-17-анри-жан-гийом-мартен.html">Анри Жан Гийом Мартен — Le paysan et la bergère (Крестьянин и пастушка), 1903</a></li></ul>
+</article>
+<article class="museum-card" id="museum-штеделевский-художественный-институт-франкфурт-на-майне" data-id="штеделевский-художественный-институт-франкфурт-на-майне"
+         data-search="штеделевский художественный институт, франкфурт-на-майне städel museum германия" data-count="1"
+         data-name="штеделевский художественный институт, франкфурт-на-майне" data-country="германия"
+         data-mapped="1">
+  <header class="museum-card-head"><h3>Штеделевский художественный институт, Франкфурт-на-Майне</h3><span class="museum-badge">1</span></header>
+  <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Städel Museum, Германия</p>
+  <div class="museum-thumbs"><a class="museum-thumb" href="2025-04-23-жан-дезире-гюстав-курбе.html" title="Жан Дезире Гюстав Курбе — Dorfausgang im Winter (Окраина деревни зимой), 1868"><img src="images/thumbs/2025-04-23-жан-дезире-гюстав-курбе.jpg" alt="Жан Дезире Гюстав Курбе — Dorfausgang im Winter (Окраина деревни зимой), 1868" loading="lazy" decoding="async"></a></div>
+  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-штеделевский-художественный-институт-франкфурт-на-майне"
+          onclick="toggleMuseumPosts(this, 'штеделевский-художественный-институт-франкфурт-на-майне')">Список картин ▾</button>
+  <ul class="museum-posts-list" id="posts-штеделевский-художественный-институт-франкфурт-на-майне" hidden><li><a href="2025-04-23-жан-дезире-гюстав-курбе.html">Жан Дезире Гюстав Курбе — Dorfausgang im Winter (Окраина деревни зимой), 1868</a></li></ul>
+</article>
+    <p class="no-results" id="museums-empty" hidden>Ничего не найдено.</p>
+  </div>
+</div>
+
 <button type="button" class="scroll-top" onclick="scrollToTop()" aria-label="Наверх" title="Наверх"><span class="icon-arrow-up" aria-hidden="true"></span></button>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin></script>
+<script src="map-config.js"></script>
 <script>
 function scrollToTop(){
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -790,103 +838,275 @@ function toggleTheme(){
 })();
 </script>
 <script>
-// Карта — не обязательная часть страницы. Если leaflet не загрузился,
-// список музеев внизу всё равно должен работать (раньше падал весь скрипт).
-if (typeof L === 'undefined') {
+const MUSEUMS = [{"id": "гмии-им-ас-пушкина-москва", "name": "ГМИИ им. А.С. Пушкина, Москва", "place": "", "lat": 55.74702868, "lon": 37.60602901, "count": 6, "approx": false}, {"id": "государственная-третьяковская-галерея-москва", "name": "Государственная Третьяковская галерея, Москва", "place": "Третьяковская галерея, Россия", "lat": 55.7413613, "lon": 37.6202196, "count": 5, "approx": false}, {"id": "национальная-галерея-искусства-вашингтон", "name": "Национальная галерея искусства, Вашингтон", "place": "National Gallery of Art, Соединённые Штаты Америки", "lat": 38.8913116, "lon": -77.0199045, "count": 4, "approx": false}, {"id": "музей-дорсе-париж", "name": "Музей д’Орсе, Париж", "place": "Музей Орсе, Франция", "lat": 48.8599179, "lon": 2.3265849, "count": 3, "approx": false}, {"id": "государственный-русский-музей-санкт-петербург", "name": "Государственный Русский музей, Санкт-Петербург", "place": "Русский музей, Россия", "lat": 59.9385848, "lon": 30.3288929, "count": 2, "approx": false}, {"id": "малый-дворец-музей-изящных-искусств-города-парижа-париж", "name": "Малый дворец, музей изящных искусств города Парижа, Париж", "place": "", "lat": 48.86602777777778, "lon": 2.3145555555555557, "count": 2, "approx": false}, {"id": "метрополитен-музей-нью-йорк", "name": "Метрополитен-музей, Нью-Йорк", "place": "Metropolitan Museum Of Art, Таиланд", "lat": 13.7348443, "lon": 100.5458071, "count": 2, "approx": false}, {"id": "музей-фабра-монпелье", "name": "Музей Фабра, Монпелье", "place": "Musée Fabre, Франция", "lat": 43.6117542, "lon": 3.8801274, "count": 2, "approx": false}, {"id": "национальный-музей-прадо-мадрид", "name": "Национальный музей Прадо, Мадрид", "place": "музей Прадо, Испания", "lat": 40.4137925, "lon": -3.6920407, "count": 2, "approx": false}, {"id": "чикагский-институт-искусств-чикаго", "name": "Чикагский институт искусств, Чикаго", "place": "The Art Institute of Chicago, Соединённые Штаты Америки", "lat": 41.879605, "lon": -87.6230716, "count": 2, "approx": false}, {"id": "базельский-художественный-музей-базель", "name": "Базельский художественный музей, Базель", "place": "", "lat": 47.554167, "lon": 7.594167, "count": 1, "approx": false}, {"id": "британская-галерея-тейт-лондон", "name": "Британская галерея Тейт, Лондон", "place": "", "lat": 51.491062, "lon": -0.127789, "count": 1, "approx": false}, {"id": "винтертурский-художественный-музей-винтертур", "name": "Винтертурский художественный музей, Винтертур", "place": "", "lat": 47.5015175020441, "lon": 8.73039426768105, "count": 1, "approx": false}, {"id": "гим-москва", "name": "ГИМ, Москва", "place": "Исторический музей, Россия", "lat": 55.755323, "lon": 37.6178815, "count": 1, "approx": false}, {"id": "государственный-музей-истории-религии-санкт-петербург", "name": "Государственный музей истории религии, Санкт-Петербург", "place": "Гродненский государственный музей истории религии, Беларусь", "lat": 53.6778265, "lon": 23.8257533, "count": 1, "approx": false}, {"id": "государственный-музей-тюрингии-хайдексбург", "name": "Государственный музей Тюрингии, Хайдексбург", "place": "", "lat": 50.723, "lon": 11.339, "count": 1, "approx": false}, {"id": "государственный-художественный-музей-платтсбурга-галерея-рок", "name": "Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург", "place": "", "lat": 44.695277777778, "lon": -73.458333333333, "count": 1, "approx": true}, {"id": "гётеборгский-художественный-музей-гётеборг", "name": "Гётеборгский художественный музей, Гётеборг", "place": "Göteborgs konstmuseum, Швеция", "lat": 57.6965614, "lon": 11.9807432, "count": 1, "approx": false}, {"id": "институт-искусств-миннеаполиса-миннеаполис", "name": "Институт искусств Миннеаполиса, Миннеаполис", "place": "Minneapolis Institute of Art, Соединённые Штаты Америки", "lat": 44.9585946, "lon": -93.2741526, "count": 1, "approx": false}, {"id": "институт-искусств-стерлинга-и-франсин-кларк-уильямстаун", "name": "Институт искусств Стерлинга и Франсин Кларк, Уильямстаун", "place": "", "lat": 42.7078, "lon": -73.2136, "count": 1, "approx": false}, {"id": "коллекции-версальского-дворца-версаль", "name": "Коллекции Версальского дворца, Версаль", "place": "", "lat": 48.8044, "lon": 2.12197, "count": 1, "approx": false}, {"id": "королевский-музей-изящных-искусств-брюссель", "name": "Королевский музей изящных искусств, Брюссель", "place": "", "lat": 50.84168, "lon": 4.358238, "count": 1, "approx": false}, {"id": "лувр-париж-в-запаснике", "name": "Лувр, Париж (в запаснике)", "place": "", "lat": 48.861111111111114, "lon": 2.3358333333333334, "count": 1, "approx": false}, {"id": "музей-барберини-потсдам", "name": "Музей Барберини, Потсдам", "place": "Museum Barberini, Германия", "lat": 52.395233, "lon": 13.0618998, "count": 1, "approx": false}, {"id": "музей-вальрафа-рихарца-и-фонд-корбо-кёльн", "name": "Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн", "place": "Wallraf-Richartz-Museum & Fondation Corboud, Германия", "lat": 50.9374105, "lon": 6.9584434, "count": 1, "approx": false}, {"id": "музей-гетти-лос-анджелес", "name": "Музей Гетти, Лос-Анджелес", "place": "Nino's Getty, Соединённые Штаты Америки", "lat": 41.8774365, "lon": -72.8007443, "count": 1, "approx": false}, {"id": "музей-изящных-искусств-гент", "name": "Музей изящных искусств, Гент", "place": "Museum voor Schone Kunsten, Бельгия", "lat": 51.0379751, "lon": 3.7242437, "count": 1, "approx": false}, {"id": "музей-искусств-охара-курасики", "name": "Музей искусств Охара, Курасики", "place": "大原美術館, Япония", "lat": 34.5960325, "lon": 133.7704385, "count": 1, "approx": false}, {"id": "музей-кунстпаласт-дюссельдорф", "name": "Музей Кунстпаласт, Дюссельдорф", "place": "Museum Kunstpalast, Германия", "lat": 51.234998, "lon": 6.7731045, "count": 1, "approx": false}, {"id": "музей-леопольда-вена", "name": "Музей Леопольда, Вена", "place": "Музей Леопольда, Австрия", "lat": 48.2025896, "lon": 16.3590667, "count": 1, "approx": false}, {"id": "музей-скагена-скаген", "name": "Музей Скагена, Скаген", "place": "Skagens Museum, Дания", "lat": 57.7245204, "lon": 10.5967916, "count": 1, "approx": false}, {"id": "музей-современного-искусства-андре-мальро-гавр", "name": "Музей современного искусства Андре Мальро, Гавр", "place": "Musée d'Art Moderne André Malraux, Франция", "lat": 49.4850174, "lon": 0.1026567, "count": 1, "approx": false}, {"id": "музей-эжена-будена-онфлёр", "name": "Музей Эжена Будена, Онфлёр", "place": "Musée Eugène Boudin, Франция", "lat": 49.4223549, "lon": 0.2305791, "count": 1, "approx": false}, {"id": "национальная-галерея-шотландии-эдинбург", "name": "Национальная галерея Шотландии, Эдинбург", "place": "Национальная портретная галерея Шотландии, Соединённое Королевство", "lat": 55.9554655, "lon": -3.1935919, "count": 1, "approx": false}, {"id": "национальный-музей-западного-искусства-токио", "name": "Национальный музей западного искусства, Токио", "place": "Национальный музей западного искусства, Япония", "lat": 35.7155512, "lon": 139.7759424, "count": 1, "approx": false}, {"id": "национальный-художественный-музей-республики-беларусь-минск", "name": "Национальный художественный музей Республики Беларусь, Минск", "place": "", "lat": 53.9024716, "lon": 27.5618225, "count": 1, "approx": true}, {"id": "отдел-личных-коллекций-гмии-им-ас-пушкина-москва", "name": "Отдел личных коллекций, ГМИИ им. А.С. Пушкина, Москва", "place": "Галерея искусства стран Европы и Америки XIX—XX веков, Россия", "lat": 55.7464881, "lon": 37.6053051, "count": 1, "approx": false}, {"id": "пермская-государственная-художественная-галерея-пермь", "name": "Пермская государственная художественная галерея, Пермь", "place": "Пермская Государственная Художественная Галерея, Россия", "lat": 58.0164488, "lon": 56.2346467, "count": 1, "approx": false}, {"id": "портлендский-художественный-музей-портленд", "name": "Портлендский художественный музей, Портленд", "place": "Portland Art Museum, Соединённые Штаты Америки", "lat": 45.5165483, "lon": -122.6834106, "count": 1, "approx": false}, {"id": "собрание-фонда-эмиля-бюрле-цюрих", "name": "Собрание Фонда Эмиля Бюрле, Цюрих", "place": "", "lat": 47.353045, "lon": 8.561758, "count": 1, "approx": false}, {"id": "собрание-хиршпрунга-копенгаген", "name": "Собрание Хиршпрунга, Копенгаген", "place": "Den Hirschsprungske Samling, Дания", "lat": 55.6899139, "lon": 12.5774814, "count": 1, "approx": false}, {"id": "старая-национальная-галерея-берлин", "name": "Старая национальная галерея, Берлин", "place": "Старая национальная галерея, Германия", "lat": 52.520862, "lon": 13.3982661, "count": 1, "approx": false}, {"id": "художественная-галерея-южной-австралии-аделаида", "name": "Художественная галерея Южной Австралии, Аделаида", "place": "Art Gallery of South Australia, Австралия", "lat": -34.9206307, "lon": 138.6039688, "count": 1, "approx": false}, {"id": "художественный-музей-колледжа-смит-нортхемптон", "name": "Художественный музей колледжа Смит, Нортхемптон", "place": "Smith College Museum of Art, Соединённые Штаты Америки", "lat": 42.318633, "lon": -72.636124, "count": 1, "approx": false}, {"id": "штеделевский-художественный-институт-франкфурт-на-майне", "name": "Штеделевский художественный институт, Франкфурт-на-Майне", "place": "Städel Museum, Германия", "lat": 50.1032949, "lon": 8.6738582, "count": 1, "approx": false}];
+
+// ------------------------------------------------ слои карты
+// Никаких ключей эти четыре слоя не требуют. Тёмная схема нужна,
+// потому что обычная карта в тёмной теме сайта светит белым прямоугольником.
+var BASE_LAYERS = [
+  {id: 'light', name: 'Светлая', url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+   attr: '&copy; OpenStreetMap, &copy; CARTO', max: 20},
+  {id: 'dark', name: 'Тёмная', url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+   attr: '&copy; OpenStreetMap, &copy; CARTO', max: 20},
+  {id: 'osm', name: 'Подробная', url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+   attr: '&copy; OpenStreetMap', max: 19},
+  {id: 'sat', name: 'Спутник',
+   url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+   attr: 'Esri, Maxar, Earthstar Geographics', max: 19}
+];
+
+var map = null, markers = {}, layers = {}, layerControl = null, userPickedLayer = false;
+
+function currentTheme() {
+  return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+}
+
+function initMap() {
+  if (typeof L === 'undefined') {
     var box = document.getElementById('map');
-    if (box) {
-        box.innerHTML = '<p class="map-fallback">Карта не загрузилась — проверьте соединение. Список музеев доступен ниже.</p>';
-    }
-} else {
-    var map = L.map('map').setView([50, 10], 3);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-        maxZoom: 18
+    if (box) box.innerHTML = '<p class="map-fallback">Карта не загрузилась — проверьте соединение.<br>Список музеев доступен рядом.</p>';
+    return;
+  }
+
+  map = L.map('map', {scrollWheelZoom: true}).setView([48, 10], 4);
+
+  BASE_LAYERS.forEach(function (cfg) {
+    layers[cfg.name] = L.tileLayer(cfg.url, {attribution: cfg.attr, maxZoom: cfg.max});
+    layers[cfg.name]._opaId = cfg.id;
+  });
+
+  var saved = null;
+  try { saved = localStorage.getItem('mapLayer'); } catch (e) {}
+  var startName = null;
+  if (saved) {
+    BASE_LAYERS.forEach(function (c) { if (c.id === saved) startName = c.name; });
+    userPickedLayer = !!startName;
+  }
+  if (!startName) startName = currentTheme() === 'dark' ? 'Тёмная' : 'Светлая';
+  layers[startName].addTo(map);
+
+  layerControl = L.control.layers(layers, null, {position: 'topright'}).addTo(map);
+
+  map.on('baselayerchange', function (e) {
+    userPickedLayer = true;
+    try { localStorage.setItem('mapLayer', e.layer._opaId || ''); } catch (err) {}
+  });
+
+  // Пока человек сам не выбрал слой, карта следует за темой сайта
+  new MutationObserver(function () {
+    if (userPickedLayer || !map) return;
+    var want = currentTheme() === 'dark' ? 'Тёмная' : 'Светлая';
+    Object.keys(layers).forEach(function (name) {
+      if (name === want) { if (!map.hasLayer(layers[name])) map.addLayer(layers[name]); }
+      else if (map.hasLayer(layers[name])) map.removeLayer(layers[name]);
+    });
+  }).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+
+  addMarkers();
+  addYandexLayer();
+}
+
+function addMarkers() {
+  var group = [];
+  MUSEUMS.forEach(function (m) {
+    var marker = L.marker([m.lat, m.lon], {
+      opacity: m.approx ? 0.55 : 1,
+      title: m.name
     }).addTo(map);
 
-L.marker([47.554167, 7.594167]).addTo(map).bindPopup(`<b>Базельский художественный музей, Базель</b><br>, <br>1 картина<br><a href="#museum-базельский-художественный-музей-базель" onclick="scrollToMuseum('базельский-художественный-музей-базель')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([51.491062, -0.127789]).addTo(map).bindPopup(`<b>Британская галерея Тейт, Лондон</b><br>, <br>1 картина<br><a href="#museum-британская-галерея-тейт-лондон" onclick="scrollToMuseum('британская-галерея-тейт-лондон')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([47.5015175020441, 8.73039426768105]).addTo(map).bindPopup(`<b>Винтертурский художественный музей, Винтертур</b><br>, <br>1 картина<br><a href="#museum-винтертурский-художественный-музей-винтертур" onclick="scrollToMuseum('винтертурский-художественный-музей-винтертур')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([55.755323, 37.6178815]).addTo(map).bindPopup(`<b>ГИМ, Москва</b><br>Исторический музей, Россия<br>1 картина<br><a href="#museum-гим-москва" onclick="scrollToMuseum('гим-москва')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([55.74702868, 37.60602901]).addTo(map).bindPopup(`<b>ГМИИ им. А.С. Пушкина, Москва</b><br>, <br>6 картин<br><a href="#museum-гмии-им-ас-пушкина-москва" onclick="scrollToMuseum('гмии-им-ас-пушкина-москва')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([55.7413613, 37.6202196]).addTo(map).bindPopup(`<b>Государственная Третьяковская галерея, Москва</b><br>Третьяковская галерея, Россия<br>5 картин<br><a href="#museum-государственная-третьяковская-галерея-москва" onclick="scrollToMuseum('государственная-третьяковская-галерея-москва')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([59.9385848, 30.3288929]).addTo(map).bindPopup(`<b>Государственный Русский музей, Санкт-Петербург</b><br>Русский музей, Россия<br>2 картины<br><a href="#museum-государственный-русский-музей-санкт-петербург" onclick="scrollToMuseum('государственный-русский-музей-санкт-петербург')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([50.723, 11.339]).addTo(map).bindPopup(`<b>Государственный музей Тюрингии, Хайдексбург</b><br>, <br>1 картина<br><a href="#museum-государственный-музей-тюрингии-хайдексбург" onclick="scrollToMuseum('государственный-музей-тюрингии-хайдексбург')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([53.6778265, 23.8257533]).addTo(map).bindPopup(`<b>Государственный музей истории религии, Санкт-Петербург</b><br>Гродненский государственный музей истории религии, Беларусь<br>1 картина<br><a href="#museum-государственный-музей-истории-религии-санкт-петербург" onclick="scrollToMuseum('государственный-музей-истории-религии-санкт-петербург')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([44.695277777778, -73.458333333333], {opacity: 0.6}).addTo(map).bindPopup(`<b>Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург</b><br>,  — расположение приблизительное<br>1 картина<br><a href="#museum-государственный-художественный-музей-платтсбурга-галерея-рок" onclick="scrollToMuseum('государственный-художественный-музей-платтсбурга-галерея-рок')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([57.6965614, 11.9807432]).addTo(map).bindPopup(`<b>Гётеборгский художественный музей, Гётеборг</b><br>Göteborgs konstmuseum, Швеция<br>1 картина<br><a href="#museum-гётеборгский-художественный-музей-гётеборг" onclick="scrollToMuseum('гётеборгский-художественный-музей-гётеборг')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([44.9585946, -93.2741526]).addTo(map).bindPopup(`<b>Институт искусств Миннеаполиса, Миннеаполис</b><br>Minneapolis Institute of Art, Соединённые Штаты Америки<br>1 картина<br><a href="#museum-институт-искусств-миннеаполиса-миннеаполис" onclick="scrollToMuseum('институт-искусств-миннеаполиса-миннеаполис')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([42.7085558, -73.2145995]).addTo(map).bindPopup(`<b>Институт искусств Стерлинга и Франсин Кларк, Уильямстаун</b><br>Clark Art Institute Orientation Center, Соединённые Штаты Америки<br>1 картина<br><a href="#museum-институт-искусств-стерлинга-и-франсин-кларк-уильямстаун" onclick="scrollToMuseum('институт-искусств-стерлинга-и-франсин-кларк-уильямстаун')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([48.8044252, 2.1202853]).addTo(map).bindPopup(`<b>Коллекции Версальского дворца, Версаль</b><br>Версальский дворец, Франция<br>1 картина<br><a href="#museum-коллекции-версальского-дворца-версаль" onclick="scrollToMuseum('коллекции-версальского-дворца-версаль')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([50.84168, 4.358238]).addTo(map).bindPopup(`<b>Королевский музей изящных искусств, Брюссель</b><br>, <br>1 картина<br><a href="#museum-королевский-музей-изящных-искусств-брюссель" onclick="scrollToMuseum('королевский-музей-изящных-искусств-брюссель')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([48.861111111111114, 2.3358333333333334]).addTo(map).bindPopup(`<b>Лувр, Париж (в запаснике)</b><br>, <br>1 картина<br><a href="#museum-лувр-париж-в-запаснике" onclick="scrollToMuseum('лувр-париж-в-запаснике')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([48.86602777777778, 2.3145555555555557]).addTo(map).bindPopup(`<b>Малый дворец, музей изящных искусств города Парижа, Париж</b><br>, <br>2 картины<br><a href="#museum-малый-дворец-музей-изящных-искусств-города-парижа-париж" onclick="scrollToMuseum('малый-дворец-музей-изящных-искусств-города-парижа-париж')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([40.779444444444444, -73.96333333333334]).addTo(map).bindPopup(`<b>Метрополитен-музей, Нью-Йорк</b><br>, <br>2 картины<br><a href="#museum-метрополитен-музей-нью-йорк" onclick="scrollToMuseum('метрополитен-музей-нью-йорк')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([52.395233, 13.0618998]).addTo(map).bindPopup(`<b>Музей Барберини, Потсдам</b><br>Museum Barberini, Германия<br>1 картина<br><a href="#museum-музей-барберини-потсдам" onclick="scrollToMuseum('музей-барберини-потсдам')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([50.9375, 6.958611]).addTo(map).bindPopup(`<b>Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн</b><br>, <br>1 картина<br><a href="#museum-музей-вальрафа-рихарца-и-фонд-корбо-кёльн" onclick="scrollToMuseum('музей-вальрафа-рихарца-и-фонд-корбо-кёльн')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([41.8774365, -72.8007443]).addTo(map).bindPopup(`<b>Музей Гетти, Лос-Анджелес</b><br>Nino&#x27;s Getty, Соединённые Штаты Америки<br>1 картина<br><a href="#museum-музей-гетти-лос-анджелес" onclick="scrollToMuseum('музей-гетти-лос-анджелес')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([51.234998, 6.7731045]).addTo(map).bindPopup(`<b>Музей Кунстпаласт, Дюссельдорф</b><br>Museum Kunstpalast, Германия<br>1 картина<br><a href="#museum-музей-кунстпаласт-дюссельдорф" onclick="scrollToMuseum('музей-кунстпаласт-дюссельдорф')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([48.2025896, 16.3590667]).addTo(map).bindPopup(`<b>Музей Леопольда, Вена</b><br>Музей Леопольда, Австрия<br>1 картина<br><a href="#museum-музей-леопольда-вена" onclick="scrollToMuseum('музей-леопольда-вена')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([57.7245204, 10.5967916]).addTo(map).bindPopup(`<b>Музей Скагена, Скаген</b><br>Skagens Museum, Дания<br>1 картина<br><a href="#museum-музей-скагена-скаген" onclick="scrollToMuseum('музей-скагена-скаген')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([43.6117542, 3.8801274]).addTo(map).bindPopup(`<b>Музей Фабра, Монпелье</b><br>Musée Fabre, Франция<br>2 картины<br><a href="#museum-музей-фабра-монпелье" onclick="scrollToMuseum('музей-фабра-монпелье')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([49.4223549, 0.2305791]).addTo(map).bindPopup(`<b>Музей Эжена Будена, Онфлёр</b><br>Musée Eugène Boudin, Франция<br>1 картина<br><a href="#museum-музей-эжена-будена-онфлёр" onclick="scrollToMuseum('музей-эжена-будена-онфлёр')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([48.8599179, 2.3265849]).addTo(map).bindPopup(`<b>Музей д’Орсе, Париж</b><br>Музей Орсе, Франция<br>3 картины<br><a href="#museum-музей-дорсе-париж" onclick="scrollToMuseum('музей-дорсе-париж')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([51.0379751, 3.7242437]).addTo(map).bindPopup(`<b>Музей изящных искусств, Гент</b><br>Museum voor Schone Kunsten, Бельгия<br>1 картина<br><a href="#museum-музей-изящных-искусств-гент" onclick="scrollToMuseum('музей-изящных-искусств-гент')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([34.5960325, 133.7704385]).addTo(map).bindPopup(`<b>Музей искусств Охара, Курасики</b><br>大原美術館, Япония<br>1 картина<br><a href="#museum-музей-искусств-охара-курасики" onclick="scrollToMuseum('музей-искусств-охара-курасики')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([49.4850174, 0.1026567]).addTo(map).bindPopup(`<b>Музей современного искусства Андре Мальро, Гавр</b><br>Musée d&#x27;Art Moderne André Malraux, Франция<br>1 картина<br><a href="#museum-музей-современного-искусства-андре-мальро-гавр" onclick="scrollToMuseum('музей-современного-искусства-андре-мальро-гавр')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([55.9554655, -3.1935919]).addTo(map).bindPopup(`<b>Национальная галерея Шотландии, Эдинбург</b><br>Национальная портретная галерея Шотландии, Соединённое Королевство<br>1 картина<br><a href="#museum-национальная-галерея-шотландии-эдинбург" onclick="scrollToMuseum('национальная-галерея-шотландии-эдинбург')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([38.8913116, -77.0199045]).addTo(map).bindPopup(`<b>Национальная галерея искусства, Вашингтон</b><br>National Gallery of Art, Соединённые Штаты Америки<br>4 картины<br><a href="#museum-национальная-галерея-искусства-вашингтон" onclick="scrollToMuseum('национальная-галерея-искусства-вашингтон')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([40.4137925, -3.6920407]).addTo(map).bindPopup(`<b>Национальный музей Прадо, Мадрид</b><br>музей Прадо, Испания<br>2 картины<br><a href="#museum-национальный-музей-прадо-мадрид" onclick="scrollToMuseum('национальный-музей-прадо-мадрид')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([35.7155512, 139.7759424]).addTo(map).bindPopup(`<b>Национальный музей западного искусства, Токио</b><br>Национальный музей западного искусства, Япония<br>1 картина<br><a href="#museum-национальный-музей-западного-искусства-токио" onclick="scrollToMuseum('национальный-музей-западного-искусства-токио')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([53.9024716, 27.5618225], {opacity: 0.6}).addTo(map).bindPopup(`<b>Национальный художественный музей Республики Беларусь, Минск</b><br>,  — расположение приблизительное<br>1 картина<br><a href="#museum-национальный-художественный-музей-республики-беларусь-минск" onclick="scrollToMuseum('национальный-художественный-музей-республики-беларусь-минск')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([55.7464881, 37.6053051]).addTo(map).bindPopup(`<b>Отдел личных коллекций, ГМИИ им. А.С. Пушкина, Москва</b><br>Галерея искусства стран Европы и Америки XIX—XX веков, Россия<br>1 картина<br><a href="#museum-отдел-личных-коллекций-гмии-им-ас-пушкина-москва" onclick="scrollToMuseum('отдел-личных-коллекций-гмии-им-ас-пушкина-москва')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([58.0164488, 56.2346467]).addTo(map).bindPopup(`<b>Пермская государственная художественная галерея, Пермь</b><br>Пермская Государственная Художественная Галерея, Россия<br>1 картина<br><a href="#museum-пермская-государственная-художественная-галерея-пермь" onclick="scrollToMuseum('пермская-государственная-художественная-галерея-пермь')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([45.5165483, -122.6834106]).addTo(map).bindPopup(`<b>Портлендский художественный музей, Портленд</b><br>Portland Art Museum, Соединённые Штаты Америки<br>1 картина<br><a href="#museum-портлендский-художественный-музей-портленд" onclick="scrollToMuseum('портлендский-художественный-музей-портленд')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([47.353045, 8.561758]).addTo(map).bindPopup(`<b>Собрание Фонда Эмиля Бюрле, Цюрих</b><br>, <br>1 картина<br><a href="#museum-собрание-фонда-эмиля-бюрле-цюрих" onclick="scrollToMuseum('собрание-фонда-эмиля-бюрле-цюрих')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([55.6899139, 12.5774814]).addTo(map).bindPopup(`<b>Собрание Хиршпрунга, Копенгаген</b><br>Den Hirschsprungske Samling, Дания<br>1 картина<br><a href="#museum-собрание-хиршпрунга-копенгаген" onclick="scrollToMuseum('собрание-хиршпрунга-копенгаген')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([52.520862, 13.3982661]).addTo(map).bindPopup(`<b>Старая национальная галерея, Берлин</b><br>Старая национальная галерея, Германия<br>1 картина<br><a href="#museum-старая-национальная-галерея-берлин" onclick="scrollToMuseum('старая-национальная-галерея-берлин')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([-34.9206307, 138.6039688]).addTo(map).bindPopup(`<b>Художественная галерея Южной Австралии, Аделаида</b><br>Art Gallery of South Australia, Австралия<br>1 картина<br><a href="#museum-художественная-галерея-южной-австралии-аделаида" onclick="scrollToMuseum('художественная-галерея-южной-австралии-аделаида')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([42.318633, -72.636124]).addTo(map).bindPopup(`<b>Художественный музей колледжа Смит, Нортхемптон</b><br>Smith College Museum of Art, Соединённые Штаты Америки<br>1 картина<br><a href="#museum-художественный-музей-колледжа-смит-нортхемптон" onclick="scrollToMuseum('художественный-музей-колледжа-смит-нортхемптон')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([41.879605, -87.6230716]).addTo(map).bindPopup(`<b>Чикагский институт искусств, Чикаго</b><br>The Art Institute of Chicago, Соединённые Штаты Америки<br>2 картины<br><a href="#museum-чикагский-институт-искусств-чикаго" onclick="scrollToMuseum('чикагский-институт-искусств-чикаго')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
-            L.marker([50.1032949, 8.6738582]).addTo(map).bindPopup(`<b>Штеделевский художественный институт, Франкфурт-на-Майне</b><br>Städel Museum, Германия<br>1 картина<br><a href="#museum-штеделевский-художественный-институт-франкфурт-на-майне" onclick="scrollToMuseum('штеделевский-художественный-институт-франкфурт-на-майне')" class="popup-link"><span class="icon-search-small" aria-hidden="true"></span> Показать в списке</a>`);
+    var word = m.count % 10 === 1 && m.count % 100 !== 11 ? 'картина'
+             : (m.count % 10 >= 2 && m.count % 10 <= 4 && (m.count % 100 < 10 || m.count % 100 >= 20)) ? 'картины'
+             : 'картин';
 
-    var markers = [];
-    map.eachLayer(function(layer) {
-        if (layer instanceof L.Marker) markers.push(layer);
+    var html = document.createElement('div');
+    var title = document.createElement('b');
+    title.textContent = m.name;
+    html.appendChild(title);
+    if (m.place) {
+      var place = document.createElement('div');
+      place.className = 'popup-place';
+      place.textContent = m.place + (m.approx ? ' — расположение приблизительное' : '');
+      html.appendChild(place);
+    }
+    var cnt = document.createElement('div');
+    cnt.textContent = m.count + ' ' + word;
+    html.appendChild(cnt);
+    var link = document.createElement('a');
+    link.href = '#museum-' + m.id;
+    link.className = 'popup-link';
+    link.textContent = 'Показать в списке';
+    link.addEventListener('click', function (e) { e.preventDefault(); focusCard(m.id); });
+    html.appendChild(link);
+
+    marker.bindPopup(html);
+    marker.on('click', function () { highlightCard(m.id); });
+    markers[m.id] = marker;
+    group.push(marker);
+  });
+
+  if (group.length) map.fitBounds(L.featureGroup(group).getBounds().pad(0.1));
+}
+
+// ------------------------------------------------ Яндекс.Карты
+// Слой появляется только если в map-config.js вписан ключ. Всё загружается
+// отложенно и в try: без ключа или при ошибке остальные карты работают как были.
+function addYandexLayer() {
+  var key = (window.MAP_KEYS && window.MAP_KEYS.yandex || '').trim();
+  if (!key) return;
+
+  loadScript('https://api-maps.yandex.ru/2.1/?apikey=' + encodeURIComponent(key) + '&lang=ru_RU', function () {
+    if (typeof ymaps === 'undefined') return;
+    ymaps.ready(function () {
+      loadScript('https://cdn.jsdelivr.net/npm/leaflet-plugins@3.4.0/layer/tile/Yandex.js', function () {
+        try {
+          if (!L.Yandex) return;
+          layerControl.addBaseLayer(new L.Yandex('map'), 'Яндекс');
+          layerControl.addBaseLayer(new L.Yandex('satellite'), 'Яндекс: спутник');
+        } catch (e) { console.warn('Слой Яндекса не добавлен:', e.message); }
+      });
     });
-    if (markers.length > 0) {
-        map.fitBounds(L.featureGroup(markers).getBounds().pad(0.1));
-    }
+  });
 }
 
-function scrollToMuseum(id) {
-    var el = document.getElementById('museum-' + id);
-    if (!el) return;
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
-    el.classList.add('museum-highlight');
-    setTimeout(function() { el.classList.remove('museum-highlight'); }, 2000);
+function loadScript(src, done) {
+  var el = document.createElement('script');
+  el.src = src;
+  el.async = true;
+  el.onload = done;
+  el.onerror = function () { console.warn('Не загрузился скрипт карты:', src); };
+  document.head.appendChild(el);
 }
 
-// btn передаём аргументом. Раньше здесь был глобальный event.target —
-// нестандартный приём, который ломается вне Chrome.
+// ------------------------------------------------ связь списка и карты
+function highlightCard(id) {
+  document.querySelectorAll('.museum-card.active').forEach(function (c) { c.classList.remove('active'); });
+  var card = document.getElementById('museum-' + id);
+  if (card) card.classList.add('active');
+}
+
+function focusCard(id) {
+  highlightCard(id);
+  var card = document.getElementById('museum-' + id);
+  if (!card) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  card.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block: 'center'});
+}
+
+function focusMuseum(id) {
+  highlightCard(id);
+  var marker = markers[id];
+  if (!map || !marker) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) map.setView(marker.getLatLng(), Math.max(map.getZoom(), 9));
+  else map.flyTo(marker.getLatLng(), Math.max(map.getZoom(), 9), {duration: 0.8});
+  marker.openPopup();
+}
+
 function toggleMuseumPosts(btn, id) {
-    var hidden = document.getElementById('hidden-' + id);
-    if (!hidden) return;
-    var isOpen = hidden.hasAttribute('hidden') === false;
-    if (isOpen) {
-        hidden.setAttribute('hidden', '');
-        var count = hidden.querySelectorAll('li').length;
-        var word = (count % 10 === 1 && count % 100 !== 11) ? 'картину'
-                 : (count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 10 || count % 100 >= 20)) ? 'картины'
-                 : 'картин';
-        btn.textContent = 'Показать все ' + count + ' ' + word + ' ▾';
-        btn.setAttribute('aria-expanded', 'false');
-    } else {
-        hidden.removeAttribute('hidden');
-        btn.textContent = 'Свернуть ▴';
-        btn.setAttribute('aria-expanded', 'true');
-    }
+  var list = document.getElementById('posts-' + id);
+  if (!list) return;
+  var open = !list.hasAttribute('hidden');
+  if (open) {
+    list.setAttribute('hidden', '');
+    btn.textContent = 'Список картин ▾';
+  } else {
+    list.removeAttribute('hidden');
+    btn.textContent = 'Свернуть ▴';
+  }
+  btn.setAttribute('aria-expanded', open ? 'false' : 'true');
 }
+
+function toggleMapFullscreen(btn) {
+  var shell = document.querySelector('.map-shell');
+  if (!shell) return;
+  var on = shell.classList.toggle('fullscreen');
+  btn.setAttribute('aria-label', on ? 'Свернуть карту' : 'Развернуть карту');
+  btn.title = btn.getAttribute('aria-label');
+  btn.textContent = on ? '✕' : '⛶';
+  document.body.style.overflow = on ? 'hidden' : '';
+  if (map) setTimeout(function () { map.invalidateSize(); }, 250);
+}
+
+// ------------------------------------------------ поиск и сортировка
+function plural(n, one, few, many) {
+  var n10 = n % 10, n100 = n % 100;
+  if (n10 === 1 && n100 !== 11) return one;
+  if (n10 >= 2 && n10 <= 4 && (n100 < 10 || n100 >= 20)) return few;
+  return many;
+}
+
+function applyMuseumFilter() {
+  var box = document.getElementById('search-value');
+  var query = (window.__museumQuery || '').toLowerCase().trim();
+  var shown = 0;
+  document.querySelectorAll('.museum-card').forEach(function (card) {
+    var match = !query || (card.dataset.search || '').indexOf(query) !== -1;
+    card.hidden = !match;
+    if (match) shown++;
+    // метки на карте фильтруются вместе со списком
+    var marker = markers[card.dataset.id];
+    if (marker && map) {
+      if (match && !map.hasLayer(marker)) map.addLayer(marker);
+      else if (!match && map.hasLayer(marker)) map.removeLayer(marker);
+    }
+  });
+  var counter = document.getElementById('museum-found');
+  if (counter) counter.textContent = query ? shown + ' ' + plural(shown, 'музей', 'музея', 'музеев') : '';
+  var empty = document.getElementById('museums-empty');
+  if (empty) empty.hidden = shown !== 0;
+}
+
+function sortMuseums(mode) {
+  var list = document.getElementById('museum-list');
+  var cards = Array.prototype.slice.call(list.querySelectorAll('.museum-card'));
+  cards.sort(function (a, b) {
+    if (mode === 'name') return a.dataset.name.localeCompare(b.dataset.name, 'ru');
+    if (mode === 'country') {
+      var ca = a.dataset.country || 'яяя', cb = b.dataset.country || 'яяя';
+      return ca.localeCompare(cb, 'ru') || a.dataset.name.localeCompare(b.dataset.name, 'ru');
+    }
+    return (+b.dataset.count) - (+a.dataset.count) || a.dataset.name.localeCompare(b.dataset.name, 'ru');
+  });
+  var frag = document.createDocumentFragment();
+  cards.forEach(function (c) { frag.appendChild(c); });
+  list.insertBefore(frag, document.getElementById('museums-empty'));
+  try { localStorage.setItem('museumSort', mode); } catch (e) {}
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  initMap();
+
+  var search = document.getElementById('museum-search');
+  if (search) {
+    var timer = null;
+    search.addEventListener('input', function (e) {
+      var value = e.target.value;
+      clearTimeout(timer);
+      timer = setTimeout(function () { window.__museumQuery = value; applyMuseumFilter(); }, 120);
+    });
+  }
+
+  var sort = document.getElementById('museum-sort');
+  if (sort) {
+    var savedSort = null;
+    try { savedSort = localStorage.getItem('museumSort'); } catch (e) {}
+    if (savedSort) { sort.value = savedSort; sortMuseums(savedSort); }
+    sort.addEventListener('change', function () { sortMuseums(this.value); });
+  }
+
+  // Клик по карточке ведёт к метке. Ссылки внутри карточки не перехватываем.
+  document.getElementById('museum-list').addEventListener('click', function (e) {
+    if (e.target.closest('a, button')) return;
+    var card = e.target.closest('.museum-card');
+    if (card && card.dataset.mapped === '1') focusMuseum(card.dataset.id);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var shell = document.querySelector('.map-shell.fullscreen');
+    if (shell) toggleMapFullscreen(document.querySelector('.map-expand'));
+  });
+});
+
 </script>
 </body></html>

@@ -921,43 +921,9 @@ header { margin-bottom: 1.5rem; text-align: center; }
   font-size: 2.2rem;
 }
 
-.museums-grid {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1.5rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
-}
-
-.museum-card {
-  background: var(--card-bg);
-  padding: 1.2rem;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  transition: transform .1s, box-shadow .2s;
-}
-
-.museum-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--shadow);
-}
-
-.museum-card h3 {
-  margin: 0 0 .5rem;
-  font-size: 1.15rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.museum-card p { color: var(--muted); font-size: .85rem; margin: 0 0 .5rem; }
-.museum-location { display: flex; align-items: center; gap: 2px; }
-.museum-card ul { margin: .5rem 0 0; padding-left: 1.2rem; font-size: .9rem; }
-.museum-card li { margin-bottom: .25rem; }
-.museum-card a { color: var(--link); text-decoration: none; }
-.museum-card a:hover { text-decoration: underline; }
+/* Стили страницы музеев переехали в generate_map.py: страница целиком
+   перестроена (карта закреплена слева, список справа, миниатюры картин),
+   и старая сетка .museums-grid больше нигде не используется. */
 
 /* ========== МОБИЛЬНАЯ КНОПКА МЕНЮ ========== */
 .menu-toggle {
@@ -1301,8 +1267,7 @@ header { margin-bottom: 1.5rem; text-align: center; }
    а на квизе и таймлайне никакого .sidebar в разметке нет вовсе.
    Заодно !important-ы перебивали max-width, заданный на самих страницах. */
 .timeline-container,
-.quiz-container,
-.museums-grid {
+.quiz-container {
   width: 100%;
   margin-left: auto;
   margin-right: auto;
@@ -1310,7 +1275,6 @@ header { margin-bottom: 1.5rem; text-align: center; }
 
 .timeline-container { max-width: 1100px; }
 .quiz-container { max-width: 800px; }
-.museums-grid { max-width: 1200px; }
 
 /* ========== МЕДИА-ЗАПРОСЫ ========== */
 /* Кнопка «наверх» показывается на всех экранах.
@@ -1361,7 +1325,6 @@ header { margin-bottom: 1.5rem; text-align: center; }
   .sidebar li { margin-bottom: .25rem; }
   .sidebar a { font-size: .9rem; padding: .4rem .7rem; background: none; border: none; border-radius: 6px; }
   .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .8rem; }
-  .museums-grid { grid-template-columns: 1fr; padding: .8rem; }
   .post-nav { flex-direction: column; }
   .post-nav a { text-align: center; }
   .timeline-blocks { gap: 1.5rem; }
@@ -1404,7 +1367,6 @@ header { margin-bottom: 1.5rem; text-align: center; }
   .menu-toggle { top: .3rem; left: .3rem; padding: .3rem .6rem; font-size: .8rem; }
   .tag-page { padding: .5rem; font-size: 15px; }
   .tag-page h1 { font-size: 1.2rem; }
-  .museums-grid { padding: .4rem; gap: .8rem; }
   .timeline-container { padding: .8rem; }
   .timeline-blocks { gap: 1rem; }
   .timeline-block { padding: .8rem; }

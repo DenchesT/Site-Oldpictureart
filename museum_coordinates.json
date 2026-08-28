@@ -62,7 +62,7 @@
   "Гётеборгский художественный музей, Гётеборг": {
     "lat": 57.6965614,
     "lon": 11.9807432,
-    "display_name": "Göteborgs konstmuseum, Götaplatsen, Lorensberg, Centrum, Гётеборг, Göteborgs Stad, Вестра-Гёталанд, 412 56, Швеция",
+    "display_name": "Göteborgs konstmuseum, Axel Romdahls Trappor, Lorensberg, Centrum, Гётеборг, Göteborgs Stad, Вестра-Гёталанд, 412 56, Швеция",
     "source": "nominatim",
     "precision": "exact"
   },
@@ -74,17 +74,17 @@
     "precision": "exact"
   },
   "Институт искусств Стерлинга и Франсин Кларк, Уильямстаун": {
-    "lat": 42.7085558,
-    "lon": -73.2145995,
-    "display_name": "Clark Art Institute Orientation Center, Clark Museum Driveway, Williamstown, Berkshire County, Массачусетс, 01267, Соединённые Штаты Америки",
-    "source": "nominatim",
+    "lat": 42.7078,
+    "lon": -73.2136,
+    "display_name": "Институт искусств Стерлинга и Франсин Кларк",
+    "source": "wikidata:Q1465805",
     "precision": "exact"
   },
   "Коллекции Версальского дворца, Версаль": {
-    "lat": 48.8044252,
-    "lon": 2.1202853,
-    "display_name": "Версальский дворец, Cour haute de la Chapelle, Notre-Dame, Версаль, Versailles, Ивелин, Иль-де-Франс, Метрополия Франции, 78000, Франция",
-    "source": "nominatim",
+    "lat": 48.8044,
+    "lon": 2.12197,
+    "display_name": "Музей истории Франции",
+    "source": "wikidata:Q3329787",
     "precision": "exact"
   },
   "Королевский музей изящных искусств, Брюссель": {
@@ -109,10 +109,10 @@
     "precision": "exact"
   },
   "Метрополитен-музей, Нью-Йорк": {
-    "lat": 40.779444444444444,
-    "lon": -73.96333333333334,
-    "display_name": "Метрополитен-музей",
-    "source": "wikidata:Q160236",
+    "lat": 13.7348443,
+    "lon": 100.5458071,
+    "display_name": "Metropolitan Museum Of Art, ถนนวิทยุ, ชุมชนซอยร่วมฤดี, แขวงลุมพินี, เขตปทุมวัน, Бангкок, 10330, Таиланд",
+    "source": "nominatim",
     "precision": "exact"
   },
   "Музей Барберини, Потсдам": {
@@ -121,10 +121,10 @@
     "display_name": "Museum Barberini, 5-6, Humboldtstraße, Viertel der Seidenweber, Historische Innenstadt, Потсдам, Бранденбург, 14467, Германия"
   },
   "Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн": {
-    "lat": 50.9375,
-    "lon": 6.958611,
-    "display_name": "Музей Вальрафа-Рихарца",
-    "source": "wikidata:Q700959",
+    "lat": 50.9374105,
+    "lon": 6.9584434,
+    "display_name": "Wallraf-Richartz-Museum & Fondation Corboud, 40, Obenmarspforten, Martinsviertel, Altstadt-Nord, Innenstadt, Кёльн, Северный Рейн — Вестфалия, 50667, Германия",
+    "source": "nominatim",
     "precision": "exact"
   },
   "Музей Гетти, Лос-Анджелес": {
@@ -180,7 +180,7 @@
   "Музей искусств Охара, Курасики": {
     "lat": 34.5960325,
     "lon": 133.7704385,
-    "display_name": "大原美術館, 今橋, 中央一丁目, Курасики, Окаяма, 710-0046, Япония",
+    "display_name": "大原美術館, 今橋, 中央一丁目, Курасики, Окаяма, 710-0054, Япония",
     "source": "nominatim",
     "precision": "exact"
   },
