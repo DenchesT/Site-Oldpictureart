@@ -56,14 +56,6 @@
     "precision": "exact",
     "query": "Schlossbezirk 1, Rudolstadt"
   },
-  "Государственный музей истории религии, Санкт-Петербург": {
-    "lat": 59.9316489,
-    "lon": 30.3010021,
-    "display_name": "14, Почтамтская улица, Адмиралтейский округ, Санкт-Петербург, Северо-Западный федеральный округ, 190121, Россия",
-    "source": "nominatim",
-    "precision": "exact",
-    "query": "Почтамтская улица, 14, Санкт-Петербург"
-  },
   "Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург": {
     "lat": 44.6931881,
     "lon": -73.4667363,
@@ -113,28 +105,20 @@
     "query": "Rue de la Régence 3, Bruxelles"
   },
   "Лувр, Париж (в запаснике)": {
-    "lat": 48.856916666667,
-    "lon": 2.3536722222222,
-    "display_name": "улица Риволи",
-    "source": "wikidata:Q141747",
+    "lat": 48.8643028,
+    "lon": 2.3305559,
+    "display_name": "улица Риволи, Quartier Vendôme, I округ, Париж, Иль-де-Франс, Метрополия Франции, 75001, Франция",
+    "source": "nominatim",
     "precision": "exact",
     "query": "Rue de Rivoli, Paris"
   },
   "Малый дворец, музей изящных искусств города Парижа, Париж": {
-    "lat": 48.866176,
-    "lon": 2.313856,
-    "display_name": "avenue Winston-Churchill",
-    "source": "wikidata:Q2873884",
-    "precision": "exact",
-    "query": "Avenue Winston Churchill, Paris"
-  },
-  "Метрополитен-музей, Нью-Йорк": {
-    "lat": 40.7794396,
-    "lon": -73.9633825,
-    "display_name": "Метрополитан Музей Искусства, 1000, 5-я авеню, Аппер-Ист-Сайд, Manhattan Community Board 8, Манхэттен, округ Нью-Йорк, Нью-Йорк, 10075, Соединённые Штаты Америки",
+    "lat": 48.866042,
+    "lon": 2.3153496,
+    "display_name": "Малый дворец, Avenue Winston Churchill, Quartier des Champs-Élysées, VIII округ, Париж, Иль-де-Франс, Метрополия Франции, 75008, Франция",
     "source": "nominatim",
     "precision": "exact",
-    "query": "1000 5th Ave, New York"
+    "query": "Avenue Winston Churchill, Paris"
   },
   "Музей Барберини, Потсдам": {
     "lat": 52.395233,
@@ -145,20 +129,12 @@
     "query": "Humboldtstraße 5-6, Potsdam"
   },
   "Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн": {
-    "lat": 50.9376874,
-    "lon": 6.9571773,
+    "lat": 50.9375879,
+    "lon": 6.958484,
     "display_name": "Obenmarspforten, Martinsviertel, Altstadt-Nord, Innenstadt, Кёльн, Северный Рейн — Вестфалия, 50667, Германия",
     "source": "nominatim",
     "precision": "exact",
     "query": "Obenmarspforten, Köln"
-  },
-  "Музей Гетти, Лос-Анджелес": {
-    "lat": 34.0769513,
-    "lon": -118.475712,
-    "display_name": "Getty Research Institute, 1200, Getty Center Drive, Лос-Анджелес, Los Angeles County, Калифорния, 90049, Соединённые Штаты Америки",
-    "source": "nominatim",
-    "precision": "exact",
-    "query": "1200 Getty Center Dr, Los Angeles"
   },
   "Музей Кунстпаласт, Дюссельдорф": {
     "lat": 51.234998,
@@ -233,17 +209,17 @@
     "query": "2 boulevard Clemenceau, Le Havre"
   },
   "Национальная галерея Шотландии, Эдинбург": {
-    "lat": 55.951643,
-    "lon": -3.1956764,
-    "display_name": "The Mound, Abbeyhill, Old Town, Эдинбург, Шотландия, Соединённое Королевство",
+    "lat": 55.9502288,
+    "lon": -3.1958576,
+    "display_name": "The Mound, Abbeyhill, Old Town, Эдинбург, Шотландия, EH1 2LX, Соединённое Королевство",
     "source": "nominatim",
     "precision": "exact",
     "query": "The Mound, Edinburgh"
   },
   "Национальная галерея искусства, Вашингтон": {
-    "lat": 38.8920976,
-    "lon": -77.030467,
-    "display_name": "Constitution Avenue Northwest, Ward 2, Вашингтон, Округ Колумбия, 20423, Соединённые Штаты Америки",
+    "lat": 38.8920825,
+    "lon": -77.0226804,
+    "display_name": "Constitution Avenue Northwest, Ward 2, Вашингтон, Округ Колумбия, 20408, Соединённые Штаты Америки",
     "source": "nominatim",
     "precision": "exact",
     "query": "6th & Constitution Ave NW, Washington"
@@ -337,9 +313,9 @@
     "query": "20 Elm St, Northampton"
   },
   "Чикагский институт искусств, Чикаго": {
-    "lat": 41.8794137,
-    "lon": -87.6239573,
-    "display_name": "Art Institute’s Gardens, 111, South Michigan Avenue, Jewelers Row, Loop, Чикаго, South Chicago Township, Cook County, Иллинойс, 60604, Соединённые Штаты Америки",
+    "lat": 41.879605,
+    "lon": -87.6230716,
+    "display_name": "The Art Institute of Chicago, 111, South Michigan Avenue, Jewelers Row, Loop, Чикаго, South Chicago Township, Cook County, Иллинойс, 60603, Соединённые Штаты Америки",
     "source": "nominatim",
     "precision": "exact",
     "query": "111 S Michigan Ave, Chicago"
@@ -359,6 +335,30 @@
     "source": "nominatim",
     "precision": "exact",
     "query": "Инженерная улица, 4, Санкт-Петербург"
+  },
+  "Государственный музей истории религии, Санкт-Петербург": {
+    "lat": 59.9318443,
+    "lon": 30.3014533,
+    "display_name": "Музей истории религии, 14, Почтамтская улица, Адмиралтейский округ, Санкт-Петербург, Северо-Западный федеральный округ, 190121, Россия",
+    "source": "nominatim",
+    "precision": "exact",
+    "query": "Почтамтская улица, 14, Санкт-Петербург"
+  },
+  "Метрополитен-музей, Нью-Йорк": {
+    "lat": 40.7794396,
+    "lon": -73.9633825,
+    "display_name": "Метрополитан Музей Искусства, 1000, 5-я авеню, Аппер-Ист-Сайд, Manhattan Community Board 8, Манхэттен, округ Нью-Йорк, Нью-Йорк, 10075, Соединённые Штаты Америки",
+    "source": "nominatim",
+    "precision": "exact",
+    "query": "1000 5th Ave, New York"
+  },
+  "Музей Гетти, Лос-Анджелес": {
+    "lat": 34.0769513,
+    "lon": -118.475712,
+    "display_name": "Getty Research Institute, 1200, Getty Center Drive, Лос-Анджелес, Los Angeles County, Калифорния, 90049, Соединённые Штаты Америки",
+    "source": "nominatim",
+    "precision": "exact",
+    "query": "1200 Getty Center Dr, Los Angeles"
   },
   "Национальный музей искусства Каталонии, Барселона": {
     "lat": 41.3686024,

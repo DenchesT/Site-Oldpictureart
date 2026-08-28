@@ -164,6 +164,52 @@ def build_queries(museum_name):
     return out
 
 
+def distance_km(a, b):
+    """Расстояние между двумя точками, км."""
+    from math import radians, sin, cos, asin, sqrt
+    lat1, lon1, lat2, lon2 = map(radians, (a['lat'], a['lon'], b['lat'], b['lon']))
+    h = sin((lat2 - lat1) / 2) ** 2 + cos(lat1) * cos(lat2) * sin((lon2 - lon1) / 2) ** 2
+    return 6371 * 2 * asin(sqrt(h))
+
+
+_city_points = {}
+
+
+def city_point(museum_name):
+    """Координаты города из названия музея — опора для проверки находок.
+
+    Города повторяются (в Москве четыре музея, в Париже три), поэтому
+    ответ запоминается: лишних запросов к геокодеру не будет.
+    """
+    parts = split_parts(museum_name)
+    if len(parts) < 2:
+        return None
+    place = parts[-1]
+    if place not in _city_points:
+        _city_points[place] = wikidata_search(place) or nominatim_search(place)
+    return _city_points[place]
+
+
+def wrong_city(museum_name, result, limit_km=100):
+    """Проверяет, что найденная точка лежит рядом с городом из названия.
+
+    Геокодер охотно отдаёт одноимённое заведение в другой стране:
+    «Metropolitan Museum of Art» находился в Бангкоке, «Getty Center» —
+    на заправке Nino's Getty в Коннектикуте, а музей истории религии
+    из Петербурга — в Гродно. Сверка по расстоянию ловит такое и не
+    придирается к написанию: «Нортхемптон» и «Нортгемптон» — один город.
+
+    Возвращает расстояние в км, если точка явно не та, иначе None.
+    """
+    if not result:
+        return None
+    anchor = city_point(museum_name)
+    if not anchor:
+        return None            # город не опознан — проверять не с чем
+    km = distance_km(anchor, result)
+    return km if km > limit_km else None
+
+
 def city_fallback(museum_name):
     """Последний рубеж: ставим метку хотя бы на город или страну.
 
@@ -279,32 +325,43 @@ def geocode(museum_name, cache, overrides=None, retry_failed=False, offline=Fals
     #    Только Nominatim: он умеет разбирать строку «улица, дом, город»,
     #    а Викиданные ищут по названиям и на «Place d'Armes, Versailles»
     #    легко вернут площадь с тем же именем в другом городе.
+    def accept(result, query):
+        """Отбрасывает находку, улетевшую в чужой город: пусть лучше
+        сработает следующий способ поиска, чем метка встанет не там."""
+        off = wrong_city(museum_name, result)
+        if off:
+            logger.warning(f"  ✗ {museum_name}: «{query}» нашлось в {off:.0f} км от города "
+                           f"({result.get('display_name', '')[:60]}) — не беру")
+            return None
+        return result
+
     wanted_address = (manual.get('address') or '').strip()
     if wanted_address:
-        found = nominatim_search(wanted_address)
+        found = accept(nominatim_search(wanted_address), wanted_address)
         if found:
             logger.info(f"  ✓ (по адресу) {museum_name} → {found['lat']:.4f}, {found['lon']:.4f}")
             return remember(found, wanted_address)
 
     # 4. Подсказка из справочника
     if wanted_query:
-        found = wikidata_search(wanted_query) or nominatim_search(wanted_query)
+        found = (accept(wikidata_search(wanted_query), wanted_query)
+                 or accept(nominatim_search(wanted_query), wanted_query))
         if found:
             logger.info(f"  ✓ (справочник: «{wanted_query}») {museum_name} → "
                         f"{found['lat']:.4f}, {found['lon']:.4f}")
             return remember(found, wanted_query)
 
-    # 4. Автопоиск по частям названия
+    # 5. Автопоиск по частям названия
     for query in build_queries(museum_name):
         for finder in (wikidata_search, nominatim_search):
-            result = finder(query)
+            result = accept(finder(query), query)
             if result:
                 note = "" if query == museum_name else f" (по запросу «{query}»)"
                 logger.info(f"  ✓ {museum_name} → {result['lat']:.4f}, {result['lon']:.4f}"
                             f" [{result['source']}]{note}")
                 return remember(result, query)
 
-    # 5. Хотя бы город
+    # 6. Хотя бы город
     result = city_fallback(museum_name)
     if result:
         logger.info(f"  ≈ {museum_name} → приблизительно, по месту «{result['display_name']}»")
@@ -530,6 +587,58 @@ MUSEUMS_CSS = """
 .museum-posts-list a:hover { text-decoration: underline; }
 
 /* всплывающее окно на карте */
+/* ---------- метки: музейная этикетка ----------
+   Метка — не капля, а подпись у картины: карточка на тонкой ножке,
+   число работ набрано моноширинным. Цвета берутся из переменных сайта,
+   поэтому в тёмной теме метки перекрашиваются вместе со всем остальным. */
+.opa-pin, .opa-cluster {
+  background: none; border: 0;
+  display: flex; flex-direction: column; align-items: center;
+}
+.pin-card {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 22px; height: 18px; padding: 0 5px;
+  background: var(--card-bg); color: var(--active);
+  border: 1px solid var(--active); border-radius: 2px;
+  font-family: var(--ff-data); font-size: 11px; line-height: 1;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+.pin-stem { width: 1px; height: 9px; background: var(--active); }
+.pin-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--active); }
+
+/* приблизительные координаты — пунктиром, чтобы не выдавать их за точные */
+.opa-pin.approx .pin-card { border-style: dashed; opacity: .75; }
+
+.opa-pin:hover .pin-card,
+.opa-pin:focus-visible .pin-card,
+.opa-pin.active .pin-card {
+  background: var(--active); color: var(--card-bg); border-color: var(--active);
+}
+.opa-pin.active .pin-card { box-shadow: 0 0 0 2px var(--card-bg), 0 0 0 3px var(--active); }
+.opa-pin:focus-visible, .opa-cluster:focus-visible { outline: none; }
+
+/* стопка карточек: за передней видно, что музеев несколько */
+.cl-stack { position: relative; width: 34px; height: 24px; }
+.cl {
+  position: absolute; left: 0; top: 0; width: 28px; height: 19px;
+  background: var(--card-bg); border: 1px solid var(--active); border-radius: 2px;
+}
+.cl-2 { transform: translate(5px, 5px); opacity: .4; }
+.cl-1 { transform: translate(2.5px, 2.5px); opacity: .7; }
+.cl-0 {
+  display: flex; align-items: center; justify-content: center;
+  border-width: 1.4px; color: var(--active);
+  font-family: var(--ff-data); font-size: 12px; line-height: 1;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+.opa-cluster:hover .cl-0, .opa-cluster:focus-visible .cl-0 {
+  background: var(--active); color: var(--card-bg);
+}
+/* усики, которыми расходятся совпавшие метки */
+.leaflet-cluster-spider-leg { stroke: var(--active); stroke-opacity: .55; }
+
 .leaflet-popup-content { margin: .8rem 1rem; font-family: inherit; }
 .leaflet-popup-content b { font-size: .95rem; }
 .popup-link { color: var(--active); }
@@ -601,7 +710,7 @@ var BASE_LAYERS = [
    max: 19, dark: false}
 ];
 
-var map = null, markers = {}, layers = {}, layerControl = null;
+var map = null, markers = {}, layers = {}, layerControl = null, clusterGroup = null;
 
 function currentTheme() {
   return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
@@ -667,13 +776,53 @@ function initMap() {
   updateMapTheme();
 }
 
+// Метка-этикетка: карточка с числом работ, ножка и точка ровно на месте музея.
+function pinIcon(m) {
+  return L.divIcon({
+    className: 'opa-pin' + (m.approx ? ' approx' : ''),
+    html: '<span class="pin-card">' + m.count + '</span>' +
+          '<span class="pin-stem"></span><span class="pin-dot"></span>',
+    iconSize: [46, 32],
+    iconAnchor: [23, 32],
+    popupAnchor: [0, -30]
+  });
+}
+
+// Скопление: стопка карточек с числом музеев под ней.
+function clusterIcon(cluster) {
+  var n = cluster.getChildCount();
+  return L.divIcon({
+    className: 'opa-cluster',
+    html: '<span class="cl-stack">' +
+            '<span class="cl cl-2"></span><span class="cl cl-1"></span>' +
+            '<span class="cl cl-0">' + n + '</span>' +
+          '</span><span class="pin-stem"></span><span class="pin-dot"></span>',
+    iconSize: [46, 38],
+    iconAnchor: [23, 38]
+  });
+}
+
 function addMarkers() {
+  // Музеи одного города накладывались друг на друга: до Лувра нельзя было
+  // дотянуться мышью из-за д’Орсе. Теперь близкие метки собираются в одну,
+  // а при приближении расходятся сами.
+  clusterGroup = L.markerClusterGroup({
+    maxClusterRadius: 34,
+    showCoverageOnHover: false,
+    spiderfyOnMaxZoom: true,
+    disableClusteringAtZoom: 12,
+    iconCreateFunction: clusterIcon,
+    spiderLegPolylineOptions: {weight: 1, opacity: 0.55}
+  });
+
   var group = [];
   MUSEUMS.forEach(function (m) {
     var marker = L.marker([m.lat, m.lon], {
-      opacity: m.approx ? 0.55 : 1,
-      title: m.name
-    }).addTo(map);
+      icon: pinIcon(m),
+      title: m.name + (m.place ? ', ' + m.place : ''),
+      alt: m.name
+    });
+    clusterGroup.addLayer(marker);
 
     var word = m.count % 10 === 1 && m.count % 100 !== 11 ? 'картина'
              : (m.count % 10 >= 2 && m.count % 10 <= 4 && (m.count % 100 < 10 || m.count % 100 >= 20)) ? 'картины'
@@ -705,7 +854,16 @@ function addMarkers() {
     group.push(marker);
   });
 
+  map.addLayer(clusterGroup);
   if (group.length) map.fitBounds(L.featureGroup(group).getBounds().pad(0.1));
+}
+
+// Метка выделенного музея подсвечивается вместе с карточкой в списке.
+function markMarkerActive(id) {
+  Object.keys(markers).forEach(function (key) {
+    var el = markers[key].getElement();
+    if (el) el.classList.toggle('active', key === id);
+  });
 }
 
 // ------------------------------------------------ Яндекс.Карты
@@ -759,6 +917,7 @@ function highlightCard(id) {
   document.querySelectorAll('.museum-card.active').forEach(function (c) { c.classList.remove('active'); });
   var card = document.getElementById('museum-' + id);
   if (card) card.classList.add('active');
+  markMarkerActive(id);
 }
 
 function focusCard(id) {
@@ -773,10 +932,23 @@ function focusMuseum(id) {
   highlightCard(id);
   var marker = markers[id];
   if (!map || !marker) return;
+  markMarkerActive(id);
+
+  var show = function () {
+    markMarkerActive(id);        // после раскрытия скопления элемент метки новый
+    marker.openPopup();
+  };
+
+  // Метка может быть спрятана внутри скопления — сначала раскрываем его,
+  // иначе openPopup сработает вхолостую и музей останется ненайденным.
+  if (clusterGroup && clusterGroup.hasLayer(marker) && clusterGroup.zoomToShowLayer) {
+    clusterGroup.zoomToShowLayer(marker, show);
+    return;
+  }
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce) map.setView(marker.getLatLng(), Math.max(map.getZoom(), 9));
   else map.flyTo(marker.getLatLng(), Math.max(map.getZoom(), 9), {duration: 0.8});
-  marker.openPopup();
+  show();
 }
 
 function toggleMuseumPosts(btn, id) {
@@ -820,11 +992,12 @@ function applyMuseumFilter() {
     var match = !query || (card.dataset.search || '').indexOf(query) !== -1;
     card.hidden = !match;
     if (match) shown++;
-    // метки на карте фильтруются вместе со списком
+    // метки на карте фильтруются вместе со списком: убирать их надо из
+    // группы скоплений, а не с карты — иначе счётчик на стопке соврёт
     var marker = markers[card.dataset.id];
-    if (marker && map) {
-      if (match && !map.hasLayer(marker)) map.addLayer(marker);
-      else if (!match && map.hasLayer(marker)) map.removeLayer(marker);
+    if (marker && clusterGroup) {
+      if (match && !clusterGroup.hasLayer(marker)) clusterGroup.addLayer(marker);
+      else if (!match && clusterGroup.hasLayer(marker)) clusterGroup.removeLayer(marker);
     }
   });
   var counter = document.getElementById('museum-found');
@@ -1007,10 +1180,21 @@ def generate_museums_page(retry_failed=False, offline=False):
         )
 
         loc_line = ", ".join(x for x in (city, country) if x)
-        if loc_line:
+        if not loc_line:
+            # Викиданные отдают координаты без города и страны, и карточка
+            # объявляла «нет на карте» у четырнадцати музеев, метки которых
+            # преспокойно стояли на карте. Город берём из самого названия:
+            # «Музей Фабра, Монпелье» — он там всегда последним.
+            parts = split_parts(museum)
+            if len(parts) >= 2:
+                loc_line = parts[-1]
+
+        if lat and lon:
             approx_note = ' <span class="approx-note">(приблизительно)</span>' if approx else ""
             location_html = (f'<p class="museum-location"><span class="icon-location" aria-hidden="true"></span> '
                              f'{h(loc_line)}{approx_note}</p>')
+        elif loc_line:
+            location_html = (f'<p class="museum-location museum-nomap">{h(loc_line)} — нет на карте</p>')
         else:
             location_html = '<p class="museum-location museum-nomap">Нет на карте</p>'
 
@@ -1070,7 +1254,9 @@ def generate_museums_page(retry_failed=False, offline=False):
         description=f"{len(museums_dict)} музеев из коллекции Old Picture Art на карте мира.",
         canonical=f"{BASE_URL}/museums.html",
         extra='\n<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" '
-              'integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin>',
+              'integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin>'
+              '\n<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" '
+              'integrity="sha256-YU3qCpj/P06tdPBJGPax0bm6Q1wltfwjsho5TR4+TYc=" crossorigin>',
     )
 
     stats = (f"<b>{len(museums_dict)}</b> {plural_ru(len(museums_dict), 'музей', 'музея', 'музеев')} · "
@@ -1125,6 +1311,8 @@ def generate_museums_page(retry_failed=False, offline=False):
 {scroll_top_button()}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"
+        integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin></script>
 <script src="map-config.js"></script>
 {SCROLL_TOP_JS}
 {COMMON_JS}
