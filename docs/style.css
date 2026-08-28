@@ -1616,3 +1616,4 @@ pre, code { overflow-x: auto; max-width: 100%; }
 .error-text { color: var(--muted); }
 .error-links { font-size: .9rem; }
 .error-links a { color: var(--link); }
+.approx-note { font-size: .78rem; opacity: .65; font-style: italic; }
