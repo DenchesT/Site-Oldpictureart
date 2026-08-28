@@ -7,6 +7,11 @@
    ========================================================================== */
 
 :root {
+  /* Системные элементы — выпадающие списки, полосы прокрутки —
+     follow-ят эту настройку, иначе в тёмной теме список выбора
+     открывается ослепительно белым. */
+  color-scheme: light;
+
   /* --- шрифты --- */
   --ff-text: "Old Standard TT", Georgia, "Times New Roman", serif;
   --ff-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
@@ -55,6 +60,7 @@
 }
 
 [data-theme="dark"] {
+  color-scheme: dark;
   --bg: #14181c;
   --card-bg: #1a1f24;
   --panel: #20262c;
@@ -220,23 +226,9 @@ time { color: var(--muted); font-family: var(--ff-data); font-size: var(--fs-sm)
 }
 .random-btn:hover { opacity: .88; }
 
-.scroll-top {
-  position: fixed;
-  bottom: var(--s5); right: var(--s5);
-  width: 44px; height: 44px;
-  background: var(--card-bg);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  cursor: pointer;
-  box-shadow: 0 4px 14px var(--shadow);
-  z-index: 999;
-  display: none;
-  align-items: center; justify-content: center;
-  transition: background .15s;
-}
-.scroll-top.visible { display: flex; }
-.scroll-top:hover { background: var(--panel); }
+/* Кнопка «наверх» описана одним блоком ниже, в разделе про прокрутку.
+   Здесь раньше стояло второе, более раннее определение: его :hover
+   перекрашивал фон кнопки и стирал кольцо прогресса. */
 
 .theme-toggle {
   position: fixed; top: var(--s4); right: var(--s4);
@@ -352,7 +344,9 @@ time { color: var(--muted); font-family: var(--ff-data); font-size: var(--fs-sm)
   color: var(--muted);
   cursor: pointer;
   display: flex;
-  justify-content: space-between;
+  /* Подписи начинаются от одной вертикали, «плюс» прижат к правому краю.
+     При space-between подпись болталась посередине и разделы не выстраивались. */
+  justify-content: flex-start;
   align-items: center;
   gap: var(--s2);
   transition: color .15s;
@@ -365,6 +359,7 @@ time { color: var(--muted); font-family: var(--ff-data); font-size: var(--fs-sm)
   font-family: var(--ff-data);
   font-size: var(--fs-sm);
   color: var(--muted);
+  margin-left: auto;
 }
 .sidebar-title.open::after { content: '–'; color: var(--active); }
 .sidebar-title.no-arrow::after { content: none; }
@@ -1305,6 +1300,9 @@ a:has(.painting) { display: block; margin-bottom: var(--s4); }
   border-bottom: 1px dotted var(--border);
 }
 .card-museum a:hover { color: var(--link); border-bottom-color: currentColor; }
+/* В описи 81 строка, и постоянное подчёркивание под каждым музеем
+   превращало список в частокол. Линия появляется при наведении. */
+.card-museum a { border-bottom-color: transparent; }
 
 /* ==========================================================================
    ФИЛЬТР ПО ГОДАМ
@@ -1447,3 +1445,58 @@ a:has(.painting) { display: block; margin-bottom: var(--s4); }
 .museum-site { margin: var(--s2) 0 0; font-size: var(--fs-sm); }
 .museum-site a { color: var(--link); text-decoration: none; border-bottom: 1px solid transparent; }
 .museum-site a:hover { border-bottom-color: currentColor; }
+
+/* ==========================================================================
+   ВЫПАДАЮЩИЕ СПИСКИ
+   Без appearance:none браузер рисует select системным стилем: на Windows
+   это серый градиент со скруглением, на Linux — плоская рамка. Из-за этого
+   один и тот же сайт выглядел по-разному на разных машинах и выпадал
+   из оформления. Рисуем сами: та же рамка, тот же моношрифт, свой шеврон.
+   ========================================================================== */
+.sort-select,
+.year-select {
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  letter-spacing: .04em;
+  line-height: 1.4;
+  color: var(--text);
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: var(--s2) 1.6rem var(--s2) var(--s3);
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%235b6675' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M1 1.5 6 6.5l5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--s3) center;
+  background-size: 9px;
+  transition: border-color .15s, background-color .15s;
+}
+[data-theme="dark"] .sort-select,
+[data-theme="dark"] .year-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%23939dab' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M1 1.5 6 6.5l5-5'/%3E%3C/svg%3E");
+}
+.sort-select:hover,
+.year-select:hover { border-color: var(--active); }
+.sort-select:focus-visible,
+.year-select:focus-visible { outline: 2px solid var(--active); outline-offset: 1px; }
+
+/* Поле поиска и списки должны быть одной высоты */
+.search-box {
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  letter-spacing: .04em;
+  padding: var(--s2) var(--s3);
+}
+
+/* Подпись перед выбором порядка — как ярлык поля в таблице сведений */
+.bar-label {
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.view-switch button { padding: var(--s2) var(--s3); line-height: 1.4; }

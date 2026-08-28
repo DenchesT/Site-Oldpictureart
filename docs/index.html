@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=89910a9b">
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="index-page">
 <a href="#cards" class="skip-link">К галерее</a>
@@ -64,8 +64,9 @@
 <div class="results-bar">
   <span id="results-count" class="results-count" role="status" aria-live="polite"></span>
   <div class="bar-controls">
+  <span class="bar-label" id="sort-label">Порядок</span>
   <label class="visually-hidden" for="sort">Порядок записей</label>
-  <select id="sort" class="sort-select">
+  <select id="sort" class="sort-select" aria-labelledby="sort-label">
     <option value="new">Сначала новые</option>
     <option value="cyear">По году создания</option>
     <option value="cyear-desc">По году создания, новые сверху</option>
@@ -918,7 +919,7 @@ function toggleTheme(){
     var y = window.scrollY;
     btn.classList.toggle('visible', y > 400);
     // Кольцо вокруг стрелки показывает долю пройденной страницы
-    btn.style.setProperty('--progress', max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0);
+    btn.style.setProperty('--progress', String(max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0));
     ticking=false;
   }
   window.addEventListener('scroll', function(){

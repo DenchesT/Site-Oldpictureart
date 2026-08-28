@@ -1145,8 +1145,9 @@ def render_index(all_posts):
 <div class="results-bar">
   <span id="results-count" class="results-count" role="status" aria-live="polite"></span>
   <div class="bar-controls">
+  <span class="bar-label" id="sort-label">Порядок</span>
   <label class="visually-hidden" for="sort">Порядок записей</label>
-  <select id="sort" class="sort-select">
+  <select id="sort" class="sort-select" aria-labelledby="sort-label">
     <option value="new">Сначала новые</option>
     <option value="cyear">По году создания</option>
     <option value="cyear-desc">По году создания, новые сверху</option>

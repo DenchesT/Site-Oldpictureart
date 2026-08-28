@@ -59,7 +59,7 @@ function toggleTheme(){
     var y = window.scrollY;
     btn.classList.toggle('visible', y > 400);
     // Кольцо вокруг стрелки показывает долю пройденной страницы
-    btn.style.setProperty('--progress', max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0);
+    btn.style.setProperty('--progress', String(max > 0 ? Math.min(100, Math.round(y / max * 100)) : 0));
     ticking=false;
   }
   window.addEventListener('scroll', function(){
@@ -69,6 +69,24 @@ function toggleTheme(){
   upd();
 })();
 </script>"""
+
+
+def style_version():
+    """Короткий отпечаток содержимого style.css.
+
+    GitHub Pages отдаёт css с заголовками кэширования, и браузер может
+    держать старую версию файла ещё долго после публикации: разметка уже
+    новая, а стили прежние — сайт выглядит сломанным ровно до Ctrl+F5.
+    Отпечаток в адресе меняется вместе с файлом, поэтому браузер сам
+    забирает свежий, а неизменившийся продолжает брать из кэша.
+    """
+    import hashlib, os
+    path = os.path.join("docs", "style.css")
+    try:
+        with open(path, "rb") as f:
+            return hashlib.sha1(f.read()).hexdigest()[:8]
+    except OSError:
+        return "0"
 
 
 def head_common(title, description="", og_image="", canonical="", og_type="website", extra=""):
@@ -100,7 +118,7 @@ def head_common(title, description="", og_image="", canonical="", og_type="websi
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css">{extra}
+<link rel="stylesheet" href="style.css?v={style_version()}">{extra}
 {THEME_BOOT}"""
 
 
