@@ -418,9 +418,23 @@ def render_post_page(post, all_posts=None):
     sz = f'<span class="detail-item"><span class="detail-icon icon-size-card"></span> {h(post.get("size",""))}</span>' if post.get("size") else ""
     mdet = f'<div class="medium-details">{mat} {tech} {sz}</div>'
 
+    # Сведения о работе — отдельной таблицей в правой колонке: в каталоге
+    # это главный справочный блок, а не строчка под заголовком.
+    spec_rows = [
+        ("Год", str(post.get("creation_year")) if post.get("creation_year") else ""),
+        ("Основа", post.get("material", "")),
+        ("Техника", ", ".join(post.get("techniques", []))),
+        ("Размер", post.get("size", "")),
+        ("Собрание", post.get("museum", "")),
+    ]
+    spec_html = ('<div class="spec-table">' +
+                 "".join(f'<div><span>{h(k)}</span><b>{h(v)}</b></div>' for k, v in spec_rows if v) +
+                 '</div>')
+
     tags_html = ""
     if post["tags"]:
         tags_html = '<div class="tags">' + " ".join(f'<a href="tag-{h(t)}.html" class="tag">#{h(t)}</a>' for t in post["tags"]) + "</div>"
+    tags_block = f'<div class="aside-block"><h3>Теги</h3>{tags_html}</div>' if tags_html else ""
 
     desc_html = ""
     if desc:
@@ -435,13 +449,12 @@ def render_post_page(post, all_posts=None):
         hist_html = f'<section class="history"><h3>Происхождение</h3><ul>{its}</ul></section>'
 
     src_html = ""
+    src_block = ""
     if urls:
-        if len(urls) == 1:
-            u = urls[0]
-            src_html = f'<div class="source-section"><strong>Источник:</strong><ul class="source-list"><li><a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></li></ul></div>'
-        else:
-            its = "".join(f'<li><a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></li>' for u in urls)
-            src_html = f'<div class="source-section"><strong>Источники:</strong><ul class="source-list">{its}</ul></div>'
+        its = "".join(f'<li><a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></li>' for u in urls)
+        word = "Источник" if len(urls) == 1 else "Источники"
+        src_html = f'<div class="source-section"><strong>{word}</strong><ul class="source-list">{its}</ul></div>'
+        src_block = f'<div class="aside-block"><h3>{word}</h3><ul class="source-list">{its}</ul></div>'
 
     # Prev/Next навигация
     prev_link = ""
@@ -481,9 +494,27 @@ def render_post_page(post, all_posts=None):
   </div>
 </div>
 {scroll_top_button()}
-<article id="main"><h1>{artist}</h1><h2>{title}</h2>{img_html}
-<div class="color-palette" id="color-palette"></div>
-{mdet}<p class="museum"><span class="icon-museum-inline"></span> {museum}</p>{desc_html}{hist_html}{src_html}<time>{h(post['date'])}</time><span class="views-count" id="views-count"></span>{tags_html}</article>
+<article id="main" class="post-layout">
+  <div class="post-main">
+    <header class="post-head">
+      <h1>{artist}</h1>
+      <h2>{title}</h2>
+    </header>
+    {img_html}
+    <div class="color-palette" id="color-palette"></div>
+    {desc_html}
+    {hist_html}
+  </div>
+  <aside class="post-aside">
+    {spec_html}
+    {src_block}
+    {tags_block}
+    <div class="aside-block">
+      <h3>Запись</h3>
+      <time>{h(post['date'])}</time><span class="views-count" id="views-count"></span>
+    </div>
+  </aside>
+</article>
 {post_nav}
 {SCROLL_TOP_JS}
 {COMMON_JS}
@@ -833,7 +864,10 @@ def surname_key(n):
     w = f.split()
     return w[-1].lower() if w else n.lower()
 
-def render_tag_page(tag, posts):
+def render_tag_page(tag, posts, cat_no=None, cat_width=3):
+    """cat_no — сквозные каталожные номера всего собрания: на странице тега
+    номер должен остаться тем же, что и на главной, иначе он ничего не значит."""
+    cat_no = cat_no or {}
     cards = []
     for p in sorted(posts, key=lambda x: x["date"], reverse=True):
         cv = ""
@@ -846,11 +880,19 @@ def render_tag_page(tag, posts):
         # Экранированные кавычки внутри f-строки требуют Python 3.12+,
         # на 3.11 это была синтаксическая ошибка. Собираем строку заранее.
         museum_html = f'<div class="card-museum">{museum_name}</div>' if museum_name else ''
+        no = cat_no.get(p.get("filename"))
+        no_html = f'<span class="card-no">{no:0{cat_width}d}</span>' if no else '<span class="card-no"></span>'
+        facts = [("Год", str(p.get("creation_year")) if p.get("creation_year") else ""),
+                 ("Основа", p.get("material", "")),
+                 ("Техника", ", ".join(p.get("techniques", []))),
+                 ("Размер", p.get("size", ""))]
+        facts_html = "".join(f'<div><span>{h(k)}</span><b>{h(v)}</b></div>' for k, v in facts if v)
         cards.append(
-            f'<a class="card" href="{h(p["filename"])}">'
+            f'<a class="card" href="{h(p["filename"])}">{no_html}'
             f'<div class="card-img"><img src="{cv}" alt="{artist_name} — {title_name}" loading="lazy" decoding="async"></div>'
             f'<div class="card-body"><div class="card-artist">{artist_name}</div>'
-            f'<div class="card-title">{title_name}</div>{museum_html}</div></a>'
+            f'<div class="card-title">{title_name}</div>{museum_html}</div>'
+            f'<div class="card-facts">{facts_html}</div></a>'
         )
     head = head_common(
         title=f"#{h(tag)} — Old Picture Art",
@@ -866,7 +908,7 @@ def render_tag_page(tag, posts):
 </div>
 {scroll_top_button()}
 <h1>#{h(tag)} <span class="tag-count">({len(posts)})</span></h1>
-<div class="grid">{''.join(cards)}</div>
+<div class="grid list">{''.join(cards)}</div>
 {SCROLL_TOP_JS}
 {COMMON_JS}
 </body></html>"""
@@ -906,6 +948,12 @@ def render_index(all_posts):
     
     year_range = f"{min(creation_years)}–{max(creation_years)}" if creation_years else ""
     
+    # Каталожный номер закреплён за работой навсегда: он показывает место
+    # в хронологии собрания, а не позицию в текущей сортировке.
+    chrono = sorted(ps, key=lambda x: (x.get("creation_year") or 9999, x.get("date", "")))
+    cat_no = {id(x): i for i, x in enumerate(chrono, 1)}
+    cat_width = max(3, len(str(len(ps))))
+
     cards = []
     for p in ps:
         cv = ""
@@ -926,16 +974,6 @@ def render_index(all_posts):
         techniques_list = p.get('techniques', [])
         size_val = h(p.get('size', ''))
 
-        # Строка с техниками и размером
-        medium_parts = []
-        if material_name:
-            medium_parts.append(material_name)
-        if techniques_list:
-            medium_parts.append(', '.join(h(t) for t in techniques_list[:2]))
-        if size_val:
-            medium_parts.append(size_val)
-        medium_str = ' · '.join(medium_parts) if medium_parts else ''
-
         # Дата публикации
         pub_date = p.get('date', '')[:10] if p.get('date') else ''
 
@@ -948,15 +986,25 @@ def render_index(all_posts):
             " ".join(p.get('tags', [])), pub_date,
         ])).lower()
 
-        cards.append(f"""<a class="card" href="{h(p['filename'])}" data-artist="{h(p['artist'].lower())}" data-year="{y}" data-month="{m}" data-museum="{h(slugify(p.get('museum','')))}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}" data-search="{h(search_blob)}" {decade_attr}>
+        # Сведения о работе: в описи это столбец таблицы, в плитках —
+        # строчка через точку. Разметка одна, раскладку задаёт CSS.
+        facts = [("Год", str(creation_year) if creation_year else ""),
+                 ("Основа", p.get('material', '')),
+                 ("Техника", ", ".join(p.get('techniques', []))),
+                 ("Размер", p.get('size', ''))]
+        facts_html = "".join(
+            f'<div><span>{h(k)}</span><b>{h(v)}</b></div>' for k, v in facts if v)
+
+        cards.append(f"""<a class="card" href="{h(p['filename'])}" data-artist="{h(p['artist'].lower())}" data-year="{y}" data-month="{m}" data-museum="{h(slugify(p.get('museum','')))}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}" data-search="{h(search_blob)}" data-no="{cat_no[id(p)]}" {decade_attr}>
+    <span class="card-no">{cat_no[id(p)]:0{cat_width}d}</span>
     <div class="card-img"><img src="{cv}" alt="{artist_name} — {title_name}" loading="lazy" decoding="async"></div>
     <div class="card-body">
         <div class="card-artist">{artist_name}</div>
         <div class="card-title">{title_name}</div>
-        {f'<div class="card-medium">{medium_str}</div>' if medium_str else ''}
         {f'<div class="card-museum">{museum_name}</div>' if museum_name else ''}
         <div class="card-date">{pub_date}</div>
     </div>
+    <div class="card-facts">{facts_html}</div>
     </a>""")
     
     artist_count = defaultdict(int)
@@ -1046,8 +1094,14 @@ def render_index(all_posts):
 {quiz_link_html}
 {timeline_link_html}
 </aside><main class="main-content">
-<div class="results-bar"><span id="results-count" class="results-count" role="status" aria-live="polite"></span></div>
-<div class="grid" id="cards">{''.join(cards)}</div>
+<div class="results-bar">
+  <span id="results-count" class="results-count" role="status" aria-live="polite"></span>
+  <div class="view-switch" role="group" aria-label="Вид списка">
+    <button type="button" id="view-list" aria-pressed="true" onclick="setView('list')">Опись</button>
+    <button type="button" id="view-grid" aria-pressed="false" onclick="setView('grid')">Плитки</button>
+  </div>
+</div>
+<div class="grid list" id="cards">{''.join(cards)}</div>
 <p class="no-results" id="no-results" hidden>Ничего не найдено. Попробуйте изменить запрос или <button type="button" class="linklike" onclick="resetAllFilters()">сбросить фильтры</button>.</p>
 </main></div>
 {SCROLL_TOP_JS}
@@ -1066,6 +1120,24 @@ function goRandom() {{
 if (location.search.indexOf('random=1') !== -1 && ALL_POSTS.length) {{
     location.replace(ALL_POSTS[Math.floor(Math.random() * ALL_POSTS.length)]);
 }}
+
+// Опись или плитки. Выбор запоминается: разметка одна, меняется только
+// класс контейнера, поэтому фильтры и поиск продолжают работать как были.
+function setView(mode) {{
+    const grid = document.getElementById('cards');
+    if (!grid) return;
+    grid.classList.toggle('list', mode === 'list');
+    const l = document.getElementById('view-list'), g = document.getElementById('view-grid');
+    if (l) l.setAttribute('aria-pressed', mode === 'list' ? 'true' : 'false');
+    if (g) g.setAttribute('aria-pressed', mode === 'grid' ? 'true' : 'false');
+    try {{ localStorage.setItem('cardView', mode); }} catch (e) {{}}
+}}
+
+(function () {{
+    let saved = null;
+    try {{ saved = localStorage.getItem('cardView'); }} catch (e) {{}}
+    if (saved === 'grid') document.addEventListener('DOMContentLoaded', function () {{ setView('grid'); }});
+}})();
 
 function updateFavList() {{
     let likes = {{}};
@@ -1313,10 +1385,13 @@ def generate_tag_pages(all_posts):
     tp = defaultdict(list)
     for p in all_posts:
         for t in p.get("tags",[]): tp[t].append(p)
+    chrono = sorted(all_posts, key=lambda x: (x.get("creation_year") or 9999, x.get("date", "")))
+    cat_no = {x["filename"]: i for i, x in enumerate(chrono, 1)}
+    cat_width = max(3, len(str(len(all_posts))))
     c = 0
     for tag, posts in tp.items():
         with open(os.path.join(OUTPUT_DIR, f"tag-{tag}.html"), "w", encoding="utf-8") as f:
-            f.write(render_tag_page(tag, posts))
+            f.write(render_tag_page(tag, posts, cat_no, cat_width))
         c += 1
     logger.info(f"Сгенерировано {c} страниц тегов")
     return tp
