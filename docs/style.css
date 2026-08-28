@@ -1500,3 +1500,12 @@ a:has(.painting) { display: block; margin-bottom: var(--s4); }
 }
 
 .view-switch button { padding: var(--s2) var(--s3); line-height: 1.4; }
+
+/* Почтовый адрес музея в карточке */
+.museum-address {
+  margin: var(--s1) 0 0;
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  letter-spacing: .02em;
+}

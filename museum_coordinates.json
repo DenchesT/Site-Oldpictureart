@@ -1,78 +1,84 @@
 {
   "Базельский художественный музей, Базель": {
-    "lat": 47.554167,
-    "lon": 7.594167,
-    "display_name": "Базельский художественный музей",
-    "source": "wikidata:Q194626",
+    "lat": 47.5539294,
+    "lon": 7.5944513,
+    "display_name": "Kunstmuseum Basel | Hauptbau, 16, St. Alban-Graben, Vorstädte, Grossbasel, Базель, Базель-Штадт, 4051, Швейцария",
+    "source": "nominatim",
     "precision": "exact",
-    "query": "Kunstmuseum Basel"
+    "query": "St. Alban-Graben 16, Basel"
   },
   "Британская галерея Тейт, Лондон": {
-    "lat": 51.491062,
-    "lon": -0.127789,
-    "display_name": "Британская галерея Тейт",
-    "source": "wikidata:Q195436",
+    "lat": 51.4965477,
+    "lon": -0.1255167,
+    "display_name": "Millbank, Westminster, Millbank, Вестминстер, Большой Лондон, Англия, SW1P 3JH, Соединённое Королевство",
+    "source": "nominatim",
     "precision": "exact",
-    "query": "Tate Britain"
+    "query": "Millbank, London"
   },
   "Винтертурский художественный музей, Винтертур": {
-    "lat": 47.5015175020441,
-    "lon": 8.73039426768105,
-    "display_name": "Винтертурский художественный музей",
-    "source": "wikidata:Q650299",
+    "lat": 47.5015809,
+    "lon": 8.7302751,
+    "display_name": "52, Museumstrasse, Inneres Lind, Lind, Stadt, Винтертур, Bezirk Winterthur, Цюрих, 8400, Швейцария",
+    "source": "nominatim",
     "precision": "exact",
-    "query": "Kunstmuseum Winterthur"
+    "query": "Museumstrasse 52, Winterthur"
   },
   "ГИМ, Москва": {
     "lat": 55.755323,
     "lon": 37.6178815,
-    "display_name": "Исторический музей, 1, Красная площадь, Китай-город, 4, Тверской район, Москва, Центральный федеральный округ, 109012, Россия"
+    "display_name": "Исторический музей, 1, Красная площадь, Китай-город, 15, Тверской район, Москва, Центральный федеральный округ, 109012, Россия",
+    "source": "nominatim",
+    "precision": "exact",
+    "query": "Красная площадь, 1, Москва"
   },
   "ГМИИ им. А.С. Пушкина, Москва": {
-    "lat": 55.74702868,
-    "lon": 37.60602901,
-    "display_name": "Государственный музей изобразительных искусств имени А. С. Пушкина",
-    "source": "wikidata:Q4872",
+    "lat": 55.747285,
+    "lon": 37.6054233,
+    "display_name": "Государственный музей изобразительных искусств имени А. С. Пушкина, 12 с1, улица Волхонка, 31, район Хамовники, Москва, Центральный федеральный округ, 119019, Россия",
+    "source": "nominatim",
     "precision": "exact",
-    "query": "Государственный музей изобразительных искусств имени А. С. Пушкина"
+    "query": "улица Волхонка, 12, Москва"
   },
   "ГРМ, Санкт-Петербург": null,
   "Государственная Третьяковская галерея, Москва": {
     "lat": 55.7413613,
     "lon": 37.6202196,
-    "display_name": "Третьяковская галерея, 10, Лаврушинский переулок, район Якиманка, Москва, Центральный федеральный округ, 119017, Россия"
+    "display_name": "Третьяковская галерея, 10, Лаврушинский переулок, район Якиманка, Москва, Центральный федеральный округ, 119017, Россия",
+    "source": "nominatim",
+    "precision": "exact",
+    "query": "Лаврушинский переулок, 10, Москва"
   },
   "Государственный музей Тюрингии, Хайдексбург": {
-    "lat": 50.723,
-    "lon": 11.339,
-    "display_name": "Хайдексбург",
-    "source": "wikidata:Q316382",
+    "lat": 50.7225817,
+    "lon": 11.3378434,
+    "display_name": "Naturhistorisches Museum Rudolstadt, 1, Schloßbezirk, Volkstedt, Pflanzwirbach, Rudolstadt, Kamsdorf, Landkreis Saalfeld-Rudolstadt, Тюрингия, 07407, Германия",
+    "source": "nominatim",
     "precision": "exact",
-    "query": "Schloss Heidecksburg"
+    "query": "Schlossbezirk 1, Rudolstadt"
   },
   "Государственный музей истории религии, Санкт-Петербург": {
-    "lat": 53.6778265,
-    "lon": 23.8257533,
-    "display_name": "Гродненский государственный музей истории религии, 16, Замковая улица, Переселка, Ленинский район, Гродно, Гродненская область, 240025, Беларусь",
+    "lat": 59.9316489,
+    "lon": 30.3010021,
+    "display_name": "14, Почтамтская улица, Адмиралтейский округ, Санкт-Петербург, Северо-Западный федеральный округ, 190121, Россия",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Государственный музей истории религии"
+    "query": "Почтамтская улица, 14, Санкт-Петербург"
   },
   "Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург": {
-    "lat": 44.6960855,
-    "lon": -73.4542915,
-    "display_name": "Платтсбург",
-    "source": "nominatim",
-    "precision": "approx",
-    "query": "SUNY Plattsburgh Art Museum"
-  },
-  "Гётеборгский художественный музей, Гётеборг": {
-    "lat": 57.6965614,
-    "lon": 11.9807432,
-    "display_name": "Göteborgs konstmuseum, Axel Romdahls Trappor, Lorensberg, Centrum, Гётеборг, Göteborgs Stad, Вестра-Гёталанд, 412 56, Швеция",
+    "lat": 44.6931881,
+    "lon": -73.4667363,
+    "display_name": "Tim Hortons, 101, Broad Street, Платсберг, округ Клинтон, Нью-Йорк, 12901, Соединённые Штаты Америки",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Göteborgs konstmuseum"
+    "query": "101 Broad St, Plattsburgh"
+  },
+  "Гётеборгский художественный музей, Гётеборг": {
+    "lat": 57.696653,
+    "lon": 11.9803269,
+    "display_name": "6, Götaplatsen, Lorensberg, Centrum, Гётеборг, Göteborgs Stad, Вестра-Гёталанд, 412 56, Швеция",
+    "source": "nominatim",
+    "precision": "exact",
+    "query": "Götaplatsen 6, Göteborg"
   },
   "Институт искусств Миннеаполиса, Миннеаполис": {
     "lat": 44.9585946,
@@ -80,102 +86,111 @@
     "display_name": "Minneapolis Institute of Art, 2400, 3rd Avenue South, Whittier, Eat Street, Powderhorn, Миннеаполис, Hennepin County, Миннесота, 55404, Соединённые Штаты Америки",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Minneapolis Institute of Art"
+    "query": "2400 3rd Ave S, Minneapolis"
   },
   "Институт искусств Стерлинга и Франсин Кларк, Уильямстаун": {
-    "lat": 42.7085558,
-    "lon": -73.2145995,
-    "display_name": "Clark Art Institute Orientation Center, Clark Museum Driveway, Williamstown, Berkshire County, Массачусетс, 01267, Соединённые Штаты Америки",
+    "lat": 42.7075528,
+    "lon": -73.2136571,
+    "display_name": "Clark Art Museum, 225, South Street, Williamstown, Berkshire County, Массачусетс, 01267, Соединённые Штаты Америки",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Clark Art Institute"
+    "query": "225 South St, Williamstown"
   },
   "Коллекции Версальского дворца, Версаль": {
-    "lat": 48.8044252,
-    "lon": 2.1202853,
-    "display_name": "Версальский дворец, Cour haute de la Chapelle, Notre-Dame, Версаль, Versailles, Ивелин, Иль-де-Франс, Метрополия Франции, 78000, Франция",
+    "lat": 48.8038406,
+    "lon": 2.1246463,
+    "display_name": "Place d'Armes, Notre-Dame, Версаль, Versailles, Ивелин, Иль-де-Франс, Метрополия Франции, 78000, Франция",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Château de Versailles"
+    "query": "Place d'Armes, Versailles"
   },
   "Королевский музей изящных искусств, Брюссель": {
-    "lat": 50.8416804,
-    "lon": 4.3582377,
-    "display_name": "Musées royaux des Beaux-Arts de Belgique - Koninklijke Musea voor Schone Kunsten van België, Rue de la Régence - Regentschapsstraat, Quartier Royal - Koninklijke Wijk, Pentagone - Vijfhoek, Брюссель, Brussel-Hoofdstad - Bruxelles-Capitale, Брюссельский столичный регион, 1000, Бельгия",
+    "lat": 50.8415295,
+    "lon": 4.358156,
+    "display_name": "3, Rue de la Régence - Regentschapsstraat, Quartier Royal - Koninklijke Wijk, Pentagone - Vijfhoek, Брюссель, Brussel-Hoofdstad - Bruxelles-Capitale, Брюссельский столичный регион, 1000, Бельгия",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Royal Museums of Fine Arts of Belgium"
+    "query": "Rue de la Régence 3, Bruxelles"
   },
   "Лувр, Париж (в запаснике)": {
-    "lat": 48.8611473,
-    "lon": 2.3380277,
-    "display_name": "Лувр, Cour Carrée, Saint-Germain-l'Auxerrois, I округ, Париж, Иль-де-Франс, Метрополия Франции, 75001, Франция",
-    "source": "nominatim",
+    "lat": 48.856916666667,
+    "lon": 2.3536722222222,
+    "display_name": "улица Риволи",
+    "source": "wikidata:Q141747",
     "precision": "exact",
-    "query": "Musée du Louvre"
+    "query": "Rue de Rivoli, Paris"
   },
   "Малый дворец, музей изящных искусств города Парижа, Париж": {
-    "lat": 48.866042,
-    "lon": 2.3153496,
-    "display_name": "Малый дворец, Avenue Winston Churchill, Quartier des Champs-Élysées, VIII округ, Париж, Иль-де-Франс, Метрополия Франции, 75008, Франция",
-    "source": "nominatim",
+    "lat": 48.866176,
+    "lon": 2.313856,
+    "display_name": "avenue Winston-Churchill",
+    "source": "wikidata:Q2873884",
     "precision": "exact",
-    "query": "Petit Palais"
+    "query": "Avenue Winston Churchill, Paris"
   },
   "Метрополитен-музей, Нью-Йорк": {
-    "lat": 13.7348443,
-    "lon": 100.5458071,
-    "display_name": "Metropolitan Museum Of Art, ถนนวิทยุ, ชุมชนซอยร่วมฤดี, แขวงลุมพินี, เขตปทุมวัน, Бангкок, 10330, Таиланд",
+    "lat": 40.7794396,
+    "lon": -73.9633825,
+    "display_name": "Метрополитан Музей Искусства, 1000, 5-я авеню, Аппер-Ист-Сайд, Manhattan Community Board 8, Манхэттен, округ Нью-Йорк, Нью-Йорк, 10075, Соединённые Штаты Америки",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Metropolitan Museum of Art"
+    "query": "1000 5th Ave, New York"
   },
   "Музей Барберини, Потсдам": {
     "lat": 52.395233,
     "lon": 13.0618998,
-    "display_name": "Museum Barberini, 5-6, Humboldtstraße, Viertel der Seidenweber, Historische Innenstadt, Потсдам, Бранденбург, 14467, Германия"
+    "display_name": "Museum Barberini, 5-6, Humboldtstraße, Viertel der Seidenweber, Historische Innenstadt, Потсдам, Бранденбург, 14467, Германия",
+    "source": "nominatim",
+    "precision": "exact",
+    "query": "Humboldtstraße 5-6, Potsdam"
   },
   "Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн": {
-    "lat": 50.9374105,
-    "lon": 6.9584434,
-    "display_name": "Wallraf-Richartz-Museum & Fondation Corboud, 40, Obenmarspforten, Martinsviertel, Altstadt-Nord, Innenstadt, Кёльн, Северный Рейн — Вестфалия, 50667, Германия",
+    "lat": 50.9376874,
+    "lon": 6.9571773,
+    "display_name": "Obenmarspforten, Martinsviertel, Altstadt-Nord, Innenstadt, Кёльн, Северный Рейн — Вестфалия, 50667, Германия",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Wallraf-Richartz-Museum"
+    "query": "Obenmarspforten, Köln"
   },
   "Музей Гетти, Лос-Анджелес": {
-    "lat": 41.8774365,
-    "lon": -72.8007443,
-    "display_name": "Nino's Getty, Hopmeadow Street, Simsbury Center Historic District, Simsbury, Capitol Planning Region, Коннектикут, 06070, Соединённые Штаты Америки",
+    "lat": 34.0769513,
+    "lon": -118.475712,
+    "display_name": "Getty Research Institute, 1200, Getty Center Drive, Лос-Анджелес, Los Angeles County, Калифорния, 90049, Соединённые Штаты Америки",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Getty Center"
+    "query": "1200 Getty Center Dr, Los Angeles"
   },
   "Музей Кунстпаласт, Дюссельдорф": {
     "lat": 51.234998,
     "lon": 6.7731045,
-    "display_name": "Museum Kunstpalast, 4-5, Ehrenhof, Пемпельфорт, Stadtbezirk 1, Дюссельдорф, Северный Рейн — Вестфалия, 40479, Германия"
+    "display_name": "Museum Kunstpalast, 4-5, Ehrenhof, Пемпельфорт, Stadtbezirk 1, Дюссельдорф, Северный Рейн — Вестфалия, 40479, Германия",
+    "source": "nominatim",
+    "precision": "exact",
+    "query": "Ehrenhof 4-5, Düsseldorf"
   },
   "Музей Леопольда, Вена": {
     "lat": 48.2025896,
     "lon": 16.3590667,
-    "display_name": "Музей Леопольда, 1, Museumsplatz, Sankt Ulrich, Spittelberg, Katastralgemeinde Neubau, Нойбау, Вена, 1070, Австрия"
+    "display_name": "Музей Леопольда, 1, Museumsplatz, Sankt Ulrich, Spittelberg, Katastralgemeinde Neubau, Нойбау, Вена, 1070, Австрия",
+    "source": "nominatim",
+    "precision": "exact",
+    "query": "Museumsplatz 1, Wien"
   },
   "Музей Скагена, Скаген": {
-    "lat": 57.7246,
-    "lon": 10.5973,
-    "display_name": "Skagens Museum",
-    "source": "wikidata:Q3555520",
+    "lat": 57.724468,
+    "lon": 10.597215,
+    "display_name": "4, Brøndumsvej, Østerby, Скаген, Frederikshavn Kommune, Северная Ютландия, 9990, Дания",
+    "source": "nominatim",
     "precision": "exact",
-    "query": "Skagens Museum"
+    "query": "Brøndumsvej 4, Skagen"
   },
   "Музей Фабра, Монпелье": {
-    "lat": 43.611736111111,
-    "lon": 3.8801916666667,
-    "display_name": "Музей Фабра",
-    "source": "wikidata:Q1519002",
+    "lat": 43.6117542,
+    "lon": 3.8801274,
+    "display_name": "Musée Fabre, 39, Boulevard Bonne Nouvelle, Comédie, Centre, Монпелье, Эро, Окситания, Метрополия Франции, 34000, Франция",
+    "source": "nominatim",
     "precision": "exact",
-    "query": "Musée Fabre"
+    "query": "39 boulevard Bonne Nouvelle, Montpellier"
   },
   "Музей Эжена Будена, Онфлёр": {
     "lat": 49.422299,
@@ -183,28 +198,31 @@
     "display_name": "Музей Эжена Будена",
     "source": "wikidata:Q3329155",
     "precision": "exact",
-    "query": "Musée Eugène Boudin"
+    "query": "Музей Эжена Будена"
   },
   "Музей д’Орсе, Париж": {
     "lat": 48.8599179,
     "lon": 2.3265849,
-    "display_name": "Музей Орсе, 1, Rue de la Légion d'Honneur, Quartier Saint-Thomas-d'Aquin, VII округ, Париж, Иль-де-Франс, Метрополия Франции, 75007, Франция"
+    "display_name": "Музей Орсе, 1, Rue de la Légion d'Honneur, Quartier Saint-Thomas-d'Aquin, VII округ, Париж, Иль-де-Франс, Метрополия Франции, 75007, Франция",
+    "source": "nominatim",
+    "precision": "exact",
+    "query": "1 Rue de la Légion d'Honneur, Paris"
   },
   "Музей изящных искусств, Гент": {
-    "lat": 51.037975,
-    "lon": 3.724244,
-    "display_name": "Музей изящных искусств",
-    "source": "wikidata:Q2365880",
+    "lat": 51.0379751,
+    "lon": 3.7242437,
+    "display_name": "Museum voor Schone Kunsten, 1, Fernand Scribedreef, Strop, Muinkparkwijk, Gent, Гент, Восточная Фландрия, Фландрия, 9000, Бельгия",
+    "source": "nominatim",
     "precision": "exact",
-    "query": "Museum voor Schone Kunsten Gent"
+    "query": "Fernand Scribedreef 1, Gent"
   },
   "Музей искусств Охара, Курасики": {
-    "lat": 34.59615,
-    "lon": 133.77067,
-    "display_name": "Художественный музей Охара",
-    "source": "wikidata:Q2977589",
+    "lat": 34.4520606,
+    "lon": 133.7908885,
+    "display_name": "瀬戸中央自動車道, 菰池二丁目, 菰池, Курасики, Окаяма, 711-0927, Япония",
+    "source": "nominatim",
     "precision": "exact",
-    "query": "Ohara Museum of Art"
+    "query": "1-1-15 Chuo, Kurashiki"
   },
   "Музей современного искусства Андре Мальро, Гавр": {
     "lat": 49.4850174,
@@ -212,54 +230,63 @@
     "display_name": "Musée d'Art Moderne André Malraux, 2, Boulevard Clemenceau, Perrey, Le Havre, Гавр, Приморская-Сена, Нормандия, Метрополия Франции, 76600, Франция",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Musée d'art moderne André Malraux"
+    "query": "2 boulevard Clemenceau, Le Havre"
   },
   "Национальная галерея Шотландии, Эдинбург": {
-    "lat": 55.9554655,
-    "lon": -3.1935919,
-    "display_name": "Национальная портретная галерея Шотландии, 1, Queen Street, New Town, New Town/Broughton, Эдинбург, Шотландия, EH2 1JD, Соединённое Королевство"
+    "lat": 55.951643,
+    "lon": -3.1956764,
+    "display_name": "The Mound, Abbeyhill, Old Town, Эдинбург, Шотландия, Соединённое Королевство",
+    "source": "nominatim",
+    "precision": "exact",
+    "query": "The Mound, Edinburgh"
   },
   "Национальная галерея искусства, Вашингтон": {
-    "lat": 38.8913116,
-    "lon": -77.0199045,
-    "display_name": "National Gallery of Art, Madison Drive Northwest, Ward 2, Вашингтон, Округ Колумбия, 20554, Соединённые Штаты Америки",
+    "lat": 38.8920976,
+    "lon": -77.030467,
+    "display_name": "Constitution Avenue Northwest, Ward 2, Вашингтон, Округ Колумбия, 20423, Соединённые Штаты Америки",
     "source": "nominatim",
     "precision": "exact",
-    "query": "National Gallery of Art Washington"
+    "query": "6th & Constitution Ave NW, Washington"
   },
   "Национальный музей Прадо, Мадрид": {
-    "lat": 40.4137925,
-    "lon": -3.6920407,
-    "display_name": "музей Прадо, Paseo del Prado, Jerónimos, Ретиро, Мадрид, 28014, Испания",
+    "lat": 40.5558827,
+    "lon": -3.3242669,
+    "display_name": "Calle de Ruiz de Alarcón, Меко, Мадрид, 28880, Испания",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Museo del Prado"
+    "query": "Calle de Ruiz de Alarcón 23, Madrid"
   },
   "Национальный музей западного искусства, Токио": {
-    "lat": 35.7155512,
-    "lon": 139.7759424,
-    "display_name": "Национальный музей западного искусства, 上野公園, Тайто, Токио, 110-0007, Япония"
+    "lat": 35.7152915,
+    "lon": 139.7738278,
+    "display_name": "上野公園, Тайто, Токио, 110-0007, Япония",
+    "source": "nominatim",
+    "precision": "exact",
+    "query": "7-7 Ueno-koen, Taito-ku, Tokyo"
   },
   "Национальный художественный музей Республики Беларусь, Минск": {
-    "lat": 53.9024716,
-    "lon": 27.5618225,
-    "display_name": "Минск",
+    "lat": 53.898377,
+    "lon": 27.5606454,
+    "display_name": "Национальный художественный музей, 20, улица Ленина, Ляховская Слобода, Посёлок Велозавода, Ленинский район, Минск, 220030, Беларусь",
     "source": "nominatim",
-    "precision": "approx",
-    "query": "Нацыянальны мастацкі музей Рэспублікі Беларусь"
+    "precision": "exact",
+    "query": "улица Ленина, 20, Минск"
   },
   "Отдел личных коллекций, ГМИИ им. А.С. Пушкина, Москва": {
-    "lat": 55.74763889,
-    "lon": 37.60752778,
-    "display_name": "Музей личных коллекций",
-    "source": "wikidata:Q4306373",
+    "lat": 55.7474789,
+    "lon": 37.6072183,
+    "display_name": "10, улица Волхонка, 27, район Хамовники, Москва, Центральный федеральный округ, 119019, Россия",
+    "source": "nominatim",
     "precision": "exact",
-    "query": "Отдел личных коллекций"
+    "query": "улица Волхонка, 10, Москва"
   },
   "Пермская государственная художественная галерея, Пермь": {
-    "lat": 58.0164488,
-    "lon": 56.2346467,
-    "display_name": "Пермская Государственная Художественная Галерея, 4, Комсомольский проспект, Ленинский район, Пермь, Пермский городской округ, Пермский край, Приволжский федеральный округ, 614600, Россия"
+    "lat": 58.0193002,
+    "lon": 56.2521113,
+    "display_name": "Цех №4, 1, Советская улица, Ленинский район, Пермь, Пермский городской округ, Пермский край, Приволжский федеральный округ, 614000, Россия",
+    "source": "nominatim",
+    "precision": "exact",
+    "query": "улица Советская, 1, Пермь"
   },
   "Портлендский художественный музей, Портленд": {
     "lat": 45.5165483,
@@ -267,36 +294,39 @@
     "display_name": "Portland Art Museum, 1219, Southwest Park Avenue, University District, Downtown, Портленд, Multnomah County, Орегон, 97205, Соединённые Штаты Америки",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Portland Art Museum"
+    "query": "1219 SW Park Ave, Portland"
   },
   "Собрание Фонда Эмиля Бюрле, Цюрих": {
-    "lat": 47.3744489,
-    "lon": 8.5410422,
-    "display_name": "Цюрих",
-    "source": "nominatim",
-    "precision": "approx",
-    "query": "Sammlung Emil Bührle"
-  },
-  "Собрание Хиршпрунга, Копенгаген": {
-    "lat": 55.6899139,
-    "lon": 12.5774814,
-    "display_name": "Den Hirschsprungske Samling, Stockholmsgade, Østervold, Indre By, Копенгаген, Københavns Kommune, Столичная область, 1307, Дания",
+    "lat": 47.3702241,
+    "lon": 8.5479797,
+    "display_name": "Kunsthaus, 1, Heimplatz, Hochschulen, Altstadt, Цюрих, Bezirk Zürich, Цюрих, 8001, Швейцария",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Den Hirschsprungske Samling"
+    "query": "Heimplatz 1, Zürich"
+  },
+  "Собрание Хиршпрунга, Копенгаген": {
+    "lat": 55.689956,
+    "lon": 12.577423,
+    "display_name": "20, Stockholmsgade, Østervold, Indre By, Копенгаген, Københavns Kommune, Столичная область, 2100, Дания",
+    "source": "nominatim",
+    "precision": "exact",
+    "query": "Stockholmsgade 20, København"
   },
   "Старая национальная галерея, Берлин": {
     "lat": 52.520862,
     "lon": 13.3982661,
-    "display_name": "Старая национальная галерея, 1-3, Bodestraße, Spandauer Vorstadt, Митте, Берлин, 10178, Германия"
-  },
-  "Художественная галерея Южной Австралии, Аделаида": {
-    "lat": -34.9206307,
-    "lon": 138.6039688,
-    "display_name": "Art Gallery of South Australia, Western Drive, Adelaide, Аделаида, Южная Австралия, 5000, Австралия",
+    "display_name": "Старая национальная галерея, 1-3, Bodestraße, Spandauer Vorstadt, Митте, Берлин, 10178, Германия",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Art Gallery of South Australia"
+    "query": "Bodestraße 1-3, Berlin"
+  },
+  "Художественная галерея Южной Австралии, Аделаида": {
+    "lat": -34.9180224,
+    "lon": 138.6180994,
+    "display_name": "North Terrace, Hackney, Аделаида, Южная Австралия, 5069, Австралия",
+    "source": "nominatim",
+    "precision": "exact",
+    "query": "490 North Terrace, Adelaide"
   },
   "Художественный музей колледжа Смит, Нортхемптон": {
     "lat": 42.318633,
@@ -304,28 +334,31 @@
     "display_name": "Smith College Museum of Art, 20, Elm Street, Northampton Downtown Historic District, Нортгемптон, Hampshire County, Массачусетс, 01063, Соединённые Штаты Америки",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Smith College Museum of Art"
+    "query": "20 Elm St, Northampton"
   },
   "Чикагский институт искусств, Чикаго": {
-    "lat": 41.879605,
-    "lon": -87.6230716,
-    "display_name": "The Art Institute of Chicago, 111, South Michigan Avenue, Jewelers Row, Loop, Чикаго, South Chicago Township, Cook County, Иллинойс, 60603, Соединённые Штаты Америки",
+    "lat": 41.8794137,
+    "lon": -87.6239573,
+    "display_name": "Art Institute’s Gardens, 111, South Michigan Avenue, Jewelers Row, Loop, Чикаго, South Chicago Township, Cook County, Иллинойс, 60604, Соединённые Штаты Америки",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Art Institute of Chicago"
+    "query": "111 S Michigan Ave, Chicago"
   },
   "Штеделевский художественный институт, Франкфурт-на-Майне": {
-    "lat": 50.1032949,
-    "lon": 8.6738582,
-    "display_name": "Städel Museum, 63, Schaumainkai, Sachsenhausen Nord, Sachsenhausen, Süd, Франкфурт-на-Майне, Гессен, 60596, Германия",
+    "lat": 50.1032187,
+    "lon": 8.6738203,
+    "display_name": "Hauptgebäude Städel Museum (Mainflügel), 63, Schaumainkai, Sachsenhausen Nord, Sachsenhausen, Süd, Франкфурт-на-Майне, Гессен, 60596, Германия",
     "source": "nominatim",
     "precision": "exact",
-    "query": "Städel Museum"
+    "query": "Schaumainkai 63, Frankfurt am Main"
   },
   "Государственный Русский музей, Санкт-Петербург": {
-    "lat": 59.9385848,
-    "lon": 30.3288929,
-    "display_name": "Русский музей, Инженерная улица, Дворцовый округ, Санкт-Петербург, Северо-Западный федеральный округ, 191186, Россия"
+    "lat": 59.9387113,
+    "lon": 30.3323111,
+    "display_name": "Михайловский дворец, 2-4 литД, Инженерная улица, Дворцовый округ, Санкт-Петербург, Северо-Западный федеральный округ, 191186, Россия",
+    "source": "nominatim",
+    "precision": "exact",
+    "query": "Инженерная улица, 4, Санкт-Петербург"
   },
   "Национальный музей искусства Каталонии, Барселона": {
     "lat": 41.3686024,

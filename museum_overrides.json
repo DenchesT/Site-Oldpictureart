@@ -3,138 +3,176 @@
   "_как_дополнить": "После запуска generate_map.py в конце лога выводится список музеев без координат в готовом для вставки виде. Скопируйте строки сюда и подставьте значения.",
   "Базельский художественный музей, Базель": {
     "query": "Kunstmuseum Basel",
-    "site": "https://kunstmuseumbasel.ch"
+    "site": "https://kunstmuseumbasel.ch",
+    "address": "St. Alban-Graben 16, Basel"
   },
   "Британская галерея Тейт, Лондон": {
     "query": "Tate Britain",
-    "site": "https://www.tate.org.uk"
+    "site": "https://www.tate.org.uk",
+    "address": "Millbank, London"
   },
   "Винтертурский художественный музей, Винтертур": {
     "query": "Kunstmuseum Winterthur",
-    "site": "https://www.kmw.ch"
+    "site": "https://www.kmw.ch",
+    "address": "Museumstrasse 52, Winterthur"
   },
   "ГМИИ им. А.С. Пушкина, Москва": {
     "query": "Государственный музей изобразительных искусств имени А. С. Пушкина",
-    "site": "https://pushkinmuseum.art"
+    "site": "https://pushkinmuseum.art",
+    "address": "улица Волхонка, 12, Москва"
   },
   "ГРМ, Санкт-Петербург": {
     "query": "Государственный Русский музей"
   },
   "Государственный музей Тюрингии, Хайдексбург": {
-    "query": "Schloss Heidecksburg"
+    "query": "Schloss Heidecksburg",
+    "address": "Schlossbezirk 1, Rudolstadt",
+    "site": "https://www.heidecksburg.de"
   },
   "Государственный музей истории религии, Санкт-Петербург": {
     "query": "Государственный музей истории религии",
-    "site": "https://gmir.ru"
+    "site": "https://gmir.ru",
+    "address": "Почтамтская улица, 14, Санкт-Петербург"
   },
   "Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург": {
-    "query": "SUNY Plattsburgh Art Museum"
+    "query": "SUNY Plattsburgh Art Museum",
+    "address": "101 Broad St, Plattsburgh",
+    "site": "https://www.plattsburgh.edu/plattslife/arts/art-museum/index.html"
   },
   "Гётеборгский художественный музей, Гётеборг": {
     "query": "Göteborgs konstmuseum",
-    "site": "https://goteborgskonstmuseum.se"
+    "site": "https://goteborgskonstmuseum.se",
+    "address": "Götaplatsen 6, Göteborg"
   },
   "Институт искусств Миннеаполиса, Миннеаполис": {
     "query": "Minneapolis Institute of Art",
-    "site": "https://new.artsmia.org"
+    "site": "https://new.artsmia.org",
+    "address": "2400 3rd Ave S, Minneapolis"
   },
   "Институт искусств Стерлинга и Франсин Кларк, Уильямстаун": {
     "query": "Clark Art Institute",
-    "site": "https://www.clarkart.edu"
+    "site": "https://www.clarkart.edu",
+    "address": "225 South St, Williamstown"
   },
   "Коллекции Версальского дворца, Версаль": {
     "query": "Château de Versailles",
-    "site": "https://www.chateauversailles.fr"
+    "site": "https://www.chateauversailles.fr",
+    "address": "Place d'Armes, Versailles"
   },
   "Королевский музей изящных искусств, Брюссель": {
     "query": "Royal Museums of Fine Arts of Belgium",
-    "site": "https://www.fine-arts-museum.be"
+    "site": "https://www.fine-arts-museum.be",
+    "address": "Rue de la Régence 3, Bruxelles"
   },
   "Лувр, Париж (в запаснике)": {
     "query": "Musée du Louvre",
-    "site": "https://www.louvre.fr"
+    "site": "https://www.louvre.fr",
+    "address": "Rue de Rivoli, Paris"
   },
   "Малый дворец, музей изящных искусств города Парижа, Париж": {
     "query": "Petit Palais",
-    "site": "https://www.petitpalais.paris.fr"
+    "site": "https://www.petitpalais.paris.fr",
+    "address": "Avenue Winston Churchill, Paris"
   },
   "Метрополитен-музей, Нью-Йорк": {
     "query": "Metropolitan Museum of Art",
-    "site": "https://www.metmuseum.org"
+    "site": "https://www.metmuseum.org",
+    "address": "1000 5th Ave, New York"
   },
   "Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн": {
     "query": "Wallraf-Richartz-Museum",
-    "site": "https://www.wallraf.museum"
+    "site": "https://www.wallraf.museum",
+    "address": "Obenmarspforten, Köln"
   },
   "Музей Гетти, Лос-Анджелес": {
     "query": "Getty Center",
-    "site": "https://www.getty.edu"
+    "site": "https://www.getty.edu",
+    "address": "1200 Getty Center Dr, Los Angeles"
   },
   "Музей Скагена, Скаген": {
     "query": "Skagens Museum",
-    "site": "https://skagenskunstmuseer.dk"
+    "site": "https://skagenskunstmuseer.dk",
+    "address": "Brøndumsvej 4, Skagen"
   },
   "Музей Фабра, Монпелье": {
     "query": "Musée Fabre",
-    "site": "https://museefabre.montpellier3m.fr"
+    "site": "https://museefabre.montpellier3m.fr",
+    "address": "39 boulevard Bonne Nouvelle, Montpellier"
   },
   "Музей Эжена Будена, Онфлёр": {
-    "query": "Musée Eugène Boudin"
+    "query": "Musée Eugène Boudin",
+    "address": "Place Erik Satie, Honfleur",
+    "site": "https://www.musees-honfleur.fr"
   },
   "Музей изящных искусств, Гент": {
     "query": "Museum voor Schone Kunsten Gent",
-    "site": "https://www.mskgent.be"
+    "site": "https://www.mskgent.be",
+    "address": "Fernand Scribedreef 1, Gent"
   },
   "Музей искусств Охара, Курасики": {
     "query": "Ohara Museum of Art",
-    "site": "https://www.ohara.or.jp"
+    "site": "https://www.ohara.or.jp",
+    "address": "1-1-15 Chuo, Kurashiki"
   },
   "Музей современного искусства Андре Мальро, Гавр": {
     "query": "Musée d'art moderne André Malraux",
-    "site": "https://www.muma-lehavre.fr"
+    "site": "https://www.muma-lehavre.fr",
+    "address": "2 boulevard Clemenceau, Le Havre"
   },
   "Национальная галерея искусства, Вашингтон": {
     "query": "National Gallery of Art Washington",
-    "site": "https://www.nga.gov"
+    "site": "https://www.nga.gov",
+    "address": "6th & Constitution Ave NW, Washington"
   },
   "Национальный музей Прадо, Мадрид": {
     "query": "Museo del Prado",
-    "site": "https://www.museodelprado.es"
+    "site": "https://www.museodelprado.es",
+    "address": "Calle de Ruiz de Alarcón 23, Madrid"
   },
   "Национальный художественный музей Республики Беларусь, Минск": {
     "query": "Нацыянальны мастацкі музей Рэспублікі Беларусь",
-    "site": "https://www.artmuseum.by"
+    "site": "https://www.artmuseum.by",
+    "address": "улица Ленина, 20, Минск"
   },
   "Отдел личных коллекций, ГМИИ им. А.С. Пушкина, Москва": {
     "query": "Отдел личных коллекций ГМИИ имени Пушкина",
-    "site": "https://pushkinmuseum.art"
+    "site": "https://pushkinmuseum.art",
+    "address": "улица Волхонка, 10, Москва"
   },
   "Портлендский художественный музей, Портленд": {
     "query": "Portland Art Museum",
-    "site": "https://portlandartmuseum.org"
+    "site": "https://portlandartmuseum.org",
+    "address": "1219 SW Park Ave, Portland"
   },
   "Собрание Фонда Эмиля Бюрле, Цюрих": {
-    "query": "Sammlung Emil Bührle"
+    "query": "Sammlung Emil Bührle",
+    "address": "Heimplatz 1, Zürich",
+    "site": "https://buehrle.ch"
   },
   "Собрание Хиршпрунга, Копенгаген": {
     "query": "Den Hirschsprungske Samling",
-    "site": "https://hirschsprung.dk"
+    "site": "https://hirschsprung.dk",
+    "address": "Stockholmsgade 20, København"
   },
   "Художественная галерея Южной Австралии, Аделаида": {
     "query": "Art Gallery of South Australia",
-    "site": "https://www.agsa.sa.gov.au"
+    "site": "https://www.agsa.sa.gov.au",
+    "address": "490 North Terrace, Adelaide"
   },
   "Художественный музей колледжа Смит, Нортхемптон": {
     "query": "Smith College Museum of Art",
-    "site": "https://scma.smith.edu"
+    "site": "https://scma.smith.edu",
+    "address": "20 Elm St, Northampton"
   },
   "Чикагский институт искусств, Чикаго": {
     "query": "Art Institute of Chicago",
-    "site": "https://www.artic.edu"
+    "site": "https://www.artic.edu",
+    "address": "111 S Michigan Ave, Chicago"
   },
   "Штеделевский художественный институт, Франкфурт-на-Майне": {
     "query": "Städel Museum",
-    "site": "https://www.staedelmuseum.de"
+    "site": "https://www.staedelmuseum.de",
+    "address": "Schaumainkai 63, Frankfurt am Main"
   },
   "Частная коллекция": {
     "skip": true
@@ -152,37 +190,49 @@
     "skip": true
   },
   "Государственная Третьяковская галерея, Москва": {
-    "site": "https://www.tretyakovgallery.ru"
+    "site": "https://www.tretyakovgallery.ru",
+    "address": "Лаврушинский переулок, 10, Москва"
   },
   "Государственный Русский музей, Санкт-Петербург": {
-    "site": "https://rusmuseum.ru"
+    "site": "https://rusmuseum.ru",
+    "address": "Инженерная улица, 4, Санкт-Петербург"
   },
   "ГИМ, Москва": {
-    "site": "https://shm.ru"
+    "site": "https://shm.ru",
+    "address": "Красная площадь, 1, Москва"
   },
   "Пермская государственная художественная галерея, Пермь": {
-    "site": "https://permartmuseum.ru"
+    "site": "https://permartmuseum.ru",
+    "address": "улица Советская, 1, Пермь"
   },
   "Музей д’Орсе, Париж": {
-    "site": "https://www.musee-orsay.fr"
+    "site": "https://www.musee-orsay.fr",
+    "address": "1 Rue de la Légion d'Honneur, Paris"
   },
   "Национальная галерея Шотландии, Эдинбург": {
-    "site": "https://www.nationalgalleries.org"
+    "site": "https://www.nationalgalleries.org",
+    "address": "The Mound, Edinburgh"
   },
   "Старая национальная галерея, Берлин": {
-    "site": "https://www.smb.museum"
+    "site": "https://www.smb.museum",
+    "address": "Bodestraße 1-3, Berlin"
   },
   "Музей Барберини, Потсдам": {
-    "site": "https://www.museum-barberini.de"
+    "site": "https://www.museum-barberini.de",
+    "address": "Humboldtstraße 5-6, Potsdam"
   },
   "Музей Кунстпаласт, Дюссельдорф": {
-    "site": "https://www.kunstpalast.de"
+    "site": "https://www.kunstpalast.de",
+    "address": "Ehrenhof 4-5, Düsseldorf"
   },
   "Музей Леопольда, Вена": {
-    "site": "https://www.leopoldmuseum.org"
+    "site": "https://www.leopoldmuseum.org",
+    "address": "Museumsplatz 1, Wien"
   },
   "Национальный музей западного искусства, Токио": {
-    "site": "https://www.nmwa.go.jp"
+    "site": "https://www.nmwa.go.jp",
+    "address": "7-7 Ueno-koen, Taito-ku, Tokyo"
   },
-  "_сайты": "Поле site — официальный сайт музея, показывается ссылкой в карточке на странице карты. Добавляйте так же, как query или lat/lon."
+  "_сайты": "Поле site — официальный сайт музея, показывается ссылкой в карточке на странице карты. Добавляйте так же, как query или lat/lon.",
+  "_адреса": "Поле address — почтовый адрес музея. Показывается в карточке на странице карты, участвует в поиске и используется первым запросом при поиске координат: по улице и дому геокодер попадает точнее, чем по названию музея. Если адрес изменить, координаты этого музея будут найдены заново."
 }

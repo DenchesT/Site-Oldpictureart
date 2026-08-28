@@ -227,12 +227,14 @@ def geocode(museum_name, cache, overrides=None, retry_failed=False, offline=Fals
     # 2. Кэш. Запоминаем, каким запросом получен результат: если подсказку
     #    в справочнике поменяли, координаты нужно искать заново — иначе
     #    правка справочника молча ни на что не влияла бы.
-    wanted_query = (manual.get('query') or '').strip()
+    wanted_query = (manual.get('address') or manual.get('query') or '').strip()
+    stale = None      # прежние координаты на случай, если новый поиск не удастся
     if museum_name in cache:
         cached = cache[museum_name]
         if cached:
             if wanted_query and cached.get('query', '') != wanted_query:
                 logger.info(f"  ↻ подсказка изменилась, ищу заново: {museum_name}")
+                stale = cached
             else:
                 logger.info(f"  ✓ (из кэша) {museum_name}")
                 bump('cache')
@@ -243,17 +245,48 @@ def geocode(museum_name, cache, overrides=None, retry_failed=False, offline=Fals
             return None
 
     if offline:
+        # Без сети сохраняем прежнюю метку: устаревшие координаты всё равно
+        # лучше, чем исчезнувший с карты музей.
+        if stale:
+            logger.info(f"  ✓ (офлайн, прежние координаты) {museum_name}")
+            bump('cache')
+            return stale
         logger.info(f"  – (офлайн, пропуск) {museum_name}")
         bump('offline')
         return None
 
     def remember(result, query):
+        # Если музей уже был на карте, а новый поиск увёл его за сотни
+        # километров — почти наверняка нашлась не та точка (одинаковые
+        # названия улиц и площадей встречаются в разных городах).
+        # Координаты всё равно принимаем, но в логе это видно.
+        if stale and stale.get('lat') and result.get('lat'):
+            from math import radians, sin, cos, asin, sqrt
+            lat1, lon1, lat2, lon2 = map(radians, (stale['lat'], stale['lon'],
+                                                   result['lat'], result['lon']))
+            a = sin((lat2 - lat1) / 2) ** 2 + cos(lat1) * cos(lat2) * sin((lon2 - lon1) / 2) ** 2
+            km = 6371 * 2 * asin(sqrt(a))
+            if km > 50:
+                logger.warning(f"  ⚠ {museum_name}: новая точка в {km:.0f} км от прежней "
+                               f"(искали «{query}») — проверьте адрес в museum_overrides.json")
         result['query'] = query
         cache[museum_name] = result
         bump('lookup')
         return result
 
-    # 3. Подсказка из справочника — но уже после кэша
+    # 3. Адрес из справочника: по улице и дому геокодер попадает точнее,
+    #    чем по названию музея, поэтому спрашиваем его раньше подсказки.
+    #    Только Nominatim: он умеет разбирать строку «улица, дом, город»,
+    #    а Викиданные ищут по названиям и на «Place d'Armes, Versailles»
+    #    легко вернут площадь с тем же именем в другом городе.
+    wanted_address = (manual.get('address') or '').strip()
+    if wanted_address:
+        found = nominatim_search(wanted_address)
+        if found:
+            logger.info(f"  ✓ (по адресу) {museum_name} → {found['lat']:.4f}, {found['lon']:.4f}")
+            return remember(found, wanted_address)
+
+    # 4. Подсказка из справочника
     if wanted_query:
         found = wikidata_search(wanted_query) or nominatim_search(wanted_query)
         if found:
@@ -276,6 +309,13 @@ def geocode(museum_name, cache, overrides=None, retry_failed=False, offline=Fals
     if result:
         logger.info(f"  ≈ {museum_name} → приблизительно, по месту «{result['display_name']}»")
         return remember(result, wanted_query or museum_name)
+
+    # Ничего не нашлось. Если прежние координаты были — оставляем их:
+    # потерять метку хуже, чем показать её по старым данным.
+    if stale:
+        logger.warning(f"  ≈ {museum_name}: заново не нашёлся, оставляю прежние координаты")
+        bump('cache')
+        return stale
 
     logger.warning(f"  ✗ Не найдено: {museum_name}")
     cache[museum_name] = None
@@ -974,30 +1014,38 @@ def generate_museums_page(retry_failed=False, offline=False):
         else:
             location_html = '<p class="museum-location museum-nomap">Нет на карте</p>'
 
-        search_blob = " ".join([museum, city, country]).lower()
+        search_blob = " ".join([museum, city, country,
+                                (overrides.get(museum) or {}).get("address", "")]).lower()
 
         # Официальный сайт берём из ручного справочника: в данных постов его
         # нет, а угадывать адрес по названию — верный способ ошибиться.
+        address = (overrides.get(museum) or {}).get("address", "")
+        address_html = (f'<p class="museum-address">{h(address)}</p>') if address else ""
         site = (overrides.get(museum) or {}).get("site", "")
         site_html = (f'<p class="museum-site"><a href="{h(site)}" target="_blank" rel="noopener">'
                      f'Сайт музея ↗</a></p>') if site else ""
         mapped = "1" if (lat and lon) else "0"
 
-        cards.append(
-            f'<article class="museum-card" id="museum-{museum_id}" data-id="{museum_id}"\n'
-            f'         data-search="{h(search_blob)}" data-count="{len(posts)}"\n'
-            f'         data-name="{h(museum.lower())}" data-country="{h(country.lower())}"\n'
-            f'         data-mapped="{mapped}">\n'
+        # Необязательные строки (адрес, сайт, миниатюры) собираем списком и
+        # пустые выбрасываем: иначе в разметку попадают строки из одних
+        # пробелов — валидатор их справедливо ругает.
+        card_lines = [
+            f'<article class="museum-card" id="museum-{museum_id}" data-id="{museum_id}"',
+            f'         data-search="{h(search_blob)}" data-count="{len(posts)}"',
+            f'         data-name="{h(museum.lower())}" data-country="{h(country.lower())}"',
+            f'         data-mapped="{mapped}">',
             f'  <header class="museum-card-head"><h3>{h(museum)}</h3>'
-            f'<span class="museum-badge">{len(posts)}</span></header>\n'
-            f'  {location_html}\n'
-            f'  {site_html}\n'
-            f'  {thumbs_block}\n'
-            f'  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-{museum_id}"\n'
-            f'          onclick="toggleMuseumPosts(this, \'{museum_id}\')">Список картин ▾</button>\n'
-            f'  <ul class="museum-posts-list" id="posts-{museum_id}" hidden>{posts_html}</ul>\n'
-            f'</article>'
-        )
+            f'<span class="museum-badge">{len(posts)}</span></header>',
+            f'  {location_html}',
+            f'  {address_html}' if address_html else "",
+            f'  {site_html}' if site_html else "",
+            f'  {thumbs_block}' if thumbs_block.strip() else "",
+            f'  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-{museum_id}"',
+            f'          onclick="toggleMuseumPosts(this, \'{museum_id}\')">Список картин ▾</button>',
+            f'  <ul class="museum-posts-list" id="posts-{museum_id}" hidden>{posts_html}</ul>',
+            '</article>',
+        ]
+        cards.append("\n".join(line for line in card_lines if line))
 
         if lat and lon:
             map_data.append({
