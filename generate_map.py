@@ -184,51 +184,84 @@ def city_fallback(museum_name):
 
 # ------------------------------------------------------------------ geocode
 
-def geocode(museum_name, cache, overrides=None, retry_failed=False):
-    """Ищет координаты музея: ручной справочник → Wikidata → Nominatim → город.
+def geocode(museum_name, cache, overrides=None, retry_failed=False, offline=False, stats=None):
+    """Ищет координаты музея: ручной справочник → кэш → Wikidata → Nominatim → город.
 
-    retry_failed=True заставляет заново спросить названия, которые раньше
-    записались в кэш как null: без этого одна неудача запоминалась навсегда
-    и музей уже никогда не появлялся на карте.
+    Порядок здесь важнее, чем кажется. Кэш проверяется ДО любых сетевых
+    запросов: раньше подсказки {"query": ...} из справочника обрабатывались
+    первыми, и 35 музеев переспрашивались в сети при каждом запуске —
+    сборка занимала минуты вместо секунд.
+
+    retry_failed=True — заново спросить те названия, что записались в кэш
+    как null (иначе одна неудача запоминалась навсегда).
+    offline=True — вообще не ходить в сеть, брать только готовое.
     """
     overrides = overrides or {}
+    stats = stats if stats is not None else {}
 
-    # 1. Ручной справочник — он всегда главнее любой автоматики
-    manual = overrides.get(museum_name)
-    if manual:
-        if manual.get('skip'):
-            # «Частная коллекция» — адреса не существует. Раньше Nominatim
-            # находил по этому запросу магазин на Волхонке и ставил метку
-            # в центре Москвы. Такие записи остаются в списке под картой,
-            # но метки не получают.
-            logger.info(f"  – (без метки по справочнику) {museum_name}")
-            cache.pop(museum_name, None)
-            return None
-        if 'lat' in manual and 'lon' in manual:
-            logger.info(f"  ✓ (справочник) {museum_name}")
-            result = {'lat': float(manual['lat']), 'lon': float(manual['lon']),
-                      'display_name': manual.get('display_name', museum_name),
-                      'source': 'override', 'precision': manual.get('precision', 'exact')}
-            cache[museum_name] = result
-            return result
-        if manual.get('query'):
-            found = wikidata_search(manual['query']) or nominatim_search(manual['query'])
-            if found:
-                logger.info(f"  ✓ (справочник: «{manual['query']}») {museum_name}")
-                cache[museum_name] = found
-                return found
+    def bump(key):
+        stats[key] = stats.get(key, 0) + 1
 
-    # 2. Кэш
+    manual = overrides.get(museum_name) or {}
+
+    # 1. Записи, для которых сеть не нужна никогда
+    if manual.get('skip'):
+        # «Частная коллекция» — адреса не существует. Раньше Nominatim
+        # находил по этому запросу магазин на Волхонке и ставил метку
+        # в центре Москвы. Такие записи остаются в списке под картой,
+        # но метки не получают.
+        logger.info(f"  – (без метки по справочнику) {museum_name}")
+        cache.pop(museum_name, None)
+        bump('skip')
+        return None
+
+    if 'lat' in manual and 'lon' in manual:
+        logger.info(f"  ✓ (справочник) {museum_name}")
+        result = {'lat': float(manual['lat']), 'lon': float(manual['lon']),
+                  'display_name': manual.get('display_name', museum_name),
+                  'source': 'override', 'precision': manual.get('precision', 'exact')}
+        cache[museum_name] = result
+        bump('override')
+        return result
+
+    # 2. Кэш. Запоминаем, каким запросом получен результат: если подсказку
+    #    в справочнике поменяли, координаты нужно искать заново — иначе
+    #    правка справочника молча ни на что не влияла бы.
+    wanted_query = (manual.get('query') or '').strip()
     if museum_name in cache:
         cached = cache[museum_name]
         if cached:
-            logger.info(f"  ✓ (из кэша) {museum_name}")
-            return cached
-        if not retry_failed:
+            if wanted_query and cached.get('query', '') != wanted_query:
+                logger.info(f"  ↻ подсказка изменилась, ищу заново: {museum_name}")
+            else:
+                logger.info(f"  ✓ (из кэша) {museum_name}")
+                bump('cache')
+                return cached
+        elif not retry_failed:
             logger.info(f"  – (из кэша, без координат) {museum_name}")
+            bump('cache_empty')
             return None
 
-    # 3. Автопоиск
+    if offline:
+        logger.info(f"  – (офлайн, пропуск) {museum_name}")
+        bump('offline')
+        return None
+
+    def remember(result, query):
+        result['query'] = query
+        cache[museum_name] = result
+        bump('lookup')
+        return result
+
+    # 3. Подсказка из справочника — но уже после кэша
+    if wanted_query:
+        found = wikidata_search(wanted_query) or nominatim_search(wanted_query)
+        if found:
+            logger.info(f"  ✓ (справочник: «{wanted_query}») {museum_name} → "
+                        f"{found['lat']:.4f}, {found['lon']:.4f}")
+            return remember(found, wanted_query)
+
+    # 4. Автопоиск по частям названия
     for query in build_queries(museum_name):
         for finder in (wikidata_search, nominatim_search):
             result = finder(query)
@@ -236,18 +269,17 @@ def geocode(museum_name, cache, overrides=None, retry_failed=False):
                 note = "" if query == museum_name else f" (по запросу «{query}»)"
                 logger.info(f"  ✓ {museum_name} → {result['lat']:.4f}, {result['lon']:.4f}"
                             f" [{result['source']}]{note}")
-                cache[museum_name] = result
-                return result
+                return remember(result, query)
 
-    # 4. Хотя бы город
+    # 5. Хотя бы город
     result = city_fallback(museum_name)
     if result:
         logger.info(f"  ≈ {museum_name} → приблизительно, по месту «{result['display_name']}»")
-        cache[museum_name] = result
-        return result
+        return remember(result, wanted_query or museum_name)
 
     logger.warning(f"  ✗ Не найдено: {museum_name}")
     cache[museum_name] = None
+    bump('not_found')
     return None
 
 
@@ -277,12 +309,14 @@ MAP_CONFIG_TEMPLATE = """// Ключи картографических серв
 // Пустая строка — слой просто не появится в переключателе,
 // остальные карты продолжат работать как были.
 //
-// ЯНДЕКС.КАРТЫ
-// 1. Зайдите в кабинет разработчика: https://developer.tech.yandex.ru
-// 2. Подключите тариф «JavaScript API и HTTP Геокодер» (есть бесплатный лимит)
-// 3. Скопируйте ключ и вставьте его между кавычками ниже
-// 4. ОБЯЗАТЕЛЬНО ограничьте ключ доменом denchest.github.io —
-//    на статическом сайте ключ виден всем в исходниках страницы
+// ЯНДЕКС.КАРТЫ — нужен ключ от продукта \"Tiles API\" (Подложка карты)
+// 1. Кабинет разработчика: https://yandex.ru/maps-api/ → Ключи → Подключить API
+// 2. Выберите ИМЕННО \"Tiles API — Подложка карты\".
+//    Не JavaScript API: у него другой формат и другие условия.
+//    Tiles API бесплатен, лимит 30 запросов в секунду.
+// 3. Скопируйте ключ и вставьте между кавычками ниже
+// 4. Ограничьте ключ доменом denchest.github.io — на статическом
+//    сайте ключ виден всем в исходниках страницы
 //
 // Этот файл сборка не перезаписывает: ключ переживёт пересборку сайта.
 window.MAP_KEYS = {
@@ -526,7 +560,9 @@ function initMap() {
   var startName = null;
   if (saved) {
     BASE_LAYERS.forEach(function (c) { if (c.id === saved) startName = c.name; });
-    userPickedLayer = !!startName;
+    // Яндекса среди BASE_LAYERS нет, он добавляется позже — но выбор
+    // всё равно считаем осознанным, чтобы тема его не перебила.
+    userPickedLayer = !!startName || saved === 'yandex';
   }
   if (!startName) startName = currentTheme() === 'dark' ? 'Тёмная' : 'Светлая';
   layers[startName].addTo(map);
@@ -594,33 +630,47 @@ function addMarkers() {
 }
 
 // ------------------------------------------------ Яндекс.Карты
-// Слой появляется только если в map-config.js вписан ключ. Всё загружается
-// отложенно и в try: без ключа или при ошибке остальные карты работают как были.
+// Tiles API отдаёт обычные XYZ-тайлы в проекции web_mercator, поэтому это
+// такой же слой Leaflet, как остальные: ни отдельного SDK, ни адаптера,
+// ни второго движка карты внутри страницы. Слой появляется только если
+// в map-config.js вписан ключ.
 function addYandexLayer() {
   var key = (window.MAP_KEYS && window.MAP_KEYS.yandex || '').trim();
-  if (!key) return;
-
-  loadScript('https://api-maps.yandex.ru/2.1/?apikey=' + encodeURIComponent(key) + '&lang=ru_RU', function () {
-    if (typeof ymaps === 'undefined') return;
-    ymaps.ready(function () {
-      loadScript('https://cdn.jsdelivr.net/npm/leaflet-plugins@3.4.0/layer/tile/Yandex.js', function () {
-        try {
-          if (!L.Yandex) return;
-          layerControl.addBaseLayer(new L.Yandex('map'), 'Яндекс');
-          layerControl.addBaseLayer(new L.Yandex('satellite'), 'Яндекс: спутник');
-        } catch (e) { console.warn('Слой Яндекса не добавлен:', e.message); }
-      });
+  if (!key || !layerControl) return;
+  try {
+    var url = 'https://tiles.api-maps.yandex.ru/v1/tiles/?apikey=' + encodeURIComponent(key) +
+              '&lang=ru_RU&l=map&projection=web_mercator&x={x}&y={y}&z={z}';
+    var yandex = L.tileLayer(url, {
+      attribution: '&copy; <a href="https://yandex.ru/maps/" target="_blank" rel="noopener">Яндекс Карты</a>',
+      maxZoom: 20
     });
-  });
-}
+    yandex._opaId = 'yandex';
+    layers['Яндекс'] = yandex;
+    layerControl.addBaseLayer(yandex, 'Яндекс');
 
-function loadScript(src, done) {
-  var el = document.createElement('script');
-  el.src = src;
-  el.async = true;
-  el.onload = done;
-  el.onerror = function () { console.warn('Не загрузился скрипт карты:', src); };
-  document.head.appendChild(el);
+    // Слой добавляется после инициализации карты, поэтому сохранённый
+    // выбор «Яндекс» включаем здесь.
+    var saved = null;
+    try { saved = localStorage.getItem('mapLayer'); } catch (err) {}
+    if (saved === 'yandex') {
+      Object.keys(layers).forEach(function (n) {
+        if (n !== 'Яндекс' && map.hasLayer(layers[n])) map.removeLayer(layers[n]);
+      });
+      map.addLayer(yandex);
+    }
+
+    // Ключ мог быть не от того продукта или домен не разрешён — тогда тайлы
+    // не приходят. Пишем в консоль один раз, страница при этом не ломается.
+    var warned = false;
+    yandex.on('tileerror', function () {
+      if (warned) return;
+      warned = true;
+      console.warn('Яндекс.Карты: тайлы не загружаются. Проверьте, что ключ от Tiles API ' +
+                   'и что домен разрешён в кабинете разработчика.');
+    });
+  } catch (e) {
+    console.warn('Слой Яндекса не добавлен:', e.message);
+  }
 }
 
 // ------------------------------------------------ связь списка и карты
@@ -756,7 +806,7 @@ document.addEventListener('DOMContentLoaded', function () {
 """
 
 
-def generate_museums_page(retry_failed=False):
+def generate_museums_page(retry_failed=False, offline=False):
     if not os.path.exists(META_FILE):
         logger.error(f"Файл {META_FILE} не найден!")
         return
@@ -785,13 +835,18 @@ def generate_museums_page(retry_failed=False):
             overrides = {k: v for k, v in json.load(f).items() if not k.startswith("_")}
         logger.info(f"Ручной справочник: {len(overrides)} записей")
 
-    logger.info("🔍 Поиск координат музеев...")
+    logger.info("🔍 Координаты музеев...")
     if retry_failed:
-        logger.info("   (режим --regeocode: заново ищем музеи без координат)")
+        logger.info("   (--regeocode: заново ищем музеи без координат)")
+    if offline:
+        logger.info("   (--no-geocode: в сеть не ходим, берём только готовое)")
+    geo_stats = {}
+    t0 = time.time()
     locations = {}
     not_found = []
     for museum in sorted(museums_dict.keys()):
-        result = geocode(museum, cache, overrides=overrides, retry_failed=retry_failed)
+        result = geocode(museum, cache, overrides=overrides,
+                         retry_failed=retry_failed, offline=offline, stats=geo_stats)
         if result:
             city, country = extract_city_country(result.get('display_name', museum))
             locations[museum] = {
@@ -806,6 +861,13 @@ def generate_museums_page(retry_failed=False):
 
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
         json.dump(cache, f, ensure_ascii=False, indent=2)
+
+    lookups = geo_stats.get('lookup', 0)
+    from_cache = geo_stats.get('cache', 0) + geo_stats.get('cache_empty', 0) + geo_stats.get('override', 0)
+    logger.info(f"   Готово за {time.time() - t0:.1f} с: из кэша и справочника {from_cache}, "
+                f"запросов в сеть {lookups}")
+    if lookups == 0:
+        logger.info("   В сеть не ходили — всё было готово")
     
     # ---------------------------------------------------------- карточки
     cards = []
@@ -986,7 +1048,10 @@ const MUSEUMS = {json.dumps(map_data, ensure_ascii=False)};
 
 if __name__ == "__main__":
     import sys
-    # python generate_map.py --regeocode — повторно искать музеи,
-    # которые в прошлый раз не нашлись (кэш их запомнил как «нет координат»)
-    generate_museums_page(retry_failed="--regeocode" in sys.argv)
+    # --regeocode   заново искать музеи, которые в прошлый раз не нашлись
+    # --no-geocode  вообще не ходить в сеть, взять только готовые координаты
+    generate_museums_page(
+        retry_failed="--regeocode" in sys.argv,
+        offline="--no-geocode" in sys.argv,
+    )
     print("\nГотово! Откройте docs/museums.html в браузере.")

@@ -56,8 +56,11 @@ def main():
         if flag and flag in sys.argv:
             print(f"– {script} пропущен")
             continue
+        # Флаги карты пробрасываем дальше: --no-geocode собирает карту
+        # только по готовым координатам и в сеть не ходит вообще.
+        args = [a for a in ("--no-geocode", "--regeocode") if a in sys.argv] if script == "generate_map.py" else []
         try:
-            subprocess.run([sys.executable, script], check=True)
+            subprocess.run([sys.executable, script] + args, check=True)
             print(f"✓ {script}")
         except Exception as e:
             print(f"✕ {script}: {e}")

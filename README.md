@@ -32,6 +32,9 @@ python rebuild_pages.py --no-map
 
 # заново поискать музеи, которые раньше не нашлись
 python generate_map.py --regeocode
+
+# собрать карту только по готовым координатам, в сеть не ходить
+python rebuild_pages.py --no-geocode
 ```
 
 ## Карта музеев
@@ -39,6 +42,11 @@ python generate_map.py --regeocode
 Координаты ищутся по цепочке: `museum_overrides.json` → Wikidata → OpenStreetMap →
 город или страна из названия. Wikidata стоит первой, потому что знает русские
 названия зарубежных музеев, а OpenStreetMap — нет.
+
+Найденные координаты складываются в `museum_coordinates.json` и при следующих
+запусках берутся оттуда — в сеть скрипт не ходит вообще. Перепоиск случается
+только в трёх случаях: появился новый музей, вы поменяли подсказку в
+`museum_overrides.json`, или запуск был с `--regeocode`.
 
 Если музей не нашёлся, `generate_map.py` в конце лога печатает готовые строки
 для вставки в `museum_overrides.json`. Три формы записи:
