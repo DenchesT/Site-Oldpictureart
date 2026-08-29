@@ -10,7 +10,8 @@ import random
 from datetime import datetime, timezone
 from email.utils import format_datetime
 from urllib.parse import quote
-from collections import defaultdict
+import functools
+from collections import defaultdict, Counter
 from html import escape as h
 from pathlib import Path
 
@@ -49,7 +50,8 @@ try:
 except ImportError:
     PIL_AVAILABLE = False
 
-from site_common import head_common, scroll_top_button, theme_button, COMMON_JS, SCROLL_TOP_JS, BASE_URL
+from site_common import (head_common, scroll_top_button, theme_button,
+                         COMMON_JS, SCROLL_TOP_JS, LUPA_JS, BASE_URL)
 
 def load_dotenv(path=".env"):
     if not os.path.exists(path): return
@@ -392,6 +394,22 @@ async def download_images(client, group, comments, slug):
 
 # ===================== HTML-ФУНКЦИИ =====================
 
+def tidy(fn):
+    """Убирает пробелы в конце строк готовой страницы.
+
+    В шаблонах есть необязательные куски — описание, происхождение,
+    «рядом в собрании». Когда такой кусок пуст, от строки остаётся один
+    отступ: валидатор считает это ошибкой, а в исходнике страницы это
+    выглядит как мусор. Декоратор снимает вопрос на всех страницах сразу.
+    """
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        html = fn(*args, **kwargs)
+        return "\n".join(line.rstrip() for line in html.split("\n"))
+    return wrapper
+
+
+@tidy
 def render_post_page(post, all_posts=None):
     artist, title, museum = h(post["artist"]), h(post["title"]), h(post["museum"])
     desc = post.get("description") or ""
@@ -406,9 +424,16 @@ def render_post_page(post, all_posts=None):
         # Первая картина — главный элемент страницы (LCP): грузим её сразу,
         # остальные ленимся. Раньше lazy стоял на всех, включая первую.
         loading = 'fetchpriority="high" decoding="async"' if i == 0 else 'loading="lazy" decoding="async"'
+        # Ссылка на оригинал остаётся настоящей: без JS она откроет файл, как
+        # раньше, а со скриптом клик перехватывает лупа. data-* нужны ей для
+        # подписи — лезть за ними в разметку страницы не приходится.
+        meta_bits = [x for x in (str(post.get("creation_year") or ""), post.get("museum") or "") if x]
         parts.append(
-            f'<a href="{h(lh)}" target="_blank" rel="noopener" title="Открыть оригинал в новой вкладке">'
-            f'<img src="{h(src)}" alt="{artist} — {title}" class="painting" {loading}></a>'
+            f'<a href="{h(lh)}" class="painting-link" target="_blank" rel="noopener" '
+            f'title="Рассмотреть" data-title="{artist} — {title}" data-meta="{h(", ".join(meta_bits))}">'
+            f'<img src="{h(src)}" alt="{artist} — {title}" class="painting" {loading}>'
+            f'<span class="painting-hint" aria-hidden="true">'
+            f'<span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a>'
         )
     img_html = "\n".join(parts)
 
@@ -479,6 +504,12 @@ def render_post_page(post, all_posts=None):
             next_link = f'<a href="{h(next_post["filename"])}" class="next-post" title="{h(next_post["artist"])} — {h(next_post["title"])}">Следующая <span class="icon-next"></span></a>'
     post_nav = f'<nav class="post-nav">{prev_link}{next_link}</nav>' if (prev_link or next_link) else ""
 
+    # «Рядом в собрании»: после описания человек упирался в тупик, хотя
+    # у того же художника и в том же музее есть что показать.
+    similar_block = similar_html(post, all_posts) if all_posts else ""
+    artist_link = (f'<a href="{h(artist_slug(post["artist"]))}">{artist}</a>'
+                   if post.get("artist") else artist)
+
     page_desc = (desc[:200] if desc else f"{post.get('artist','')} — {post.get('title','')}. {post.get('museum','')}").strip()
     head = head_common(
         title=f"{artist} — {title}",
@@ -506,7 +537,7 @@ def render_post_page(post, all_posts=None):
 <article id="main" class="post-layout">
   <div class="post-main">
     <header class="post-head">
-      <h1>{artist}</h1>
+      <h1>{artist_link}</h1>
       <h2>{title}</h2>
     </header>
     {img_html}
@@ -524,9 +555,11 @@ def render_post_page(post, all_posts=None):
     </div>
   </aside>
 </article>
+{similar_block}
 {post_nav}
 {SCROLL_TOP_JS}
 {COMMON_JS}
+{LUPA_JS}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js" defer></script>
 <script>
 // ---------- Палитра цветов ----------
@@ -873,38 +906,50 @@ def surname_key(n):
     w = f.split()
     return w[-1].lower() if w else n.lower()
 
+def card_html(p, cat_no=None, cat_width=3, show_artist=True):
+    """Карточка работы в описи. Одна на все списки — главную, теги,
+    страницы художников: раньше разметка была скопирована и разъезжалась.
+
+    show_artist=False — для страницы художника: там его имя стоит в
+    заголовке и повторять его в каждой строке незачем, поэтому главной
+    строкой карточки становится название работы."""
+    cat_no = cat_no or {}
+    cv = ""
+    if p.get("thumbs"): cv = p["thumbs"][0]
+    elif p.get("images"): cv = p["images"][0]
+    cv = h(cv)
+    museum_name = h(p.get('museum', ''))
+    artist_name = h(p["artist"])
+    title_name = h(p["title"])
+    # Экранированные кавычки внутри f-строки требуют Python 3.12+,
+    # на 3.11 это была синтаксическая ошибка. Собираем строку заранее.
+    museum_html = (f'<div class="card-museum"><a href="museums.html#museum-{h(slugify(p.get("museum","")))}"'
+                   f' title="Показать музей на карте">{museum_name}</a></div>') if museum_name else ''
+    no = cat_no.get(p.get("filename"))
+    no_html = f'<span class="card-no">{no:0{cat_width}d}</span>' if no else '<span class="card-no"></span>'
+    facts = [("Год", str(p.get("creation_year")) if p.get("creation_year") else ""),
+             ("Материал", lower_first(p.get("material", ""))),
+             ("Техника", ", ".join(p.get("techniques", []))),
+             ("Размер", p.get("size", ""))]
+    facts_html = "".join(f'<div><span>{h(k)}</span><b>{h(v)}</b></div>' for k, v in facts if v)
+    head_line = artist_name if show_artist else title_name
+    sub_line = f'<div class="card-title">{title_name}</div>' if show_artist else ''
+    return (
+        f'<article class="card">{no_html}'
+        f'<div class="card-img"><img src="{cv}" alt="{artist_name} — {title_name}" loading="lazy" decoding="async"></div>'
+        f'<div class="card-body">'
+        f'<div class="card-artist"><a class="card-link" href="{h(p["filename"])}">{head_line}</a></div>'
+        f'{sub_line}{museum_html}</div>'
+        f'<div class="card-facts">{facts_html}</div></article>'
+    )
+
+
+@tidy
 def render_tag_page(tag, posts, cat_no=None, cat_width=3):
     """cat_no — сквозные каталожные номера всего собрания: на странице тега
     номер должен остаться тем же, что и на главной, иначе он ничего не значит."""
-    cat_no = cat_no or {}
-    cards = []
-    for p in sorted(posts, key=lambda x: x["date"], reverse=True):
-        cv = ""
-        if p.get("thumbs"): cv = p["thumbs"][0]
-        elif p.get("images"): cv = p["images"][0]
-        cv = h(cv)
-        museum_name = h(p.get('museum', ''))
-        artist_name = h(p["artist"])
-        title_name = h(p["title"])
-        # Экранированные кавычки внутри f-строки требуют Python 3.12+,
-        # на 3.11 это была синтаксическая ошибка. Собираем строку заранее.
-        museum_html = (f'<div class="card-museum"><a href="museums.html#museum-{h(slugify(p.get("museum","")))}"'
-                       f' title="Показать музей на карте">{museum_name}</a></div>') if museum_name else ''
-        no = cat_no.get(p.get("filename"))
-        no_html = f'<span class="card-no">{no:0{cat_width}d}</span>' if no else '<span class="card-no"></span>'
-        facts = [("Год", str(p.get("creation_year")) if p.get("creation_year") else ""),
-                 ("Материал", lower_first(p.get("material", ""))),
-                 ("Техника", ", ".join(p.get("techniques", []))),
-                 ("Размер", p.get("size", ""))]
-        facts_html = "".join(f'<div><span>{h(k)}</span><b>{h(v)}</b></div>' for k, v in facts if v)
-        cards.append(
-            f'<article class="card">{no_html}'
-            f'<div class="card-img"><img src="{cv}" alt="{artist_name} — {title_name}" loading="lazy" decoding="async"></div>'
-            f'<div class="card-body">'
-            f'<div class="card-artist"><a class="card-link" href="{h(p["filename"])}">{artist_name}</a></div>'
-            f'<div class="card-title">{title_name}</div>{museum_html}</div>'
-            f'<div class="card-facts">{facts_html}</div></article>'
-        )
+    cards = [card_html(p, cat_no, cat_width)
+             for p in sorted(posts, key=lambda x: x["date"], reverse=True)]
     head = head_common(
         title=f"#{h(tag)} — Old Picture Art",
         description=f"Картины по тегу #{tag} — подборка из {len(posts)} работ в галерее Old Picture Art.",
@@ -924,6 +969,7 @@ def render_tag_page(tag, posts, cat_no=None, cat_width=3):
 {COMMON_JS}
 </body></html>"""
 
+@tidy
 def render_index(all_posts):
     MONTHS = {"01":"Январь","02":"Февраль","03":"Март","04":"Апрель","05":"Май","06":"Июнь","07":"Июль","08":"Август","09":"Сентябрь","10":"Октябрь","11":"Ноябрь","12":"Декабрь"}
     ps = sorted(all_posts, key=lambda x: x["date"], reverse=True)
@@ -1101,6 +1147,10 @@ def render_index(all_posts):
                           'href="timeline.html">Таймлайн</a></div>')
     map_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-map no-arrow" '
                      'href="museums.html">Карта музеев</a></div>')
+    index_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-artists no-arrow" '
+                       'href="ukazatel.html">Указатель</a></div>')
+    stats_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-decades no-arrow" '
+                       'href="stats.html">Статистика</a></div>')
     
     head = head_common(
         title="Old Picture Art — Галерея",
@@ -1139,6 +1189,8 @@ def render_index(all_posts):
 {fav_html}
 {theme_html}
 {map_link_html}
+{index_link_html}
+{stats_link_html}
 {quiz_link_html}
 {timeline_link_html}
 </aside><main class="main-content">
@@ -1539,6 +1591,397 @@ async def fetch_new_posts(client, processed_ids):
         logger.info(f"rejected_posts.txt ({len(sf)} шт.)")
     return accepted[::-1]
 
+def catalogue_numbers(all_posts):
+    """Сквозные номера собрания: по году создания, потом по дате записи.
+
+    Номер обязан быть одним и тем же на главной, на теге и на странице
+    художника — иначе он перестаёт что-либо обозначать.
+    """
+    chrono = sorted(all_posts, key=lambda x: (x.get("creation_year") or 9999, x.get("date", "")))
+    return ({x["filename"]: i for i, x in enumerate(chrono, 1)},
+            max(3, len(str(len(all_posts)))))
+
+
+def artist_slug(name):
+    return "artist-" + slugify(name) + ".html"
+
+
+def year_span(posts):
+    """«1871—1896» или «1896», если год один. Работы без года пропускаем."""
+    years = sorted(p["creation_year"] for p in posts if p.get("creation_year"))
+    if not years:
+        return ""
+    return str(years[0]) if years[0] == years[-1] else f"{years[0]}—{years[-1]}"
+
+
+def similar_works(post, all_posts, limit=6):
+    """Похожие работы: сначала тот же художник, затем то же собрание,
+    затем то же десятилетие. Считается при сборке, на странице ничего
+    не ищется — поэтому блок ничего не стоит посетителю.
+    """
+    me = post.get("filename")
+    picked, seen = [], {me}
+
+    def take(candidates, why):
+        for p in candidates:
+            if len(picked) >= limit:
+                return
+            fn = p.get("filename")
+            if not fn or fn in seen:
+                continue
+            seen.add(fn)
+            picked.append((p, why))
+
+    by_date = sorted(all_posts, key=lambda x: x.get("date", ""), reverse=True)
+
+    artist = (post.get("artist") or "").strip()
+    if artist:
+        take([p for p in by_date if (p.get("artist") or "").strip() == artist], "того же художника")
+
+    museum = (post.get("museum") or "").strip()
+    if museum and not museum.lower().startswith("частная"):
+        take([p for p in by_date if (p.get("museum") or "").strip() == museum], "из того же собрания")
+
+    year = post.get("creation_year")
+    if year:
+        lo = (int(year) // 10) * 10
+        take([p for p in by_date
+              if p.get("creation_year") and lo <= int(p["creation_year"]) < lo + 10],
+             f"{lo}-х годов")
+
+    return picked
+
+
+def similar_html(post, all_posts):
+    """Блок «Рядом в собрании» в конце страницы картины."""
+    items = similar_works(post, all_posts)
+    if not items:
+        return ""
+    cards = []
+    for p, why in items:
+        cv = ""
+        if p.get("thumbs"):
+            cv = p["thumbs"][0]
+        elif p.get("images"):
+            cv = p["images"][0]
+        # Когда работа попала в подборку «за десятилетие», год уже назван
+        # в самой причине — второй раз его писать незачем.
+        year = "" if why.endswith("-х годов") else str(p.get("creation_year") or "")
+        cards.append(
+            f'<a class="near-card" href="{h(p["filename"])}">'
+            f'<span class="near-img"><img src="{h(cv)}" alt="{h(p["artist"])} — {h(p["title"])}" '
+            f'loading="lazy" decoding="async"></span>'
+            f'<span class="near-body">'
+            f'<span class="near-artist">{h(p["artist"])}</span>'
+            f'<span class="near-title">{h(p["title"])}</span>'
+            f'<span class="near-why">{h(why)}{" · " + year if year else ""}</span>'
+            f'</span></a>'
+        )
+    return ('<section class="near"><h3>Рядом в собрании</h3>'
+            '<div class="near-grid">' + "".join(cards) + '</div></section>')
+
+
+@tidy
+def render_artist_page(artist, posts, all_posts, cat_no, cat_width):
+    """Страница художника: все его работы, годы, собрания.
+
+    Раньше художник был только значением фильтра на главной — такую
+    подборку нельзя было послать ссылкой и её не видел поиск.
+    """
+    works = sorted(posts, key=lambda x: (x.get("creation_year") or 9999, x.get("date", "")))
+    cards = [card_html(p, cat_no, cat_width, show_artist=False) for p in works]
+
+    museums = sorted({p["museum"].strip() for p in works if p.get("museum")})
+    techs = sorted({t for p in works for t in p.get("techniques", []) if t})
+    mats = sorted({p["material"] for p in works if p.get("material")})
+    span = year_span(works)
+
+    facts = []
+    if span:
+        facts.append(("Годы", span))
+    facts.append(("Работ", str(len(works))))
+    if mats:
+        facts.append(("Основы", ", ".join(lower_first(m) for m in mats)))
+    if techs:
+        facts.append(("Техники", ", ".join(techs)))
+    facts_html = "".join(f'<div><span>{h(k)}</span><b>{h(v)}</b></div>' for k, v in facts)
+
+    museum_html = ""
+    if museums:
+        items = "".join(
+            f'<li><a href="museums.html#museum-{h(slugify(m))}">{h(m)}</a></li>' for m in museums)
+        museum_html = (f'<div class="aside-block"><h3>Собрания</h3>'
+                       f'<ul class="plain-list">{items}</ul></div>')
+
+    # Соседи по алфавиту — по фамилии, как в описи
+    names = sorted({p["artist"].strip() for p in all_posts if p.get("artist")}, key=surname_key)
+    pos = names.index(artist) if artist in names else -1
+    nav = []
+    if pos > 0:
+        nav.append(f'<a class="prev-post" href="{h(artist_slug(names[pos-1]))}">'
+                   f'<span class="icon-prev" aria-hidden="true"></span> {h(names[pos-1])}</a>')
+    if 0 <= pos < len(names) - 1:
+        nav.append(f'<a class="next-post" href="{h(artist_slug(names[pos+1]))}">'
+                   f'{h(names[pos+1])} <span class="icon-next" aria-hidden="true"></span></a>')
+    nav_html = f'<nav class="post-nav">{"".join(nav)}</nav>' if nav else ""
+
+    page_title = f"{artist} — Old Picture Art"
+    if len(page_title) > 70:
+        page_title = artist
+    if len(page_title) > 70:
+        page_title = page_title[:67].rsplit(" ", 1)[0] + "…"
+
+    word = plural_ru(len(works), "работа", "работы", "работ")
+    desc = f"{artist}: {len(works)} {word} в собрании Old Picture Art" + (f", {span}." if span else ".")
+    head = head_common(
+        # длинные имена не влезают в выдачу поисковика: сначала убираем
+        # название сайта, а совсем длинные (у одной записи в авторах
+        # перечислено одиннадцать человек) подрезаем по слову.
+        title=h(page_title),
+        description=desc,
+        canonical=f"{BASE_URL}/{artist_slug(artist)}",
+        og_image=f"{BASE_URL}/{works[0]['images'][0]}" if works and works[0].get("images") else "",
+    )
+    return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
+{head}
+</head><body class="tag-page artist-page">
+<div class="tag-topbar">
+  <a href="index.html" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
+  <a href="ukazatel.html" class="back">Указатель</a>
+  {theme_button('theme-toggle-inline')}
+</div>
+{scroll_top_button()}
+<header class="artist-head">
+  <p class="eyebrow">Художник</p>
+  <h1>{h(artist)}</h1>
+  <div class="spec-table artist-facts">{facts_html}</div>
+</header>
+<div class="artist-layout">
+  <div class="grid list">{''.join(cards)}</div>
+  <aside class="post-aside">{museum_html}</aside>
+</div>
+{nav_html}
+{SCROLL_TOP_JS}
+{COMMON_JS}
+</body></html>"""
+
+
+@tidy
+def render_ukazatel(all_posts):
+    """Указатель: художники, собрания, техники и материалы по алфавиту.
+
+    Всё это было спрятано в раскрывающихся разделах сайдбара — с телефона
+    туда не добраться одним взглядом, а для каталога это обязательная часть.
+    """
+    artists = defaultdict(list)
+    museums = defaultdict(list)
+    techs = defaultdict(list)
+    mats = defaultdict(list)
+    for p in all_posts:
+        if p.get("artist"):
+            artists[p["artist"].strip()].append(p)
+        if p.get("museum"):
+            museums[p["museum"].strip()].append(p)
+        for t in p.get("techniques", []):
+            if t and len(t) > 2:
+                techs[t.strip().lower()].append(p)
+        if p.get("material"):
+            mats[p["material"].strip().lower()].append(p)
+
+    def letter(name):
+        ch = (name or "?")[:1].upper()
+        return ch if ch.isalpha() else "#"
+
+    def column(title, data, href, key=None, anchor=""):
+        """Список с группировкой по первой букве и числом работ."""
+        items = sorted(data.items(), key=lambda kv: (key(kv[0]) if key else kv[0].lower()))
+        out, cur = [], None
+        for name, posts in items:
+            first = letter(key(name).upper() if key else name)
+            if first != cur:
+                cur = first
+                out.append(f'<li class="idx-letter" aria-hidden="true">{h(cur)}</li>')
+            link = href(name)
+            n = len(posts)
+            out.append(f'<li><a href="{h(link)}">{h(name)}</a><span class="idx-n">{n}</span></li>')
+        return (f'<section class="idx-col" id="{anchor}"><h2>{h(title)} '
+                f'<span class="idx-total">{len(items)}</span></h2>'
+                f'<ul class="idx-list">{"".join(out)}</ul></section>')
+
+    body = "".join([
+        column("Художники", artists, artist_slug, key=surname_key, anchor="hudozhniki"),
+        column("Собрания", museums, lambda m: f"museums.html#museum-{slugify(m)}", anchor="sobraniya"),
+        column("Техники", techs, lambda t: f"index.html#tech-{slugify(t)}", anchor="tehniki"),
+        column("Основы", mats, lambda m: f"index.html#mat-{slugify(m)}", anchor="osnovy"),
+    ])
+
+    head = head_common(
+        title="Указатель — Old Picture Art",
+        description=(f"Художники, собрания и техники коллекции Old Picture Art "
+                     f"по алфавиту: {len(artists)} художников, {len(museums)} собраний."),
+        canonical=f"{BASE_URL}/ukazatel.html",
+    )
+    return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
+{head}
+</head><body class="tag-page index-page">
+<div class="tag-topbar">
+  <a href="index.html" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
+  <a href="stats.html" class="back">Статистика</a>
+  {theme_button('theme-toggle-inline')}
+</div>
+{scroll_top_button()}
+<header class="artist-head">
+  <p class="eyebrow">Собрание</p>
+  <h1>Указатель</h1>
+  <p class="idx-lede">Всё, что есть в каталоге, по алфавиту и с числом работ.</p>
+</header>
+<div class="idx-grid">{body}</div>
+{SCROLL_TOP_JS}
+{COMMON_JS}
+</body></html>"""
+
+
+def _bar_rows(pairs, total, href=None, unit=("работа", "работы", "работ")):
+    """Строки «название — полоса — число».
+
+    Число всегда написано словами рядом с полосой, поэтому таблица читается
+    и без цвета, и в распечатке, и скринридером — полоса лишь помогает
+    сравнить на глаз.
+    """
+    top = max((n for _, n in pairs), default=1) or 1
+    out = []
+    for name, n in pairs:
+        w = round(n / top * 100, 1)
+        label = h(name)
+        if href:
+            link = href(name)
+            label = f'<a href="{h(link)}">{label}</a>'
+        share = f"{n} {plural_ru(n, *unit)}" + (f", {round(n / total * 100)}%" if total else "")
+        out.append(
+            f'<li class="stat-row">'
+            f'<span class="stat-name">{label}</span>'
+            f'<span class="stat-track"><span class="stat-fill" style="--w:{w}%"></span></span>'
+            f'<span class="stat-n" title="{h(share)}">{n}</span>'
+            f'</li>'
+        )
+    return "".join(out)
+
+
+def _bar_block(title, pairs, total, note="", href=None, anchor=""):
+    if not pairs:
+        return ""
+    return (f'<section class="stat-block" id="{anchor}">'
+            f'<h2>{h(title)}</h2>'
+            f'<ol class="stat-list">{_bar_rows(pairs, total, href)}</ol>'
+            + (f'<p class="stat-note">{h(note)}</p>' if note else "")
+            + '</section>')
+
+
+@tidy
+def render_stats(all_posts):
+    """Статистика собрания: чем оно на самом деле является.
+
+    Одна мера — число работ — по разным разрезам, поэтому везде один цвет
+    и никаких легенд: цвет ничего не кодирует, он просто рисует длину.
+    """
+    ps = list(all_posts)
+    total = len(ps)
+
+    artists = Counter(p["artist"].strip() for p in ps if p.get("artist"))
+    museums = Counter(p["museum"].strip() for p in ps if p.get("museum"))
+    cities = Counter(p["museum"].rsplit(",", 1)[-1].split("(")[0].strip()
+                     for p in ps if p.get("museum") and "," in p["museum"])
+    techs = Counter(t.strip().lower() for p in ps for t in p.get("techniques", []) if t and len(t) > 2)
+    mats = Counter(p["material"].strip().lower() for p in ps if p.get("material"))
+
+    years = sorted(int(p["creation_year"]) for p in ps if p.get("creation_year"))
+    decades = Counter((y // 10) * 10 for y in years)
+
+    # ---- столбцы по десятилетиям ----
+    bars = ""
+    if decades:
+        lo, hi = min(decades), max(decades)
+        peak = max(decades.values())
+        cols = []
+        for d in range(lo, hi + 10, 10):
+            n = decades.get(d, 0)
+            hpct = round(n / peak * 100, 1)
+            # подписываем каждые полвека и обязательно края
+            show = (d % 50 == 0) or d == lo or d == hi
+            cols.append(
+                f'<div class="dec-col" title="{d}-е: {n} {h(plural_ru(n, "работа", "работы", "работ"))}">'
+                f'<span class="dec-bar" style="--hgt:{hpct}%"></span>'
+                f'<span class="dec-cap{"" if show else " dec-cap-hidden"}">{d}</span>'
+                f'</div>'
+            )
+        no_year = total - len(years)
+        note = f"Самая ранняя работа — {years[0]} год, самая поздняя — {years[-1]}."
+        if no_year:
+            note += f" У {no_year} {plural_ru(no_year, 'работы', 'работ', 'работ')} год не указан."
+        bars = (f'<section class="stat-block" id="desyatiletiya"><h2>По десятилетиям</h2>'
+                f'<div class="dec-chart" role="img" aria-label="Распределение работ по десятилетиям, '
+                f'от {lo}-х до {hi}-х годов">{"".join(cols)}</div>'
+                f'<p class="stat-note">{h(note)}</p></section>')
+
+    def many(counter, least=2):
+        return [(k, v) for k, v in counter.most_common() if v >= least]
+
+    def tail(counter, least=2, word=("художник", "художника", "художников")):
+        rest = sum(1 for v in counter.values() if v < least)
+        if not rest:
+            return ""
+        return f"И ещё {rest} {plural_ru(rest, *word)} — по одной работе."
+
+    span = f"{years[0]}—{years[-1]}" if years else "—"
+    tiles = [
+        (str(total), plural_ru(total, "работа", "работы", "работ")),
+        (str(len(artists)), plural_ru(len(artists), "художник", "художника", "художников")),
+        (str(len(museums)), plural_ru(len(museums), "собрание", "собрания", "собраний")),
+        (str(len(cities)), plural_ru(len(cities), "город", "города", "городов")),
+        (span, "годы создания"),
+    ]
+    tiles_html = "".join(f'<div class="stat-tile"><b>{h(v)}</b><span>{h(k)}</span></div>' for v, k in tiles)
+
+    blocks = [
+        bars,
+        _bar_block("Художники", many(artists), total,
+                   tail(artists, 2, ("художник", "художника", "художников")),
+                   href=artist_slug, anchor="hudozhniki"),
+        _bar_block("Собрания", many(museums), total,
+                   tail(museums, 2, ("собрание", "собрания", "собраний")),
+                   href=lambda m: f"museums.html#museum-{slugify(m)}", anchor="sobraniya"),
+        _bar_block("Города", many(cities), total,
+                   tail(cities, 2, ("город", "города", "городов")), anchor="goroda"),
+        _bar_block("Техники", techs.most_common(), total, anchor="tehniki"),
+        _bar_block("Основы", mats.most_common(), total, anchor="osnovy"),
+    ]
+
+    head = head_common(
+        title="Статистика собрания — Old Picture Art",
+        description=(f"Чем собрано Old Picture Art: {total} работ, {len(artists)} художников, "
+                     f"{len(museums)} собраний, {span}."),
+        canonical=f"{BASE_URL}/stats.html",
+    )
+    return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
+{head}
+</head><body class="tag-page stats-page">
+<div class="tag-topbar">
+  <a href="index.html" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
+  <a href="ukazatel.html" class="back">Указатель</a>
+  {theme_button('theme-toggle-inline')}
+</div>
+{scroll_top_button()}
+<header class="artist-head">
+  <p class="eyebrow">Собрание</p>
+  <h1>Статистика</h1>
+  <div class="stat-tiles">{tiles_html}</div>
+</header>
+{''.join(b for b in blocks if b)}
+{SCROLL_TOP_JS}
+{COMMON_JS}
+</body></html>"""
+
+
 def generate_tag_pages(all_posts):
     logger.info("Генерация страниц тегов...")
     tp = defaultdict(list)
@@ -1555,6 +1998,28 @@ def generate_tag_pages(all_posts):
     logger.info(f"Сгенерировано {c} страниц тегов")
     return tp
 
+
+def generate_extra_pages(all_posts):
+    """Страницы художников, указатель и статистика."""
+    cat_no, cat_width = catalogue_numbers(all_posts)
+
+    by_artist = defaultdict(list)
+    for p in all_posts:
+        if p.get("artist"):
+            by_artist[p["artist"].strip()].append(p)
+    for artist, posts in by_artist.items():
+        with open(os.path.join(OUTPUT_DIR, artist_slug(artist)), "w", encoding="utf-8") as f:
+            f.write(render_artist_page(artist, posts, all_posts, cat_no, cat_width))
+    logger.info(f"Сгенерировано {len(by_artist)} страниц художников")
+
+    with open(os.path.join(OUTPUT_DIR, "ukazatel.html"), "w", encoding="utf-8") as f:
+        f.write(render_ukazatel(all_posts))
+    with open(os.path.join(OUTPUT_DIR, "stats.html"), "w", encoding="utf-8") as f:
+        f.write(render_stats(all_posts))
+    logger.info("Указатель и статистика готовы")
+    return by_artist
+
+@tidy
 def render_404():
     """Раньше 404 была пустой страницей с meta refresh: без заголовка,
     без объяснения, и на вложенных адресах редирект вёл в никуда."""
@@ -1589,6 +2054,12 @@ def generate_sitemap(all_posts):
     urls.append(f"  <url><loc>{bu}/museums.html</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>")
     urls.append(f"  <url><loc>{bu}/quiz.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>")
     urls.append(f"  <url><loc>{bu}/timeline.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>")
+    urls.append(f"  <url><loc>{bu}/ukazatel.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>")
+    urls.append(f"  <url><loc>{bu}/stats.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>")
+    # Страницы художников — то, что ищут чаще всего («Левитан картины»),
+    # поэтому приоритет у них выше, чем у тегов.
+    for a in sorted({p["artist"].strip() for p in all_posts if p.get("artist")}):
+        urls.append(f"  <url><loc>{bu}/{u(artist_slug(a))}</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>")
     at = set()
     for p in all_posts:
         for t in p.get("tags",[]): at.add(t)
@@ -1760,6 +2231,7 @@ async def main():
     save_json(META_FILE, all_posts)
     save_json(PROCESSED_FILE, sorted(processed_ids))
     generate_tag_pages(all_posts)
+    generate_extra_pages(all_posts)
     generate_sitemap(all_posts)
     generate_manifest()
     generate_rss(all_posts)

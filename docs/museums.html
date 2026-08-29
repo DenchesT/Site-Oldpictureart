@@ -23,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=a2773f84">
+<link rel="stylesheet" href="style.css?v=c61dbcf4">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha256-YU3qCpj/P06tdPBJGPax0bm6Q1wltfwjsho5TR4+TYc=" crossorigin>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
@@ -1106,9 +1106,31 @@ function initMap() {
   new MutationObserver(updateMapTheme)
     .observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
 
-  addMarkers();
+  // Яндекс добавляем ДО меток. Он подключается позже остальных слоёв, и если
+  // сохранён именно он, до этой строки на карте нет ни одной подложки. Любая
+  // ошибка в метках тогда обрывала initMap — и вместо карты оставалось серое
+  // поле. Теперь подложка появляется первой.
   addYandexLayer();
+
+  // Подложка обязана быть хоть какая-то: пустая карта выглядит как поломка,
+  // а Leaflet.markercluster вдобавок падает с «Map has no maxZoom specified»,
+  // если ни один слой не задал максимальное приближение.
+  if (!hasBaseLayer()) layers['Схема'].addTo(map);
+
+  // Метки — в последнюю очередь и под присмотром: карта со списком музеев
+  // полезнее, чем пустой экран из-за одной сломавшейся библиотеки.
+  try {
+    addMarkers();
+  } catch (e) {
+    console.error('Метки на карту не встали:', e);
+  }
   updateMapTheme();
+}
+
+function hasBaseLayer() {
+  var found = false;
+  map.eachLayer(function (l) { if (l instanceof L.TileLayer) found = true; });
+  return found;
 }
 
 // Метка-этикетка: карточка с числом работ, ножка и точка ровно на месте музея.
@@ -1141,14 +1163,19 @@ function addMarkers() {
   // Музеи одного города накладывались друг на друга: до Лувра нельзя было
   // дотянуться мышью из-за д’Орсе. Теперь близкие метки собираются в одну,
   // а при приближении расходятся сами.
-  clusterGroup = L.markerClusterGroup({
-    maxClusterRadius: 34,
-    showCoverageOnHover: false,
-    spiderfyOnMaxZoom: true,
-    disableClusteringAtZoom: 12,
-    iconCreateFunction: clusterIcon,
-    spiderLegPolylineOptions: {weight: 1, opacity: 0.55}
-  });
+  // Если библиотека группировки не доехала с CDN, метки всё равно должны
+  // появиться: L.layerGroup поддерживает те же addLayer / removeLayer /
+  // hasLayer, которыми пользуется остальной код, только без скоплений.
+  clusterGroup = (typeof L.markerClusterGroup === 'function')
+    ? L.markerClusterGroup({
+        maxClusterRadius: 34,
+        showCoverageOnHover: false,
+        spiderfyOnMaxZoom: true,
+        disableClusteringAtZoom: 12,
+        iconCreateFunction: clusterIcon,
+        spiderLegPolylineOptions: {weight: 1, opacity: 0.55}
+      })
+    : L.layerGroup();
 
   var group = [];
   MUSEUMS.forEach(function (m) {

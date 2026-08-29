@@ -771,9 +771,31 @@ function initMap() {
   new MutationObserver(updateMapTheme)
     .observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
 
-  addMarkers();
+  // Яндекс добавляем ДО меток. Он подключается позже остальных слоёв, и если
+  // сохранён именно он, до этой строки на карте нет ни одной подложки. Любая
+  // ошибка в метках тогда обрывала initMap — и вместо карты оставалось серое
+  // поле. Теперь подложка появляется первой.
   addYandexLayer();
+
+  // Подложка обязана быть хоть какая-то: пустая карта выглядит как поломка,
+  // а Leaflet.markercluster вдобавок падает с «Map has no maxZoom specified»,
+  // если ни один слой не задал максимальное приближение.
+  if (!hasBaseLayer()) layers['Схема'].addTo(map);
+
+  // Метки — в последнюю очередь и под присмотром: карта со списком музеев
+  // полезнее, чем пустой экран из-за одной сломавшейся библиотеки.
+  try {
+    addMarkers();
+  } catch (e) {
+    console.error('Метки на карту не встали:', e);
+  }
   updateMapTheme();
+}
+
+function hasBaseLayer() {
+  var found = false;
+  map.eachLayer(function (l) { if (l instanceof L.TileLayer) found = true; });
+  return found;
 }
 
 // Метка-этикетка: карточка с числом работ, ножка и точка ровно на месте музея.
@@ -806,14 +828,19 @@ function addMarkers() {
   // Музеи одного города накладывались друг на друга: до Лувра нельзя было
   // дотянуться мышью из-за д’Орсе. Теперь близкие метки собираются в одну,
   // а при приближении расходятся сами.
-  clusterGroup = L.markerClusterGroup({
-    maxClusterRadius: 34,
-    showCoverageOnHover: false,
-    spiderfyOnMaxZoom: true,
-    disableClusteringAtZoom: 12,
-    iconCreateFunction: clusterIcon,
-    spiderLegPolylineOptions: {weight: 1, opacity: 0.55}
-  });
+  // Если библиотека группировки не доехала с CDN, метки всё равно должны
+  // появиться: L.layerGroup поддерживает те же addLayer / removeLayer /
+  // hasLayer, которыми пользуется остальной код, только без скоплений.
+  clusterGroup = (typeof L.markerClusterGroup === 'function')
+    ? L.markerClusterGroup({
+        maxClusterRadius: 34,
+        showCoverageOnHover: false,
+        spiderfyOnMaxZoom: true,
+        disableClusteringAtZoom: 12,
+        iconCreateFunction: clusterIcon,
+        spiderLegPolylineOptions: {weight: 1, opacity: 0.55}
+      })
+    : L.layerGroup();
 
   var group = [];
   MUSEUMS.forEach(function (m) {

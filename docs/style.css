@@ -668,7 +668,136 @@ time { color: var(--muted); font-family: var(--ff-data); font-size: var(--fs-sm)
   background: var(--panel);
   box-shadow: 0 10px 34px -22px var(--shadow-strong);
 }
-a:has(.painting) { display: block; margin-bottom: var(--s4); }
+a:has(.painting) { display: block; margin-bottom: var(--s4); position: relative; }
+
+/* Подсказка, что картину можно рассмотреть. Появляется по наведению —
+   на телефоне её не видно, там про увеличение говорит сам жест. */
+.painting-hint {
+  position: absolute;
+  right: var(--s3);
+  bottom: var(--s3);
+  display: inline-flex;
+  align-items: center;
+  gap: .4em;
+  padding: .35em .7em;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  letter-spacing: .02em;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .18s ease, transform .18s ease;
+  pointer-events: none;
+}
+a:has(.painting):hover .painting-hint,
+a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
+
+/* ---------------------------------------------------------------- лупа --
+   Полноэкранный просмотр картины: колесо и щипок увеличивают, перетаскивание
+   двигает. Открывается поверх страницы, поэтому фон под ней не прокручивается. */
+.lupa {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  /* Непрозрачный фон: сквозь полупрозрачный просвечивал текст статьи и
+     мешал смотреть на живопись. */
+  background: #0c0f12;
+  touch-action: none;
+  overscroll-behavior: contain;
+}
+.lupa[hidden] { display: none !important; }
+/* display:grid у кнопок сильнее атрибута hidden, поэтому говорим явно —
+   иначе стрелки «предыдущая/следующая» видны и когда картина одна. */
+.lupa-btn[hidden] { display: none !important; }
+
+.lupa-stage {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+}
+.lupa-stage.dragging { cursor: grabbing; }
+.lupa-stage.zoomable { cursor: zoom-in; }
+
+.lupa-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  max-width: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  background: #1a1f24;
+  box-shadow: 0 24px 80px -30px #000;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lupa-img.eased { transition: transform .22s cubic-bezier(.2, .7, .3, 1); }
+}
+
+.lupa-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  color: #e6eaee;
+  background: rgba(0, 0, 0, .35);
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+  flex-wrap: wrap;
+}
+.lupa-caption { min-width: 0; flex: 1; line-height: 1.35; }
+/* Цвет задаём явно: общее правило сайта красит <b> в цвет текста темы,
+   а на тёмной панели лупы это делает подпись нечитаемой в светлой теме. */
+.lupa-caption b { display: block; font-weight: 400; font-size: var(--fs-md); color: #e6eaee; }
+.lupa-caption span {
+  display: block;
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  color: #a9b3bf;
+  letter-spacing: .02em;
+}
+.lupa-tools { display: flex; align-items: center; gap: var(--s2); }
+.lupa-btn {
+  width: 2.1rem;
+  height: 2.1rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .22);
+  background: rgba(255, 255, 255, .06);
+  color: #e6eaee;
+  font-family: var(--ff-data);
+  font-size: var(--fs-sm);
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.lupa-btn:hover { background: rgba(255, 255, 255, .16); }
+.lupa-btn:focus-visible { outline: 2px solid #8db2e8; outline-offset: 2px; }
+.lupa-btn[disabled] { opacity: .35; cursor: default; }
+.lupa-scale {
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  color: #a9b3bf;
+  min-width: 4.2ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.lupa-hint {
+  padding: var(--s2) var(--s4) var(--s3);
+  text-align: center;
+  color: #8b95a1;
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  letter-spacing: .02em;
+}
+@media (max-width: 640px) {
+  .lupa-caption b { font-size: var(--fs-sm); }
+  .lupa-hint { display: none; }
+}
 
 .color-palette { display: flex; gap: var(--s2); margin: var(--s4) 0; flex-wrap: wrap; }
 .color-palette:empty { margin: 0; }
@@ -940,7 +1069,7 @@ a:has(.painting) { display: block; margin-bottom: var(--s4); }
 .icon-museum-small, .icon-search-small, .icon-map-inline,
 .icon-material-card, .icon-technique-card, .icon-size-card,
 .icon-quiz-inline, .icon-timeline-inline, .icon-info-small,
-.icon-login, .icon-user {
+.icon-login, .icon-user, .icon-lupa {
   display: inline-block;
   background-size: contain;
   background-repeat: no-repeat;
@@ -966,6 +1095,7 @@ a:has(.painting) { display: block; margin-bottom: var(--s4); }
 .icon-map-inline, .icon-quiz-inline, .icon-timeline-inline { width: 16px; height: 16px; margin-right: 6px; }
 .icon-info-small { width: 12px; height: 12px; }
 .icon-login, .icon-user { width: 16px; height: 16px; }
+.icon-lupa { width: 14px; height: 14px; }
 .icon-material-card, .icon-technique-card, .icon-size-card { width: 16px; height: 16px; opacity: 0.7; }
 .detail-icon { width: 16px; height: 16px; opacity: 0.7; }
 .detail-item { display: inline-flex; align-items: center; gap: 4px; }
@@ -1007,6 +1137,14 @@ a:has(.painting) { display: block; margin-bottom: var(--s4); }
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cline x1='3' y1='6' x2='21' y2='6'/%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cline x1='3' y1='18' x2='21' y2='18'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 .icon-logo { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); }
+/* Лупа с плюсом. Через mask, а не background-image: так значок берёт
+   currentColor и живёт в обеих темах одним правилом. */
+.icon-lupa {
+  background-image: none;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4.3-4.3'/%3E%3Cpath d='M11 8v6'/%3E%3Cpath d='M8 11h6'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4.3-4.3'/%3E%3Cpath d='M11 8v6'/%3E%3Cpath d='M8 11h6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
 .icon-random {
   background-image: none;
   background-color: currentColor;
@@ -1509,3 +1647,254 @@ a:has(.painting) { display: block; margin-bottom: var(--s4); }
   color: var(--muted);
   letter-spacing: .02em;
 }
+
+/* ==========================================================================
+   СТРАНИЦЫ ХУДОЖНИКОВ, УКАЗАТЕЛЬ, СТАТИСТИКА
+   ========================================================================== */
+
+/* Заголовок страницы художника, указателя и статистики. Ширину и поля
+   задаёт .tag-page, поэтому здесь только вертикальный ритм; жирную черту
+   из общего правила .tag-page h1 снимаем — под ней стоят свои сведения. */
+.artist-head {
+  display: block;
+  margin: 0 0 var(--s4);
+  padding: var(--s6) 0 var(--s4);
+  border-bottom: 1px solid var(--border);
+}
+.artist-head h1 {
+  font-size: var(--fs-2xl);
+  margin: 0 0 var(--s3);
+  padding: 0;
+  border: 0;
+  line-height: 1.1;
+  text-align: left;
+}
+.eyebrow {
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 var(--s2);
+}
+.artist-facts { max-width: 34rem; }
+
+.artist-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 16rem;
+  gap: var(--s5);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .artist-layout { grid-template-columns: 1fr; }
+  .artist-layout .post-aside { position: static; }
+}
+.plain-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s2); }
+.plain-list a { text-decoration: none; }
+.plain-list a:hover { text-decoration: underline; }
+
+/* ---------- рядом в собрании ---------- */
+.near {
+  max-width: 1280px;
+  margin: var(--s6) auto 0;
+  padding: var(--s5) var(--s5) 0;
+  border-top: 1px solid var(--border);
+}
+.near h3 {
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+  margin: 0 0 var(--s3);
+}
+.near-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--s3);
+}
+.near-card {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: var(--s2);
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  padding: var(--s2);
+}
+.near-card:hover { border-color: var(--active); }
+.near-card:focus-visible { outline: 2px solid var(--active); outline-offset: 2px; }
+.near-img {
+  display: block;
+  height: 96px;
+  background: var(--panel);
+  overflow: hidden;
+}
+.near-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.near-body { display: grid; gap: 2px; min-width: 0; }
+.near-artist { font-size: var(--fs-sm); line-height: 1.25; }
+.near-title { color: var(--muted); font-size: var(--fs-xs); line-height: 1.3; }
+.near-why {
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  opacity: .8;
+  letter-spacing: .02em;
+}
+
+/* ---------- указатель ---------- */
+.idx-lede { color: var(--muted); max-width: 46ch; margin: 0; }
+.idx-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--s5);
+  align-items: start;
+}
+.idx-col h2 {
+  font-size: var(--fs-lg);
+  margin: 0 0 var(--s3);
+  padding-bottom: var(--s2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: baseline;
+  gap: var(--s2);
+}
+.idx-total {
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.idx-list { list-style: none; margin: 0; padding: 0; }
+.idx-list li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s2);
+  padding: 3px 0;
+  border-bottom: 1px solid var(--hairline, transparent);
+}
+.idx-list li a { text-decoration: none; flex: 1; min-width: 0; }
+.idx-list li a:hover { text-decoration: underline; }
+.idx-letter {
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  letter-spacing: .14em;
+  color: var(--muted);
+  margin-top: var(--s3);
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--border);
+}
+.idx-list li.idx-letter:first-child { margin-top: 0; }
+.idx-n {
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- статистика ----------
+   Одна мера — число работ, поэтому один цвет и никаких легенд: цвет здесь
+   ничего не кодирует, он только рисует длину. Число всегда написано рядом,
+   так что таблица читается и без цвета. */
+.stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--s3);
+  margin-top: var(--s3);
+}
+.stat-tile b {
+  display: block;
+  font-family: var(--ff-data);
+  font-size: var(--fs-xl);
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.stat-tile span {
+  display: block;
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  letter-spacing: .04em;
+}
+
+.stat-block { padding: var(--s5) 0 0; }
+.stat-block h2 {
+  font-size: var(--fs-lg);
+  margin: 0 0 var(--s3);
+  padding-bottom: var(--s2);
+  border-bottom: 1px solid var(--border);
+}
+.stat-note { color: var(--muted); font-size: var(--fs-sm); margin: var(--s3) 0 0; max-width: 60ch; }
+
+.stat-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.stat-row {
+  display: grid;
+  grid-template-columns: minmax(8rem, 18rem) minmax(0, 1fr) 3ch;
+  align-items: center;
+  gap: var(--s3);
+  padding: 3px 0;
+}
+.stat-name { min-width: 0; overflow-wrap: anywhere; }
+.stat-name a { text-decoration: none; }
+.stat-name a:hover { text-decoration: underline; }
+.stat-track { height: 12px; background: var(--panel); border-radius: 2px; }
+.stat-fill {
+  display: block;
+  height: 100%;
+  width: var(--w, 0%);
+  background: var(--active);
+  border-radius: 0 2px 2px 0;
+  min-width: 2px;
+}
+.stat-row:hover .stat-fill { filter: brightness(1.12); }
+.stat-n {
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 560px) {
+  .stat-row { grid-template-columns: minmax(0, 1fr) 3ch; }
+  .stat-track { grid-column: 1 / -1; }
+}
+
+/* столбцы по десятилетиям */
+.dec-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 190px;
+  padding-top: var(--s3);
+  overflow-x: auto;
+}
+.dec-col {
+  flex: 1 0 18px;
+  min-width: 18px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+}
+.dec-bar {
+  width: 100%;
+  height: var(--hgt, 0%);
+  background: var(--active);
+  border-radius: 2px 2px 0 0;
+  min-height: 1px;
+}
+.dec-col:hover .dec-bar { filter: brightness(1.12); }
+.dec-cap {
+  font-family: var(--ff-data);
+  font-size: 10px;
+  color: var(--muted);
+  writing-mode: vertical-rl;
+  line-height: 1;
+}
+.dec-cap-hidden { visibility: hidden; }

@@ -136,6 +136,282 @@ def theme_button(extra_class=""):
             '<span class="icon-theme-toggle" aria-hidden="true"></span></button>')
 
 
+# Лупа: полноэкранный просмотр картины.
+#
+# Раньше клик по картине просто открывал JPEG в соседней вкладке — браузер
+# показывал его как файл, без масштабирования по месту и без подписи. Для
+# сайта о живописи это главный экран: сюда возвращаются, чтобы рассмотреть
+# мазок. Ссылка на оригинал остаётся в разметке и работает без JS — скрипт
+# только перехватывает клик.
+LUPA_JS = """<script>
+(function () {
+  var links = [].slice.call(document.querySelectorAll('a.painting-link'));
+  if (!links.length) return;
+
+  var box = null, stage = null, img = null, capTitle = null, capMeta = null,
+      scaleOut = null, btnPrev = null, btnNext = null, btnIn = null, btnOut = null;
+  var idx = 0, scale = 1, fit = 1, tx = 0, ty = 0, natW = 0, natH = 0;
+  var opener = null, pointers = {}, pinch = null, dragged = false;
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function build() {
+    box = document.createElement('div');
+    box.className = 'lupa';
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-modal', 'true');
+    box.setAttribute('aria-label', 'Просмотр картины');
+    box.hidden = true;
+    box.innerHTML =
+      '<div class="lupa-bar">' +
+        '<div class="lupa-caption"><b></b><span></span></div>' +
+        '<div class="lupa-tools">' +
+          '<button type="button" class="lupa-btn" data-act="prev" aria-label="Предыдущая картина" title="Предыдущая">‹</button>' +
+          '<button type="button" class="lupa-btn" data-act="next" aria-label="Следующая картина" title="Следующая">›</button>' +
+          '<span class="lupa-scale"></span>' +
+          '<button type="button" class="lupa-btn" data-act="out" aria-label="Уменьшить" title="Уменьшить">−</button>' +
+          '<button type="button" class="lupa-btn" data-act="in" aria-label="Увеличить" title="Увеличить">+</button>' +
+          '<button type="button" class="lupa-btn" data-act="fit" aria-label="Вписать целиком" title="Вписать целиком">⤢</button>' +
+          '<button type="button" class="lupa-btn" data-act="close" aria-label="Закрыть" title="Закрыть (Esc)">✕</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="lupa-stage"><img class="lupa-img" alt=""></div>' +
+      '<p class="lupa-hint">Колесо — увеличение, перетаскивание — сдвиг, двойной щелчок — во всю величину, Esc — закрыть</p>';
+    document.body.appendChild(box);
+
+    stage = box.querySelector('.lupa-stage');
+    img = box.querySelector('.lupa-img');
+    capTitle = box.querySelector('.lupa-caption b');
+    capMeta = box.querySelector('.lupa-caption span');
+    scaleOut = box.querySelector('.lupa-scale');
+    btnPrev = box.querySelector('[data-act="prev"]');
+    btnNext = box.querySelector('[data-act="next"]');
+    btnIn = box.querySelector('[data-act="in"]');
+    btnOut = box.querySelector('[data-act="out"]');
+
+    box.addEventListener('click', function (e) {
+      var act = e.target.getAttribute && e.target.getAttribute('data-act');
+      if (act === 'close') return close();
+      if (act === 'in') return zoomAt(center(), 1.4);
+      if (act === 'out') return zoomAt(center(), 1 / 1.4);
+      if (act === 'fit') return apply(fitScale(), true);
+      if (act === 'prev') return show(idx - 1);
+      if (act === 'next') return show(idx + 1);
+      // щелчок мимо картины закрывает — привычное поведение просмотрщиков
+      if (e.target === stage && !dragged) close();
+    });
+
+    stage.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      zoomAt({x: e.clientX, y: e.clientY}, e.deltaY < 0 ? 1.18 : 1 / 1.18);
+    }, {passive: false});
+
+    stage.addEventListener('dblclick', function (e) {
+      if (Math.abs(scale - fit) < 0.01) zoomAt({x: e.clientX, y: e.clientY}, 1 / fit);
+      else apply(fitScale(), true);
+    });
+
+    stage.addEventListener('pointerdown', onDown);
+    stage.addEventListener('pointermove', onMove);
+    stage.addEventListener('pointerup', onUp);
+    stage.addEventListener('pointercancel', onUp);
+
+    document.addEventListener('keydown', onKey);
+    window.addEventListener('resize', function () { if (!box.hidden) apply(fitScale(), false); });
+  }
+
+  function center() {
+    var r = stage.getBoundingClientRect();
+    return {x: r.left + r.width / 2, y: r.top + r.height / 2};
+  }
+
+  function fitScale() {
+    var r = stage.getBoundingClientRect();
+    if (!natW || !natH) return 1;
+    fit = Math.min((r.width - 32) / natW, (r.height - 32) / natH);
+    if (!isFinite(fit) || fit <= 0) fit = 1;
+    return fit;
+  }
+
+  // Картину нельзя утащить за край: если она меньше окна — держим по центру,
+  // если больше — не даём образоваться пустому полю.
+  function clamp(s) {
+    var r = stage.getBoundingClientRect();
+    var w = natW * s, hgt = natH * s;
+    tx = w <= r.width ? (r.width - w) / 2 : Math.min(0, Math.max(r.width - w, tx));
+    ty = hgt <= r.height ? (r.height - hgt) / 2 : Math.min(0, Math.max(r.height - hgt, ty));
+  }
+
+  function paint() {
+    img.style.transform = 'translate(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px) scale(' + scale + ')';
+    scaleOut.textContent = Math.round(scale * 100) + '%';
+    var max = maxScale();
+    btnIn.disabled = scale >= max - 0.001;
+    btnOut.disabled = scale <= fit + 0.001;
+    stage.classList.toggle('zoomable', Math.abs(scale - fit) < 0.01);
+  }
+
+  function maxScale() { return Math.max(1, fit * 8); }
+
+  function apply(s, eased) {
+    scale = Math.min(maxScale(), Math.max(fitScale(), s));
+    clamp(scale);
+    if (eased && !reduce) {
+      img.classList.add('eased');
+      setTimeout(function () { img.classList.remove('eased'); }, 240);
+    }
+    paint();
+  }
+
+  function zoomAt(pt, factor) {
+    var r = stage.getBoundingClientRect();
+    var px = pt.x - r.left, py = pt.y - r.top;
+    var ix = (px - tx) / scale, iy = (py - ty) / scale;
+    var s = Math.min(maxScale(), Math.max(fitScale(), scale * factor));
+    tx = px - ix * s;
+    ty = py - iy * s;
+    scale = s;
+    clamp(scale);
+    paint();
+  }
+
+  function onDown(e) {
+    pointers[e.pointerId] = {x: e.clientX, y: e.clientY};
+    stage.setPointerCapture(e.pointerId);
+    dragged = false;
+    var ids = Object.keys(pointers);
+    if (ids.length === 2) {
+      pinch = {d: dist(pointers[ids[0]], pointers[ids[1]]), s: scale};
+    } else {
+      stage.classList.add('dragging');
+    }
+  }
+
+  function onMove(e) {
+    var p = pointers[e.pointerId];
+    if (!p) return;
+    var ids = Object.keys(pointers);
+    if (ids.length === 2 && pinch) {
+      pointers[e.pointerId] = {x: e.clientX, y: e.clientY};
+      var a = pointers[ids[0]], b = pointers[ids[1]];
+      var d = dist(a, b);
+      if (pinch.d > 0) {
+        var mid = {x: (a.x + b.x) / 2, y: (a.y + b.y) / 2};
+        var want = pinch.s * (d / pinch.d);
+        zoomAt(mid, want / scale);
+      }
+      return;
+    }
+    var dx = e.clientX - p.x, dy = e.clientY - p.y;
+    if (Math.abs(dx) + Math.abs(dy) > 3) dragged = true;
+    tx += dx; ty += dy;
+    pointers[e.pointerId] = {x: e.clientX, y: e.clientY};
+    clamp(scale);
+    paint();
+  }
+
+  function onUp(e) {
+    delete pointers[e.pointerId];
+    if (Object.keys(pointers).length < 2) pinch = null;
+    stage.classList.remove('dragging');
+  }
+
+  function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+
+  function onKey(e) {
+    if (!box || box.hidden) return;
+    var k = e.key;
+    if (k === 'Escape') { e.preventDefault(); return close(); }
+    if (k === '+' || k === '=') { e.preventDefault(); return zoomAt(center(), 1.4); }
+    if (k === '-' || k === '_') { e.preventDefault(); return zoomAt(center(), 1 / 1.4); }
+    if (k === '0') { e.preventDefault(); return apply(fitScale(), true); }
+    if (k === 'ArrowLeft') { e.preventDefault(); return links.length > 1 ? show(idx - 1) : pan(60, 0); }
+    if (k === 'ArrowRight') { e.preventDefault(); return links.length > 1 ? show(idx + 1) : pan(-60, 0); }
+    if (k === 'ArrowUp') { e.preventDefault(); return pan(0, 60); }
+    if (k === 'ArrowDown') { e.preventDefault(); return pan(0, -60); }
+    if (k === 'Tab') {                       // фокус не должен уходить на страницу под лупой
+      var f = box.querySelectorAll('button:not([disabled])');
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  }
+
+  function pan(dx, dy) { tx += dx; ty += dy; clamp(scale); paint(); }
+
+  function show(i) {
+    if (i < 0) i = links.length - 1;
+    if (i >= links.length) i = 0;
+    idx = i;
+    var a = links[idx];
+    var thumb = a.querySelector('img');
+    var hires = a.getAttribute('href');
+
+    capTitle.textContent = a.getAttribute('data-title') || (thumb ? thumb.alt : '');
+    capMeta.textContent = a.getAttribute('data-meta') || '';
+    img.alt = thumb ? thumb.alt : '';
+    btnPrev.hidden = btnNext.hidden = links.length < 2;
+
+    // Сначала показываем ту же картинку, что уже на странице — она в кэше,
+    // и лупа открывается мгновенно. Оригинал подгружаем следом и подменяем,
+    // сохранив видимый размер.
+    var small = (thumb && (thumb.currentSrc || thumb.src)) || hires;
+    img.src = small;
+    var ready = function () {
+      natW = img.naturalWidth; natH = img.naturalHeight;
+      apply(fitScale(), false);
+      loadHires(hires);
+    };
+    if (img.complete && img.naturalWidth) ready();
+    else img.onload = ready;
+  }
+
+  function loadHires(src) {
+    if (!src || src === img.src) return;
+    var big = new Image();
+    big.onload = function () {
+      if (!big.naturalWidth) return;
+      var k = natW ? big.naturalWidth / natW : 1;
+      img.src = src;
+      natW = big.naturalWidth; natH = big.naturalHeight;
+      // при подмене картинка не должна дёрнуться: пересчитываем масштаб
+      scale = scale / k; fit = fit / k;
+      clamp(scale); paint();
+    };
+    big.src = src;
+  }
+
+  function open(i, from) {
+    if (!box) build();
+    opener = from || document.activeElement;
+    box.hidden = false;
+    document.body.style.overflow = 'hidden';
+    show(i);
+    var close_ = box.querySelector('[data-act="close"]');
+    if (close_) close_.focus();
+  }
+
+  function close() {
+    if (!box || box.hidden) return;
+    box.hidden = true;
+    document.body.style.overflow = '';
+    img.src = '';
+    if (opener && opener.focus) opener.focus();
+  }
+
+  links.forEach(function (a, i) {
+    a.addEventListener('click', function (e) {
+      // Ctrl/Cmd/средняя кнопка — пусть браузер откроет оригинал, как обычно
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      e.preventDefault();
+      open(i, a);
+    });
+  });
+})();
+</script>"""
+
+
 SCROLL_TOP_JS = """<script>
 function scrollToTop(){
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
