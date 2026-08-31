@@ -437,18 +437,6 @@ def render_post_page(post, all_posts=None):
         )
     img_html = "\n".join(parts)
 
-    mat = f'<span class="detail-item"><span class="detail-icon icon-material-card"></span> {h(post.get("material","").capitalize())}</span>' if post.get("material") else ""
-    techniques_list = post.get("techniques", [])
-    if techniques_list:
-        formatted_techs = []
-        for i, t in enumerate(techniques_list):
-            formatted_techs.append(t.capitalize() if i == 0 else t.lower())
-        tech = f'<span class="detail-item"><span class="detail-icon icon-technique-card"></span> {h(", ".join(formatted_techs))}</span>'
-    else:
-        tech = ""
-    sz = f'<span class="detail-item"><span class="detail-icon icon-size-card"></span> {h(post.get("size",""))}</span>' if post.get("size") else ""
-    mdet = f'<div class="medium-details">{mat} {tech} {sz}</div>'
-
     # Сведения о работе — отдельной таблицей в правой колонке: в каталоге
     # это главный справочный блок, а не строчка под заголовком.
     spec_rows = [
@@ -1084,7 +1072,10 @@ def render_index(all_posts):
     
     ah = "".join(f'<li><a href="#" class="filter-link" data-type="artist" data-val="{h(a.lower())}">{h(a)} <span class="count">({artist_count[a]})</span></a></li>' for a in authors)
     mh = "".join(f'<li><a href="#" class="filter-link" data-type="museum" data-val="{h(slugify(m))}">{h(m)} <span class="count">({museum_count[m]})</span></a></li>' for m in museums if m)
-    mth = "".join(f'<li><a href="#" class="filter-link" data-type="material" data-val="{h(slugify(m))}">{h(m)} <span class="count">({material_count[m]})</span></a></li>' for m in materials)
+    # Материал в базе записан с заглавной («Холст»), техника — со строчной
+    # («масло»). В списке фильтров они стоят рядом, поэтому приводим
+    # к одному виду: со строчной, как принято в описании работы.
+    mth = "".join(f'<li><a href="#" class="filter-link" data-type="material" data-val="{h(slugify(m))}">{h(lower_first(m))} <span class="count">({material_count[m]})</span></a></li>' for m in materials)
     th = "".join(f'<li><a href="#" class="filter-link" data-type="technique" data-val="{h(slugify(t))}">{h(t)} <span class="count">({technique_count[t]})</span></a></li>' for t in techniques)
     # Годы: столбики по десятилетиям вместо простого списка. Высота — сколько
     # работ, клик по столбику выбирает десятилетие, а поля «от / до» задают
@@ -1497,6 +1488,27 @@ document.addEventListener('DOMContentLoaded', function() {{
         }});
     }});
 
+    // Из указателя сюда ведут ссылки вида index.html#mat-холст. Без разбора
+    // якоря такой переход просто открывал главную без всякого фильтра.
+    function applyHashFilter() {{
+        const raw = (location.hash || '').replace(/^#/, '');
+        const cut = raw.indexOf('-');
+        if (cut < 1) return;
+        const kind = {{mat: 'material', tech: 'technique', artist: 'artist', museum: 'museum'}}[raw.slice(0, cut)];
+        if (!kind) return;
+        let val = raw.slice(cut + 1);
+        try {{ val = decodeURIComponent(val); }} catch (e) {{}}
+        const link = [...document.querySelectorAll('.filter-link')]
+            .find(l => l.dataset.type === kind && l.dataset.val === val);
+        if (!link) return;
+        const section = link.closest('.sidebar-section');
+        const body = section && section.querySelector('.sidebar-content');
+        if (body && body.classList.contains('collapsed')) section.querySelector('.sidebar-title').click();
+        link.click();
+    }}
+    applyHashFilter();
+    window.addEventListener('hashchange', applyHashFilter);
+
     const resetBtn = document.getElementById('reset-filter');
     if (resetBtn) resetBtn.addEventListener('click', function(e) {{ e.preventDefault(); resetAllFilters(); }});
 
@@ -1701,9 +1713,9 @@ def render_artist_page(artist, posts, all_posts, cat_no, cat_width):
         facts.append(("Годы", span))
     facts.append(("Работ", str(len(works))))
     if mats:
-        facts.append(("Основы", ", ".join(lower_first(m) for m in mats)))
+        facts.append(("Материал", ", ".join(lower_first(m) for m in mats)))
     if techs:
-        facts.append(("Техники", ", ".join(techs)))
+        facts.append(("Техника", ", ".join(techs)))
     facts_html = "".join(f'<div><span>{h(k)}</span><b>{h(v)}</b></div>' for k, v in facts)
 
     museum_html = ""
@@ -1768,7 +1780,7 @@ def render_artist_page(artist, posts, all_posts, cat_no, cat_width):
 
 @tidy
 def render_ukazatel(all_posts):
-    """Указатель: художники, собрания, техники и материалы по алфавиту.
+    """Указатель: художники, собрания, материал и техника по алфавиту.
 
     Всё это было спрятано в раскрывающихся разделах сайдбара — с телефона
     туда не добраться одним взглядом, а для каталога это обязательная часть.
@@ -1784,9 +1796,9 @@ def render_ukazatel(all_posts):
             museums[p["museum"].strip()].append(p)
         for t in p.get("techniques", []):
             if t and len(t) > 2:
-                techs[t.strip().lower()].append(p)
+                techs[lower_first(t.strip())].append(p)
         if p.get("material"):
-            mats[p["material"].strip().lower()].append(p)
+            mats[lower_first(p["material"].strip())].append(p)
 
     def letter(name):
         ch = (name or "?")[:1].upper()
@@ -1811,8 +1823,8 @@ def render_ukazatel(all_posts):
     body = "".join([
         column("Художники", artists, artist_slug, key=surname_key, anchor="hudozhniki"),
         column("Собрания", museums, lambda m: f"museums.html#museum-{slugify(m)}", anchor="sobraniya"),
-        column("Техники", techs, lambda t: f"index.html#tech-{slugify(t)}", anchor="tehniki"),
-        column("Основы", mats, lambda m: f"index.html#mat-{slugify(m)}", anchor="osnovy"),
+        column("Материал", mats, lambda m: f"index.html#mat-{slugify(m)}", anchor="material"),
+        column("Техника", techs, lambda t: f"index.html#tech-{slugify(t)}", anchor="tehnika"),
     ])
 
     head = head_common(
@@ -1891,8 +1903,8 @@ def render_stats(all_posts):
     museums = Counter(p["museum"].strip() for p in ps if p.get("museum"))
     cities = Counter(p["museum"].rsplit(",", 1)[-1].split("(")[0].strip()
                      for p in ps if p.get("museum") and "," in p["museum"])
-    techs = Counter(t.strip().lower() for p in ps for t in p.get("techniques", []) if t and len(t) > 2)
-    mats = Counter(p["material"].strip().lower() for p in ps if p.get("material"))
+    techs = Counter(lower_first(t.strip()) for p in ps for t in p.get("techniques", []) if t and len(t) > 2)
+    mats = Counter(lower_first(p["material"].strip()) for p in ps if p.get("material"))
 
     years = sorted(int(p["creation_year"]) for p in ps if p.get("creation_year"))
     decades = Counter((y // 10) * 10 for y in years)
@@ -1952,8 +1964,8 @@ def render_stats(all_posts):
                    href=lambda m: f"museums.html#museum-{slugify(m)}", anchor="sobraniya"),
         _bar_block("Города", many(cities), total,
                    tail(cities, 2, ("город", "города", "городов")), anchor="goroda"),
-        _bar_block("Техники", techs.most_common(), total, anchor="tehniki"),
-        _bar_block("Основы", mats.most_common(), total, anchor="osnovy"),
+        _bar_block("Материал", mats.most_common(), total, anchor="material"),
+        _bar_block("Техника", techs.most_common(), total, anchor="tehnika"),
     ]
 
     head = head_common(
