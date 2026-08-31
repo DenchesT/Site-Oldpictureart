@@ -409,6 +409,24 @@ def tidy(fn):
     return wrapper
 
 
+def download_name(post, src):
+    """Осмысленное имя файла для скачивания: «Художник — Название, год.jpg».
+
+    Браузер иначе сохранит его как «2025-11-26-исаак-ильич-левитан-hires-1.jpg» —
+    в папке «Загрузки» по такому имени работу потом не найти.
+    """
+    ext = os.path.splitext(src)[1] or ".jpg"
+    parts = [post.get("artist", ""), post.get("title", "")]
+    name = " — ".join(x.strip() for x in parts if x and x.strip()) or "painting"
+    year = post.get("creation_year")
+    if year and str(year) not in name:
+        name = f"{name}, {year}"
+    # символы, которые файловые системы не принимают
+    name = re.sub(r'[\\/:*?"<>|\r\n\t]', " ", name)
+    name = re.sub(r"\s+", " ", name).strip(" .")
+    return (name[:120] or "painting") + ext
+
+
 @tidy
 def render_post_page(post, all_posts=None):
     artist, title, museum = h(post["artist"]), h(post["title"]), h(post["museum"])
@@ -492,6 +510,16 @@ def render_post_page(post, all_posts=None):
             next_link = f'<a href="{h(next_post["filename"])}" class="next-post" title="{h(next_post["artist"])} — {h(next_post["title"])}">Следующая <span class="icon-next"></span></a>'
     post_nav = f'<nav class="post-nav">{prev_link}{next_link}</nav>' if (prev_link or next_link) else ""
 
+    # Скачать работу. Это ссылка, а не кнопка: атрибут download отдаёт файл
+    # напрямую, работает без JS и не мешает «сохранить как» из меню правой
+    # кнопки. Файлы лежат на том же домене, иначе download браузер игнорирует.
+    download_src = (hl[0] if hl else (post["images"][0] if post.get("images") else ""))
+    download_btn = ""
+    if download_src:
+        download_btn = (f'<a href="{h(download_src)}" download="{h(download_name(post, download_src))}" '
+                        f'class="topbar-btn" aria-label="Скачать картину" title="Скачать картину">'
+                        f'<span class="icon-download" aria-hidden="true"></span></a>')
+
     # «Рядом в собрании»: после описания человек упирался в тупик, хотя
     # у того же художника и в том же музее есть что показать.
     similar_block = similar_html(post, all_posts) if all_posts else ""
@@ -516,6 +544,7 @@ def render_post_page(post, all_posts=None):
   <div class="post-topbar-right">
     <button type="button" onclick="goRandom()" class="topbar-btn" aria-label="Случайная картина" title="Случайная картина"><span class="icon-random" aria-hidden="true"></span></button>
     <button type="button" onclick="sharePage()" class="topbar-btn" aria-label="Поделиться" title="Поделиться"><span class="icon-share" aria-hidden="true"></span></button>
+    {download_btn}
     <button type="button" id="like-btn" data-post-id="{post_id}" onclick="toggleLike()" class="topbar-btn topbar-like" aria-pressed="false" aria-label="В избранное" title="В избранное"><span class="icon-heart" aria-hidden="true"></span></button>
     <button type="button" class="topbar-btn" data-theme-toggle onclick="toggleTheme()" aria-label="Переключить тему" title="Светлая / тёмная тема"><span class="icon-theme-toggle" aria-hidden="true"></span></button>
     <button type="button" id="auth-btn" class="topbar-btn" title="Войти"><span class="icon-login" aria-hidden="true"></span> Войти</button>
