@@ -50,7 +50,8 @@ try:
 except ImportError:
     PIL_AVAILABLE = False
 
-from site_common import (head_common, scroll_top_button, theme_button,
+from site_common import (head_common, scroll_top_button, theme_button, site_footer,
+                         mark_svg, TELEGRAM_URL, TELEGRAM_NAME,
                          COMMON_JS, SCROLL_TOP_JS, LUPA_JS, BASE_URL)
 
 def load_dotenv(path=".env"):
@@ -574,6 +575,7 @@ def render_post_page(post, all_posts=None):
 </article>
 {similar_block}
 {post_nav}
+{site_footer()}
 {SCROLL_TOP_JS}
 {COMMON_JS}
 {LUPA_JS}
@@ -982,6 +984,7 @@ def render_tag_page(tag, posts, cat_no=None, cat_width=3):
 {scroll_top_button()}
 <h1>#{h(tag)} <span class="tag-count">({len(posts)})</span></h1>
 <div class="grid list">{''.join(cards)}</div>
+{site_footer()}
 {SCROLL_TOP_JS}
 {COMMON_JS}
 </body></html>"""
@@ -1171,6 +1174,10 @@ def render_index(all_posts):
                        'href="ukazatel.html">Указатель</a></div>')
     stats_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-decades no-arrow" '
                        'href="stats.html">Статистика</a></div>')
+    # Канал — источник всего собрания, поэтому он в том же ряду, что карта
+    # и указатель, а не мелкой строкой где-то внизу.
+    tg_link_html = (f'<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-tg no-arrow" '
+                    f'href="{TELEGRAM_URL}" target="_blank" rel="noopener">Канал</a></div>')
     
     head = head_common(
         title="Old Picture Art — Галерея",
@@ -1211,6 +1218,7 @@ def render_index(all_posts):
 {map_link_html}
 {index_link_html}
 {stats_link_html}
+{tg_link_html}
 {quiz_link_html}
 {timeline_link_html}
 </aside><main class="main-content">
@@ -1235,6 +1243,7 @@ def render_index(all_posts):
 <div class="grid list" id="cards">{''.join(cards)}</div>
 <p class="no-results" id="no-results" hidden>Ничего не найдено. Попробуйте изменить запрос или <button type="button" class="linklike" onclick="resetAllFilters()">сбросить фильтры</button>.</p>
 </main></div>
+{site_footer()}
 {SCROLL_TOP_JS}
 {COMMON_JS}
 <script>
@@ -1802,6 +1811,7 @@ def render_artist_page(artist, posts, all_posts, cat_no, cat_width):
   <aside class="post-aside">{museum_html}</aside>
 </div>
 {nav_html}
+{site_footer()}
 {SCROLL_TOP_JS}
 {COMMON_JS}
 </body></html>"""
@@ -1877,6 +1887,7 @@ def render_ukazatel(all_posts):
   <p class="idx-lede">Всё, что есть в каталоге, по алфавиту и с числом работ.</p>
 </header>
 <div class="idx-grid">{body}</div>
+{site_footer()}
 {SCROLL_TOP_JS}
 {COMMON_JS}
 </body></html>"""
@@ -2018,6 +2029,7 @@ def render_stats(all_posts):
   <div class="stat-tiles">{tiles_html}</div>
 </header>
 {''.join(b for b in blocks if b)}
+{site_footer()}
 {SCROLL_TOP_JS}
 {COMMON_JS}
 </body></html>"""
@@ -2078,6 +2090,7 @@ def render_404():
   <p><a class="random-btn" href="index.html">В галерею</a></p>
   <p class="error-links"><a href="quiz.html">Квиз</a> · <a href="timeline.html">Таймлайн</a> · <a href="museums.html">Карта музеев</a></p>
 </main>
+{site_footer()}
 {COMMON_JS}
 </body></html>"""
 
@@ -2109,29 +2122,65 @@ def generate_sitemap(all_posts):
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + '\n</urlset>')
     logger.info(f"Sitemap ({len(urls)} URL)")
 
-def generate_icons():
-    """Иконки для manifest.json. Раньше манифест ссылался на файлы,
-    которых в репозитории не было, — установка как приложения не работала."""
-    if not PIL_AVAILABLE:
-        return []
+def _draw_mark(size, inset=0.0):
+    """Знак сайта растром. inset — доля поля вокруг рисунка: для плиток
+    Android (maskable) края обрезаются, поэтому там знак ужимаем внутрь."""
     from PIL import ImageDraw
+    navy = (31, 58, 107, 255)
+    cream = (242, 237, 227, 255)
+    ochre = (201, 163, 94, 255)
+    img = Image.new("RGBA", (size, size), navy)
+    d = ImageDraw.Draw(img)
+    pad = size * inset
+    s = (size - 2 * pad) / 32.0
+
+    def box(x0, y0, x1, y1, fill):
+        d.rectangle([pad + x0 * s, pad + y0 * s, pad + x1 * s, pad + y1 * s], fill=fill)
+
+    box(4, 6, 28, 26, cream)          # холст
+    box(4, 20, 28, 26, ochre)         # земля
+    r = 3 * s
+    cx, cy = pad + 22 * s, pad + 12 * s
+    d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=navy)   # солнце
+    return img
+
+
+def generate_icons():
+    """Значки сайта: svg для вкладки, ico для старых браузеров, png для
+    телефона и манифеста. Раньше манифест ссылался на файлы, которых
+    в репозитории не было, а фавикон был отдельной картинкой, ничем
+    не связанной с оформлением."""
+    # svg пишем всегда: он не требует PIL и именно его берут современные браузеры
+    with open(os.path.join(OUTPUT_DIR, "favicon.svg"), "w", encoding="utf-8") as f:
+        f.write(mark_svg())
+
+    if not PIL_AVAILABLE:
+        logger.warning("PIL не установлен — png и ico значки не обновлены")
+        return []
+
+    # ico собираем из отрисованных размеров, а не уменьшением одного:
+    # у знака прямые границы, и пересчёт их размывает
+    ico_sizes = [16, 32, 48]
+    frames = [_draw_mark(n) for n in ico_sizes]
+    frames[-1].save(os.path.join(OUTPUT_DIR, "favicon.ico"),
+                    format="ICO", sizes=[(n, n) for n in ico_sizes],
+                    append_images=frames[:-1])
+
+    _draw_mark(180).save(os.path.join(OUTPUT_DIR, "apple-touch-icon.png"), "PNG")
+
     made = []
     for size in (192, 512):
-        path = os.path.join(IMAGES_DIR, f"icon-{size}.png")
-        s = size / 32.0
-        img = Image.new("RGBA", (size, size), (47, 47, 58, 255))
-        d = ImageDraw.Draw(img)
-        d.rectangle([6*s, 7*s, 26*s, 25*s], fill=(250, 250, 250, 255))
-        d.polygon([(8*s, 21*s), (13*s, 15*s), (17*s, 19*s), (20*s, 16*s), (24*s, 21*s)], fill=(107, 142, 107, 255))
-        d.ellipse([18*s, 10*s, 22*s, 14*s], fill=(224, 176, 80, 255))
-        img.save(path, "PNG")
-        made.append(f"images/icon-{size}.png")
+        _draw_mark(size).save(os.path.join(IMAGES_DIR, f"icon-{size}.png"), "PNG")
+        made.append((f"images/icon-{size}.png", size, "any"))
+        # maskable Android обрезает по кругу — знак должен уместиться внутри
+        _draw_mark(size, inset=0.18).save(os.path.join(IMAGES_DIR, f"icon-{size}-maskable.png"), "PNG")
+        made.append((f"images/icon-{size}-maskable.png", size, "maskable"))
     return made
 
 
 def generate_manifest():
-    icons = [{"src": src, "sizes": f"{n}x{n}", "type": "image/png", "purpose": "any maskable"}
-             for src, n in zip(generate_icons(), (192, 512))]
+    icons = [{"src": src, "sizes": f"{n}x{n}", "type": "image/png", "purpose": purpose}
+             for src, n, purpose in generate_icons()]
     data = {
         "name": "Old Picture Art",
         "short_name": "OldPictureArt",
@@ -2140,8 +2189,8 @@ def generate_manifest():
         "scope": "./",
         "display": "standalone",
         "lang": "ru",
-        "background_color": "#fafafa",
-        "theme_color": "#fafafa",
+        "background_color": "#eceef1",
+        "theme_color": "#eceef1",
         "icons": icons,
     }
     with open(os.path.join(OUTPUT_DIR, "manifest.json"), "w", encoding="utf-8") as f:

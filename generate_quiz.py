@@ -9,7 +9,7 @@ import os
 import random
 from html import escape as h
 
-from site_common import head_common, theme_button, COMMON_JS, BASE_URL
+from site_common import head_common, theme_button, site_footer, COMMON_JS, BASE_URL
 
 META_FILE = "posts_meta.json"
 OUTPUT_DIR = "docs"
@@ -299,6 +299,7 @@ def generate_quiz_page():
     </div>
   </div>
 </div>
+{site_footer()}
 {COMMON_JS}
 <script>
 const ALL_POSTS = {json.dumps(valid_posts, ensure_ascii=False)};

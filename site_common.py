@@ -14,18 +14,46 @@ generate_timeline.py, generate_map.py).
 
 SITE_NAME = "Old Picture Art"
 BASE_URL = "https://denchest.github.io/Site-Oldpictureart"
+TELEGRAM_URL = "https://t.me/oldpictureart"
+TELEGRAM_NAME = "@oldpictureart"
 
-# Фавикон: рамка с картиной. Инлайн-SVG, отдельного файла не требует,
-# поэтому браузер больше не долбится в несуществующий /favicon.ico.
-FAVICON = (
-    "data:image/svg+xml,"
-    "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E"
-    "%3Crect width='32' height='32' rx='6' fill='%232f2f3a'/%3E"
-    "%3Crect x='6' y='7' width='20' height='18' rx='2' fill='%23fafafa'/%3E"
-    "%3Cpath d='M8 21l5-6 4 4 3-3 4 5z' fill='%236b8e6b'/%3E"
-    "%3Ccircle cx='20' cy='12' r='2' fill='%23e0b050'/%3E"
-    "%3C/svg%3E"
-)
+# ---------------------------------------------------------------- знак сайта
+#
+# Одна фигура на всё: вкладку браузера, плитку на телефоне и значок рядом
+# с названием в шапке. Раньше это были две разные картинки — тёмный квадрат
+# с зелёными холмами в фавиконе и синий кружок в рамке (цвет #0366d6 остался
+# от вёрстки по умолчанию) в шапке. Ни одна не имела отношения к оформлению
+# сайта и друг к другу.
+#
+# Знак — пейзаж в раме: тёмно-синее поле рамы, кремовое небо, охристая земля,
+# солнце. Цвета те же, что у сайта. Фигуры нарочно простые: тот же набор
+# прямоугольников и круг рисуется питоном для png и ico, поэтому сложную
+# графику здесь позволить нельзя, да она и не нужна — во вкладке значок
+# показывается размером 16 пикселей.
+MARK_NAVY = "#1f3a6b"
+MARK_NAVY_DARK = "#3a5c96"     # на тёмном фоне тёмно-синее поле сливается
+MARK_CREAM = "#f2ede3"
+MARK_OCHRE = "#c9a35e"
+
+
+def mark_svg(field=MARK_NAVY):
+    """Знак сайта в виде SVG. field — цвет рамы."""
+    return (
+        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'>"
+        f"<rect width='32' height='32' fill='{field}'/>"
+        f"<rect x='4' y='6' width='24' height='20' fill='{MARK_CREAM}'/>"
+        f"<rect x='4' y='20' width='24' height='6' fill='{MARK_OCHRE}'/>"
+        f"<circle cx='22' cy='12' r='3' fill='{field}'/>"
+        "</svg>"
+    )
+
+
+def mark_data_uri(field=MARK_NAVY):
+    """Тот же знак строкой для css. Кодируем только те символы, которые
+    ломают значение css-свойства: # обязателен, остальное читается глазами."""
+    svg = mark_svg(field).replace('"', "'").replace("#", "%23").replace("\n", "")
+    return "data:image/svg+xml," + svg.replace("<", "%3C").replace(">", "%3E")
+
 
 # Бутстрап темы. Обязан стоять в <head> ДО отрисовки body, иначе тёмная тема
 # «моргает» белым на каждой загрузке. Если сохранённой темы нет — берём
@@ -110,8 +138,9 @@ def head_common(title, description="", og_image="", canonical="", og_type="websi
 <meta property="og:site_name" content="{SITE_NAME}">{og_img_tag}
 <meta name="twitter:card" content="summary_large_image">{canon_tag}
 <title>{title}</title>
-<link rel="icon" href="{FAVICON}">
-<link rel="apple-touch-icon" href="{FAVICON}">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
 <link rel="alternate" type="application/rss+xml" title="{SITE_NAME}" href="feed.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -418,3 +447,26 @@ function scrollToTop(){
   window.scrollTo({top:0, behavior: reduce ? 'auto' : 'smooth'});
 }
 </script>"""
+
+
+def site_footer(rss="feed.xml"):
+    """Подвал, общий для всех страниц.
+
+    Собрание целиком выросло из телеграм-канала, а ссылки на него на сайте
+    не было ни одной. Подвал — её естественное место: он есть на каждой
+    странице, не отвлекает от работ и заодно даёт понять, откуда всё это.
+    """
+    return (
+        '<footer class="site-footer">'
+        '<p class="footer-source">Собрано из канала '
+        f'<a href="{TELEGRAM_URL}" target="_blank" rel="noopener">'
+        f'<span class="icon-telegram" aria-hidden="true"></span>{TELEGRAM_NAME}</a>'
+        '</p>'
+        '<p class="footer-links">'
+        '<a href="ukazatel.html">Указатель</a> · '
+        '<a href="stats.html">Статистика</a> · '
+        '<a href="museums.html">Карта музеев</a> · '
+        f'<a href="{rss}">RSS</a>'
+        '</p>'
+        '</footer>'
+    )

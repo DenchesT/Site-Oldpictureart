@@ -15,7 +15,8 @@ from collections import defaultdict
 from html import escape as h
 import logging
 
-from site_common import head_common, theme_button, scroll_top_button, COMMON_JS, SCROLL_TOP_JS, BASE_URL
+from site_common import (head_common, theme_button, scroll_top_button, site_footer,
+                         COMMON_JS, SCROLL_TOP_JS, BASE_URL)
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -1341,6 +1342,7 @@ def generate_museums_page(retry_failed=False, offline=False):
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"
         integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin></script>
 <script src="map-config.js"></script>
+{site_footer()}
 {SCROLL_TOP_JS}
 {COMMON_JS}
 <script>

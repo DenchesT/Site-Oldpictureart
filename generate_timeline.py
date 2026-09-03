@@ -9,7 +9,7 @@ import os
 from collections import defaultdict
 from html import escape as h
 
-from site_common import head_common, theme_button, COMMON_JS, BASE_URL
+from site_common import head_common, theme_button, site_footer, COMMON_JS, BASE_URL
 
 META_FILE = "posts_meta.json"
 OUTPUT_DIR = "docs"
@@ -118,6 +118,7 @@ def generate_timeline_page():
   <div class="timeline-current" id="timeline-current" role="status" aria-live="polite">{getdecade_mid // 10 * 10}-е</div>
   <div class="timeline-grid" id="timeline-grid"></div>
 </div>
+{site_footer()}
 {COMMON_JS}
 <script>
 const timelineData = {json.dumps(timeline_data, ensure_ascii=False)};
