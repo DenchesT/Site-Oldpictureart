@@ -410,6 +410,141 @@ def tidy(fn):
     return wrapper
 
 
+def site_og_image(all_posts):
+    """Картинка для превью ссылки на сайт.
+
+    Когда ссылку на главную кидают в мессенджер, превью брала только
+    страница работы: у главной, указателя и статистики og:image не было
+    вовсе, и ссылка выглядела голым текстом. Берём самую свежую работу —
+    превью само обновляется вместе с собранием.
+    """
+    for post in sorted(all_posts, key=lambda x: x.get("date", ""), reverse=True):
+        if post.get("images"):
+            return f"{BASE_URL}/{post['images'][0]}"
+    return ""
+
+
+def russian_title(title):
+    """Русская часть названия работы, если она есть в скобках.
+
+    Названия хранятся как «Lisière de la forêt de Fontainebleau (Опушка
+    леса Фонтенбло), 1865»: сначала оригинал, потом перевод, потом год.
+    В заголовке вкладки и в выдаче поисковика полезен перевод — по нему
+    и ищут. Скобки бывают вложенными («Бухта на острове Сент-Томас
+    (Антильские острова)»), поэтому разбираем их счётчиком, а не regexp.
+    """
+    best = ""
+    depth = 0
+    start = -1
+    for i, ch in enumerate(title):
+        if ch == "(":
+            if depth == 0:
+                start = i + 1
+            depth += 1
+        elif ch == ")" and depth:
+            depth -= 1
+            if depth == 0 and start >= 0:
+                inner = title[start:i]
+                if any("а" <= c.lower() <= "я" or c.lower() == "ё" for c in inner):
+                    if len(inner) > len(best):
+                        best = inner
+    return best.strip()
+
+
+def short_artist(artist, limit=40):
+    """Длинный список авторов сворачиваем до первого имени."""
+    artist = (artist or "").strip()
+    if len(artist) <= limit or "," not in artist:
+        return artist
+    return artist.split(",")[0].strip() + " и другие"
+
+
+def page_title(post, limit=70):
+    """Заголовок вкладки и выдачи поисковика.
+
+    Полное «художник — название» доходило до 339 знаков и обрезалось
+    в выдаче на полуслове у 46 страниц из 81. Берём русское название,
+    год и фамилию автора — то, что человек и набирает в поиске.
+    """
+    title = (post.get("title") or "").strip()
+    ru = russian_title(title)
+    if ru:
+        # год в исходном названии стоит после скобок, вернём его к переводу
+        tail = title.rsplit(")", 1)[-1].strip(" ,")
+        name = f"{ru}, {tail}" if tail and tail not in ru else ru
+    else:
+        name = title
+
+    artist = short_artist(post.get("artist", ""))
+    full = f"{name} — {artist}" if artist else name
+    if len(full) <= limit:
+        return full
+    room = limit - len(artist) - 3
+    if room > 20:
+        return f"{name[:room].rsplit(' ', 1)[0]}… — {artist}"
+    return full[:limit - 1].rsplit(" ", 1)[0] + "…"
+
+
+def artwork_jsonld(post):
+    """Разметка Schema.org для страницы работы.
+
+    Для каталога живописи есть готовый тип VisualArtwork: он описывает
+    автора, год, материал, технику, размер и собрание так, как это
+    понимают поисковики. Без него страница для них — просто текст.
+    """
+    def q(x):
+        return json.dumps(x, ensure_ascii=False)
+
+    data = {
+        "@context": "https://schema.org",
+        "@type": "VisualArtwork",
+        "name": post.get("title", ""),
+        "url": f"{BASE_URL}/{post.get('filename', '')}",
+        "inLanguage": "ru",
+    }
+    if post.get("artist"):
+        data["creator"] = {"@type": "Person", "name": post["artist"]}
+    if post.get("creation_year"):
+        data["dateCreated"] = str(post["creation_year"])
+    if post.get("techniques"):
+        data["artMedium"] = ", ".join(post["techniques"])
+    if post.get("material"):
+        data["artworkSurface"] = lower_first(post["material"])
+    if post.get("images"):
+        data["image"] = f"{BASE_URL}/{post['images'][0]}"
+    if post.get("museum"):
+        data["isPartOf"] = {"@type": "Collection", "name": post["museum"]}
+    if post.get("description"):
+        data["description"] = post["description"][:500]
+    if post.get("urls"):
+        data["sameAs"] = post["urls"][:3]
+
+    # «105 x 75 см» → высота и ширина отдельными величинами
+    m = re.match(r"\s*([\d.,]+)\s*[xх×]\s*([\d.,]+)", post.get("size") or "")
+    if m:
+        def cm(v):
+            return {"@type": "QuantitativeValue", "value": float(v.replace(",", ".")), "unitCode": "CMT"}
+        data["height"], data["width"] = cm(m.group(1)), cm(m.group(2))
+
+    return ('<script type="application/ld+json">'
+            + json.dumps(data, ensure_ascii=False, separators=(",", ":"))
+            + "</script>")
+
+
+def generate_robots():
+    """robots.txt со ссылкой на карту сайта.
+
+    Без него поисковик находит sitemap.xml только случайно.
+    """
+    body = ("User-agent: *\n"
+            "Allow: /\n"
+            "\n"
+            f"Sitemap: {BASE_URL}/sitemap.xml\n")
+    with open(os.path.join(OUTPUT_DIR, "robots.txt"), "w", encoding="utf-8") as f:
+        f.write(body)
+    logger.info("robots.txt")
+
+
 def download_name(post, src):
     """Осмысленное имя файла для скачивания: «Художник — Название, год.jpg».
 
@@ -449,7 +584,8 @@ def render_post_page(post, all_posts=None):
         meta_bits = [x for x in (str(post.get("creation_year") or ""), post.get("museum") or "") if x]
         parts.append(
             f'<a href="{h(lh)}" class="painting-link" target="_blank" rel="noopener" '
-            f'title="Рассмотреть" data-title="{artist} — {title}" data-meta="{h(", ".join(meta_bits))}">'
+            f'title="Рассмотреть" data-title="{artist} — {title}" data-meta="{h(", ".join(meta_bits))}" '
+            f'data-download="{h(download_name(post, lh))}">'
             f'<img src="{h(src)}" alt="{artist} — {title}" class="painting" {loading}>'
             f'<span class="painting-hint" aria-hidden="true">'
             f'<span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a>'
@@ -529,11 +665,12 @@ def render_post_page(post, all_posts=None):
 
     page_desc = (desc[:200] if desc else f"{post.get('artist','')} — {post.get('title','')}. {post.get('museum','')}").strip()
     head = head_common(
-        title=f"{artist} — {title}",
+        title=h(page_title(post)),
         description=page_desc,
         og_image=f"{BASE_URL}/{cover_image}" if cover_image else "",
         canonical=f"{BASE_URL}/{post.get('filename','')}",
         og_type="article",
+        extra="\n" + artwork_jsonld(post),
     )
 
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
@@ -1181,6 +1318,7 @@ def render_index(all_posts):
     
     head = head_common(
         title="Old Picture Art — Галерея",
+        og_image=site_og_image(all_posts),
         description=(f"Галерея из {len(ps)} картин: {len(authors)} художников, {len(museums)} музеев. "
                      "Поиск по художникам, музеям, технике и десятилетиям."),
         canonical=f"{BASE_URL}/",
@@ -1868,6 +2006,7 @@ def render_ukazatel(all_posts):
 
     head = head_common(
         title="Указатель — Old Picture Art",
+        og_image=site_og_image(all_posts),
         description=(f"Художники, собрания и техники коллекции Old Picture Art "
                      f"по алфавиту: {len(artists)} художников, {len(museums)} собраний."),
         canonical=f"{BASE_URL}/ukazatel.html",
@@ -2010,6 +2149,7 @@ def render_stats(all_posts):
 
     head = head_common(
         title="Статистика собрания — Old Picture Art",
+        og_image=site_og_image(ps),
         description=(f"Чем собрано Old Picture Art: {total} работ, {len(artists)} художников, "
                      f"{len(museums)} собраний, {span}."),
         canonical=f"{BASE_URL}/stats.html",
@@ -2322,6 +2462,7 @@ async def main():
     save_json(PROCESSED_FILE, sorted(processed_ids))
     generate_tag_pages(all_posts)
     generate_extra_pages(all_posts)
+    generate_robots()
     generate_sitemap(all_posts)
     generate_manifest()
     generate_rss(all_posts)

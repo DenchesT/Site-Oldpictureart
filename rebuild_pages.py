@@ -41,6 +41,7 @@ def main():
 
     bs.generate_tag_pages(meta)
     bs.generate_extra_pages(meta)
+    bs.generate_robots()
     bs.generate_sitemap(meta)
     bs.generate_manifest()
     bs.generate_rss(meta)

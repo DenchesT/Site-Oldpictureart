@@ -201,6 +201,7 @@ LUPA_JS = """<script>
           '<button type="button" class="lupa-btn" data-act="out" aria-label="Уменьшить" title="Уменьшить">−</button>' +
           '<button type="button" class="lupa-btn" data-act="in" aria-label="Увеличить" title="Увеличить">+</button>' +
           '<button type="button" class="lupa-btn" data-act="fit" aria-label="Вписать целиком" title="Вписать целиком">⤢</button>' +
+          '<a class="lupa-btn" data-act="save" download aria-label="Скачать картину" title="Скачать картину"><span class="icon-download" aria-hidden="true"></span></a>' +
           '<button type="button" class="lupa-btn" data-act="close" aria-label="Закрыть" title="Закрыть (Esc)">✕</button>' +
         '</div>' +
       '</div>' +
@@ -219,7 +220,9 @@ LUPA_JS = """<script>
     btnOut = box.querySelector('[data-act="out"]');
 
     box.addEventListener('click', function (e) {
-      var act = e.target.getAttribute && e.target.getAttribute('data-act');
+      var hit = e.target.closest ? e.target.closest('[data-act]') : null;
+      var act = hit && hit.getAttribute('data-act');
+      if (act === 'save') return;              // ссылка отработает сама
       if (act === 'close') return close();
       if (act === 'in') return zoomAt(center(), 1.4);
       if (act === 'out') return zoomAt(center(), 1 / 1.4);
@@ -377,6 +380,12 @@ LUPA_JS = """<script>
     var thumb = a.querySelector('img');
     var hires = a.getAttribute('href');
 
+    var save = box.querySelector('[data-act="save"]');
+    if (save) {
+      // Ту же ссылку, что у кнопки на странице: оригинал и человеческое имя файла
+      save.setAttribute('href', hires);
+      save.setAttribute('download', a.getAttribute('data-download') || '');
+    }
     capTitle.textContent = a.getAttribute('data-title') || (thumb ? thumb.alt : '');
     capMeta.textContent = a.getAttribute('data-meta') || '';
     img.alt = thumb ? thumb.alt : '';

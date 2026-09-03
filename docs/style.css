@@ -1970,3 +1970,66 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 @media (max-width: 640px) {
   .site-footer { padding: var(--s4) var(--s3) var(--s5); gap: var(--s3); }
 }
+
+/* ==========================================================================
+   ПЕЧАТЬ
+   Каталог печатают: страницу работы — чтобы взять с собой в музей, опись —
+   чтобы свериться. На бумаге не нужны ни сайдбар, ни кнопки, ни тёмная
+   тема; нужны картина, сведения и адрес страницы, с которой это взято.
+   ========================================================================== */
+@media print {
+  :root {
+    --bg: #fff; --card-bg: #fff; --panel: #fff;
+    --text: #000; --text-2: #222; --muted: #444;
+    --border: #999; --link: #000; --active: #000;
+  }
+  html, body { background: #fff !important; color: #000 !important; }
+
+  /* всё, что на бумаге бессмысленно */
+  .sidebar, .post-topbar, .tag-topbar, .scroll-top, .theme-toggle,
+  .topbar-btn, .map-shell, .museums-panel, .controls, .view-switch,
+  .hist, .year-range, .near, .post-nav, .painting-hint, .lupa,
+  .color-palette, .site-footer .footer-links, .auth-modal, #auth-btn {
+    display: none !important;
+  }
+
+  .post-layout, .artist-layout, .idx-grid {
+    display: block !important;
+  }
+  .post-aside { position: static !important; margin-top: 1em; }
+
+  .painting {
+    max-height: 15cm;
+    width: auto;
+    border: 1px solid #999;
+    box-shadow: none;
+  }
+
+  /* строки описи не должны разрываться между страницами */
+  .card, .stat-row, .idx-list li, .spec-table div {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .card { border-bottom: 1px solid #ccc; }
+
+  h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
+  /* имя художника в заголовке — ссылка; на бумаге подчёркивание лишнее */
+  h1 a, h2 a, h3 a { text-decoration: none; color: inherit; }
+
+  /* адрес страницы — иначе распечатка ни на что не ссылается */
+  .site-footer { border-top: 1px solid #999; }
+  .site-footer::after {
+    content: "Old Picture Art — denchest.github.io/Site-Oldpictureart";
+    display: block;
+    width: 100%;
+    margin-top: .3em;
+  }
+  .post-main a[href^="http"]::after,
+  .description a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: .85em;
+    word-break: break-all;
+  }
+
+  @page { margin: 1.5cm; }
+}
