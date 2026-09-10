@@ -45,9 +45,10 @@ except ImportError:
     TELETHON_AVAILABLE = False
 
 try:
-    from PIL import Image
+    from PIL import Image, ImageDraw, ImageFont
     PIL_AVAILABLE = True
 except ImportError:
+    Image = ImageDraw = ImageFont = None
     PIL_AVAILABLE = False
 
 from site_common import (head_common, scroll_top_button, theme_button, site_footer,
@@ -93,6 +94,14 @@ JPEG_QUALITY = 95
 THUMB_DIR = "docs/images/thumbs"
 THUMB_DIMENSION = 1200
 THUMB_QUALITY = 90
+
+# Копия для просмотра в лупе. Оригиналы бывают по пять тысяч пикселей и
+# по нескольку мегабайт: на мобильном интернете такая картинка едет полминуты,
+# а разглядеть на телефоне больше двух тысяч всё равно нельзя. Кнопка
+# «Скачать картину» по-прежнему отдаёт оригинал как есть.
+VIEW_DIR = "docs/images/views"
+VIEW_DIMENSION = 2000
+VIEW_QUALITY = 82
 
 PROXY_LIST = [
     {'server': '62.113.59.20', 'port': 443, 'secret': '3f71a99978cf97e115dc89cc80aeca1f706574726f766963682e7275'},
@@ -347,6 +356,233 @@ def make_thumbnail(src, slug, idx):
         logger.warning(f"Миниатюра: {e}")
         return ""
 
+# ---------------------------------------------------------- карточка ссылки
+#
+# Когда ссылку на картину кидают в мессенджер, превью берёт og:image. Раньше
+# это была сама картина — красиво, но безымянно: кто автор и что это, видно
+# только если открыть. Карточка добавляет к картине подпись, набранную теми же
+# цветами, что и сайт.
+CARD_DIR = "docs/images/cards"
+CARD_W, CARD_H = 1200, 630
+CARD_BG = (21, 26, 34)          # тёмно-синие чернила
+CARD_CREAM = (242, 237, 227)
+CARD_OCHRE = (201, 163, 94)
+CARD_MUTED = (150, 160, 174)
+
+# Шрифт ищем среди системных: свои у сайта подключаются из сети, а карточку
+# рисует Pillow — ему нужен файл. Первым идёт fonts/ в самом проекте, чтобы
+# можно было положить туда Old Standard TT и получить точную типографику сайта.
+FONT_CANDIDATES = {
+    "regular": ["fonts/OldStandardTT-Regular.ttf", "fonts/regular.ttf",
+                "C:/Windows/Fonts/times.ttf", "C:/Windows/Fonts/georgia.ttf",
+                "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf",
+                "/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf",
+                "/System/Library/Fonts/Supplemental/Times New Roman.ttf"],
+    "bold":    ["fonts/OldStandardTT-Bold.ttf", "fonts/bold.ttf",
+                "C:/Windows/Fonts/timesbd.ttf", "C:/Windows/Fonts/georgiab.ttf",
+                "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf",
+                "/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf",
+                "/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf"],
+    "mono":    ["fonts/IBMPlexMono-Regular.ttf", "fonts/mono.ttf",
+                "C:/Windows/Fonts/consola.ttf", "C:/Windows/Fonts/cour.ttf",
+                "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
+                "/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf",
+                "/System/Library/Fonts/Supplemental/Courier New.ttf"],
+}
+_font_files = {}
+
+
+def font_file(kind):
+    """Путь к шрифту нужного начертания или None, если ничего не нашлось."""
+    if kind not in _font_files:
+        _font_files[kind] = next((p for p in FONT_CANDIDATES[kind] if os.path.exists(p)), None)
+    return _font_files[kind]
+
+
+def _font(kind, size):
+    path = font_file(kind)
+    return ImageFont.truetype(path, size) if path else None
+
+
+def _wrap(draw, text, font, width, max_lines):
+    """Разбивает строку по словам под заданную ширину. Последняя строка,
+    если не влезла, обрывается многоточием."""
+    words, lines, cur = (text or "").split(), [], ""
+    for w in words:
+        probe = (cur + " " + w).strip()
+        if draw.textlength(probe, font=font) <= width or not cur:
+            cur = probe
+        else:
+            lines.append(cur)
+            cur = w
+            if len(lines) == max_lines:
+                break
+    if cur and len(lines) < max_lines:
+        lines.append(cur)
+    if len(lines) == max_lines and (len(" ".join(lines)) < len(text or "")):
+        last = lines[-1]
+        while last and draw.textlength(last + "…", font=font) > width:
+            last = last[:-1]
+        lines[-1] = last.rstrip(" ,;") + "…"
+    return lines
+
+
+def _fit(draw, text, kind, big, small, width, max_lines):
+    """Подбирает кегль так, чтобы текст уложился в отведённые строки."""
+    size = big
+    while size > small:
+        f = _font(kind, size)
+        if f is None:
+            return None, []
+        lines = _wrap(draw, text, f, width, max_lines + 1)
+        if len(lines) <= max_lines:
+            return f, lines
+        size -= 2
+    f = _font(kind, small)
+    return f, _wrap(draw, text, f, width, max_lines)
+
+
+def make_card(post):
+    """Карточка 1200×630 для превью ссылки. Пустая строка — если не вышло."""
+    # Оба начертания обязательны: подбор кегля опирается на реальный шрифт,
+    # и подстановка встроенного растрового превратила бы подпись в кашу.
+    if not PIL_AVAILABLE or not font_file("regular") or not font_file("bold"):
+        return ""
+    src = (post.get("images") or [None])[0]
+    if not src:
+        return ""
+    os.makedirs(CARD_DIR, exist_ok=True)
+    name = f"{post['filename'][:-5]}.jpg"
+    out = os.path.join(CARD_DIR, name)
+    if os.path.exists(out):
+        return f"images/cards/{name}"
+    try:
+        card = Image.new("RGB", (CARD_W, CARD_H), CARD_BG)
+        draw = ImageDraw.Draw(card)
+
+        # Картина слева, целиком и по центру своей половины
+        art = Image.open(os.path.join(OUTPUT_DIR, src))
+        if art.mode != "RGB":
+            art = art.convert("RGB")
+        box_w, box_h = 540, 510
+        art.thumbnail((box_w, box_h), Image.LANCZOS)
+        ax = 56 + (box_w - art.width) // 2
+        ay = (CARD_H - art.height) // 2
+        draw.rectangle([ax - 2, ay - 2, ax + art.width + 1, ay + art.height + 1],
+                       outline=(70, 82, 100))
+        card.paste(art, (ax, ay))
+
+        # Подпись справа
+        x = 56 + box_w + 56
+        w = CARD_W - x - 56
+        mono = _font("mono", 20)
+        if mono:
+            draw.text((x, 92), "OLD PICTURE ART", font=mono, fill=CARD_OCHRE)
+        draw.line([x, 128, x + 64, 128], fill=CARD_OCHRE, width=2)
+
+        y = 160
+        af, alines = _fit(draw, short_artist(post.get("artist", ""), 60), "bold", 46, 30, w, 2)
+        for line in alines:
+            draw.text((x, y), line, font=af, fill=CARD_CREAM)
+            y += af.size + 8
+        y += 10
+        tf, tlines = _fit(draw, russian_title(post.get("title", "")) or post.get("title", ""),
+                          "regular", 34, 24, w, 3)
+        for line in tlines:
+            draw.text((x, y), line, font=tf, fill=(206, 214, 224))
+            y += tf.size + 6
+
+        foot = " · ".join(v for v in (str(post.get("creation_year") or ""),
+                                      (post.get("museum") or "").strip()) if v)
+        mf = _font("mono", 18)
+        if foot and mf:
+            lines = _wrap(draw, foot, mf, w, 2)
+            fy = CARD_H - 76 - (len(lines) - 1) * 26
+            for line in lines:
+                draw.text((x, fy), line, font=mf, fill=CARD_MUTED)
+                fy += 26
+
+        card.save(out, "JPEG", quality=88, optimize=True, progressive=True)
+        return f"images/cards/{name}"
+    except Exception as e:
+        logger.warning(f"Карточка ссылки: {e}")
+        return ""
+
+
+def build_cards(posts):
+    """Досоздаёт карточки там, где их ещё нет."""
+    if not PIL_AVAILABLE:
+        return 0
+    if not font_file("regular") or not font_file("bold"):
+        logger.info("Карточки ссылок пропущены: не нашёлся шрифт "
+                    "(положите ttf в папку fonts/ — см. README)")
+        return 0
+    made = 0
+    for post in posts:
+        if post.get("card"):
+            continue
+        c = make_card(post)
+        if c:
+            post["card"] = c
+            made += 1
+    if made:
+        logger.info(f"Карточек ссылок создано: {made}")
+    return made
+
+
+def make_view(src, slug, idx):
+    """Копия оригинала шириной до 2000 пикселей — то, что показывает лупа.
+
+    Если оригинал и так меньше предела, копия не нужна: лупа возьмёт его
+    самого. Пустая строка означает «отдельной копии нет».
+    """
+    if not PIL_AVAILABLE or not src or not os.path.exists(src):
+        return ""
+    os.makedirs(VIEW_DIR, exist_ok=True)
+    vn = f"{slug}-{idx}.jpg"
+    vp = os.path.join(VIEW_DIR, vn)
+    if os.path.exists(vp):
+        return f"images/views/{vn}"
+    try:
+        img = Image.open(src)
+        if max(img.size) <= VIEW_DIMENSION and os.path.getsize(src) < 1_500_000:
+            return ""
+        if img.mode in ("RGBA", "P", "LA"):
+            img = img.convert("RGB")
+        img.thumbnail((VIEW_DIMENSION, VIEW_DIMENSION), Image.LANCZOS)
+        img.save(vp, "JPEG", quality=VIEW_QUALITY, optimize=True, progressive=True)
+        return f"images/views/{vn}"
+    except Exception as e:
+        logger.warning(f"Копия для просмотра: {e}")
+        return ""
+
+
+def build_views(records):
+    """Досоздаёт копии для просмотра там, где их ещё нет.
+
+    Считается по оригиналам: у записи без -hires- разглядывать нечего,
+    лупа и так показывает ту картинку, что на странице.
+    """
+    if not PIL_AVAILABLE:
+        return 0
+    made = 0
+    for rec in records:
+        hires = rec.get("hires") or []
+        if not hires or len(rec.get("views") or []) == len(hires):
+            continue
+        slug = rec["filename"][:-5]
+        views = []
+        for i, hr in enumerate(hires, 1):
+            v = make_view(os.path.join(OUTPUT_DIR, hr), slug, i)
+            views.append(v)
+            if v:
+                made += 1
+        rec["views"] = views
+    if made:
+        logger.info(f"Копий для просмотра создано: {made}")
+    return made
+
+
 async def download_with_retry(client, msg, fp, retries=3):
     for a in range(retries):
         try:
@@ -411,6 +647,51 @@ def tidy(fn):
         html = fn(*args, **kwargs)
         return "\n".join(line.rstrip() for line in html.split("\n"))
     return wrapper
+
+
+SIZES_FILE = "image_sizes.json"
+_image_sizes = None
+
+
+def image_size(rel_path):
+    """Размеры картинки в пикселях по пути вида images/xxx.jpg.
+
+    Нужны, чтобы проставить width и height у <img>. Без них браузер не знает,
+    сколько места занять, рисует страницу, а потом раздвигает её под каждую
+    подгрузившуюся миниатюру: на телефоне опись из восьмидесяти строк
+    дёргается под пальцем. С размерами место резервируется сразу.
+
+    Считанное складываем в image_sizes.json — заново открывать полтысячи
+    файлов при каждой пересборке незачем.
+    """
+    global _image_sizes
+    if _image_sizes is None:
+        _image_sizes = load_json(SIZES_FILE, {})
+    if not rel_path:
+        return None
+    hit = _image_sizes.get(rel_path)
+    if hit is not None:
+        return tuple(hit) if hit else None
+    if not PIL_AVAILABLE:
+        return None
+    try:
+        with Image.open(os.path.join(OUTPUT_DIR, rel_path)) as im:
+            size = [im.width, im.height]
+    except Exception:
+        size = []          # запоминаем и неудачу, чтобы не пытаться снова
+    _image_sizes[rel_path] = size
+    return tuple(size) if size else None
+
+
+def save_image_sizes():
+    if _image_sizes:
+        save_json(SIZES_FILE, _image_sizes)
+
+
+def size_attrs(rel_path):
+    """Готовые атрибуты width/height или пустая строка."""
+    wh = image_size(rel_path)
+    return f' width="{wh[0]}" height="{wh[1]}"' if wh else ""
 
 
 def site_og_image(all_posts):
@@ -584,6 +865,7 @@ def download_name(post, src):
 @tidy
 def render_post_page(post, all_posts=None):
     artist, title, museum = h(post["artist"]), h(post["title"]), h(post["museum"])
+    title_plain = post.get("title") or ""
     desc = post.get("description") or ""
     urls = post.get("urls") or ([post["url"]] if post.get("url") else [])
     cover_image = post['images'][0] if post.get('images') else ''
@@ -591,6 +873,7 @@ def render_post_page(post, all_posts=None):
 
     parts = []
     hl = post.get("hires", [])
+    views = post.get("views") or []
     for i, src in enumerate(post["images"]):
         lh = hires_url(hl[i] if i < len(hl) else src)
         # Первая картина — главный элемент страницы (LCP): грузим её сразу,
@@ -599,12 +882,23 @@ def render_post_page(post, all_posts=None):
         # Ссылка на оригинал остаётся настоящей: без JS она откроет файл, как
         # раньше, а со скриптом клик перехватывает лупа. data-* нужны ей для
         # подписи — лезть за ними в разметку страницы не приходится.
-        meta_bits = [x for x in (str(post.get("creation_year") or ""), post.get("museum") or "") if x]
+        # Год в подписи лупы повторялся: он и так стоит в конце названия
+        # («…, 1832»), а на телефоне подпись и без того длинная.
+        year = str(post.get("creation_year") or "")
+        meta_bits = [x for x in (("" if year and year in title_plain else year),
+                                 post.get("museum") or "") if x]
+        # data-view — то, что грузит лупа: копия до 2000 пикселей. Ссылка
+        # остаётся на оригинал: и без JS, и по Ctrl+клик, и кнопкой «скачать»
+        # человек получает файл таким, каким он пришёл из канала. Адрес копии
+        # не переписывается под HIRES_BASE_URL: в хранилище уезжают только
+        # оригиналы, всё остальное остаётся рядом с сайтом.
+        vw = views[i] if i < len(views) else ""
         parts.append(
             f'<a href="{h(lh)}" class="painting-link" target="_blank" rel="noopener" '
-            f'title="Рассмотреть" data-title="{artist} — {title}" data-meta="{h(", ".join(meta_bits))}" '
+            + (f'data-view="{h(vw)}" ' if vw else '')
+            + f'title="Рассмотреть" data-title="{artist} — {title}" data-meta="{h(", ".join(meta_bits))}" '
             f'data-download="{h(download_name(post, lh))}">'
-            f'<img src="{h(src)}" alt="{artist} — {title}" class="painting" {loading}>'
+            f'<img src="{h(src)}" alt="{artist} — {title}" class="painting"{size_attrs(src)} {loading}>'
             f'<span class="painting-hint" aria-hidden="true">'
             f'<span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a>'
         )
@@ -685,7 +979,7 @@ def render_post_page(post, all_posts=None):
     head = head_common(
         title=h(page_title(post)),
         description=page_desc,
-        og_image=f"{BASE_URL}/{cover_image}" if cover_image else "",
+        og_image=f"{BASE_URL}/{post.get('card') or cover_image}" if (post.get('card') or cover_image) else "",
         canonical=f"{BASE_URL}/{post.get('filename','')}",
         og_type="article",
         extra="\n" + artwork_jsonld(post),
@@ -1110,7 +1404,7 @@ def card_html(p, cat_no=None, cat_width=3, show_artist=True):
     sub_line = f'<div class="card-title">{title_name}</div>' if show_artist else ''
     return (
         f'<article class="card">{no_html}'
-        f'<div class="card-img"><img src="{cv}" alt="{artist_name} — {title_name}" loading="lazy" decoding="async"></div>'
+        f'<div class="card-img"><img src="{cv}" alt="{artist_name} — {title_name}"{size_attrs(cv)} loading="lazy" decoding="async"></div>'
         f'<div class="card-body">'
         f'<div class="card-artist"><a class="card-link" href="{h(p["filename"])}">{head_line}</a></div>'
         f'{sub_line}{museum_html}</div>'
@@ -1236,7 +1530,7 @@ def render_index(all_posts):
 
         cards.append(f"""<article class="card" data-artist="{h(p['artist'].lower())}" data-title="{h(p['title'].lower())}" data-year="{y}" data-month="{m}" data-cyear="{creation_year or ''}" data-museum="{h(museum_slug)}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}" data-search="{h(search_blob)}" data-no="{cat_no[id(p)]}" {decade_attr}>
     <span class="card-no">{cat_no[id(p)]:0{cat_width}d}</span>
-    <div class="card-img"><img src="{cv}" alt="{artist_name} — {title_name}" loading="lazy" decoding="async"></div>
+    <div class="card-img"><img src="{cv}" alt="{artist_name} — {title_name}"{size_attrs(cv)} loading="lazy" decoding="async"></div>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="{h(p['filename'])}">{artist_name}</a></div>
         <div class="card-title">{title_name}</div>
@@ -1264,28 +1558,31 @@ def render_index(all_posts):
     # к одному виду: со строчной, как принято в описании работы.
     mth = "".join(f'<li><a href="#" class="filter-link" data-type="material" data-val="{h(slugify(m))}">{h(lower_first(m))} <span class="count">({material_count[m]})</span></a></li>' for m in materials)
     th = "".join(f'<li><a href="#" class="filter-link" data-type="technique" data-val="{h(slugify(t))}">{h(t)} <span class="count">({technique_count[t]})</span></a></li>' for t in techniques)
-    # Годы: столбики по десятилетиям вместо простого списка. Высота — сколько
-    # работ, клик по столбику выбирает десятилетие, а поля «от / до» задают
-    # точный диапазон. Один ряд данных, поэтому легенда не нужна: подпись
-    # под гистограммой словами говорит, что именно сейчас выбрано.
+    # Годы: строка на десятилетие, полоса показывает, сколько работ. Раньше
+    # это были столбики гистограммы шириной в восемнадцать пикселей — пальцем
+    # в такой не попасть, а на сенсорных экранах читают чаще, чем мышью.
+    # Строки устроены как соседние разделы сайдбара и как страница статистики,
+    # так что это не новый элемент, а тот же самый. Поля «от / до» под списком
+    # задают точный диапазон, подпись словами говорит, что сейчас выбрано.
     hist_max = max(decades.values()) if decades else 1
     bars = []
     for d in decades_sorted:
         start = int(d.split("–")[0])
         n = decades.get(d, 0)
-        pct = max(6, round(n / hist_max * 100))
+        pct = round(n / hist_max * 100)
+        word = plural_ru(n, "работа", "работы", "работ")
         bars.append(
-            f'<button type="button" class="hbar" data-decade="{start}" style="--h:{pct}%" '
-            f'title="{h(d)} — {n} {plural_ru(n, "работа", "работы", "работ")}" '
-            f'aria-label="{h(d)}, {n} {plural_ru(n, "работа", "работы", "работ")}">'
-            f'<span class="hbar-fill"></span></button>'
+            f'<li><button type="button" class="dec-row" data-decade="{start}" style="--w:{pct}%" '
+            f'aria-pressed="false" title="{h(d)} — {n} {word}" aria-label="{h(d)}, {n} {word}">'
+            f'<span class="dec-year">{start}-е</span>'
+            f'<span class="dec-track"><span class="dec-fill"></span></span>'
+            f'<span class="dec-n">{n}</span></button></li>'
         )
     decade_starts = [int(d.split("–")[0]) for d in decades_sorted]
     opts_from = "".join(f'<option value="{v}">{v}</option>' for v in decade_starts)
     opts_to = "".join(f'<option value="{v + 9}">{v + 9}</option>' for v in decade_starts)
     dech = f'''<div class="year-filter">
-      <div class="histogram" id="year-hist">{''.join(bars)}</div>
-      <div class="hist-axis"><span>{decade_starts[0] if decade_starts else ''}</span><span>{(decade_starts[-1] + 9) if decade_starts else ''}</span></div>
+      <ul class="dec-list" id="year-hist">{''.join(bars)}</ul>
       <div class="year-range">
         <label class="visually-hidden" for="year-from">Год от</label>
         <select id="year-from" class="year-select"><option value="">любой</option>{opts_from}</select>
@@ -1514,7 +1811,7 @@ function resetAllFilters() {{
 // цветом: под столбиками стоит строка словами.
 function syncHistogram() {{
     const from = activeFilters.from, to = activeFilters.to;
-    document.querySelectorAll('.hbar').forEach(b => {{
+    document.querySelectorAll('.dec-row').forEach(b => {{
         const d = +b.dataset.decade;
         const on = (from === null && to === null) ||
                    ((from === null || d + 9 >= from) && (to === null || d <= to));
@@ -1630,8 +1927,8 @@ document.addEventListener('DOMContentLoaded', function() {{
         sortSel.addEventListener('change', function () {{ sortCards(this.value); }});
     }}
 
-    // Гистограмма: клик по столбику — это десятилетие целиком
-    document.querySelectorAll('.hbar').forEach(bar => {{
+    // Клик по строке — это десятилетие целиком
+    document.querySelectorAll('.dec-row').forEach(bar => {{
         bar.addEventListener('click', function () {{
             const d = +this.dataset.decade;
             if (activeFilters.from === d && activeFilters.to === d + 9) setYearRange(null, null);
@@ -1961,7 +2258,7 @@ def similar_html(post, all_posts):
         year = "" if why.endswith("-х годов") else str(p.get("creation_year") or "")
         cards.append(
             f'<a class="near-card" href="{h(p["filename"])}">'
-            f'<span class="near-img"><img src="{h(cv)}" alt="{h(p["artist"])} — {h(p["title"])}" '
+            f'<span class="near-img"><img src="{h(cv)}" alt="{h(p["artist"])} — {h(p["title"])}"{size_attrs(cv)} '
             f'loading="lazy" decoding="async"></span>'
             f'<span class="near-body">'
             f'<span class="near-artist">{h(p["artist"])}</span>'
@@ -2502,7 +2799,7 @@ def render_visits_page(visits, all_posts=None):
                  ("f-shots", "Снимков", str(shots) if shots else "")]
         facts_html = "".join(f'<div class="{cls}"><span>{h(k)}</span><b>{h(val)}</b></div>'
                              for cls, k, val in facts if val)
-        img = (f'<div class="card-img"><img src="{h(cover)}" alt="{h(heading)}"'
+        img = (f'<div class="card-img"><img src="{h(cover)}" alt="{h(heading)}"{size_attrs(cover)}'
                f' loading="lazy" decoding="async"></div>') if cover else '<div class="card-img"></div>'
         sub = v.get("place") if v.get("title") else v.get("note", "")
         sub_html = f'<div class="card-title">{h(sub)}</div>' if sub else ''
@@ -2624,17 +2921,20 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
     # открывает лупу — рассматривают в ней, а не на странице.
     shots = []
     thumbs = visit.get("thumbs") or []
+    vlist = visit.get("views") or []
     for i, src in enumerate(photos):
         big = hires_url(hires[i] if i < len(hires) else src)
         small = thumbs[i] if i < len(thumbs) else src
         loading = ('fetchpriority="high" decoding="async"' if i == 0
                    else 'loading="lazy" decoding="async"')
         meta_bits = [x for x in (place if place != heading else "", visit.get("visited", "")) if x]
+        vw = vlist[i] if i < len(vlist) else ""
         shots.append(
             f'<a href="{h(big)}" class="painting-link shot" target="_blank" rel="noopener" '
-            f'title="Рассмотреть" data-title="{h(heading)}" data-meta="{h(", ".join(meta_bits))}" '
+            + (f'data-view="{h(vw)}" ' if vw else '')
+            + f'title="Рассмотреть" data-title="{h(heading)}" data-meta="{h(", ".join(meta_bits))}" '
             f'data-download="{h(slug)}-{i + 1}{h(os.path.splitext(big)[1] or ".jpg")}">'
-            f'<img src="{h(small)}" alt="{h(heading)}, снимок {i + 1}" class="painting" {loading}>'
+            f'<img src="{h(small)}" alt="{h(heading)}, снимок {i + 1}" class="painting"{size_attrs(small)} {loading}>'
             f'<span class="painting-hint" aria-hidden="true">'
             f'<span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a>'
         )
@@ -3126,6 +3426,8 @@ async def main():
                     if t: th.append(t)
                 p["thumbs"] = th
             logger.info("Миниатюры готовы")
+        build_views(all_posts + all_visits)
+        build_cards(all_posts)
     # Файл посещений пишем до страниц: по нему подвал и сайдбар решают,
     # показывать ли раздел, а страницы картин собираются следом.
     refresh_visits(all_visits)
@@ -3158,6 +3460,7 @@ async def main():
         logger.error(f"Ошибка генерации таймлайна: {e}")
     with open(os.path.join(OUTPUT_DIR, "index.html"), "w", encoding="utf-8") as f: f.write(render_index(all_posts))
     with open(os.path.join(OUTPUT_DIR, "404.html"), "w", encoding="utf-8") as f: f.write(render_404())
+    save_image_sizes()
     logger.info(f"Новых постов: {len(accepted)}. Всего: {len(all_posts)}")
     push_to_github()
 

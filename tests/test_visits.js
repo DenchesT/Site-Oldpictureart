@@ -188,6 +188,13 @@ function readVisits() {
     missing ? missing + ' без карточки' : withPlace.length + ' мест');
 
   // ---------- лупа не сбрасывает масштаб ----------
+  // Масштаб считается по загруженной картинке, поэтому без файла на диске
+  // проверять нечего: так бывает, когда база посещений от одного собрания,
+  // а картинки — от другого.
+  const shotFile = (ONE.thumbs || ONE.images || [])[0];
+  if (!shotFile || !fs.existsSync(path.join(DOCS, shotFile))) {
+    ok('снимков нет на диске — лупу не проверяем', true, shotFile || '—');
+  } else {
   await page.click('.painting-link');
   await page.waitForTimeout(900);
   const stage = await page.evaluate(() => {
@@ -212,6 +219,7 @@ function readVisits() {
   ok('колесо работает и при повторном открытии', parseInt(r1, 10) > parseInt(r0, 10), r0 + ' → ' + r1);
   await page.keyboard.press('Escape');
   await page.waitForTimeout(200);
+  }
 
   ok('нет ошибок JS', errs.length === 0, errs.join(' | '));
 

@@ -13,7 +13,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Old Picture Art">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="https://oldpictureart.ru/timeline.html">
+<link rel="canonical" href="https://denchest.github.io/Site-Oldpictureart/timeline.html">
 <title>Таймлайн — Old Picture Art</title>
 <link rel="icon" href="favicon.ico" sizes="32x32">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=3fbf11f0">
+<link rel="stylesheet" href="style.css?v=60f8bbad">
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <style>
 .timeline-topbar { display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding: .4rem 1rem; }
@@ -44,6 +44,15 @@
   background: var(--active); cursor: pointer; border: 2px solid var(--bg);
 }
 .timeline-slider::-moz-range-track { height: 8px; border-radius: 4px; background: var(--border); }
+/* Пальцем в полоску высотой восемь пикселей не попасть: на сенсорных
+   экранах делаем сам ползунок высоким, а видимую дорожку рисуем внутри. */
+@media (pointer: coarse) {
+  .timeline-slider { height: 40px; background: none; }
+  .timeline-slider::-webkit-slider-runnable-track {
+    height: 8px; border-radius: 4px; background: var(--border);
+  }
+  .timeline-slider::-webkit-slider-thumb { margin-top: -10px; }
+}
 .timeline-labels { display: flex; justify-content: space-between; font-size: .85rem; color: var(--muted); margin-bottom: .5rem; }
 .timeline-current { text-align: center; font-size: 2rem; font-weight: 700; color: var(--active); margin: 1rem 0; }
 .timeline-grid {

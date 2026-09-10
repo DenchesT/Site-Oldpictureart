@@ -809,6 +809,17 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
+/* Который снимок из скольких. Нужен листанию: на телефоне стрелок под
+   пальцем нет, и без счётчика непонятно, где ты в череде снимков. */
+.lupa-count {
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  color: #a9b3bf;
+  font-variant-numeric: tabular-nums;
+  min-width: 4ch;
+  text-align: center;
+}
+.lupa-count[hidden] { display: none !important; }
 .lupa-hint {
   padding: var(--s2) var(--s4) var(--s3);
   text-align: center;
@@ -817,9 +828,51 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
   font-size: var(--fs-xs);
   letter-spacing: .02em;
 }
+.lupa-hint-touch { display: none; }
+.lupa-hint-touch[hidden] { display: none !important; }
+
 @media (max-width: 640px) {
-  .lupa-caption b { font-size: var(--fs-sm); }
+  /* На телефоне подпись и кнопки не помещаются в одну строку: подпись
+     сжималась до узкой колонки и разваливалась на десяток строк. Кладём
+     её отдельной строкой во всю ширину, кнопки — под ней. */
+  .lupa-bar {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s2);
+    padding: var(--s2) var(--s3);
+    padding-top: max(var(--s2), env(safe-area-inset-top));
+    flex-wrap: nowrap;
+  }
+  .lupa-caption { flex: none; }
+  .lupa-caption b {
+    font-size: var(--fs-sm);
+    /* Длинные названия с оригиналом и переводом занимают пол-экрана —
+       двух строк хватает, чтобы понять, что перед тобой. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .lupa-caption span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .lupa-tools { justify-content: center; gap: var(--s1); }
+  .lupa-btn { width: 2rem; height: 2rem; }
+  .lupa-scale { min-width: 3.6ch; }
+  .lupa-count { min-width: 3.6ch; }
   .lupa-hint { display: none; }
+  /* Подсказка про жесты нужна ровно там, где есть пальцы. */
+  .lupa-hint-touch {
+    display: block;
+    padding: var(--s2) var(--s3);
+    padding-bottom: max(var(--s2), env(safe-area-inset-bottom));
+  }
+}
+@media (max-width: 640px) and (pointer: fine) {
+  .lupa-hint-touch { display: none; }
+.lupa-hint-touch[hidden] { display: none !important; }
 }
 
 .color-palette { display: flex; gap: var(--s2); margin: var(--s4) 0; flex-wrap: wrap; }
@@ -1484,51 +1537,56 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
    ========================================================================== */
 .year-filter { padding: var(--s2) 0 0; }
 
-.histogram {
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 56px;
-  padding: 0 2px;
-}
+.dec-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
 
-.hbar {
-  flex: 1 1 0;
-  min-width: 0;
-  height: 100%;
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
-  display: flex;
-  align-items: flex-end;
-}
-
-/* Столбик стоит на базовой линии, скруглён только сверху */
-.hbar-fill {
-  display: block;
+/* Строка десятилетия: год, полоса, число работ. Устроена как строки
+   на странице статистики и как соседние разделы сайдбара — это тот же
+   элемент, а не ещё один. Раньше здесь стояли столбики гистограммы
+   шириной в восемнадцать пикселей: пальцем в такой не попасть. */
+.dec-row {
   width: 100%;
-  height: var(--h, 10%);
-  background: var(--active);
-  border-radius: 2px 2px 0 0;
-  opacity: .55;
-  transition: opacity .15s, background .15s;
+  display: grid;
+  grid-template-columns: 4.4rem minmax(0, 1fr) 2.6ch;
+  align-items: center;
+  gap: var(--s3);
+  padding: 8px 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  color: var(--text);
+  text-align: left;
 }
-.hbar:hover .hbar-fill { opacity: 1; }
-.hbar[aria-pressed="true"] .hbar-fill { opacity: 1; }
-.hbar.dim .hbar-fill { opacity: .16; }
-.hbar:focus-visible { outline: 2px solid var(--active); outline-offset: 1px; }
-
-.hist-axis {
-  display: flex;
-  justify-content: space-between;
+.dec-year {
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+  letter-spacing: .02em;
+}
+.dec-track { height: 10px; background: var(--panel); border-radius: 2px; }
+.dec-fill {
+  display: block;
+  height: 100%;
+  width: var(--w, 0%);
+  background: var(--active);
+  border-radius: 0 2px 2px 0;
+  min-width: 3px;
+  opacity: .62;
+  transition: opacity .15s;
+}
+.dec-n {
   font-family: var(--ff-data);
   font-size: var(--fs-xs);
   color: var(--muted);
-  padding: var(--s1) 2px 0;
-  border-top: 1px solid var(--rule-soft);
+  text-align: right;
   font-variant-numeric: tabular-nums;
 }
+.dec-row:hover .dec-fill,
+.dec-row[aria-pressed="true"] .dec-fill { opacity: 1; }
+.dec-row[aria-pressed="true"] .dec-year { color: var(--text); }
+.dec-row.dim .dec-fill { opacity: .18; }
+.dec-row.dim .dec-year, .dec-row.dim .dec-n { opacity: .5; }
+.dec-row:focus-visible { outline: 2px solid var(--active); outline-offset: 1px; }
 
 .year-range {
   display: flex;
@@ -1987,6 +2045,22 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 .footer-links { display: flex; flex-wrap: wrap; gap: var(--s2); }
 @media (max-width: 640px) {
   .site-footer { padding: var(--s4) var(--s3) var(--s5); gap: var(--s3); }
+}
+
+/* ==========================================================================
+   ПАЛЕЦ ВМЕСТО МЫШИ
+   Ссылки в шапке, подвале и теги набраны мелким моноширинным — по высоте
+   строки это цель в 17–22 пикселя, а палец накрывает вчетверо больше.
+   Расширяем область нажатия отступами и тут же снимаем их отрицательными
+   полями, чтобы вёрстка не разъехалась.
+   ========================================================================== */
+@media (pointer: coarse) {
+  .back, .topbar-back, .site-footer a, .tag, .error-links a,
+  .idx-list a, .stat-row a, .museum-visit-list a {
+    padding-block: 9px;
+    margin-block: -9px;
+  }
+  .tag { padding-block: 7px; margin-block: -3px; }
 }
 
 /* ==========================================================================

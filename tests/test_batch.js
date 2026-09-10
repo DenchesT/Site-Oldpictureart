@@ -132,23 +132,23 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
     await page.waitForTimeout(700);
     const total = await page.locator('.card').count();
 
-    ok('гистограмма построена', await page.locator('.hbar').count() > 3, await page.locator('.hbar').count() + ' столбиков');
+    ok('строки десятилетий построены', await page.locator('.dec-row').count() > 3, await page.locator('.dec-row').count() + ' строк');
     ok('подпись про все годы', (await page.locator('#year-caption').textContent()).includes('Все годы'));
 
     // клик по самому высокому столбику
     const idx = await page.evaluate(() => {
-      const bars = [...document.querySelectorAll('.hbar')];
+      const bars = [...document.querySelectorAll('.dec-row')];
       let best = 0, bestH = -1;
       bars.forEach((b, i) => { const hh = parseFloat(b.style.getPropertyValue('--h')); if (hh > bestH) { bestH = hh; best = i; } });
       return best;
     });
-    await page.locator('.hbar').nth(idx).click();
+    await page.locator('.dec-row').nth(idx).click();
     await page.waitForTimeout(400);
     let vis = await page.locator('.card:not([hidden])').count();
     ok('клик по столбику фильтрует', vis > 0 && vis < total, `${vis} из ${total}`);
     const cap = (await page.locator('#year-caption').textContent()).trim();
     ok('подпись показывает выбранный диапазон', /^\d{4}—\d{4}$/.test(cap), cap);
-    ok('невыбранные столбики приглушены', await page.locator('.hbar.dim').count() > 0);
+    ok('невыбранные десятилетия приглушены', await page.locator('.dec-row.dim').count() > 0);
     const inRange = await page.evaluate(() => {
       const from = +document.getElementById('year-from').value, to = +document.getElementById('year-to').value;
       return [...document.querySelectorAll('.card:not([hidden])')]
@@ -157,7 +157,7 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
     ok('показаны только работы из диапазона', inRange);
 
     // повторный клик снимает
-    await page.locator('.hbar').nth(idx).click();
+    await page.locator('.dec-row').nth(idx).click();
     await page.waitForTimeout(400);
     ok('повторный клик снимает фильтр', (await page.locator('.card:not([hidden])').count()) === total);
 
@@ -196,7 +196,7 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
     // фильтр по годам + поиск вместе
     await page.fill('#search', 'холст');
     await page.waitForTimeout(400);
-    await page.locator('.hbar').nth(idx).click();
+    await page.locator('.dec-row').nth(idx).click();
     await page.waitForTimeout(400);
     const both = await page.locator('.card:not([hidden])').count();
     ok('поиск и годы работают вместе', both >= 0 && both < total, `${both} из ${total}`);

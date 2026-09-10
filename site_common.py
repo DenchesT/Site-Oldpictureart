@@ -114,7 +114,7 @@ def has_visits():
 # в canonical, карту сайта, RSS, превью ссылок и разметку для поисковиков,
 # а сборка положит рядом файл CNAME, по которому GitHub Pages узнаёт домен.
 # Менять адрес в других местах не нужно — он собирается только здесь.
-CUSTOM_DOMAIN = "oldpictureart.ru"
+CUSTOM_DOMAIN = ""
 
 BASE_URL = (f"https://{CUSTOM_DOMAIN}" if CUSTOM_DOMAIN
             else "https://denchest.github.io/Site-Oldpictureart")
@@ -259,7 +259,14 @@ def head_common(title, description="", og_image="", canonical="", og_type="websi
     desc = (description or f"{SITE_NAME} — галерея картин из старых музейных собраний.").strip()
     desc = desc.replace('"', "&quot;").replace("<", "&lt;").replace(">", "&gt;")
     title_attr = title.replace('"', "&quot;")
-    og_img_tag = f'\n<meta property="og:image" content="{og_image}">' if og_image else ""
+    # Размеры карточки нужны мессенджерам: без них Telegram и VK иногда
+    # рисуют превью маленьким квадратом вместо широкой картинки.
+    og_img_tag = ""
+    if og_image:
+        og_img_tag = f'\n<meta property="og:image" content="{og_image}">'
+        if "/cards/" in og_image:
+            og_img_tag += ('\n<meta property="og:image:width" content="1200">'
+                           '\n<meta property="og:image:height" content="630">')
     canon_tag = f'\n<link rel="canonical" href="{canonical}">' if canonical else ""
     return f"""<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -315,9 +322,13 @@ LUPA_JS = """<script>
   if (!links.length) return;
 
   var box = null, stage = null, img = null, capTitle = null, capMeta = null,
-      scaleOut = null, btnPrev = null, btnNext = null, btnIn = null, btnOut = null;
+      scaleOut = null, btnPrev = null, btnNext = null, btnIn = null, btnOut = null,
+      countOut = null;
   var idx = 0, scale = 1, fit = 1, tx = 0, ty = 0, natW = 0, natH = 0, zoomed = false;
   var opener = null, pointers = {}, pinch = null, dragged = false;
+  // Жест листания: вписанная картина никуда не двигается, поэтому её
+  // перетаскивание свободно — вбок листает, вниз закрывает.
+  var swipe = null, swipeX = 0;
 
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -333,6 +344,7 @@ LUPA_JS = """<script>
         '<div class="lupa-caption"><b></b><span></span></div>' +
         '<div class="lupa-tools">' +
           '<button type="button" class="lupa-btn" data-act="prev" aria-label="Предыдущая картина" title="Предыдущая">‹</button>' +
+          '<span class="lupa-count" aria-live="polite"></span>' +
           '<button type="button" class="lupa-btn" data-act="next" aria-label="Следующая картина" title="Следующая">›</button>' +
           '<span class="lupa-scale"></span>' +
           '<button type="button" class="lupa-btn" data-act="out" aria-label="Уменьшить" title="Уменьшить">−</button>' +
@@ -343,7 +355,8 @@ LUPA_JS = """<script>
         '</div>' +
       '</div>' +
       '<div class="lupa-stage"><img class="lupa-img" alt=""></div>' +
-      '<p class="lupa-hint">Колесо — увеличение, перетаскивание — сдвиг, двойной щелчок — во всю величину, Esc — закрыть</p>';
+      '<p class="lupa-hint">Колесо — увеличение, перетаскивание — сдвиг, двойной щелчок — во всю величину, Esc — закрыть</p>' +
+      '<p class="lupa-hint lupa-hint-touch">Листайте вбок · вниз — закрыть</p>';
     document.body.appendChild(box);
 
     stage = box.querySelector('.lupa-stage');
@@ -355,6 +368,7 @@ LUPA_JS = """<script>
     btnNext = box.querySelector('[data-act="next"]');
     btnIn = box.querySelector('[data-act="in"]');
     btnOut = box.querySelector('[data-act="out"]');
+    countOut = box.querySelector('.lupa-count');
 
     box.addEventListener('click', function (e) {
       var hit = e.target.closest ? e.target.closest('[data-act]') : null;
@@ -383,7 +397,9 @@ LUPA_JS = """<script>
     stage.addEventListener('pointerdown', onDown);
     stage.addEventListener('pointermove', onMove);
     stage.addEventListener('pointerup', onUp);
-    stage.addEventListener('pointercancel', onUp);
+    // Отмена жеста (звонок, системный жест) не должна листать: сначала
+    // забываем начатое движение, потом закрываем указатель как обычно.
+    stage.addEventListener('pointercancel', function (e) { endSwipe(true); onUp(e); });
 
     document.addEventListener('keydown', onKey);
     window.addEventListener('resize', function () { if (!box.hidden) apply(fitScale(), false); });
@@ -412,7 +428,7 @@ LUPA_JS = """<script>
   }
 
   function paint() {
-    img.style.transform = 'translate(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px) scale(' + scale + ')';
+    img.style.transform = 'translate(' + (tx + swipeX).toFixed(1) + 'px,' + ty.toFixed(1) + 'px) scale(' + scale + ')';
     scaleOut.textContent = Math.round(scale * 100) + '%';
     var max = maxScale();
     btnIn.disabled = scale >= max - 0.001;
@@ -461,9 +477,32 @@ LUPA_JS = """<script>
     var ids = Object.keys(pointers);
     if (ids.length === 2) {
       pinch = {d: dist(pointers[ids[0]], pointers[ids[1]]), s: scale};
+      endSwipe(false);
     } else {
       stage.classList.add('dragging');
+      // Пока картина вписана целиком, тащить её некуда — clamp держит её
+      // по центру. Значит, это движение можно отдать под жест.
+      swipe = Math.abs(scale - fitScale()) < 0.01
+        ? {x0: e.clientX, y0: e.clientY, dx: 0, dy: 0} : null;
     }
+  }
+
+  function hideHint() {
+    // Подсказка нужна ровно до первого жеста, дальше она только занимает
+    // место внизу экрана.
+    var hint = box && box.querySelector('.lupa-hint-touch');
+    if (hint) hint.hidden = true;
+  }
+
+  function endSwipe(eased) {
+    swipe = null;
+    if (!swipeX) return;
+    swipeX = 0;
+    if (eased && !reduce) {
+      img.classList.add('eased');
+      setTimeout(function () { img.classList.remove('eased'); }, 240);
+    }
+    paint();
   }
 
   function onMove(e) {
@@ -481,6 +520,17 @@ LUPA_JS = """<script>
       }
       return;
     }
+    // Листание: картина едет за пальцем, чтобы жест был виден, а не
+    // угадывался. Соседняя запись появится, когда палец отпустят.
+    if (swipe) {
+      swipe.dx = e.clientX - swipe.x0;
+      swipe.dy = e.clientY - swipe.y0;
+      if (Math.abs(swipe.dx) + Math.abs(swipe.dy) > 3) dragged = true;
+      swipeX = links.length > 1 ? swipe.dx : 0;
+      pointers[e.pointerId] = {x: e.clientX, y: e.clientY};
+      paint();
+      return;
+    }
     var dx = e.clientX - p.x, dy = e.clientY - p.y;
     if (Math.abs(dx) + Math.abs(dy) > 3) dragged = true;
     tx += dx; ty += dy;
@@ -493,6 +543,24 @@ LUPA_JS = """<script>
     delete pointers[e.pointerId];
     if (Object.keys(pointers).length < 2) pinch = null;
     stage.classList.remove('dragging');
+    if (!swipe) return;
+    var dx = swipe.dx, dy = swipe.dy;
+    swipe = null;
+    // Порог — доля ширины экрана, но не меньше пальца и не больше,
+    // чем удобно смахнуть одной рукой на телефоне.
+    var w = stage.getBoundingClientRect().width;
+    var need = Math.max(48, Math.min(120, w * 0.18));
+    if (links.length > 1 && Math.abs(dx) > need && Math.abs(dx) > Math.abs(dy)) {
+      swipeX = 0;
+      hideHint();
+      return show(dx < 0 ? idx + 1 : idx - 1);
+    }
+    if (Math.abs(dy) > 120 && Math.abs(dy) > Math.abs(dx) * 1.5) {
+      swipeX = 0;
+      hideHint();
+      return close();
+    }
+    endSwipe(true);
   }
 
   function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
@@ -526,6 +594,10 @@ LUPA_JS = """<script>
     var a = links[idx];
     var thumb = a.querySelector('img');
     var hires = a.getAttribute('href');
+    // Лупа показывает копию до 2000 пикселей, если она есть: оригинал бывает
+    // по нескольку мегабайт, а разглядеть на экране больше всё равно нельзя.
+    // Кнопка «скачать» ниже по-прежнему указывает на оригинал.
+    var viewSrc = a.getAttribute('data-view') || hires;
 
     var save = box.querySelector('[data-act="save"]');
     if (save) {
@@ -537,11 +609,23 @@ LUPA_JS = """<script>
     capMeta.textContent = a.getAttribute('data-meta') || '';
     img.alt = thumb ? thumb.alt : '';
     btnPrev.hidden = btnNext.hidden = links.length < 2;
+    if (countOut) {
+      countOut.hidden = links.length < 2;
+      countOut.textContent = links.length > 1 ? (idx + 1) + '/' + links.length : '';
+    }
+    // Подсказка по делу: листать нечего, когда картина одна.
+    var touchHint = box.querySelector('.lupa-hint-touch');
+    if (touchHint) {
+      touchHint.textContent = links.length > 1
+        ? 'Листайте вбок · вниз — закрыть'
+        : 'Щипок увеличивает · вниз — закрыть';
+    }
 
     // Сначала показываем ту же картинку, что уже на странице — она в кэше,
     // и лупа открывается мгновенно. Оригинал подгружаем следом и подменяем,
     // сохранив видимый размер.
-    var small = (thumb && (thumb.currentSrc || thumb.src)) || hires;
+    var small = (thumb && (thumb.currentSrc || thumb.src)) || viewSrc;
+    swipe = null; swipeX = 0;
     natW = natH = 0;
     zoomed = false;
     stage.classList.add('loading');
@@ -551,7 +635,7 @@ LUPA_JS = """<script>
       natW = img.naturalWidth; natH = img.naturalHeight;
       stage.classList.remove('loading');
       apply(fitScale(), false);
-      loadHires(hires);
+      loadHires(viewSrc);
     };
     if (img.complete && img.naturalWidth) ready();
     else img.onload = ready;

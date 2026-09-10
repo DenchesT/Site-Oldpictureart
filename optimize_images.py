@@ -72,9 +72,11 @@ def collect_references():
             continue
         with open(meta, encoding="utf-8") as f:
             for post in json.load(f):
-                for field in ("images", "thumbs", "hires"):
+                for field in ("images", "thumbs", "hires", "views"):
                     for path in post.get(field) or []:
                         refs.add(path)
+                if post.get("card"):
+                    refs.add(post["card"])
 
     for root, _, files in os.walk(OUTPUT_DIR):
         if os.path.abspath(root).startswith(os.path.abspath(UNUSED_DIR)):

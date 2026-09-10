@@ -45,6 +45,16 @@ def main():
 
     print(f"Постов в базе: {len(meta)}" + (f", посещений: {len(visits)}" if visits else ""))
 
+    # Копии для просмотра в лупе. Делаются один раз и переживают пересборки;
+    # если Pillow нет, страницы соберутся и без них — лупа возьмёт оригинал.
+    changed = bs.build_views(meta + visits)
+    # Карточки для превью ссылок в мессенджерах
+    changed += bs.build_cards(meta)
+    if changed:
+        bs.save_json(bs.META_FILE, meta)
+        if visits:
+            bs.save_json(bs.VISITS_FILE, visits)
+
     for post in meta:
         with open(os.path.join(bs.OUTPUT_DIR, post["filename"]), "w", encoding="utf-8") as f:
             f.write(bs.render_post_page(post, meta))
@@ -82,6 +92,8 @@ def main():
             print(f"✓ {script}")
         except Exception as e:
             print(f"✕ {script}: {e}")
+
+    bs.save_image_sizes()
 
     print("\nГотово. Откройте docs/index.html")
 

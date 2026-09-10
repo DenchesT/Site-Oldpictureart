@@ -1302,7 +1302,7 @@ def generate_museums_page(retry_failed=False, offline=False):
         extra = len(posts_sorted) - len(thumbs)
         thumbs_html = "".join(
             f'<a class="museum-thumb" href="{h(fn)}" title="{h(alt)}">'
-            f'<img src="{h(src)}" alt="{h(alt)}" loading="lazy" decoding="async"></a>'
+            f'<img src="{h(src)}" alt="{h(alt)}" width="62" height="62" loading="lazy" decoding="async"></a>'
             for src, fn, alt in thumbs
         )
         if extra > 0:

@@ -1,5 +1,7 @@
 const { chromium } = require('playwright');
-const DOCS = require('path').join(__dirname, '..', 'docs');
+const fs = require('fs');
+const path = require('path');
+const DOCS = path.join(__dirname, '..', 'docs');
 // Страница работы для проверок выбирается из базы, а не задана жёстко:
 // конкретный пост могут удалить из канала, и проверки посыпались бы.
 function pickPost() {
@@ -207,7 +209,83 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
   });
   ok('на телефоне ряд кнопок помещается', bar.fits);
   ok('на телефоне «скачать» на месте', bar.dl);
+
+  // Панель лупы на телефоне. Раньше подпись сжималась до узкой колонки
+  // и разваливалась на десяток строк, занимая почти весь экран.
+  await mp.locator('a.painting-link').first().dispatchEvent('click');
+  await mp.waitForTimeout(500);
+  const capt = await mp.evaluate(() => {
+    const b = document.querySelector('.lupa-bar').getBoundingClientRect();
+    const t = document.querySelector('.lupa-caption b').getBoundingClientRect();
+    const st = document.querySelector('.lupa-stage').getBoundingClientRect();
+    return { bar: Math.round(b.height), title: Math.round(t.height), stage: Math.round(st.height) };
+  });
+  ok('панель лупы не съедает экран', capt.bar <= 140, capt.bar + 'px');
+  ok('подпись не выше двух строк', capt.title <= 60, capt.title + 'px');
+  ok('картине остаётся место', capt.stage > 500, capt.stage + 'px');
+
+  // Листание жестом: на телефоне стрелок под пальцем нет.
+  const swipe = async (dx, dy) => {
+    await mp.evaluate(async ([dx, dy]) => {
+      const el = document.querySelector('.lupa-stage');
+      const r = el.getBoundingClientRect();
+      const x = r.left + r.width / 2, y = r.top + r.height / 2;
+      const send = (type, cx, cy) => el.dispatchEvent(new PointerEvent(type, {
+        pointerId: 1, pointerType: 'touch', isPrimary: true, clientX: cx, clientY: cy, bubbles: true }));
+      send('pointerdown', x, y);
+      for (let i = 1; i <= 10; i++) {
+        send('pointermove', x + dx * i / 10, y + dy * i / 10);
+        await new Promise(r => setTimeout(r, 10));
+      }
+      send('pointerup', x + dx, y + dy);
+    }, [dx, dy]);
+    await mp.waitForTimeout(350);
+  };
+  await swipe(0, 220);
+  ok('смахивание вниз закрывает лупу', !(await mp.locator('.lupa').isVisible()));
   await m.close();
+
+  // Страница с несколькими снимками: там листание и счётчик
+  const many = fs.readdirSync(DOCS).filter(x => x.startsWith('visit-') && x.endsWith('.html'))
+    .find(x => (fs.readFileSync(path.join(DOCS, x), 'utf8').match(/class="painting-link/g) || []).length > 2);
+  if (many) {
+    const t = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    const tp = await t.newPage();
+    const terrs = [];
+    tp.on('pageerror', e => terrs.push(e.message.slice(0, 100)));
+    await tp.goto(f(many));
+    await tp.waitForTimeout(700);
+    await tp.locator('a.painting-link').first().dispatchEvent('click');
+    await tp.waitForTimeout(600);
+    const count = () => tp.evaluate(() => document.querySelector('.lupa-count').textContent);
+    const first = await count();
+    ok('счётчик снимков виден', /^1\/\d+$/.test(first), first);
+    const swipeT = async (dx) => {
+      await tp.evaluate(async (dx) => {
+        const el = document.querySelector('.lupa-stage');
+        const r = el.getBoundingClientRect();
+        const x = r.left + r.width / 2, y = r.top + r.height / 2;
+        const send = (type, cx, cy) => el.dispatchEvent(new PointerEvent(type, {
+          pointerId: 1, pointerType: 'touch', isPrimary: true, clientX: cx, clientY: cy, bubbles: true }));
+        send('pointerdown', x, y);
+        for (let i = 1; i <= 10; i++) {
+          send('pointermove', x + dx * i / 10, y);
+          await new Promise(r => setTimeout(r, 10));
+        }
+        send('pointerup', x + dx, y);
+      }, dx);
+      await tp.waitForTimeout(350);
+    };
+    await swipeT(-170);
+    const second = await count();
+    ok('свайп влево листает вперёд', second !== first, first + ' → ' + second);
+    await swipeT(170);
+    ok('свайп вправо возвращает назад', (await count()) === first, first);
+    await swipeT(-20);
+    ok('короткое движение не листает', (await count()) === first, first);
+    ok('нет ошибок JS при листании', terrs.length === 0, terrs.join(' | '));
+    await t.close();
+  }
 
   await browser.close();
   const fails = results.filter(r => !r.pass);

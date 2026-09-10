@@ -85,6 +85,15 @@ def generate_timeline_page():
   background: var(--active); cursor: pointer; border: 2px solid var(--bg);
 }}
 .timeline-slider::-moz-range-track {{ height: 8px; border-radius: 4px; background: var(--border); }}
+/* Пальцем в полоску высотой восемь пикселей не попасть: на сенсорных
+   экранах делаем сам ползунок высоким, а видимую дорожку рисуем внутри. */
+@media (pointer: coarse) {{
+  .timeline-slider {{ height: 40px; background: none; }}
+  .timeline-slider::-webkit-slider-runnable-track {{
+    height: 8px; border-radius: 4px; background: var(--border);
+  }}
+  .timeline-slider::-webkit-slider-thumb {{ margin-top: -10px; }}
+}}
 .timeline-labels {{ display: flex; justify-content: space-between; font-size: .85rem; color: var(--muted); margin-bottom: .5rem; }}
 .timeline-current {{ text-align: center; font-size: 2rem; font-weight: 700; color: var(--active); margin: 1rem 0; }}
 .timeline-grid {{
