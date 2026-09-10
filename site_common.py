@@ -13,7 +13,51 @@ generate_timeline.py, generate_map.py).
 """
 
 SITE_NAME = "Old Picture Art"
-BASE_URL = "https://denchest.github.io/Site-Oldpictureart"
+
+# Свой домен. Пока пусто — сайт живёт по адресу github.io.
+#
+# Купили домен? Впишите его сюда без «https://» и без косой черты в конце,
+# например "oldpictureart.ru", и пересоберите сайт. Адрес сам подставится
+# в canonical, карту сайта, RSS, превью ссылок и разметку для поисковиков,
+# а сборка положит рядом файл CNAME, по которому GitHub Pages узнаёт домен.
+# Менять адрес в других местах не нужно — он собирается только здесь.
+CUSTOM_DOMAIN = ""
+
+BASE_URL = (f"https://{CUSTOM_DOMAIN}" if CUSTOM_DOMAIN
+            else "https://denchest.github.io/Site-Oldpictureart")
+
+
+# Где лежат оригиналы для скачивания.
+#
+# Пусто — рядом с сайтом, в docs/images, как сейчас. Оригиналы занимают
+# 91% веса всего сайта и растут быстрее всего остального: страницы,
+# миниатюры и копии для показа вместе весят около 50 МБ, оригиналы — за
+# полтерабайта пути. Когда упрётесь в предел хостинга, оригиналы
+# переносят в объектное хранилище, а сюда вписывают его адрес без косой
+# черты в конце, например:
+#
+#     HIRES_BASE_URL = "https://storage.yandexcloud.net/oldpictureart"
+#
+# После этого кнопка «Скачать картину» и лупа берут файл оттуда, а сам
+# сайт остаётся маленьким и бесплатным. Имена файлов не меняются —
+# достаточно скопировать папку images в хранилище как есть.
+#
+# Одна тонкость: атрибут download браузеры соблюдают только для файлов
+# с того же домена. Как только оригиналы уедут в хранилище, кнопка станет
+# открывать картинку вместо сохранения, и красивое имя файла потеряется.
+# Лечится на стороне хранилища — заголовком Content-Disposition:
+# attachment у объектов; у Yandex Object Storage это делается в свойствах
+# объекта или параметром response-content-disposition в ссылке.
+HIRES_BASE_URL = ""
+
+
+def hires_url(path):
+    """Адрес оригинала: локальный путь или ссылка в хранилище."""
+    if not path:
+        return path
+    if not HIRES_BASE_URL or path.startswith(("http://", "https://")):
+        return path
+    return f"{HIRES_BASE_URL.rstrip('/')}/{path.lstrip('/')}"
 TELEGRAM_URL = "https://t.me/oldpictureart"
 TELEGRAM_NAME = "@oldpictureart"
 

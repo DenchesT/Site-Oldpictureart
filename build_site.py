@@ -51,7 +51,7 @@ except ImportError:
     PIL_AVAILABLE = False
 
 from site_common import (head_common, scroll_top_button, theme_button, site_footer,
-                         mark_svg, TELEGRAM_URL, TELEGRAM_NAME,
+                         mark_svg, TELEGRAM_URL, TELEGRAM_NAME, CUSTOM_DOMAIN, hires_url,
                          COMMON_JS, SCROLL_TOP_JS, LUPA_JS, BASE_URL)
 
 def load_dotenv(path=".env"):
@@ -531,6 +531,21 @@ def artwork_jsonld(post):
             + "</script>")
 
 
+def generate_cname():
+    """Файл CNAME — то, по чему GitHub Pages понимает, что у сайта свой домен.
+
+    Пишем его сборкой, а не руками: иначе однажды он потеряется при
+    очередной пересборке или переносе, и сайт молча вернётся на github.io
+    вместе со всеми ссылками. Если домена нет, ничего не трогаем — в том
+    числе не удаляем файл, который мог быть создан через настройки GitHub.
+    """
+    if not CUSTOM_DOMAIN:
+        return
+    with open(os.path.join(OUTPUT_DIR, "CNAME"), "w", encoding="utf-8") as f:
+        f.write(CUSTOM_DOMAIN + "\n")
+    logger.info(f"CNAME → {CUSTOM_DOMAIN}")
+
+
 def generate_robots():
     """robots.txt со ссылкой на карту сайта.
 
@@ -574,7 +589,7 @@ def render_post_page(post, all_posts=None):
     parts = []
     hl = post.get("hires", [])
     for i, src in enumerate(post["images"]):
-        lh = hl[i] if i < len(hl) else src
+        lh = hires_url(hl[i] if i < len(hl) else src)
         # Первая картина — главный элемент страницы (LCP): грузим её сразу,
         # остальные ленимся. Раньше lazy стоял на всех, включая первую.
         loading = 'fetchpriority="high" decoding="async"' if i == 0 else 'loading="lazy" decoding="async"'
@@ -650,7 +665,7 @@ def render_post_page(post, all_posts=None):
     # Скачать работу. Это ссылка, а не кнопка: атрибут download отдаёт файл
     # напрямую, работает без JS и не мешает «сохранить как» из меню правой
     # кнопки. Файлы лежат на том же домене, иначе download браузер игнорирует.
-    download_src = (hl[0] if hl else (post["images"][0] if post.get("images") else ""))
+    download_src = hires_url(hl[0] if hl else (post["images"][0] if post.get("images") else ""))
     download_btn = ""
     if download_src:
         download_btn = (f'<a href="{h(download_src)}" download="{h(download_name(post, download_src))}" '
@@ -2463,6 +2478,7 @@ async def main():
     generate_tag_pages(all_posts)
     generate_extra_pages(all_posts)
     generate_robots()
+    generate_cname()
     generate_sitemap(all_posts)
     generate_manifest()
     generate_rss(all_posts)

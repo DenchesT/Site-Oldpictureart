@@ -1,0 +1,23 @@
+# Окончания строк.
+#
+# Проект правится и на Windows, и на Linux, поэтому git на каждом коммите
+# писал «LF will be replaced by CRLF». Предупреждение безобидное, но из-за
+# разнобоя файл иногда выглядит изменённым целиком, хотя менялась одна
+# строка. Здесь это решено раз и навсегда: в репозитории всегда LF.
+* text=auto eol=lf
+
+# Windows-скрипты обязаны быть с CRLF, иначе cmd их не выполнит
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Двоичные файлы git не трогает и не пытается «чинить» переносы
+*.jpg  binary
+*.jpeg binary
+*.png  binary
+*.gif  binary
+*.ico  binary
+*.tif  binary
+*.tiff binary
+*.woff binary
+*.woff2 binary
+*.pdf  binary
