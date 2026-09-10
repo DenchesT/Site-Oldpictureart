@@ -12,7 +12,26 @@ generate_timeline.py, generate_map.py).
 экранировать не нужно.
 """
 
+import json
+import os
+
 SITE_NAME = "Old Picture Art"
+
+# Посещения — выставки и музеи из постов #выставка и #галерея.
+# Раздела может не быть вовсе (пока таких постов не нашлось), поэтому
+# ссылки на него в подвале и в сайдбаре появляются только вместе с файлом.
+VISITS_FILE = "visits_meta.json"
+
+
+def has_visits():
+    """Есть ли в собрании посещения. Читается на каждой странице, но файл
+    крошечный, а держать флаг в памяти нельзя: генераторы карты, квиза и
+    таймлайна — отдельные процессы, и о состоянии сборки они не знают."""
+    try:
+        with open(VISITS_FILE, encoding="utf-8") as f:
+            return bool(json.load(f))
+    except Exception:
+        return False
 
 # Свой домен. Пока пусто — сайт живёт по адресу github.io.
 #
@@ -518,8 +537,9 @@ def site_footer(rss="feed.xml"):
         '<p class="footer-links">'
         '<a href="ukazatel.html">Указатель</a> · '
         '<a href="stats.html">Статистика</a> · '
-        '<a href="museums.html">Карта музеев</a> · '
-        f'<a href="{rss}">RSS</a>'
+        '<a href="museums.html">Карта собраний</a> · '
+        + ('<a href="visits.html">Посещения</a> · ' if has_visits() else '')
+        + f'<a href="{rss}">RSS</a>'
         '</p>'
         '</footer>'
     )

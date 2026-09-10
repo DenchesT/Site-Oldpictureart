@@ -1278,7 +1278,7 @@ def generate_museums_page(retry_failed=False, offline=False):
         logger.info(f"Создан {config_path} — впишите туда ключ Яндекс.Карт")
 
     page_head = head_common(
-        title="Карта музеев — Old Picture Art",
+        title="Карта собраний — Old Picture Art",
         description=f"{len(museums_dict)} музеев из коллекции Old Picture Art на карте мира.",
         canonical=f"{BASE_URL}/museums.html",
         extra='\n<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" '
@@ -1305,7 +1305,7 @@ def generate_museums_page(retry_failed=False, offline=False):
 </div>
 
 <header class="museums-hero">
-  <h1><span class="icon-map-header" aria-hidden="true"></span> Карта музеев</h1>
+  <h1><span class="icon-map-header" aria-hidden="true"></span> Карта собраний</h1>
   <p class="museums-stats">{stats}</p>
 </header>
 
@@ -1356,7 +1356,7 @@ const MUSEUMS = {json.dumps(map_data, ensure_ascii=False)};
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html)
     
-    logger.info(f"✅ Карта музеев сохранена: {output_path}")
+    logger.info(f"✅ Карта собраний сохранена: {output_path}")
     logger.info(f"   Всего музеев: {len(museums_dict)}")
     logger.info(f"   На карте: {found_locations}")
     approx = [m for m, l in locations.items() if l.get('precision') == 'approx']

@@ -9,8 +9,8 @@
 оригиналов, случайно попавшие файлы.
 
 Что делает скрипт:
-  1. собирает все упоминания картинок — из posts_meta.json и из готовых
-     страниц в docs/ (html, xml, json, css, js);
+  1. собирает все упоминания картинок — из posts_meta.json, visits_meta.json
+     и из готовых страниц в docs/ (html, xml, json, css, js);
   2. показывает, какие файлы не упомянуты нигде, сколько они весят,
      какие файлы битые и какие не годятся для веба (например .tif);
   3. пересобирает раздутые миниатюры под тот размер, в котором они
@@ -43,6 +43,7 @@ import urllib.parse
 OUTPUT_DIR = "docs"
 IMAGES_DIR = os.path.join(OUTPUT_DIR, "images")
 META_FILE = "posts_meta.json"
+VISITS_FILE = "visits_meta.json"
 UNUSED_DIR = os.path.join(OUTPUT_DIR, "_unused")
 
 # Форматы, которые браузеры не показывают: держать их на сайте бессмысленно.
@@ -64,8 +65,12 @@ def collect_references():
     """
     refs = set()
 
-    if os.path.exists(META_FILE):
-        with open(META_FILE, encoding="utf-8") as f:
+    # Обе базы: картины и посещения. Снимки с выставок лежат в той же
+    # папке images, и без второго файла уборка сочла бы их мусором.
+    for meta in (META_FILE, VISITS_FILE):
+        if not os.path.exists(meta):
+            continue
+        with open(meta, encoding="utf-8") as f:
             for post in json.load(f):
                 for field in ("images", "thumbs", "hires"):
                     for path in post.get(field) or []:

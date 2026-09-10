@@ -5,7 +5,8 @@
 Зачем: build_site.py ходит в Telegram за новыми постами, поэтому починить
 вёрстку и прогнать сайт заново раньше было нельзя без .env и телефона.
 Этот скрипт берёт уже скачанные данные и перегенерирует HTML: страницы
-картин, теги, главную, 404, sitemap, RSS, манифест, квиз, таймлайн и карту.
+картин, посещения, теги, главную, 404, sitemap, RSS, манифест, квиз,
+таймлайн и карту.
 
 Запуск:
     python rebuild_pages.py            # всё
@@ -27,23 +28,32 @@ def main():
     if not meta:
         raise SystemExit(f"✕ {bs.META_FILE} пуст или не найден — пересобирать нечего")
 
+    # Посещения живут отдельным файлом и могут не существовать вовсе:
+    # раздел появляется только после того, как build_site.py найдёт
+    # в канале посты #выставка или #галерея.
+    visits = bs.load_json(bs.VISITS_FILE, [])
+
     os.makedirs(bs.OUTPUT_DIR, exist_ok=True)
     os.makedirs(bs.IMAGES_DIR, exist_ok=True)
     with open(os.path.join(bs.OUTPUT_DIR, ".nojekyll"), "w"):
         pass
 
-    print(f"Постов в базе: {len(meta)}")
+    print(f"Постов в базе: {len(meta)}" + (f", посещений: {len(visits)}" if visits else ""))
 
     for post in meta:
         with open(os.path.join(bs.OUTPUT_DIR, post["filename"]), "w", encoding="utf-8") as f:
             f.write(bs.render_post_page(post, meta))
     print(f"✓ Страницы картин: {len(meta)}")
 
+    if visits:
+        bs.generate_visit_pages(visits, meta)
+        print(f"✓ Посещения: {len(visits)} + visits.html")
+
     bs.generate_tag_pages(meta)
     bs.generate_extra_pages(meta)
     bs.generate_robots()
     bs.generate_cname()
-    bs.generate_sitemap(meta)
+    bs.generate_sitemap(meta, visits)
     bs.generate_manifest()
     bs.generate_rss(meta)
 
