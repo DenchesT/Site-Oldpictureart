@@ -30,6 +30,11 @@ fs.copyFileSync(path.join(DOCS, 'map-config.js'), path.join(TMP, 'map-config.js'
 const results = [];
 const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extra || '' });
 
+// Сколько карточек должно быть, считаем по данным, а не числом в проверке:
+// на карте теперь и собрания из posts_meta.json, и места из visits_meta.json,
+// и жёсткая цифра ломалась каждый раз, когда прибавлялся музей.
+const CARDS = (html.match(/class="museum-card"/g) || []).length;
+
 (async () => {
   const browser = await chromium.launch(LAUNCH);
 
@@ -51,7 +56,7 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
     ok('метки на карте', markers > 0, markers + ' шт.');
 
     const cards = await page.locator('.museum-card').count();
-    ok('карточки музеев', cards === 50, cards + ' шт.');
+    ok('карточки музеев', cards === CARDS && cards > 40, cards + ' шт.');
 
     const thumbs = await page.locator('.museum-thumb img').count();
     ok('миниатюры картин в карточках', thumbs > 0, thumbs + ' шт.');
@@ -85,7 +90,7 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
     await page.fill('#museum-search', '');
     await page.waitForTimeout(400);
     visible = await page.locator('.museum-card:not([hidden])').count();
-    ok('очистка поиска возвращает всё', visible === 50, visible + '/50');
+    ok('очистка поиска возвращает всё', visible === CARDS, visible + '/' + CARDS);
 
     // сортировка
     const firstByCount = (await page.locator('.museum-card h3').first().textContent()).trim();
@@ -95,7 +100,7 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
     ok('сортировка по названию меняет порядок', firstByName !== firstByCount, `${firstByCount} → ${firstByName}`);
     await page.selectOption('#museum-sort', 'country');
     await page.waitForTimeout(300);
-    ok('сортировка по стране работает', (await page.locator('.museum-card').count()) === 50);
+    ok('сортировка по стране работает', (await page.locator('.museum-card').count()) === CARDS);
     await page.selectOption('#museum-sort', 'count');
     await page.waitForTimeout(300);
 

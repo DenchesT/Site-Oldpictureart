@@ -49,6 +49,8 @@ function readVisits() {
 
   const list = await page.evaluate(() => ({
     h1: document.querySelector('h1').textContent.trim(),
+    tiles: !document.getElementById('visits').classList.contains('list'),
+    views: [...document.querySelectorAll('.visit-view button')].map(b => b.getAttribute('data-view')),
     cards: document.querySelectorAll('#visits .visit-card').length,
     buttons: [...document.querySelectorAll('.visit-switch button')].map(b => b.getAttribute('data-kind')),
     counts: [...document.querySelectorAll('.visit-switch .visit-count')].map(s => +s.textContent),
@@ -59,6 +61,8 @@ function readVisits() {
       .map(d => d.querySelector('b').textContent.trim()),
   }));
   ok('заголовок раздела', list.h1 === 'Посещения', list.h1);
+  ok('по умолчанию плитки', list.tiles);
+  ok('есть переключатель раскладки', list.views.join(',') === 'grid,list', list.views.join(','));
   ok('карточек столько же, сколько посещений', list.cards === visits.length, `${list.cards} из ${visits.length}`);
   ok('три кнопки переключателя', list.buttons.join(',') === 'all,выставка,музей', list.buttons.join(','));
   ok('числа на кнопках сходятся',
@@ -109,6 +113,28 @@ function readVisits() {
     .filter(c => c.offsetParent !== null).length);
   ok('«все» возвращает весь список', allShown === visits.length, `${allShown} шт.`);
 
+  // ---------- раскладка ----------
+  await page.click('.visit-view button[data-view="list"]');
+  await page.waitForTimeout(150);
+  ok('опись включается', await page.evaluate(() =>
+    document.getElementById('visits').classList.contains('list')));
+  await page.reload();
+  await page.waitForTimeout(300);
+  ok('раскладка запоминается', await page.evaluate(() =>
+    document.getElementById('visits').classList.contains('list')));
+  await page.click('.visit-view button[data-view="grid"]');
+  await page.waitForTimeout(150);
+
+  // Заголовок не должен тащить за собой служебные скобки и слово «Выставка»:
+  // вид записи и так подписан отдельной строкой.
+  const headings = await page.evaluate(() => [...document.querySelectorAll('#visits .card-artist')]
+    .map(x => x.textContent.trim()));
+  ok('в заголовках нет пустых скобок', !headings.some(t => /\(\s*\)/.test(t)),
+    headings.find(t => /\(\s*\)/.test(t)) || '');
+  ok('заголовок не начинается со слова «Выставка»',
+    !headings.some(t => /^Выставка[\s"«]/i.test(t)),
+    headings.find(t => /^Выставка[\s"«]/i.test(t)) || '');
+
   // ---------- страница одного посещения ----------
   await page.goto(f(ONE.filename));
   await page.waitForTimeout(400);
@@ -118,6 +144,9 @@ function readVisits() {
     shots: document.querySelectorAll('.painting').length,
     spec: [...document.querySelectorAll('.spec-table div')]
       .map(d => d.querySelector('span').textContent.trim()),
+    gridded: !!document.querySelector('.shots'),
+    cols: document.querySelector('.shots')
+      ? getComputedStyle(document.querySelector('.shots')).gridTemplateColumns.split(' ').length : 0,
     back: (document.querySelector('.topbar-back') || {}).getAttribute
       ? document.querySelector('.topbar-back').getAttribute('href') : '',
     download: !!document.querySelector('.topbar-btn[download]'),
@@ -130,6 +159,7 @@ function readVisits() {
   ok('назад ведёт в раздел', one.back === 'visits.html', one.back);
   ok('есть кнопка «скачать»', one.download);
   ok('снимок открывается лупой', one.lupa);
+  ok('снимки сеткой, а не колонкой', one.gridded && one.cols >= 2, one.cols + ' в ряд');
 
   // Ссылка на карту появляется, только когда место совпало с музеем
   // из собрания, — проверяем, что она хотя бы никуда не врёт.
@@ -137,11 +167,51 @@ function readVisits() {
     const a = document.querySelector('.spec-table a[href^="museums.html#museum-"]');
     return a ? a.getAttribute('href') : '';
   });
+  ok('со страницы похода можно перейти на карту', !!mapLink || !ONE.place, mapLink);
   if (mapLink) {
     const museums = fs.readFileSync(path.join(DOCS, 'museums.html'), 'utf8');
-    ok('ссылка на карту ведёт к настоящей метке',
+    ok('ссылка на карту ведёт к настоящей карточке',
       museums.includes('id="' + mapLink.split('#')[1] + '"'), mapLink);
   }
+
+  // Каждое место похода обязано иметь карточку на карте — иначе половина
+  // раздела оказывается вне карты собраний.
+  const museumsHtml = fs.readFileSync(path.join(DOCS, 'museums.html'), 'utf8');
+  const withPlace = visits.filter(v => (v.place || '').trim());
+  let missing = 0;
+  for (const v of withPlace) {
+    const page2 = fs.readFileSync(path.join(DOCS, v.filename), 'utf8');
+    const m = page2.match(/museums\.html#museum-([^"]+)/);
+    if (!m || !museumsHtml.includes('id="museum-' + m[1] + '"')) missing++;
+  }
+  ok('все места похода есть на карте', missing === 0,
+    missing ? missing + ' без карточки' : withPlace.length + ' мест');
+
+  // ---------- лупа не сбрасывает масштаб ----------
+  await page.click('.painting-link');
+  await page.waitForTimeout(900);
+  const stage = await page.evaluate(() => {
+    const r = document.querySelector('.lupa-stage').getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  });
+  const s0 = await page.evaluate(() => document.querySelector('.lupa-scale').textContent);
+  await page.mouse.move(stage.x, stage.y);
+  await page.mouse.wheel(0, -300);
+  await page.waitForTimeout(300);
+  const s1 = await page.evaluate(() => document.querySelector('.lupa-scale').textContent);
+  ok('колесо увеличивает снимок', parseInt(s1, 10) > parseInt(s0, 10), s0 + ' → ' + s1);
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(200);
+  await page.click('.painting-link');
+  await page.waitForTimeout(700);
+  await page.mouse.move(stage.x + 1, stage.y + 1);
+  const r0 = await page.evaluate(() => document.querySelector('.lupa-scale').textContent);
+  await page.mouse.wheel(0, -300);
+  await page.waitForTimeout(300);
+  const r1 = await page.evaluate(() => document.querySelector('.lupa-scale').textContent);
+  ok('колесо работает и при повторном открытии', parseInt(r1, 10) > parseInt(r0, 10), r0 + ' → ' + r1);
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(200);
 
   ok('нет ошибок JS', errs.length === 0, errs.join(' | '));
 

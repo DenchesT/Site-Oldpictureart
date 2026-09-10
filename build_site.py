@@ -53,7 +53,7 @@ except ImportError:
 from site_common import (head_common, scroll_top_button, theme_button, site_footer,
                          mark_svg, TELEGRAM_URL, TELEGRAM_NAME, CUSTOM_DOMAIN, hires_url,
                          COMMON_JS, SCROLL_TOP_JS, LUPA_JS, BASE_URL,
-                         VISITS_FILE, has_visits)
+                         VISITS_FILE, has_visits, visit_places)
 
 def load_dotenv(path=".env"):
     if not os.path.exists(path): return
@@ -359,9 +359,11 @@ async def download_with_retry(client, msg, fp, retries=3):
             else: raise
     return False
 
-async def download_images(client, group, comments, slug):
+async def download_images(client, group, comments, slug, start=0):
+    """start — сколько снимков у записи уже есть. Добавки к походу качаются
+    отдельным заходом, и без сдвига они перезаписали бы первые файлы."""
     images, hires, thumbs = [], [], []
-    idx = 0
+    idx = start
     for msg in group:
         if getattr(msg,"photo",None):
             idx += 1
@@ -373,7 +375,7 @@ async def download_images(client, group, comments, slug):
             if t: thumbs.append(t)
     docs = [m for m in group if getattr(m,"document",None) and m.document.mime_type.startswith("image/")]
     docs.extend(comments)
-    for i, msg in enumerate(docs, 1):
+    for i, msg in enumerate(docs, start + 1):
         ext = ".jpg"
         for attr in getattr(msg.document,"attributes",[]):
             if hasattr(attr,"file_name"): ext = os.path.splitext(attr.file_name)[1].lower(); break
@@ -389,7 +391,7 @@ async def download_images(client, group, comments, slug):
     if not images and hires:
         images = hires.copy()
         if PIL_AVAILABLE and not thumbs:
-            for i, hr in enumerate(hires, 1):
+            for i, hr in enumerate(hires, start + 1):
                 t = make_thumbnail(os.path.join(OUTPUT_DIR, hr), slug, i)
                 if t: thumbs.append(t)
     return images, hires, thumbs
@@ -1757,18 +1759,43 @@ try {{
 
 # ===================== TELEGRAM =====================
 
-async def fetch_new_posts(client, processed_ids, full_scan=False):
-    """Возвращает две пачки: картины и посещения.
+async def fetch_new_posts(client, processed_ids, full_scan=False, known_visits=None):
+    """Возвращает три пачки: картины, новые посещения и добавки к прежним.
 
     В канале восемь хештегов, а сайт до сих пор понимал только #картина —
     остальные посты молча уходили в отбраковку. Теперь #выставка и #галерея
     разбираются своим разбором и живут в отдельном разделе; всё прочее
     по-прежнему пропускается.
+
+    Отдельная забота — снимки без подписи. С похода привозят больше фото,
+    чем влезает в один пост, и остальные идут следом отдельными записями
+    без текста. Такой пост сам по себе ничего не значит, но относится
+    к ближайшему посещению того же дня — к нему его и приписываем.
     """
     logger.info("Сканирую канал...")
-    accepted, visits = [], []
-    stats = {"total":0,"no_kartina_tag":0,"no_main_msg":0,"already_seen":0,"parse_failed":0,"visits":0}
+    accepted, visits, extras_for_known = [], [], {}
+    known = {v.get("id"): v for v in (known_visits or []) if v.get("id")}
+    stats = {"total":0,"no_kartina_tag":0,"no_main_msg":0,"already_seen":0,
+             "parse_failed":0,"visits":0,"extra_groups":0}
     sf = []
+    # Канал читается от новых к старым, поэтому безымянные посты со снимками
+    # встречаются РАНЬШЕ того посещения, к которому относятся. Копим их и
+    # отдаём ближайшему посещению того же дня.
+    pending = []
+
+    def _day(msg):
+        return msg.date.strftime("%Y-%m-%d")
+
+    def _take_pending(anchor):
+        """Забирает накопленные безымянные посты того же дня."""
+        day = _day(anchor)
+        # Канал читается от новых к старым, поэтому очередь накопилась
+        # задом наперёд: разворачиваем, чтобы снимки легли в том порядке,
+        # в котором их выложили.
+        mine = [g for g in pending if _day(g[0]) == day][::-1]
+        pending.clear()
+        return mine
+
     def _pg(group):
         stats["total"] += 1
         group.reverse()
@@ -1779,20 +1806,42 @@ async def fetch_new_posts(client, processed_ids, full_scan=False):
             low = t.lower()
             if "#картина" in low: mm = m
             if vm is None and any(f"#{tag}" in low for tag in VISIT_TAGS): vm = m
+
         # Посещение: пост о выставке или музее, а не о работе из собрания
         if not mm and vm:
-            if vm.id in processed_ids: stats["already_seen"] += 1; return
+            extra = _take_pending(vm)
+            if vm.id in processed_ids:
+                stats["already_seen"] += 1
+                # Само посещение уже разобрано, но снимки к нему могли
+                # появиться позже или просто не собирались раньше.
+                if extra and vm.id in known:
+                    extras_for_known.setdefault(vm.id, []).extend(extra)
+                    stats["extra_groups"] += len(extra)
+                return
             try:
                 v = parse_visit(ft)
             except Exception as e:
                 logger.error(f"Ошибка посещения {vm.id}: {e}"); v = {}
             if v:
                 stats["visits"] += 1
-                visits.append((vm, group, v))
+                stats["extra_groups"] += len(extra)
+                visits.append((vm, group, v, extra))
             else:
                 stats["parse_failed"] += 1; sf.append(ft[:500])
             return
-        if not mm: stats["no_main_msg"] += 1; return
+
+        if not mm:
+            # Пост без подписи и со снимками — вероятная добавка к походу.
+            # Оставляем в очереди до ближайшего посещения; любая запись
+            # с текстом очередь обрывает: между постами дня она не тянется.
+            if not ft.strip() and any(getattr(m, "photo", None) or getattr(m, "document", None) for m in group):
+                pending.append(group)
+            else:
+                pending.clear()
+            stats["no_main_msg"] += 1
+            return
+
+        pending.clear()
         if "#картина@oldpictureart" not in ft.lower(): stats["no_kartina_tag"] += 1; return
         if mm.id in processed_ids: stats["already_seen"] += 1; return
         try:
@@ -1803,13 +1852,14 @@ async def fetch_new_posts(client, processed_ids, full_scan=False):
             stats["parse_failed"] += 1
             logger.error(f"Ошибка поста {mm.id}: {e}")
             sf.append(ft[:500])
+
     # Обычно смотрим только то, что новее последнего разобранного поста.
     # Но посты #выставка и #галерея лежат в канале давно, а сайт их до сих
     # пор не понимал: при первом запуске с этой возможностью проходим канал
     # целиком, иначе прошлые походы так и останутся ненайденными.
     mid = 0 if full_scan else (max(processed_ids) if processed_ids else 0)
     if full_scan:
-        logger.info("Первый проход по посещениям: смотрю канал целиком")
+        logger.info("Полный проход по каналу: собираю прошлые походы и снимки к ним")
     cai, cg = None, []
     async for msg in client.iter_messages(CHANNEL_URL, min_id=mid):
         if msg.grouped_id:
@@ -1821,13 +1871,17 @@ async def fetch_new_posts(client, processed_ids, full_scan=False):
             if cg: _pg(cg); cg = []; cai = None
             _pg([msg])
     if cg: _pg(cg)
-    logger.info(f"Новых постов: {len(accepted)}, посещений: {len(visits)}. Всего проверено: {stats['total']}, обработано: {stats['already_seen']}, не картина: {stats['no_main_msg']+stats['no_kartina_tag']}, ошибки: {stats['parse_failed']}")
+    logger.info(f"Новых постов: {len(accepted)}, посещений: {len(visits)}"
+                + (f", добавок со снимками: {stats['extra_groups']}" if stats['extra_groups'] else "")
+                + f". Всего проверено: {stats['total']}, обработано: {stats['already_seen']}, "
+                f"не картина: {stats['no_main_msg']+stats['no_kartina_tag']}, ошибки: {stats['parse_failed']}")
     if sf:
         with open("rejected_posts.txt","w",encoding="utf-8") as f:
             f.write(f"# Отбракованные посты — {datetime.now():%Y-%m-%d %H:%M}\n\n")
             for i, s in enumerate(sf, 1): f.write(f"--- #{i} ---\n{s}\n\n")
         logger.info(f"rejected_posts.txt ({len(sf)} шт.)")
-    return accepted[::-1], visits[::-1]
+    return accepted[::-1], visits[::-1], extras_for_known
+
 
 def catalogue_numbers(all_posts):
     """Сквозные номера собрания: по году создания, потом по дате записи.
@@ -2231,17 +2285,63 @@ def render_stats(all_posts):
 # бывает и дефис, и тире, поэтому принимаем любой.
 VISIT_DATE_RE = re.compile(r"\d{1,2}\.\d{1,2}\.\d{4}")
 VISIT_RANGE_RE = re.compile(r"(\d{1,2}\.\d{1,2}\.\d{4})\s*[-–—]\s*(\d{1,2}\.\d{1,2}\.\d{4})")
+VISIT_TAIL_DATE_RE = re.compile(r"[,;\s]*(\d{1,2}\.\d{1,2}\.\d{4})\s*$")
+# Пустые скобки остаются там, где стоял срок работы или ссылка: срок мы
+# из текста вынимаем, а «Выставка "Арктика. Полюс цвета" ( )» — не заголовок.
+EMPTY_BRACKETS_RE = re.compile(r"[(\[{]\s*[)\]}]")
+# Слово «Выставка» перед названием повторяет то, что и так написано
+# в шапке страницы и в строке вида, поэтому в заголовке оно лишнее.
+VISIT_PREFIX_RE = re.compile(r"^(?:выставка|экспозиция)\b[\s:—-]*", re.I)
 VISIT_TAGS = {"выставка": "выставка", "галерея": "музей"}
+
+
+def visit_date(text):
+    """«6.10.2024» → «06.10.2024». В канале день и месяц пишут и с нулём,
+    и без; без выравнивания даты не сортируются и выглядят вразнобой."""
+    m = VISIT_DATE_RE.search(text or "")
+    if not m:
+        return ""
+    d, mo, y = m.group(0).split(".")
+    return f"{int(d):02d}.{int(mo):02d}.{y}"
+
+
+def clean_visit_line(line):
+    """Одна строка поста: без лишних пробелов, пустых скобок и хвостовых
+    запятых. Пустые скобки — след вынутого срока работы."""
+    line = EMPTY_BRACKETS_RE.sub(" ", line)
+    line = re.sub(r"\s+", " ", line)
+    return line.strip(" ,;·—-\t")
+
+
+def strip_quotes(text):
+    """Название в кавычках оставляем без них: кавычки нужны в посте, где
+    название стоит рядом со словом «Выставка», а в заголовке — уже нет."""
+    text = text.strip()
+    pairs = (('"', '"'), ('«', '»'), ('“', '”'), ("'", "'"))
+    for a, b in pairs:
+        if len(text) > 2 and text.startswith(a) and text.endswith(b):
+            return text[1:-1].strip()
+    return text
 
 
 def parse_visit(text):
     """Разбирает пост о посещении: #выставка или #галерея.
 
-    Это не картины, а отчёты о походах, и структура у них своя: место,
-    даты, снимки. Разбор нарочно терпимый — части ищутся сначала по
-    разделителю ⸻, потом по пустым строкам, потом по обычным переносам,
-    потому что в канале встречается и так, и так. Даты узнаются по виду
-    и вынимаются из текста, что осталось — название и место.
+    Это не картины, а отчёты о походах, и структура у них своя:
+
+        Выставка "Арктика. Полюс цвета"      ← название
+        (12.12.2025 - 21.06.2026)            ← сколько работала
+
+        Корпус на Кадашёвской набережной, 17.01.2026   ← где и когда был
+
+        #гтг@oldpictureart
+        #выставка@oldpictureart
+
+    У #галерея названия нет — первой строкой идёт сам музей, дальше дата.
+    Разбор нарочно терпимый: части ищутся сначала по разделителю ⸻, потом
+    по пустым строкам, потом по обычным переносам, потому что в канале
+    встречается и так, и так. Даты узнаются по виду — и отдельной строкой,
+    и хвостом после запятой; что осталось, это название и место.
     """
     if not text:
         return {}
@@ -2254,14 +2354,20 @@ def parse_visit(text):
     if not kind:
         return {}
 
-    body = TAG_RE.sub("", URL_RE.sub(" ", text))
     urls = URL_RE.findall(text)
+    # Теги музеев (#гмии, #гтг) пригодятся ссылками на подборки, а теги
+    # самого раздела в них не нужны — они и так видны по виду записи.
+    tags = sorted({t for t in TAG_RE.findall(text) if t.lower() not in VISIT_TAGS})
+    body = TAG_RE.sub("", URL_RE.sub(" ", text))
 
     run = ""
     m = VISIT_RANGE_RE.search(body)
     if m:
-        run = f"{m.group(1)} — {m.group(2)}"
-        body = body[:m.start()] + "\n" + body[m.end():]
+        run = f"{visit_date(m.group(1))} — {visit_date(m.group(2))}"
+        # Заменяем пробелом, а не переносом: срок работы стоит в скобках,
+        # и от переноса скобки разъезжались по разным строкам — по одной
+        # пустую пару уже не узнать, и в заголовке оставалось «( )».
+        body = body[:m.start()] + " " + body[m.end():]
 
     parts = []
     for split in (SEPARATOR_RE.split,
@@ -2271,19 +2377,25 @@ def parse_visit(text):
         if len(parts) > 1:
             break
 
-    # Дату вынимаем построчно, а не только целыми кусками: когда пост
-    # написан без разделителей, дата посещения оказывается обычной строкой
-    # внутри куска и иначе приклеилась бы к названию музея.
+    # Дату вынимаем построчно: она бывает и отдельной строкой, и хвостом
+    # после места («Музей русского импрессионизма, 04.11.2023»). Без этого
+    # она приклеивалась к названию музея и не попадала в сведения.
     visited, keep = "", []
     for part in parts:
         lines = []
         for line in part.split("\n"):
-            line = re.sub(r"\s+", " ", line).strip(" ,;·—-")
+            line = clean_visit_line(line)
             if not line:
                 continue
             if VISIT_DATE_RE.fullmatch(line):
-                visited = visited or line
+                visited = visited or visit_date(line)
                 continue
+            tail = VISIT_TAIL_DATE_RE.search(line)
+            if tail:
+                visited = visited or visit_date(tail.group(1))
+                line = clean_visit_line(line[:tail.start()])
+                if not line:
+                    continue
             lines.append(line)
         if lines:
             keep.append(" ".join(lines))
@@ -2291,16 +2403,51 @@ def parse_visit(text):
     if not keep:
         return {}
 
-    # У выставки есть своё имя, а у похода в музей имя — это сам музей.
     if kind == "выставка":
-        title, place = keep[0], (keep[1] if len(keep) > 1 else "")
+        title = strip_quotes(VISIT_PREFIX_RE.sub("", keep[0]))
+        place = keep[1] if len(keep) > 1 else ""
         note = " · ".join(keep[2:])
     else:
-        title, place = "", keep[0]
-        note = " · ".join(keep[1:])
+        # У похода в музей главное — сам музей, а он в посте бывает и второй
+        # строкой: «Зал "Французские пастели" (402)» и под ним «Эрмитаж,
+        # Главный штаб». Название музея длиннее и идёт последним, зал —
+        # уточнение, поэтому местом считаем последнюю строку.
+        title = ""
+        place = keep[-1]
+        note = " · ".join(keep[:-1])
 
     return {"kind": kind, "title": title, "place": place, "note": note,
-            "run": run, "visited": visited, "urls": urls, "raw": text}
+            "run": run, "visited": visited, "urls": urls, "tags": tags, "raw": text}
+
+
+def refresh_visits(visits):
+    """Перечитывает сохранённые посещения тем разбором, что сейчас в коде.
+
+    Текст поста лежит в базе целиком, поэтому чинить разбор можно не ходя
+    в Telegram: скачанные снимки остаются на месте, обновляются только
+    разобранные поля и имя файла страницы.
+    """
+    changed = 0
+    for v in visits:
+        raw = v.get("raw")
+        if not raw:
+            continue
+        fresh = parse_visit(raw)
+        if not fresh:
+            continue
+        if any(v.get(k) != val for k, val in fresh.items()):
+            changed += 1
+        v.update(fresh)
+        v["filename"] = visit_filename(v)
+    if changed:
+        logger.info(f"Посещения перечитаны заново: обновлено {changed}")
+    return visits
+
+
+def visit_filename(visit):
+    """Имя страницы похода. Дата записи впереди, чтобы соседние походы
+    в одно место не сливались в одно имя."""
+    return f"visit-{visit.get('date', '')}-{slugify(visit_heading(visit))}.html"
 
 
 def visit_heading(v):
@@ -2317,20 +2464,14 @@ def visit_sort_key(v):
     return (ymd, v.get("date", ""), v.get("filename", ""))
 
 
-def visit_museum_link(visit, all_posts):
-    """Если место похода — музей из собрания, ведём на его метку на карте."""
-    place = (visit.get("place") or visit.get("title") or "").strip()
-    if not (place and all_posts):
-        return ""
-    known = {p["museum"].strip() for p in all_posts if p.get("museum")}
-    for m in sorted(known, key=len, reverse=True):
-        # Сверяем только начало строки. Вхождением где угодно нельзя:
-        # «Волго-Вятский филиал ГМИИ им. А.С. Пушкина» содержит название
-        # московского музея, но это другой город и другое собрание.
-        head = m.split(",")[0].strip()
-        if head and len(head) > 4 and (place.startswith(head) or head.startswith(place)):
-            return m
-    return ""
+def visit_map_names(visits, all_posts):
+    """{место из поста: название карточки на карте}.
+
+    Считается ровно тем же способом, что и на карте, иначе ссылка со
+    страницы похода вела бы в никуда: якорь собирается из этого названия.
+    """
+    names = sorted({p["museum"].strip() for p in (all_posts or []) if p.get("museum")})
+    return visit_places(visits or [], names)
 
 
 def visit_stats(visits):
@@ -2354,11 +2495,13 @@ def render_visits_page(visits, all_posts=None):
         cover = (v.get("thumbs") or v.get("images") or [""])[0]
         heading = visit_heading(v)
         shots = len(v.get("images") or [])
-        facts = [("Побывал", v.get("visited", "")),
-                 ("Работала", v.get("run", "")),
-                 ("Снимков", str(shots) if shots else "")]
-        facts_html = "".join(f'<div><span>{h(k)}</span><b>{h(val)}</b></div>'
-                             for k, val in facts if val)
+        # Классы у строк сведений нужны плиткам: там подписи прячутся,
+        # и без них «17.01.2026 · 12.12.2025 — 21.06.2026 · 7» не прочесть.
+        facts = [("f-when", "Побывал", v.get("visited", "")),
+                 ("f-run", "Работала", v.get("run", "")),
+                 ("f-shots", "Снимков", str(shots) if shots else "")]
+        facts_html = "".join(f'<div class="{cls}"><span>{h(k)}</span><b>{h(val)}</b></div>'
+                             for cls, k, val in facts if val)
         img = (f'<div class="card-img"><img src="{h(cover)}" alt="{h(heading)}"'
                f' loading="lazy" decoding="async"></div>') if cover else '<div class="card-img"></div>'
         sub = v.get("place") if v.get("title") else v.get("note", "")
@@ -2396,14 +2539,20 @@ def render_visits_page(visits, all_posts=None):
 <header class="artist-head">
   <p class="eyebrow">Дневник</p>
   <h1>Посещения</h1>
-  <p class="idx-lede">Выставки и музеи, где я побывал, — с датами и своими снимками.</p>
-  <div class="view-switch visit-switch" role="group" aria-label="Что показывать">
-    <button type="button" data-kind="all" aria-pressed="true">Все <span class="visit-count">{len(items)}</span></button>
-    <button type="button" data-kind="выставка" aria-pressed="false">Выставки <span class="visit-count">{shows}</span></button>
-    <button type="button" data-kind="музей" aria-pressed="false">Музеи <span class="visit-count">{museums}</span></button>
+  <p class="idx-lede visits-lede">Выставки и музеи, где я побывал, — с датами и своими снимками.</p>
+  <div class="visit-bar">
+    <div class="view-switch visit-switch" role="group" aria-label="Что показывать">
+      <button type="button" data-kind="all" aria-pressed="true">Все <span class="visit-count">{len(items)}</span></button>
+      <button type="button" data-kind="выставка" aria-pressed="false">Выставки <span class="visit-count">{shows}</span></button>
+      <button type="button" data-kind="музей" aria-pressed="false">Музеи <span class="visit-count">{museums}</span></button>
+    </div>
+    <div class="view-switch visit-view" role="group" aria-label="Как показывать">
+      <button type="button" data-view="grid" aria-pressed="true">Плитки</button>
+      <button type="button" data-view="list" aria-pressed="false">Опись</button>
+    </div>
   </div>
 </header>
-<div class="grid list" id="visits">{''.join(cards)}</div>
+<div class="grid" id="visits">{''.join(cards)}</div>
 <p class="no-results" id="visits-empty" hidden>Пока ничего нет.</p>
 {site_footer()}
 {SCROLL_TOP_JS}
@@ -2433,13 +2582,31 @@ def render_visits_page(visits, all_posts=None):
   try {{ saved = localStorage.getItem('visitFilter') || 'all'; }} catch (e) {{}}
   if (!buttons.some(function (b) {{ return b.getAttribute('data-kind') === saved; }})) saved = 'all';
   show(saved);
+
+  // Раскладка. По умолчанию плитки: походов много, и описью страница
+  // растягивается на несколько экранов — прокручивать её никто не станет.
+  var grid = document.getElementById('visits');
+  var viewBtns = Array.prototype.slice.call(document.querySelectorAll('.visit-view button'));
+  function setView(mode) {{
+    grid.classList.toggle('list', mode === 'list');
+    viewBtns.forEach(function (b) {{
+      b.setAttribute('aria-pressed', b.getAttribute('data-view') === mode ? 'true' : 'false');
+    }});
+    try {{ localStorage.setItem('visitView', mode); }} catch (e) {{}}
+  }}
+  viewBtns.forEach(function (b) {{
+    b.addEventListener('click', function () {{ setView(b.getAttribute('data-view')); }});
+  }});
+  var view = 'grid';
+  try {{ view = localStorage.getItem('visitView') || 'grid'; }} catch (e) {{}}
+  setView(view === 'list' ? 'list' : 'grid');
 }})();
 </script>
 </body></html>"""
 
 
 @tidy
-def render_visit_page(visit, visits, all_posts=None):
+def render_visit_page(visit, visits, all_posts=None, map_names=None):
     """Страница одного посещения: все снимки, сведения, ссылка на карту.
 
     Разметка та же, что у страницы работы, — шапка, колонка снимков,
@@ -2452,21 +2619,26 @@ def render_visit_page(visit, visits, all_posts=None):
     place = (visit.get("place") or "").strip()
     slug = slugify(heading)
 
+    # Снимков с похода бывает десяток, и колонкой во всю ширину страница
+    # растягивалась на пять экранов. Сетка: два-три снимка в ряд, клик
+    # открывает лупу — рассматривают в ней, а не на странице.
     shots = []
+    thumbs = visit.get("thumbs") or []
     for i, src in enumerate(photos):
         big = hires_url(hires[i] if i < len(hires) else src)
+        small = thumbs[i] if i < len(thumbs) else src
         loading = ('fetchpriority="high" decoding="async"' if i == 0
                    else 'loading="lazy" decoding="async"')
         meta_bits = [x for x in (place if place != heading else "", visit.get("visited", "")) if x]
         shots.append(
-            f'<a href="{h(big)}" class="painting-link" target="_blank" rel="noopener" '
+            f'<a href="{h(big)}" class="painting-link shot" target="_blank" rel="noopener" '
             f'title="Рассмотреть" data-title="{h(heading)}" data-meta="{h(", ".join(meta_bits))}" '
             f'data-download="{h(slug)}-{i + 1}{h(os.path.splitext(big)[1] or ".jpg")}">'
-            f'<img src="{h(src)}" alt="{h(heading)}, снимок {i + 1}" class="painting" {loading}>'
+            f'<img src="{h(small)}" alt="{h(heading)}, снимок {i + 1}" class="painting" {loading}>'
             f'<span class="painting-hint" aria-hidden="true">'
             f'<span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a>'
         )
-    img_html = "\n".join(shots)
+    img_html = ('<div class="shots">' + "\n".join(shots) + '</div>') if shots else ""
 
     spec_rows = [("Что", visit["kind"].capitalize()),
                  ("Место", place if place != heading else ""),
@@ -2476,11 +2648,22 @@ def render_visit_page(visit, visits, all_posts=None):
                  ("Снимков", str(len(photos)) if photos else "")]
     spec_html = '<div class="spec-table">' + "".join(
         f'<div><span>{h(k)}</span><b>{h(v)}</b></div>' for k, v in spec_rows if v)
-    museum = visit_museum_link(visit, all_posts)
+    # Место всегда есть на карте: карта собирает и музеи из собрания,
+    # и залы, где были только походы.
+    museum = (map_names or {}).get(place, "")
     if museum:
-        spec_html += (f'<div><span>Собрание</span><b><a href="museums.html#museum-'
+        spec_html += (f'<div><span>На карте</span><b><a href="museums.html#museum-'
                       f'{h(slugify(museum))}">{h(museum)}</a></b></div>')
     spec_html += '</div>'
+
+    # Теги музеев из поста (#гмии, #гтг) ведут в подборки картин — если
+    # такая страница есть. Тег без страницы был бы битой ссылкой.
+    tags_block = ""
+    known_tags = {t for p in (all_posts or []) for t in p.get("tags", [])}
+    tags = [t for t in visit.get("tags", []) if t in known_tags]
+    if tags:
+        its = " ".join(f'<a href="tag-{h(t)}.html" class="tag">#{h(t)}</a>' for t in tags)
+        tags_block = f'<div class="aside-block"><h3>Собрание</h3><div class="tags">{its}</div></div>'
 
     src_block = ""
     if visit.get("urls"):
@@ -2546,6 +2729,7 @@ def render_visit_page(visit, visits, all_posts=None):
   </div>
   <aside class="post-aside">
     {spec_html}
+    {tags_block}
     {src_block}
     <div class="aside-block">
       <h3>Запись</h3>
@@ -2573,11 +2757,22 @@ def generate_visit_pages(visits, all_posts=None):
     не создаём: раздел появится сам, когда в канале найдутся такие посты."""
     if not visits:
         return 0
+    map_names = visit_map_names(visits, all_posts)
+    wanted = set()
     for v in visits:
+        wanted.add(v["filename"])
         with open(os.path.join(OUTPUT_DIR, v["filename"]), "w", encoding="utf-8") as f:
-            f.write(render_visit_page(v, visits, all_posts))
+            f.write(render_visit_page(v, visits, all_posts, map_names))
     with open(os.path.join(OUTPUT_DIR, "visits.html"), "w", encoding="utf-8") as f:
         f.write(render_visits_page(visits, all_posts))
+    # Заголовок поста могли поправить — имя страницы тогда меняется,
+    # а прежняя остаётся в docs/ навсегда и попадает в поиск.
+    stale = [n for n in os.listdir(OUTPUT_DIR)
+             if n.startswith("visit-") and n.endswith(".html") and n not in wanted]
+    for n in stale:
+        os.remove(os.path.join(OUTPUT_DIR, n))
+    if stale:
+        logger.info(f"Убрано устаревших страниц посещений: {len(stale)}")
     logger.info(f"Посещения: {len(visits)} + список")
     return len(visits)
 
@@ -2834,11 +3029,16 @@ async def main():
     logger.info("Подключение к Telegram...")
     api_id, api_hash, phone = require_credentials()
     client = await connect_with_proxy(api_id, api_hash, phone, PROXY_LIST)
-    # Файла посещений ещё нет — значит, эта сборка первая, которая умеет
-    # #выставка и #галерея: канал надо пройти целиком, чтобы собрать
-    # прошлые походы. Картинам это не мешает — их отсеет processed_ids.
-    first_visit_scan = not os.path.exists(VISITS_FILE)
-    try: accepted, new_visits = await fetch_new_posts(client, processed_ids, first_visit_scan)
+    # Полный проход нужен дважды: когда файла посещений ещё нет (сборка
+    # первая, которая умеет #выставка и #галерея) и когда у прежних походов
+    # ещё не собраны безымянные посты со снимками. Картинам это не мешает —
+    # их отсеет processed_ids.
+    full_scan = (not os.path.exists(VISITS_FILE)
+                 or not all(v.get("extras_done") for v in all_visits)
+                 or "--rescan" in sys.argv)
+    try:
+        accepted, new_visits, extras_for_known = await fetch_new_posts(
+            client, processed_ids, full_scan, all_visits)
     except Exception as e: logger.error(f"Ошибка сканирования: {e}"); await client.disconnect(); return
     for i, (mm, group, parsed) in enumerate(accepted, 1):
         date = mm.date.strftime("%Y-%m-%d")
@@ -2860,24 +3060,58 @@ async def main():
         processed_ids.update(m.id for m in group)
         with open(os.path.join(OUTPUT_DIR, fn), "w", encoding="utf-8") as f:
             f.write(render_post_page(post, all_posts))
+    async def visit_comments(anchor):
+        out = []
+        if getattr(anchor, "replies", None) and anchor.replies.replies > 0:
+            try:
+                async for reply in client.iter_messages(CHANNEL_URL, reply_to=anchor.id):
+                    if getattr(reply, "document", None) and reply.document.mime_type.startswith("image/"):
+                        out.append(reply)
+            except Exception as e: logger.warning(f"Комментарии: {e}")
+        return out
+
+    async def add_photos(visit, groups, slug):
+        """Докачивает снимки из безымянных постов к тому же походу."""
+        for g in groups:
+            im, hi, th = await download_images(client, g, [], slug,
+                                               start=len(visit.get("images") or []))
+            visit["images"] = (visit.get("images") or []) + im
+            visit["hires"] = (visit.get("hires") or []) + hi
+            visit["thumbs"] = (visit.get("thumbs") or []) + th
+            processed_ids.update(m.id for m in g)
+
     # Посещения качаем тем же порядком: снимков в таком посте бывает
     # десяток, и все они нужны на странице похода.
-    for i, (vm, group, parsed) in enumerate(new_visits, 1):
+    for i, (vm, group, parsed, extra) in enumerate(new_visits, 1):
         date = vm.date.strftime("%Y-%m-%d")
         base = f"visit-{date}-{slugify(visit_heading(parsed))}"
         fn, n = f"{base}.html", 2
         ex = {v["filename"] for v in all_visits}
         while fn in ex or os.path.exists(os.path.join(OUTPUT_DIR, fn)): fn = f"{base}-{n}.html"; n += 1
-        logger.info(f"[посещение {i}/{len(new_visits)}] {visit_heading(parsed)[:60]}")
-        comments = []
-        if getattr(vm, "replies", None) and vm.replies.replies > 0:
-            try:
-                async for reply in client.iter_messages(CHANNEL_URL, reply_to=vm.id):
-                    if getattr(reply, "document", None) and reply.document.mime_type.startswith("image/"): comments.append(reply)
-            except Exception as e: logger.warning(f"Комментарии: {e}")
-        im, hi, th = await download_images(client, group, comments, fn[:-5])
-        all_visits.append({"id":vm.id,"date":date,"filename":fn,"images":im,"hires":hi,"thumbs":th,**parsed})
+        logger.info(f"[посещение {i}/{len(new_visits)}] {visit_heading(parsed)[:60]}"
+                    + (f" (+{len(extra)} без подписи)" if extra else ""))
+        im, hi, th = await download_images(client, group, await visit_comments(vm), fn[:-5])
+        visit = {"id":vm.id,"date":date,"filename":fn,"images":im,"hires":hi,"thumbs":th,
+                 "extras_done":True, **parsed}
         processed_ids.update(m.id for m in group)
+        await add_photos(visit, extra, fn[:-5])
+        all_visits.append(visit)
+
+    # Добавки к походам, которые уже были в базе: пост со снимками мог
+    # выйти позже самого посещения или просто не собирался прежней сборкой.
+    by_id = {v.get("id"): v for v in all_visits}
+    for vid, groups in extras_for_known.items():
+        visit = by_id.get(vid)
+        if not visit:
+            continue
+        before = len(visit.get("images") or [])
+        await add_photos(visit, groups, visit["filename"][:-5])
+        added = len(visit.get("images") or []) - before
+        if added:
+            logger.info(f"[посещение] {visit_heading(visit)[:50]}: +{added} снимков без подписи")
+    if full_scan:
+        for v in all_visits:
+            v["extras_done"] = True
     await client.disconnect()
     logger.info("Отключено")
     if PIL_AVAILABLE:
@@ -2894,6 +3128,7 @@ async def main():
             logger.info("Миниатюры готовы")
     # Файл посещений пишем до страниц: по нему подвал и сайдбар решают,
     # показывать ли раздел, а страницы картин собираются следом.
+    refresh_visits(all_visits)
     save_json(VISITS_FILE, all_visits)
     for post in all_posts:
         with open(os.path.join(OUTPUT_DIR, post["filename"]), "w", encoding="utf-8") as f:

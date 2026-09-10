@@ -16,7 +16,7 @@ from html import escape as h
 import logging
 
 from site_common import (head_common, theme_button, scroll_top_button, site_footer,
-                         COMMON_JS, SCROLL_TOP_JS, BASE_URL)
+                         COMMON_JS, SCROLL_TOP_JS, BASE_URL, VISITS_FILE, visit_places)
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -540,8 +540,55 @@ MUSEUMS_CSS = """
 }
 .museum-card.active .museum-badge { background: var(--active); color: #fff; }
 
+.museum-card.active .museum-badge-visit { background: var(--active); color: #fff; }
+/* значок с числом походов отличается рамкой: у одного места это число
+   картин собрания, у другого — число посещений, и путать их нельзя */
+.museum-badge-visit {
+  background: none;
+  color: var(--active);
+  box-shadow: inset 0 0 0 1px var(--active);
+}
+
 .museum-location { color: var(--muted); font-size: .85rem; margin: .35rem 0 0; }
 .museum-nomap { opacity: .65; font-style: italic; }
+
+/* Побывал: походы в это место */
+.museum-visits { margin-top: .7rem; }
+.museum-visits h4 {
+  margin: 0 0 .3rem;
+  font-family: var(--ff-data);
+  font-size: .72rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 400;
+}
+.museum-visit-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .2rem; }
+.museum-visit-list a {
+  display: flex;
+  align-items: baseline;
+  gap: .5rem;
+  font-size: .88rem;
+  text-decoration: none;
+  color: var(--link);
+}
+.museum-visit-list a:hover { text-decoration: underline; }
+.visit-when {
+  font-family: var(--ff-data);
+  font-size: .75rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.visit-tag {
+  margin-left: auto;
+  font-family: var(--ff-data);
+  font-size: .68rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  flex-shrink: 0;
+}
 
 /* мозаика миниатюр */
 .museum-thumbs { display: flex; gap: 6px; margin-top: .7rem; flex-wrap: wrap; }
@@ -610,6 +657,12 @@ MUSEUMS_CSS = """
 
 /* приблизительные координаты — пунктиром, чтобы не выдавать их за точные */
 .opa-pin.approx .pin-card { border-style: dashed; opacity: .75; }
+
+/* место, где работ собрания нет, а поход был: этикетка залита,
+   чтобы её число не путали с числом картин */
+.opa-pin.visit-only .pin-card { background: var(--active); color: var(--card-bg); }
+.opa-pin.visit-only:hover .pin-card,
+.opa-pin.visit-only.active .pin-card { background: var(--card-bg); color: var(--active); }
 
 .opa-pin:hover .pin-card,
 .opa-pin:focus-visible .pin-card,
@@ -801,9 +854,12 @@ function hasBaseLayer() {
 
 // Метка-этикетка: карточка с числом работ, ножка и точка ровно на месте музея.
 function pinIcon(m) {
+  // Где работ собрания нет, а поход был, — на этикетке число походов
+  // и точка вместо цифры не годится: пустая метка ничего не говорит.
+  var onlyVisit = !m.count && m.visits;
   return L.divIcon({
-    className: 'opa-pin' + (m.approx ? ' approx' : ''),
-    html: '<span class="pin-card">' + m.count + '</span>' +
+    className: 'opa-pin' + (m.approx ? ' approx' : '') + (onlyVisit ? ' visit-only' : ''),
+    html: '<span class="pin-card">' + (m.count || m.visits || 0) + '</span>' +
           '<span class="pin-stem"></span><span class="pin-dot"></span>',
     iconSize: [46, 32],
     iconAnchor: [23, 32],
@@ -866,9 +922,19 @@ function addMarkers() {
       place.textContent = m.place + (m.approx ? ' — расположение приблизительное' : '');
       html.appendChild(place);
     }
-    var cnt = document.createElement('div');
-    cnt.textContent = m.count + ' ' + word;
-    html.appendChild(cnt);
+    if (m.count) {
+      var cnt = document.createElement('div');
+      cnt.textContent = m.count + ' ' + word;
+      html.appendChild(cnt);
+    }
+    if (m.visits) {
+      var vs = document.createElement('div');
+      var vw = m.visits % 10 === 1 && m.visits % 100 !== 11 ? 'поход'
+             : (m.visits % 10 >= 2 && m.visits % 10 <= 4 && (m.visits % 100 < 10 || m.visits % 100 >= 20)) ? 'похода'
+             : 'походов';
+      vs.textContent = 'Побывал: ' + m.visits + ' ' + vw;
+      html.appendChild(vs);
+    }
     var link = document.createElement('a');
     link.href = '#museum-' + m.id;
     link.className = 'popup-link';
@@ -1098,6 +1164,22 @@ document.addEventListener('DOMContentLoaded', function () {
 """
 
 
+def visit_order(v):
+    """Порядок походов: по дате посещения, а не по дате записи."""
+    d = (v.get("visited") or "").split(".")
+    return f"{d[2]}-{int(d[1]):02d}-{int(d[0]):02d}" if len(d) == 3 else (v.get("date") or "")
+
+
+def visit_link(v):
+    """Строка похода в карточке места: дата и название страницей."""
+    name = (v.get("title") or v.get("place") or "Посещение").strip()
+    when = v.get("visited") or ""
+    kind = v.get("kind") or ""
+    return (f'<li><a href="{h(v.get("filename", ""))}">'
+            f'<span class="visit-when">{h(when)}</span> {h(name)}'
+            f'<span class="visit-tag">{h(kind)}</span></a></li>')
+
+
 def generate_museums_page(retry_failed=False, offline=False):
     if not os.path.exists(META_FILE):
         logger.error(f"Файл {META_FILE} не найден!")
@@ -1113,8 +1195,31 @@ def generate_museums_page(retry_failed=False, offline=False):
         museum = p.get("museum", "")
         if museum:
             museums_dict[museum].append(p)
-    
-    logger.info(f"Найдено {len(museums_dict)} музеев")
+
+    # Места из постов о походах — такие же точки на карте, как собрания
+    # картин: где-то есть и работы, и посещение, где-то только посещение.
+    # Раньше выставочный зал, в котором нет ни одной работы из собрания,
+    # на карте не появлялся вовсе, и со страницы похода некуда было пойти.
+    all_visits = []
+    if os.path.exists(VISITS_FILE):
+        try:
+            with open(VISITS_FILE, encoding="utf-8") as f:
+                all_visits = json.load(f)
+        except Exception as e:
+            logger.warning(f"Посещения не прочитались: {e}")
+    place_map = visit_places(all_visits, list(museums_dict.keys()))
+    visits_dict = defaultdict(list)
+    for v in all_visits:
+        key = place_map.get((v.get("place") or "").strip())
+        if not key:
+            continue
+        visits_dict[key].append(v)
+        museums_dict[key]          # defaultdict: место без картин тоже нужно
+    for key in visits_dict:
+        visits_dict[key].sort(key=lambda x: visit_order(x), reverse=True)
+
+    logger.info(f"Найдено {len(museums_dict)} мест"
+                + (f", из них по посещениям {len(visits_dict)}" if visits_dict else ""))
     
     cache = {}
     if os.path.exists(CACHE_FILE):
@@ -1167,7 +1272,9 @@ def generate_museums_page(retry_failed=False, offline=False):
     found_locations = 0
     countries = set()
 
-    for museum, posts in sorted(museums_dict.items(), key=lambda kv: (-len(kv[1]), kv[0].lower())):
+    for museum, posts in sorted(museums_dict.items(),
+                                key=lambda kv: (-len(kv[1]), -len(visits_dict.get(kv[0], [])), kv[0].lower())):
+        been = visits_dict.get(museum, [])
         loc = locations.get(museum, {})
         city = loc.get('city', '')
         country = loc.get('country', '')
@@ -1227,7 +1334,8 @@ def generate_museums_page(retry_failed=False, offline=False):
             location_html = '<p class="museum-location museum-nomap">Нет на карте</p>'
 
         search_blob = " ".join([museum, city, country,
-                                (overrides.get(museum) or {}).get("address", "")]).lower()
+                                (overrides.get(museum) or {}).get("address", "")]
+                               + [(v.get("title") or v.get("place") or "") for v in been]).lower()
 
         # Официальный сайт берём из ручного справочника: в данных постов его
         # нет, а угадывать адрес по названию — верный способ ошибиться.
@@ -1241,20 +1349,42 @@ def generate_museums_page(retry_failed=False, offline=False):
         # Необязательные строки (адрес, сайт, миниатюры) собираем списком и
         # пустые выбрасываем: иначе в разметку попадают строки из одних
         # пробелов — валидатор их справедливо ругает.
+        # Побывал: походы в это место. Отдельным блоком, а не вперемешку
+        # с картинами — это разные вещи: там работы собрания, здесь свои
+        # снимки из зала.
+        visits_html = ""
+        if been:
+            word = plural_ru(len(been), "поход", "похода", "походов")
+            visits_html = (f'<div class="museum-visits"><h4>Побывал — {len(been)} {word}</h4>'
+                           f'<ul class="museum-visit-list">{"".join(visit_link(v) for v in been)}</ul></div>')
+
+        # Число на значке — работы собрания; если их нет, а поход был,
+        # показываем походы: пустой ноль на карточке ничего не объясняет.
+        badge = len(posts) if posts else len(been)
+        badge_class = "museum-badge" if posts else "museum-badge museum-badge-visit"
+        badge_title = "работ в собрании" if posts else "посещений"
+
+        posts_block = ""
+        if posts:
+            posts_block = (
+                f'  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-{museum_id}"'
+                f' onclick="toggleMuseumPosts(this, \'{museum_id}\')">Список картин ▾</button>\n'
+                f'  <ul class="museum-posts-list" id="posts-{museum_id}" hidden>{posts_html}</ul>')
+
         card_lines = [
             f'<article class="museum-card" id="museum-{museum_id}" data-id="{museum_id}"',
             f'         data-search="{h(search_blob)}" data-count="{len(posts)}"',
+            f'         data-visits="{len(been)}"',
             f'         data-name="{h(museum.lower())}" data-country="{h(country.lower())}"',
             f'         data-mapped="{mapped}">',
             f'  <header class="museum-card-head"><h3>{h(museum)}</h3>'
-            f'<span class="museum-badge">{len(posts)}</span></header>',
+            f'<span class="{badge_class}" title="{badge_title}">{badge}</span></header>',
             f'  {location_html}',
             f'  {address_html}' if address_html else "",
             f'  {site_html}' if site_html else "",
             f'  {thumbs_block}' if thumbs_block.strip() else "",
-            f'  <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-{museum_id}"',
-            f'          onclick="toggleMuseumPosts(this, \'{museum_id}\')">Список картин ▾</button>',
-            f'  <ul class="museum-posts-list" id="posts-{museum_id}" hidden>{posts_html}</ul>',
+            f'  {visits_html}' if visits_html else "",
+            posts_block if posts_block else "",
             '</article>',
         ]
         cards.append("\n".join(line for line in card_lines if line))
@@ -1262,7 +1392,8 @@ def generate_museums_page(retry_failed=False, offline=False):
         if lat and lon:
             map_data.append({
                 'id': museum_id, 'name': museum, 'place': loc_line,
-                'lat': lat, 'lon': lon, 'count': len(posts), 'approx': approx,
+                'lat': lat, 'lon': lon, 'count': len(posts),
+                'visits': len(been), 'approx': approx,
             })
 
     missing = len(museums_dict) - found_locations
@@ -1279,7 +1410,7 @@ def generate_museums_page(retry_failed=False, offline=False):
 
     page_head = head_common(
         title="Карта собраний — Old Picture Art",
-        description=f"{len(museums_dict)} музеев из коллекции Old Picture Art на карте мира.",
+        description=f"{len(museums_dict)} собраний и выставочных залов Old Picture Art на карте мира.",
         canonical=f"{BASE_URL}/museums.html",
         extra='\n<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" '
               'integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin>'
@@ -1287,9 +1418,11 @@ def generate_museums_page(retry_failed=False, offline=False):
               'integrity="sha256-YU3qCpj/P06tdPBJGPax0bm6Q1wltfwjsho5TR4+TYc=" crossorigin>',
     )
 
-    stats = (f"<b>{len(museums_dict)}</b> {plural_ru(len(museums_dict), 'музей', 'музея', 'музеев')} · "
+    total_visits = sum(len(v) for v in visits_dict.values())
+    stats = (f"<b>{len(museums_dict)}</b> {plural_ru(len(museums_dict), 'место', 'места', 'мест')} · "
              f"<b>{total_paintings}</b> {plural_ru(total_paintings, 'картина', 'картины', 'картин')} · "
-             f"<b>{len(countries)}</b> {plural_ru(len(countries), 'страна', 'страны', 'стран')} · "
+             + (f"<b>{total_visits}</b> {plural_ru(total_visits, 'поход', 'похода', 'походов')} · " if total_visits else "")
+             + f"<b>{len(countries)}</b> {plural_ru(len(countries), 'страна', 'страны', 'стран')} · "
              f"{found_locations} на карте")
 
     html = f"""<!DOCTYPE html>
@@ -1357,7 +1490,7 @@ const MUSEUMS = {json.dumps(map_data, ensure_ascii=False)};
         f.write(html)
     
     logger.info(f"✅ Карта собраний сохранена: {output_path}")
-    logger.info(f"   Всего музеев: {len(museums_dict)}")
+    logger.info(f"   Всего мест: {len(museums_dict)}")
     logger.info(f"   На карте: {found_locations}")
     approx = [m for m, l in locations.items() if l.get('precision') == 'approx']
     if approx:

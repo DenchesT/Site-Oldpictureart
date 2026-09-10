@@ -29,6 +29,12 @@ const f = () => 'file://' + TMP + '/museums.html';
 const results = [];
 const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extra || '' });
 
+// Сколько адресов ждать, считаем по справочнику, а не числом в проверке:
+// адреса дописываются вручную, и жёсткая цифра устаревала каждый раз.
+const OVERRIDES = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'museum_overrides.json'), 'utf8'));
+const WANT_ADDR = Object.entries(OVERRIDES)
+  .filter(([k, v]) => !k.startsWith('_') && v && v.address).length;
+
 (async () => {
   const browser = await chromium.launch(LAUNCH);
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 950 } });
@@ -60,7 +66,8 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
     };
   });
 
-  ok('адреса отрисованы', info.withAddr === 45, `${info.withAddr} из ${info.cards} карточек`);
+  ok('адреса отрисованы', info.withAddr === WANT_ADDR,
+    `${info.withAddr} из ${info.cards} карточек, в справочнике ${WANT_ADDR}`);
   ok('пустых абзацев с адресом нет', info.empty === 0, `${info.empty}`);
   ok('адрес идёт после города и до ссылки', info.orderOk);
   ok('адрес виден на странице', info.visible, info.sample);

@@ -32,6 +32,11 @@ def main():
     # раздел появляется только после того, как build_site.py найдёт
     # в канале посты #выставка или #галерея.
     visits = bs.load_json(bs.VISITS_FILE, [])
+    if visits:
+        # Текст поста лежит в базе целиком, поэтому правку разбора видно
+        # сразу — без похода в Telegram и без перекачивания снимков.
+        bs.refresh_visits(visits)
+        bs.save_json(bs.VISITS_FILE, visits)
 
     os.makedirs(bs.OUTPUT_DIR, exist_ok=True)
     os.makedirs(bs.IMAGES_DIR, exist_ok=True)

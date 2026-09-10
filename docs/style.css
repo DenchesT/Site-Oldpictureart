@@ -731,6 +731,21 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 }
 .lupa-stage.dragging { cursor: grabbing; }
 .lupa-stage.zoomable { cursor: zoom-in; }
+/* Пока снимок грузится, увеличивать нечего: показываем это курсором,
+   иначе колесо крутится «вхолостую» и кажется, что лупа сломалась. */
+.lupa-stage.loading { cursor: progress; }
+.lupa-stage.loading::after {
+  content: "Загружаю…";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #9aa4ad;
+}
 
 .lupa-img {
   position: absolute;
@@ -1981,7 +1996,18 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
    вёрстки у раздела нет намеренно: посещение в каталоге такая же запись,
    как картина, и выглядеть должно так же.
    ========================================================================== */
-.visit-switch { display: inline-flex; margin-top: var(--s3); }
+.visit-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--s3);
+}
+.visit-switch, .visit-view { display: inline-flex; }
+/* Подпись раздела в одну строку: 46 знаков хватало указателю, а здесь
+   строка короче ширины колонки и слово «снимками» уезжало вниз. */
+.visits-lede { max-width: 70ch; }
 .visit-count {
   font-variant-numeric: tabular-nums;
   opacity: .6;
@@ -1994,6 +2020,13 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 /* Каталожного номера у посещения нет, поэтому первой колонки в строке
    тоже нет — остальные держат ту же ширину, что в описи картин. */
 .grid.list .visit-card { grid-template-columns: 132px minmax(0, 1fr) minmax(0, 16rem); }
+/* В плитке подписи сведений скрыты, поэтому оставляем только дату
+   похода: «17.01.2026 · 12.12.2025 — 21.06.2026 · 7» не прочесть. */
+.grid:not(.list) .visit-card .card-facts .f-run,
+.grid:not(.list) .visit-card .card-facts .f-shots { display: none; }
+/* Точка-разделитель ставится всем, кроме последнего, а последние два
+   скрыты — и после даты повисала точка в никуда. */
+.grid:not(.list) .visit-card .card-facts .f-when b::after { content: none; }
 .visit-kind {
   font-family: var(--ff-data);
   font-size: var(--fs-xs);
@@ -2009,15 +2042,42 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
   font-weight: normal;
   color: var(--muted);
 }
-.visit-page .painting-link + .painting-link { margin-top: var(--s4); display: block; }
 
 @media (max-width: 1000px) {
   .grid.list .visit-card { grid-template-columns: 108px minmax(0, 1fr); }
   .grid.list .visit-card .card-facts { grid-column: 1 / -1; }
 }
+/* Снимки с похода: сетка, а не колонка. Их бывает десяток, и во всю
+   ширину страница растягивалась на несколько экранов — рассматривают
+   всё равно в лупе, а здесь нужен обзор. */
+.shots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: var(--s3);
+  align-items: start;
+}
+/* Пропорцию держит сама ссылка, а снимок её заполняет. Если оставить
+   пропорцию на картинке, высота ряда считается по ней, и первый снимок
+   вставал на полстроки выше соседей. */
+.shots .painting-link {
+  display: block;
+  position: relative;
+  margin: 0;
+  line-height: 0;
+  aspect-ratio: 4 / 3;
+}
+.shots .painting {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: var(--panel);
+}
+
 @media (max-width: 640px) {
-  .visit-switch { width: 100%; }
-  .visit-switch button { flex: 1; }
+  .visit-switch, .visit-view { width: 100%; }
+  .visit-switch button, .visit-view button { flex: 1; }
+  .shots { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--s2); }
 }
 @media (max-width: 620px) {
   .grid.list .visit-card { grid-template-columns: 84px minmax(0, 1fr); }

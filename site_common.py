@@ -23,6 +23,80 @@ SITE_NAME = "Old Picture Art"
 VISITS_FILE = "visits_meta.json"
 
 
+OVERRIDES_FILE = "museum_overrides.json"
+
+
+def load_overrides():
+    """Ручной справочник музеев. Нужен и карте, и страницам посещений:
+    в нём же живут подсказки «это то же место, что вот этот музей»."""
+    try:
+        with open(OVERRIDES_FILE, encoding="utf-8") as f:
+            return {k: v for k, v in json.load(f).items() if not k.startswith("_")}
+    except Exception:
+        return {}
+
+
+def name_head(name):
+    """Название до первой запятой: город и раздел дописывают через запятую
+    и в посте о походе, и в сведениях о картине."""
+    return (name or "").split(",")[0].strip()
+
+
+def same_place(a, b):
+    """Одно ли это место.
+
+    Сравниваем только начало названия и только по целым словам. Простого
+    вхождения мало: «Волго-Вятский филиал ГМИИ им. А.С. Пушкина» содержит
+    название московского музея, но это другой город и другое собрание.
+    А вот «Эрмитаж» и «Государственный Эрмитаж» — одно и то же.
+    """
+    a, b = name_head(a).lower(), name_head(b).lower()
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+    long_, short = (a, b) if len(a) > len(b) else (b, a)
+    if len(short) < 5:
+        return False
+    return long_.startswith(short + " ") or long_.endswith(" " + short)
+
+
+def match_place(place, names):
+    """Ищет место среди известных названий. Длинные проверяем первыми,
+    чтобы «ГМИИ им. А.С. Пушкина» не перехватил отдел личных коллекций."""
+    for n in sorted(names, key=len, reverse=True):
+        if same_place(place, n):
+            return n
+    return ""
+
+
+def visit_places(visits, museum_names):
+    """Сводит места из постов о походах к названиям карточек на карте.
+
+    Возвращает {место, как написано в посте: название на карте}. Если место
+    совпало с музеем из собрания — берётся его полное название с городом,
+    чтобы карточка на карте была одна. Если нет — место становится своей
+    карточкой, и следующие походы туда же к ней и приписываются.
+    """
+    overrides = load_overrides()
+    known = list(museum_names)
+    out = {}
+    for v in sorted(visits, key=lambda x: len(x.get("place") or ""), reverse=True):
+        place = (v.get("place") or "").strip()
+        if not place or place in out:
+            continue
+        alias = (overrides.get(place) or {}).get("same_as")
+        if alias:
+            out[place] = alias
+            continue
+        hit = match_place(place, known)
+        if not hit:
+            hit = name_head(place)
+            known.append(hit)
+        out[place] = hit
+    return out
+
+
 def has_visits():
     """Есть ли в собрании посещения. Читается на каждой странице, но файл
     крошечный, а держать флаг в памяти нельзя: генераторы карты, квиза и
@@ -242,7 +316,7 @@ LUPA_JS = """<script>
 
   var box = null, stage = null, img = null, capTitle = null, capMeta = null,
       scaleOut = null, btnPrev = null, btnNext = null, btnIn = null, btnOut = null;
-  var idx = 0, scale = 1, fit = 1, tx = 0, ty = 0, natW = 0, natH = 0;
+  var idx = 0, scale = 1, fit = 1, tx = 0, ty = 0, natW = 0, natH = 0, zoomed = false;
   var opener = null, pointers = {}, pinch = null, dragged = false;
 
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -349,7 +423,10 @@ LUPA_JS = """<script>
   function maxScale() { return Math.max(1, fit * 8); }
 
   function apply(s, eased) {
-    scale = Math.min(maxScale(), Math.max(fitScale(), s));
+    // fitScale() пересчитывает fit, а maxScale() на него опирается,
+    // поэтому порядок обязателен: иначе предел берётся от прошлой картинки.
+    var lo = fitScale(), hi = maxScale();
+    scale = Math.min(hi, Math.max(lo, s));
     clamp(scale);
     if (eased && !reduce) {
       img.classList.add('eased');
@@ -359,10 +436,17 @@ LUPA_JS = """<script>
   }
 
   function zoomAt(pt, factor) {
+    // Пока картинка не загрузилась, размеров у неё нет: масштаб считался
+    // от нуля, подпись показывала выдуманные проценты, а после загрузки
+    // всё сбрасывалось. Со стороны это выглядело так, будто колесо не
+    // работает — на странице похода со снимками это случалось чаще всего.
+    if (!natW || !natH) return;
     var r = stage.getBoundingClientRect();
     var px = pt.x - r.left, py = pt.y - r.top;
     var ix = (px - tx) / scale, iy = (py - ty) / scale;
-    var s = Math.min(maxScale(), Math.max(fitScale(), scale * factor));
+    var lo = fitScale(), hi = maxScale();
+    var s = Math.min(hi, Math.max(lo, scale * factor));
+    if (Math.abs(s - scale) > 0.0001) zoomed = true;
     tx = px - ix * s;
     ty = py - iy * s;
     scale = s;
@@ -458,9 +542,14 @@ LUPA_JS = """<script>
     // и лупа открывается мгновенно. Оригинал подгружаем следом и подменяем,
     // сохранив видимый размер.
     var small = (thumb && (thumb.currentSrc || thumb.src)) || hires;
+    natW = natH = 0;
+    zoomed = false;
+    stage.classList.add('loading');
+    scaleOut.textContent = '';
     img.src = small;
     var ready = function () {
       natW = img.naturalWidth; natH = img.naturalHeight;
+      stage.classList.remove('loading');
       apply(fitScale(), false);
       loadHires(hires);
     };
@@ -469,12 +558,16 @@ LUPA_JS = """<script>
   }
 
   function loadHires(src) {
-    if (!src || src === img.src) return;
+    // Сравниваем полные адреса: в разметке ссылка относительная, а img.src
+    // браузер отдаёт абсолютным, и без этого оригинал грузился второй раз.
+    if (!src) return;
+    var abs = new URL(src, location.href).href;
+    if (abs === img.src) return;
     var big = new Image();
     big.onload = function () {
       if (!big.naturalWidth) return;
       var k = natW ? big.naturalWidth / natW : 1;
-      img.src = src;
+      img.src = abs;
       natW = big.naturalWidth; natH = big.naturalHeight;
       // при подмене картинка не должна дёрнуться: пересчитываем масштаб
       scale = scale / k; fit = fit / k;
