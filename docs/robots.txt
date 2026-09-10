@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://denchest.github.io/Site-Oldpictureart/sitemap.xml
+Sitemap: https://oldpictureart.ru/sitemap.xml

@@ -114,7 +114,7 @@ def has_visits():
 # в canonical, карту сайта, RSS, превью ссылок и разметку для поисковиков,
 # а сборка положит рядом файл CNAME, по которому GitHub Pages узнаёт домен.
 # Менять адрес в других местах не нужно — он собирается только здесь.
-CUSTOM_DOMAIN = ""
+CUSTOM_DOMAIN = "oldpictureart.ru"
 
 BASE_URL = (f"https://{CUSTOM_DOMAIN}" if CUSTOM_DOMAIN
             else "https://denchest.github.io/Site-Oldpictureart")
