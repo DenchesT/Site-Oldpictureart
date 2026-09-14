@@ -114,7 +114,7 @@ def has_visits():
 # в canonical, карту сайта, RSS, превью ссылок и разметку для поисковиков,
 # а сборка положит рядом файл CNAME, по которому GitHub Pages узнаёт домен.
 # Менять адрес в других местах не нужно — он собирается только здесь.
-CUSTOM_DOMAIN = "oldpictureart.ru"
+CUSTOM_DOMAIN = ""
 
 BASE_URL = (f"https://{CUSTOM_DOMAIN}" if CUSTOM_DOMAIN
             else "https://denchest.github.io/Site-Oldpictureart")
@@ -267,7 +267,11 @@ def head_common(title, description="", og_image="", canonical="", og_type="websi
         if "/cards/" in og_image:
             og_img_tag += ('\n<meta property="og:image:width" content="1200">'
                            '\n<meta property="og:image:height" content="630">')
+    # og:url — тот же адрес, что и canonical. Без него соцсети и парсеры
+    # микроразметки не знают, на что ссылается карточка: Телеграм подставит
+    # адрес, с которого пришёл, а валидатор Яндекса считает поле обязательным.
     canon_tag = f'\n<link rel="canonical" href="{canonical}">' if canonical else ""
+    og_url_tag = f'\n<meta property="og:url" content="{canonical}">' if canonical else ""
     return f"""<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#eceef1" media="(prefers-color-scheme: light)">
@@ -279,7 +283,7 @@ def head_common(title, description="", og_image="", canonical="", og_type="websi
 <meta property="og:title" content="{title_attr}">
 <meta property="og:description" content="{desc}">
 <meta property="og:type" content="{og_type}">
-<meta property="og:site_name" content="{SITE_NAME}">{og_img_tag}
+<meta property="og:site_name" content="{SITE_NAME}">{og_url_tag}{og_img_tag}
 <meta name="twitter:card" content="summary_large_image">{canon_tag}
 <title>{title}</title>
 <link rel="icon" href="favicon.ico" sizes="32x32">

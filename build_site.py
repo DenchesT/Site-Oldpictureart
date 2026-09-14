@@ -776,8 +776,16 @@ def artwork_jsonld(post):
     автора, год, материал, технику, размер и собрание так, как это
     понимают поисковики. Без него страница для них — просто текст.
     """
-    def q(x):
-        return json.dumps(x, ensure_ascii=False)
+    def text(x):
+        """Строка, которую нельзя принять за ссылку.
+
+        В словаре Schema.org у artMedium, artworkSurface и unitCode
+        допустимы и текст, и URL, поэтому разборщик по умолчанию читает
+        значение как адрес: «масло» превращается в ссылку на
+        oldpictureart.ru/масло, а «CMT» — в ссылку на oldpictureart.ru/CMT.
+        Обёртка {"@value": …} говорит, что это именно текст.
+        """
+        return {"@value": x}
 
     data = {
         "@context": "https://schema.org",
@@ -791,9 +799,9 @@ def artwork_jsonld(post):
     if post.get("creation_year"):
         data["dateCreated"] = str(post["creation_year"])
     if post.get("techniques"):
-        data["artMedium"] = ", ".join(post["techniques"])
+        data["artMedium"] = text(", ".join(post["techniques"]))
     if post.get("material"):
-        data["artworkSurface"] = lower_first(post["material"])
+        data["artworkSurface"] = text(lower_first(post["material"]))
     if post.get("images"):
         data["image"] = f"{BASE_URL}/{post['images'][0]}"
     if post.get("museum"):
@@ -807,7 +815,8 @@ def artwork_jsonld(post):
     m = re.match(r"\s*([\d.,]+)\s*[xх×]\s*([\d.,]+)", post.get("size") or "")
     if m:
         def cm(v):
-            return {"@type": "QuantitativeValue", "value": float(v.replace(",", ".")), "unitCode": "CMT"}
+            return {"@type": "QuantitativeValue", "value": float(v.replace(",", ".")),
+                    "unitCode": text("CMT"), "unitText": text("см")}
         data["height"], data["width"] = cm(m.group(1)), cm(m.group(2))
 
     return ('<script type="application/ld+json">'
