@@ -1655,8 +1655,12 @@ def render_index(all_posts):
 <button type="button" class="menu-toggle" id="menu-toggle" onclick="toggleMenu()" aria-expanded="false" aria-controls="sidebar"><span class="icon-menu" aria-hidden="true"></span> Меню</button>
 <div class="overlay" id="overlay" onclick="toggleMenu()" aria-hidden="true" hidden></div>
 {scroll_top_button()}
-<header><h1><span class="icon-logo" aria-hidden="true"></span> Old Picture Art</h1>
+<header>
+<div class="head-text">
+<h1><span class="icon-logo" aria-hidden="true"></span> Old Picture Art</h1>
+<p class="site-lede">Собрание живописи из музеев мира. У каждой работы указаны автор, год, материал, размер и место, где она сейчас, а любую картину можно скачать в высоком разрешении. Пополняется из телеграм-канала <a href="{TELEGRAM_URL}" target="_blank" rel="noopener">{TELEGRAM_NAME}</a>.</p>
 <div class="subtitle">{len(ps)} {plural_ru(len(ps), 'картина', 'картины', 'картин')} · {len(authors)} {plural_ru(len(authors), 'художник', 'художника', 'художников')} · {len(museums)} {plural_ru(len(museums), 'музей', 'музея', 'музеев')} · {year_range}</div>
+</div>
 <button type="button" class="random-btn" onclick="goRandom()"><span class="icon-random-white" aria-hidden="true"></span> Случайная картина</button></header>
 <div class="layout"><aside class="sidebar" id="sidebar" aria-label="Фильтры">
 <div class="sidebar-section sidebar-search">
