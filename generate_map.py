@@ -1464,6 +1464,10 @@ def generate_museums_page(retry_failed=False, offline=False):
     </div>
   </div>
   <div class="museums-list-col" id="museum-list">
+    <!-- Заголовок списка: на экране он не нужен — и так видно, что это
+         список, — но без него чтение с экрана шло с h1 сразу на h3, и
+         структура страницы выглядела дырявой. -->
+    <h2 class="visually-hidden">Собрания на карте</h2>
 {chr(10).join(cards)}
     <p class="no-results" id="museums-empty" hidden>Ничего не найдено.</p>
   </div>

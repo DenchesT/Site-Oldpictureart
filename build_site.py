@@ -52,8 +52,8 @@ except ImportError:
     PIL_AVAILABLE = False
 
 from site_common import (head_common, scroll_top_button, theme_button, site_footer,
-                         mark_svg, TELEGRAM_URL, TELEGRAM_NAME, CUSTOM_DOMAIN, hires_url,
-                         COMMON_JS, SCROLL_TOP_JS, LUPA_JS, BASE_URL,
+                         mark_svg, TELEGRAM_URL, TELEGRAM_NAME, SITE_DOMAIN, hires_url,
+                         COMMON_JS, SCROLL_TOP_JS, LUPA_JS, TOAST_JS, SHARE_JS, AUTH_JS, BASE_URL,
                          VISITS_FILE, has_visits, visit_places)
 
 def load_dotenv(path=".env"):
@@ -832,11 +832,11 @@ def generate_cname():
     вместе со всеми ссылками. Если домена нет, ничего не трогаем — в том
     числе не удаляем файл, который мог быть создан через настройки GitHub.
     """
-    if not CUSTOM_DOMAIN:
+    if not SITE_DOMAIN:
         return
     with open(os.path.join(OUTPUT_DIR, "CNAME"), "w", encoding="utf-8") as f:
-        f.write(CUSTOM_DOMAIN + "\n")
-    logger.info(f"CNAME → {CUSTOM_DOMAIN}")
+        f.write(SITE_DOMAIN + "\n")
+    logger.info(f"CNAME → {SITE_DOMAIN}")
 
 
 def generate_robots():
@@ -1002,7 +1002,7 @@ def render_post_page(post, all_posts=None):
   <a href="index.html" class="topbar-back"><span class="icon-back" aria-hidden="true"></span> Галерея</a>
   <div class="post-topbar-right">
     <button type="button" onclick="goRandom()" class="topbar-btn" aria-label="Случайная картина" title="Случайная картина"><span class="icon-random" aria-hidden="true"></span></button>
-    <button type="button" onclick="sharePage()" class="topbar-btn" aria-label="Поделиться" title="Поделиться"><span class="icon-share" aria-hidden="true"></span></button>
+    <button type="button" data-share-btn onclick="sharePage(this)" class="topbar-btn" aria-label="Поделиться" title="Поделиться" aria-haspopup="menu"><span class="icon-share" aria-hidden="true"></span></button>
     {download_btn}
     <button type="button" id="like-btn" data-post-id="{post_id}" onclick="toggleLike()" class="topbar-btn topbar-like" aria-pressed="false" aria-label="В избранное" title="В избранное"><span class="icon-heart" aria-hidden="true"></span></button>
     <button type="button" class="topbar-btn" data-theme-toggle onclick="toggleTheme()" aria-label="Переключить тему" title="Светлая / тёмная тема"><span class="icon-theme-toggle" aria-hidden="true"></span></button>
@@ -1037,6 +1037,8 @@ def render_post_page(post, all_posts=None):
 {SCROLL_TOP_JS}
 {COMMON_JS}
 {LUPA_JS}
+{TOAST_JS}
+{SHARE_JS}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js" defer></script>
 <script>
 // ---------- Палитра цветов ----------
@@ -1093,31 +1095,6 @@ function goRandom() {{
     else location.href = 'index.html?random=1';
 }}
 
-function sharePage() {{
-    var url = window.location.href;
-    if (navigator.share) {{
-        navigator.share({{title: document.title, url: url}}).catch(function() {{}});
-        return;
-    }}
-    if (navigator.clipboard && navigator.clipboard.writeText) {{
-        navigator.clipboard.writeText(url)
-            .then(function() {{ toast('Ссылка скопирована'); }})
-            .catch(function() {{ window.prompt('Скопируйте ссылку:', url); }});
-    }} else {{
-        window.prompt('Скопируйте ссылку:', url);
-    }}
-}}
-
-function toast(text) {{
-    var el = document.createElement('div');
-    el.className = 'toast';
-    el.setAttribute('role', 'status');
-    el.textContent = text;
-    document.body.appendChild(el);
-    setTimeout(function() {{ el.classList.add('hide'); }}, 1800);
-    setTimeout(function() {{ el.remove(); }}, 2200);
-}}
-
 // ---------- Счётчик просмотров (локальный) ----------
 (function() {{
     try {{
@@ -1172,211 +1149,8 @@ document.addEventListener('keydown', function(e) {{
     }}
 }});
 </script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
-<script>
-// ---------- Firebase ----------
-// Инициализацию оборачиваем в try: если скрипты Google заблокированы
-// (расширение, корпоративная сеть, офлайн), страница раньше падала целиком
-// и переставали работать ВСЕ кнопки. Теперь лайки просто остаются локальными.
-var auth = null, db = null, currentUser = null;
-var FIREBASE_OK = false;
-try {{
-    if (typeof firebase !== 'undefined' && typeof firebaseConfig !== 'undefined') {{
-        firebase.initializeApp(firebaseConfig);
-        auth = firebase.auth();
-        db = firebase.firestore();
-        FIREBASE_OK = true;
-    }}
-}} catch (e) {{ console.warn('Firebase недоступен, избранное работает локально:', e.message); }}
-
-if (FIREBASE_OK) {{
-    auth.onAuthStateChanged(function(user) {{
-        currentUser = user;
-        var btn = document.getElementById('auth-btn');
-        if (btn) {{
-            if (user) {{
-                btn.innerHTML = '<span class="icon-user" aria-hidden="true"></span> ';
-                btn.appendChild(document.createTextNode(user.email ? user.email.split('@')[0] : 'Профиль'));
-                btn.title = 'Выйти из аккаунта';
-                btn.onclick = function() {{ auth.signOut(); }};
-            }} else {{
-                btn.innerHTML = '<span class="icon-login" aria-hidden="true"></span> Войти';
-                btn.title = 'Войти';
-                btn.onclick = showAuthForm;
-            }}
-        }}
-        if (user) loadLikesFromCloud();
-    }});
-}} else {{
-    var authBtnOffline = document.getElementById('auth-btn');
-    if (authBtnOffline) authBtnOffline.style.display = 'none';
-}}
-
-// Функция показа формы авторизации
-function showAuthForm() {{
-    var old = document.querySelector('.auth-modal-overlay');
-    if (old) old.remove();
-    
-    var overlay = document.createElement('div');
-    overlay.className = 'auth-modal-overlay';
-    overlay.innerHTML = 
-        '<div class="auth-modal">' +
-        '<button class="auth-modal-close" id="auth-close-btn">×</button>' +
-        '<h3 id="auth-title">Вход в аккаунт</h3>' +
-        '<p>Сохраняйте избранное на всех устройствах</p>' +
-        '<button class="auth-btn-google" id="google-login-btn">' +
-        '<svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>' +
-        'Войти через Google' +
-        '</button>' +
-        '<div class="auth-divider">или</div>' +
-        '<form id="auth-form" autocomplete="on">' +
-        '<input type="email" class="auth-input" id="auth-email" name="email" placeholder="Email" autocomplete="email">' +
-        '<input type="password" class="auth-input" id="auth-password" name="password" placeholder="Пароль" autocomplete="current-password">' +
-        '<button type="submit" class="auth-submit" id="auth-submit-btn">Войти</button>' +
-        '</form>' +
-        '<div class="auth-error" id="auth-error"></div>' +
-        '<div class="auth-switch">' +
-        'Нет аккаунта? <button type="button" class="auth-link" id="auth-switch-link">Создать</button>' +
-        '</div>' +
-        '<div class="auth-switch auth-reset-row" id="auth-reset-container">' +
-        '<button type="button" class="auth-link" id="auth-reset-link">Забыли пароль?</button>' +
-        '</div>' +
-        '</div>';
-    
-    document.body.appendChild(overlay);
-    
-    var emailInp = document.getElementById('auth-email');
-    var passInp = document.getElementById('auth-password');
-    var submitBtn = document.getElementById('auth-submit-btn');
-    var switchLink = document.getElementById('auth-switch-link');
-    var errorDiv = document.getElementById('auth-error');
-    var isLogin = true;
-    
-    // Закрытие
-    document.getElementById('auth-close-btn').onclick = function() {{ overlay.remove(); }};
-    overlay.onclick = function(e) {{ if (e.target === overlay) overlay.remove(); }};
-    
-    // Google login
-    document.getElementById('google-login-btn').onclick = function() {{
-        var provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider)
-            .then(function() {{ overlay.remove(); }})
-            .catch(function(err) {{ errorDiv.textContent = 'Ошибка: ' + err.message; }});
-    }};
-    
-    // Switch login/register
-    switchLink.onclick = function() {{
-        isLogin = !isLogin;
-        submitBtn.textContent = isLogin ? 'Войти' : 'Создать аккаунт';
-        switchLink.textContent = isLogin ? 'Создать' : 'Войти';
-        document.getElementById('auth-title').textContent = isLogin ? 'Вход в аккаунт' : 'Регистрация';
-        errorDiv.textContent = '';
-        document.getElementById('auth-reset-container').style.display = 'none';
-    }};
-    
-    // Reset password
-    document.getElementById('auth-reset-link').onclick = function() {{
-        var email = emailInp.value.trim();
-        if (!email) {{ errorDiv.textContent = 'Введите email для сброса пароля'; return; }}
-        auth.sendPasswordResetEmail(email)
-            .then(function() {{ alert('Письмо для сброса пароля отправлено на ' + email); }})
-            .catch(function(err) {{ errorDiv.textContent = 'Ошибка: ' + err.message; }});
-    }};
-    
-    // Submit формы
-    document.getElementById('auth-form').onsubmit = function(e) {{
-        e.preventDefault();
-        var email = emailInp.value.trim();
-        var pass = passInp.value;
-        if (!email) {{ errorDiv.textContent = 'Введите email'; return; }}
-        if (pass.length < 6) {{ errorDiv.textContent = 'Пароль: минимум 6 символов'; return; }}
-        
-        var promise = isLogin 
-            ? auth.signInWithEmailAndPassword(email, pass)
-            : auth.createUserWithEmailAndPassword(email, pass);
-        
-        promise
-            .then(function() {{ overlay.remove(); }})
-            .catch(function(err) {{
-                if (err.code === 'auth/user-not-found') {{
-                    errorDiv.textContent = 'Аккаунт не найден. Проверьте email или создайте новый.';
-                    document.getElementById('auth-reset-container').style.display = 'none';
-                }} else if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {{
-                    errorDiv.textContent = 'Неверный пароль.';
-                    document.getElementById('auth-reset-container').style.display = 'block';
-                }} else if (err.code === 'auth/email-already-in-use') {{
-                    errorDiv.textContent = 'Email уже используется.';
-                    document.getElementById('auth-reset-container').style.display = 'block';
-                }} else {{
-                    errorDiv.textContent = 'Ошибка: ' + err.message;
-                    document.getElementById('auth-reset-container').style.display = 'none';
-                }}
-            }});
-    }};
-    
-    setTimeout(function() {{ emailInp.focus(); }}, 100);
-}}
-  
-// Синхронизация лайков
-async function syncLike(postId, liked) {{
-    try {{
-        var local = JSON.parse(localStorage.getItem('likes') || '{{}}');
-        local[postId] = liked;
-        localStorage.setItem('likes', JSON.stringify(local));
-    }} catch (e) {{}}
-    if (FIREBASE_OK && currentUser) {{
-        try {{
-            await db.collection('likes').doc(currentUser.uid + '_' + postId).set({{
-                userId: currentUser.uid,
-                postId: postId,
-                liked: liked,
-                time: firebase.firestore.FieldValue.serverTimestamp()
-            }});
-        }} catch(e) {{ console.warn('Не удалось сохранить лайк в облако:', e.message); }}
-    }}
-}}
-
-// Загрузка лайков из облака
-async function loadLikesFromCloud() {{
-    if (!FIREBASE_OK || !currentUser) return;
-    try {{
-        var snap = await db.collection('likes')
-            .where('userId', '==', currentUser.uid)
-            .where('liked', '==', true)
-            .get();
-        var cloud = {{}};
-        snap.forEach(function(d) {{ cloud[d.data().postId] = true; }});
-        var local = JSON.parse(localStorage.getItem('likes') || '{{}}');
-        var merged = Object.assign({{}}, local, cloud);
-        localStorage.setItem('likes', JSON.stringify(merged));
-        var btn = document.getElementById('like-btn');
-        if (btn && merged[btn.dataset.postId]) {{
-            btn.classList.add('liked');
-            btn.setAttribute('aria-pressed', 'true');
-        }}
-    }} catch (e) {{ console.warn('Не удалось загрузить избранное:', e.message); }}
-}}
-
-// Переключение лайка — работает и без аккаунта, и без Firebase
-async function toggleLike() {{
-    var btn = document.getElementById('like-btn');
-    if (!btn) return;
-    var pid = btn.dataset.postId;
-    var likes = {{}};
-    try {{ likes = JSON.parse(localStorage.getItem('likes') || '{{}}'); }} catch (e) {{}}
-    var newState = !likes[pid];
-    btn.classList.toggle('liked', newState);
-    btn.setAttribute('aria-pressed', newState ? 'true' : 'false');
-    btn.setAttribute('aria-label', newState ? 'Убрать из избранного' : 'В избранное');
-    await syncLike(pid, newState);
-    try {{
-        if (window.opener && window.opener.updateFavList) window.opener.updateFavList();
-    }} catch(e) {{}}
-}}
-</script></body></html>"""
+{AUTH_JS}
+</body></html>"""
 
 def surname_key(n):
     f = n.split(",")[0].strip()
@@ -2050,9 +1824,11 @@ try {{
     const db = firebase.firestore();
     auth.onAuthStateChanged(user => {{
       if (!user) return;
+      // Запись существует — значит отмечено; снятая отметка удаляется.
+      // Поля liked больше нет: правила Firestore разрешают в записи
+      // ровно userId, postId и createdAt (см. FIRESTORE.md).
       db.collection('likes')
-        .where('userId', '==', user.uid)
-        .where('liked', '==', true).get()
+        .where('userId', '==', user.uid).get()
         .then(snap => {{
           const cloud = {{}};
           snap.forEach(d => cloud[d.data().postId] = true);
@@ -3025,7 +2801,7 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
 <div class="post-topbar">
   <a href="visits.html" class="topbar-back"><span class="icon-back" aria-hidden="true"></span> Посещения</a>
   <div class="post-topbar-right">
-    <button type="button" onclick="sharePage()" class="topbar-btn" aria-label="Поделиться" title="Поделиться"><span class="icon-share" aria-hidden="true"></span></button>
+    <button type="button" data-share-btn onclick="sharePage(this)" class="topbar-btn" aria-label="Поделиться" title="Поделиться" aria-haspopup="menu"><span class="icon-share" aria-hidden="true"></span></button>
     {download_btn}
     <button type="button" class="topbar-btn" data-theme-toggle onclick="toggleTheme()" aria-label="Переключить тему" title="Светлая / тёмная тема"><span class="icon-theme-toggle" aria-hidden="true"></span></button>
   </div>
@@ -3055,13 +2831,8 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
 {SCROLL_TOP_JS}
 {COMMON_JS}
 {LUPA_JS}
-<script>
-function sharePage(){{
-  var d={{title:document.title,url:location.href}};
-  if(navigator.share) navigator.share(d).catch(function(){{}});
-  else if(navigator.clipboard) navigator.clipboard.writeText(location.href);
-}}
-</script>
+{TOAST_JS}
+{SHARE_JS}
 </body></html>"""
 
 
@@ -3103,6 +2874,20 @@ def generate_tag_pages(all_posts):
         with open(os.path.join(OUTPUT_DIR, f"tag-{tag}.html"), "w", encoding="utf-8") as f:
             f.write(render_tag_page(tag, posts, cat_no, cat_width))
         c += 1
+
+    # Страницы тегов, которых в собрании больше нет, надо убирать.
+    # Исправили опечатку в посте — и tag-freidrich.html остаётся лежать
+    # навсегда: на него никто не ссылается, в карте сайта его нет, но
+    # поисковик, раз его увидев, будет ходить по нему годами и показывать
+    # людям пустой раздел.
+    live = {f"tag-{t}.html" for t in tp}
+    stale = [n for n in os.listdir(OUTPUT_DIR)
+             if n.startswith("tag-") and n.endswith(".html") and n not in live]
+    for name in stale:
+        os.remove(os.path.join(OUTPUT_DIR, name))
+    if stale:
+        logger.info(f"Убрано страниц исчезнувших тегов: {len(stale)} ({', '.join(sorted(stale)[:5])})")
+
     logger.info(f"Сгенерировано {c} страниц тегов")
     return tp
 

@@ -22,8 +22,19 @@ def generate_quiz_page():
     with open(META_FILE, "r", encoding="utf-8") as f:
         all_posts = json.load(f)
     
-    valid_posts = [p for p in all_posts if p.get("images") and len(p["images"]) > 0]
-    
+    # В страницу кладём только те четыре поля, которыми квиз пользуется.
+    # Раньше сюда целиком уезжала база постов — со всеми описаниями,
+    # ссылками на источники, размерами, тегами и путями к оригиналам:
+    # 286 КБ из 473 КБ веса страницы, которые браузер честно скачивал и
+    # разбирал ради имени художника и адреса одной картинки.
+    valid_posts = [
+        {"artist": p.get("artist", ""),
+         "title": p.get("title", ""),
+         "filename": p.get("filename", ""),
+         "images": p["images"][:1]}
+        for p in all_posts if p.get("images") and len(p["images"]) > 0
+    ]
+
     if len(valid_posts) < 4:
         print("Недостаточно постов для квиза")
         return
@@ -67,9 +78,20 @@ def generate_quiz_page():
   margin: 0;
 }}
 
+.quiz-stage {{
+  /* Постоянная высота. Раньше картина просто меняла размер от вопроса
+     к вопросу, и вместе с ней прыгали вверх-вниз кнопки ответов: палец
+     уже летел к нужной, а под ним оказывалась соседняя. */
+  height: 35vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}}
+
 .quiz-painting {{
   max-width: 100%;
-  max-height: 35vh;
+  max-height: 100%;
   height: auto;
   width: auto;
   border-radius: 8px;
@@ -184,8 +206,8 @@ def generate_quiz_page():
     justify-content: center;
   }}
   
-  .quiz-painting {{
-    max-height: 40vh;
+  .quiz-stage {{
+    height: 40vh;
   }}
   
   .quiz-answers {{
@@ -209,8 +231,8 @@ def generate_quiz_page():
 
 /* Планшеты */
 @media (max-width: 768px) {{
-  .quiz-painting {{
-    max-height: 30vh;
+  .quiz-stage {{
+    height: 30vh;
   }}
   
   .quiz-answers {{
@@ -234,8 +256,8 @@ def generate_quiz_page():
     font-size: 1.1rem;
   }}
   
-  .quiz-painting {{
-    max-height: 25vh;
+  .quiz-stage {{
+    height: 25vh;
   }}
   
   .quiz-answers {{
@@ -288,7 +310,7 @@ def generate_quiz_page():
   <div class="quiz-container">
     <h1>Квиз: угадай художника</h1>
     <p class="quiz-score">Счёт: <span id="score">0</span> / <span id="total">0</span></p>
-    <img id="quiz-image" class="quiz-painting" alt="" hidden src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+    <div class="quiz-stage"><img id="quiz-image" class="quiz-painting" alt="" hidden src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></div>
     <p id="quiz-title" class="quiz-title"></p>
     <div id="quiz-answers" class="quiz-answers"></div>
     <p id="quiz-feedback" class="quiz-result" role="status" aria-live="polite"></p>

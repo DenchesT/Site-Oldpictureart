@@ -11,10 +11,10 @@
 <meta property="og:description" content="Васнецовы. Связь поколений. Из XIX в XXI век, Новая Третьяковка. Побывал 06.10.2024.">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Old Picture Art">
-<meta property="og:url" content="https://denchest.github.io/Site-Oldpictureart/visit-2025-02-13-васнецовы-связь-поколений-из-xix-в-xxi-век.html">
-<meta property="og:image" content="https://denchest.github.io/Site-Oldpictureart/images/visit-2025-02-13-васнецовы-связь-поколений-из-xix-в-xxi-век-1.jpg">
+<meta property="og:url" content="https://oldpictureart.ru/visit-2025-02-13-васнецовы-связь-поколений-из-xix-в-xxi-век.html">
+<meta property="og:image" content="https://oldpictureart.ru/images/visit-2025-02-13-васнецовы-связь-поколений-из-xix-в-xxi-век-1.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="https://denchest.github.io/Site-Oldpictureart/visit-2025-02-13-васнецовы-связь-поколений-из-xix-в-xxi-век.html">
+<link rel="canonical" href="https://oldpictureart.ru/visit-2025-02-13-васнецовы-связь-поколений-из-xix-в-xxi-век.html">
 <title>Васнецовы. Связь поколений. Из XIX в XXI век — Old Picture Art</title>
 <link rel="icon" href="favicon.ico" sizes="32x32">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -25,14 +25,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=2d2733d1">
+<link rel="stylesheet" href="style.css?v=a29c7404">
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page visit-page">
 <a href="#main" class="skip-link">К содержанию</a>
 <div class="post-topbar">
   <a href="visits.html" class="topbar-back"><span class="icon-back" aria-hidden="true"></span> Посещения</a>
   <div class="post-topbar-right">
-    <button type="button" onclick="sharePage()" class="topbar-btn" aria-label="Поделиться" title="Поделиться"><span class="icon-share" aria-hidden="true"></span></button>
+    <button type="button" data-share-btn onclick="sharePage(this)" class="topbar-btn" aria-label="Поделиться" title="Поделиться" aria-haspopup="menu"><span class="icon-share" aria-hidden="true"></span></button>
     <a href="images/visit-2025-02-13-васнецовы-связь-поколений-из-xix-в-xxi-век-1.jpg" download="васнецовы-связь-поколений-из-xix-в-xxi-век-1.jpg" class="topbar-btn" aria-label="Скачать снимок" title="Скачать снимок"><span class="icon-download" aria-hidden="true"></span></a>
     <button type="button" class="topbar-btn" data-theme-toggle onclick="toggleTheme()" aria-label="Переключить тему" title="Светлая / тёмная тема"><span class="icon-theme-toggle" aria-hidden="true"></span></button>
   </div>
@@ -474,10 +474,141 @@ function toggleTheme(){
 })();
 </script>
 <script>
-function sharePage(){
-  var d={title:document.title,url:location.href};
-  if(navigator.share) navigator.share(d).catch(function(){});
-  else if(navigator.clipboard) navigator.clipboard.writeText(location.href);
+function toast(text) {
+  var old = document.querySelector('.toast');
+  if (old) old.remove();
+  var el = document.createElement('div');
+  el.className = 'toast';
+  el.setAttribute('role', 'status');
+  el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(function () { el.classList.add('hide'); }, 1800);
+  setTimeout(function () { el.remove(); }, 2200);
 }
+</script>
+<script>
+(function () {
+  var menu = null, opener = null;
+
+  function shareUrl() {
+    var c = document.querySelector('link[rel="canonical"]');
+    return (c && c.href) || location.href.split('#')[0];
+  }
+
+  function shareTitle() {
+    var t = document.querySelector('meta[property="og:title"]');
+    return (t && t.getAttribute('content')) || document.title;
+  }
+
+  // Системное меню — только там, где оно действительно системное.
+  // В настольном Chrome navigator.share тоже есть, но открывает
+  // громоздкую панель Windows, из которой до Телеграма не дойти.
+  function preferNative() {
+    return !!navigator.share && window.matchMedia
+        && window.matchMedia('(pointer: coarse)').matches;
+  }
+
+  function close(back) {
+    if (!menu) return;
+    menu.remove();
+    menu = null;
+    document.removeEventListener('keydown', onKey, true);
+    document.removeEventListener('pointerdown', onOutside, true);
+    if (back && opener) opener.focus();
+    opener = null;
+  }
+
+  function onOutside(e) {
+    if (menu && !menu.contains(e.target) && e.target !== opener) close(false);
+  }
+
+  function onKey(e) {
+    if (!menu) return;
+    if (e.key === 'Escape') { e.stopPropagation(); close(true); return; }
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'Tab') return;
+    var items = [].slice.call(menu.querySelectorAll('[role="menuitem"]'));
+    var i = items.indexOf(document.activeElement);
+    if (e.key === 'Tab' && (i === -1 || (i === items.length - 1 && !e.shiftKey))) { close(false); return; }
+    e.preventDefault();
+    var step = (e.key === 'ArrowUp' || e.shiftKey) ? -1 : 1;
+    items[(i + step + items.length) % items.length].focus();
+  }
+
+  function copyLink(url) {
+    function ok() { toast('Ссылка скопирована'); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(ok, function () { window.prompt('Скопируйте ссылку:', url); });
+    } else {
+      window.prompt('Скопируйте ссылку:', url);
+    }
+  }
+
+  function build(url, title) {
+    var u = encodeURIComponent(url), t = encodeURIComponent(title);
+    var links = [
+      ['Телеграм',   'https://t.me/share/url?url=' + u + '&text=' + t],
+      ['ВКонтакте',  'https://vk.com/share.php?url=' + u + '&title=' + t],
+      ['WhatsApp',   'https://api.whatsapp.com/send?text=' + encodeURIComponent(title + ' ' + url)],
+      ['Почта',      'mailto:?subject=' + t + '&body=' + u]
+    ];
+    var box = document.createElement('div');
+    box.className = 'share-menu';
+    box.setAttribute('role', 'menu');
+    box.setAttribute('aria-label', 'Поделиться');
+    links.forEach(function (pair) {
+      var a = document.createElement('a');
+      a.className = 'share-item';
+      a.setAttribute('role', 'menuitem');
+      a.href = pair[1];
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = pair[0];
+      a.addEventListener('click', function () { close(false); });
+      box.appendChild(a);
+    });
+    var copy = document.createElement('button');
+    copy.type = 'button';
+    copy.className = 'share-item share-copy';
+    copy.setAttribute('role', 'menuitem');
+    copy.textContent = 'Скопировать ссылку';
+    copy.addEventListener('click', function () { close(true); copyLink(url); });
+    box.appendChild(copy);
+    return box;
+  }
+
+  function place(box, btn) {
+    // На узком экране — полоса снизу, её не надо никуда вписывать.
+    if (window.innerWidth <= 560) return;
+    var r = btn.getBoundingClientRect(), m = box.getBoundingClientRect();
+    var left = Math.min(r.right - m.width, window.innerWidth - m.width - 8);
+    var top = r.bottom + 6;
+    if (top + m.height > window.innerHeight - 8) top = Math.max(8, r.top - m.height - 6);
+    box.style.left = Math.max(8, left) + 'px';
+    box.style.top = top + 'px';
+  }
+
+  window.sharePage = function (btn) {
+    var url = shareUrl(), title = shareTitle();
+
+    if (preferNative()) {
+      navigator.share({title: title, text: title, url: url}).catch(function () {});
+      return;
+    }
+    if (menu) { close(true); return; }
+
+    opener = (btn && btn.nodeType === 1) ? btn
+           : document.querySelector('[data-share-btn]')
+           || document.activeElement;
+    menu = build(url, title);
+    document.body.appendChild(menu);
+    if (opener && opener.getBoundingClientRect) place(menu, opener);
+    document.addEventListener('keydown', onKey, true);
+    document.addEventListener('pointerdown', onOutside, true);
+    var first = menu.querySelector('[role="menuitem"]');
+    if (first) first.focus();
+  };
+
+  window.addEventListener('resize', function () { close(false); });
+})();
 </script>
 </body></html>
