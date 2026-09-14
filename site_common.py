@@ -1271,4 +1271,5 @@ def site_footer(rss="feed.xml"):
         + ('<a href="visits.html">Посещения</a> · ' if has_visits() else '')
         + f'<a href="{rss}">RSS</a>'
         '</p>'
-        '<
+        '</footer>'
+    )
