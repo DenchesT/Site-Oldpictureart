@@ -9,6 +9,9 @@ import logging
 import random
 from datetime import datetime, timezone
 from email.utils import format_datetime
+import difflib
+import unicodedata
+import urllib.parse
 from urllib.parse import quote
 import functools
 from collections import defaultdict, Counter
@@ -299,6 +302,323 @@ def slugify(text):
     t = re.sub(r"[^\w\s-]","",t,flags=re.UNICODE)
     t = re.sub(r"\s+","-",t).strip("-")
     return t[:60] or "post"
+
+
+# ======================================================================
+#                        АДРЕСА СТРАНИЦ
+# ======================================================================
+#
+# Имена страниц были кириллические: 2025-11-07-фрэнсис-кэмпбелл-буало-каделл.html.
+# В адресной строке браузер показывает их по-человечески, но стоит ссылку
+# скопировать — и она превращается в
+# %D1%84%D1%80%D1%8D%D0%BD%D1%81%D0%B8%D1%81-… длиной 341 знак. Именно в
+# таком виде ссылка уходит в переписку, в канал и в чужие письма.
+#
+# Второе: в имени стояла дата публикации в канале и имя художника. Дата
+# посетителю ничего не говорит — его интересует не когда вы это выложили,
+# а что на картине. Название работы в адресе не упоминалось вовсе.
+#
+# Стало: <фамилия>-<название>-<год>. Фамилия западных художников берётся
+# из тегов самого канала (#renoir, #sisley) — там она уже записана так,
+# как её пишут в мире. Обратная транслитерация с русской транскрипции
+# дала бы «renuar» и «pussen», по которым художника не узнать.
+
+TRANSLIT = {
+    "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e",
+    "ж": "zh", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m",
+    "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u",
+    "ф": "f", "х": "h", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "sch",
+    "ъ": "", "ы": "y", "ь": "", "э": "e", "ю": "yu", "я": "ya",
+}
+
+
+def translit(text):
+    """Кириллица и буквы с надстрочными знаками — в простую латиницу.
+
+    Надстрочные знаки снимаются разложением: é → e, ä → a. Иначе
+    французские и немецкие названия снова уехали бы в проценты.
+    """
+    out = []
+    for ch in unicodedata.normalize("NFKD", text or "").lower():
+        if unicodedata.combining(ch):
+            continue
+        if ch in TRANSLIT:
+            out.append(TRANSLIT[ch])
+        elif ch.isascii() and ch.isalnum():
+            out.append(ch)
+        elif ch.isalnum():
+            out.append(unicodedata.normalize("NFKD", ch).encode("ascii", "ignore").decode())
+        else:
+            out.append("-")
+    return re.sub(r"-+", "-", "".join(out)).strip("-")
+
+
+def looks_latin(text):
+    """Записано ли слово латиницей — с поправкой на надстрочные знаки.
+
+    rusiñol и café написаны латиницей: ñ и é раскладываются на обычную
+    букву плюс знак. А вот «сonstable» из тегов канала только выглядит
+    латинским — первая буква там русская «с», это опечатка. Буквальная
+    транслитерация превратила бы её в «sonstable» и увековечила описку
+    в адресе страницы.
+    """
+    bare = "".join(c for c in unicodedata.normalize("NFKD", text or "")
+                   if not unicodedata.combining(c))
+    return bool(bare) and bare.isascii()
+
+
+def latin_slug(text, limit=60):
+    """Кусок адреса: только латиница, цифры и дефис."""
+    return translit(text)[:limit].strip("-")
+
+
+def surname_of(artist):
+    """Фамилия из имени художника: последнее слово до скобки или запятой."""
+    a = re.sub(r"\(.*?\)", "", artist or "").split(",")[0].strip()
+    words = [w for w in a.split() if len(w) > 1]
+    return words[-1] if words else a
+
+
+# Заполняется один раз за сборку в prepare_slugs(): имена страниц
+# художников нужны в десятке мест, и таскать словарь через все вызовы
+# было бы хуже, чем держать его здесь.
+_ARTIST_LATIN = {}
+
+
+def prepare_slugs(all_posts):
+    """Считает латинские имена художников. Вызывать до генерации страниц."""
+    _ARTIST_LATIN.clear()
+    _ARTIST_LATIN.update(artist_latin_map(all_posts))
+    return _ARTIST_LATIN
+
+
+def tag_slug(tag):
+    """Имя страницы тега. Латинские теги остаются как есть, русские
+    переводятся: tag-моризо.html читался в адресной строке, но в ссылке
+    превращался в проценты, как и всё остальное."""
+    return latin_slug(tag, 48) or "tag"
+
+
+def artist_latin_map(all_posts):
+    """Художник → фамилия латиницей.
+
+    Сначала ищем в тегах поста латинское слово: канал помечает работы
+    настоящей фамилией автора (#caillebotte, #friedrich), и это куда
+    лучше, чем переложить обратно русскую транскрипцию. Для русских
+    художников латинского тега нет — там транслитерация и уместна.
+
+    Однофамильцев разводим отчеством или именем, иначе две разные
+    страницы претендовали бы на один адрес.
+    """
+    chosen = {}
+    for p in all_posts:
+        artist = (p.get("artist") or "").strip()
+        if not artist or artist in chosen:
+            continue
+        # Теги идут по алфавиту, и брать первый латинский нельзя: у
+        # работы из Прадо тег музея окажется раньше фамилии, и в адрес
+        # уедет «prado-ploschad-parizha». Поэтому тег не берётся, а
+        # опознаётся: он должен быть похож на фамилию художника, как
+        # caillebotte похож на «кайботт», а poussin — на «пуссен».
+        ru_surname = latin_slug(surname_of(artist), 40)
+        ru_full = latin_slug(artist, 60)
+        # Теги приводим к латинице до сравнения, а не отбираем заранее
+        # «только латинские»: в канале попадаются rusiñol с испанской
+        # буквой и сonstable, у которого первая буква русская «с». По
+        # виду они латинские, по кодам — нет, и такой отбор их терял.
+        best, score = "", 0.0
+        for t in p.get("tags", []):
+            t = t.strip()
+            if not t or t == "картина" or t.isdigit() or not looks_latin(t):
+                continue
+            cand = latin_slug(t, 40)
+            if not cand:
+                continue
+            near = max(difflib.SequenceMatcher(None, cand, ru_surname).ratio(),
+                       difflib.SequenceMatcher(None, cand, ru_full).ratio())
+            if near > score:
+                best, score = cand, near
+
+        # Запятая в имени означает, что авторов несколько: «Анонимные
+        # художники, Феликс Огюстен Милиус, Александр-Огюст Розе, …».
+        # Фамилии у такой записи нет — разбор выдаёт «hudozhniki», — и
+        # выбирать из нескольких авторов одного было бы неправдой.
+        # Такие страницы называются по самой работе, без автора.
+        if "," in (artist or ""):
+            chosen[artist] = best if score >= 0.6 else ""
+        else:
+            chosen[artist] = (best if score >= 0.45 else "") or ru_surname or "author"
+
+    taken = {}
+    for artist in sorted(chosen):
+        base = chosen[artist]
+        if base not in taken:
+            taken[base] = artist
+            continue
+        extra = latin_slug(" ".join((artist or "").split()[:-1]), 18)
+        name, n = (f"{base}-{extra}" if extra else base), 2
+        while name in taken:
+            name = f"{base}-{n}"
+            n += 1
+        taken[name] = artist
+        chosen[artist] = name
+    return chosen
+
+
+def work_title_slug(title):
+    """Название работы для адреса.
+
+    В базе название хранится как в канале: «Les Fiancés (Пара), около
+    1868» — сначала на языке оригинала, в скобках по-русски, в конце год.
+    Для адреса берём русскую часть (сайт русский), а год отрезаем: он
+    станет отдельным куском имени и дважды в адресе не нужен.
+    """
+    t = title or ""
+    m = re.search(r"\(([^)]*[А-Яа-яЁё][^)]*)\)", t)
+    if m:
+        t = m.group(1)
+    t = re.sub(r",?\s*(около\s*|ок\.\s*|до\s*|после\s*)?\d{3,4}\s*(?:[–—-]\s*\d{2,4})?\s*$", "", t)
+    return latin_slug(t, 48)
+
+
+def post_slug(post, artists):
+    """Имя страницы работы: фамилия-название-год."""
+    parts = []
+    author = artists.get((post.get("artist") or "").strip())
+    if author:
+        parts.append(author)
+    title = work_title_slug(post.get("title"))
+    if title:
+        parts.append(title)
+    if not parts:
+        parts.append("kartina")
+    year = post.get("creation_year")
+    if year:
+        parts.append(str(year))
+    return "-".join(parts)
+
+
+def rename_pages(all_posts, visits=None):
+    """Переводит имена страниц на латиницу. Возвращает True, если что-то
+    изменилось.
+
+    Прежнее имя не выбрасывается, а копится в old_filenames: по нему
+    потом кладётся страница-перенаправление. Ссылку на картину могли
+    уже отправить в переписке, и превращать её в «страница не найдена»
+    нельзя. Список именно список: если имя поменяется ещё раз, обе
+    прежние ссылки должны продолжать работать.
+
+    Вызывать можно сколько угодно раз: если имя уже правильное, функция
+    ничего не трогает.
+    """
+    artists = artist_latin_map(all_posts)
+    taken = set()
+    changed = False
+
+    for post in all_posts:
+        base = post_slug(post, artists)
+        name, n = f"{base}.html", 2
+        while name in taken:
+            name = f"{base}-{n}.html"
+            n += 1
+        taken.add(name)
+        old = post.get("filename")
+        if old and old != name:
+            history = post.setdefault("old_filenames", [])
+            if old not in history:
+                history.append(old)
+            changed = True
+        if old != name:
+            post["filename"] = name
+            changed = True
+
+    for visit in (visits or []):
+        base = "visit-" + "-".join(x for x in (
+            visit.get("date", ""), latin_slug(visit_heading(visit), 48)) if x)
+        name, n = f"{base}.html", 2
+        while name in taken:
+            name = f"{base}-{n}.html"
+            n += 1
+        taken.add(name)
+        old = visit.get("filename")
+        if old and old != name:
+            history = visit.setdefault("old_filenames", [])
+            if old not in history:
+                history.append(old)
+            changed = True
+        if old != name:
+            visit["filename"] = name
+            changed = True
+
+    return changed
+
+
+
+def write_redirect(old_name, new_name):
+    """Кладёт на прежний адрес страницу-перенаправление."""
+    target = urllib.parse.quote(new_name)
+    with open(os.path.join(OUTPUT_DIR, old_name), "w", encoding="utf-8") as f:
+        f.write(f"""<!DOCTYPE html><html lang="ru"><head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,follow">
+<link rel="canonical" href="{BASE_URL}/{target}">
+<meta http-equiv="refresh" content="0; url={target}">
+<title>Страница переехала</title>
+</head><body>
+<p>Страница переехала: <a href="{target}">{h(new_name)}</a></p>
+<script>location.replace({json.dumps(target)});</script>
+</body></html>""")
+
+
+def retire_pages(prefix, live, legacy):
+    """Прибирает страницы с приставкой prefix, которых больше нет.
+
+    legacy — {прежнее имя: нынешнее}. Перенаправление по таким адресам
+    кладётся всегда, а не только если прежний файл ещё лежит в папке:
+    иначе сборка с нуля — и все прежние ссылки разом превращаются в
+    «страница не найдена». Имена тегов и художников считаются из данных,
+    так что прежний адрес известен и без файла на диске.
+
+    Всё прочее с этой приставкой — след исчезнувшего тега или ушедшего
+    художника, такое убирается совсем.
+    """
+    moved = removed = 0
+    for old_name, new_name in legacy.items():
+        if old_name in live or new_name not in live:
+            continue
+        write_redirect(old_name, new_name)
+        moved += 1
+    keep = live | set(legacy)
+    for name in os.listdir(OUTPUT_DIR):
+        if name.startswith(prefix) and name.endswith(".html") and name not in keep:
+            os.remove(os.path.join(OUTPUT_DIR, name))
+            removed += 1
+    return moved, removed
+
+
+def generate_redirects(all_posts, visits=None):
+    """Страницы-перенаправления на прежних адресах.
+
+    GitHub Pages раздаёт файлы и ничего не умеет перенаправлять на своей
+    стороне, поэтому перенаправление приходится класть страницей. В ней
+    три способа сразу: canonical — чтобы поисковик понял, какой адрес
+    настоящий, и перенёс на него всё, что успел накопить; meta refresh —
+    чтобы сработало без скриптов; и строчка на javascript, которая
+    уводит мгновенно и, в отличие от meta refresh, не засоряет кнопку
+    «назад».
+    """
+    made = 0
+    for rec in list(all_posts) + list(visits or []):
+        new = rec.get("filename")
+        for old in rec.get("old_filenames", []):
+            if not old or old == new or "/" in old or not old.endswith(".html"):
+                continue
+            write_redirect(old, new)
+            made += 1
+    if made:
+        logger.info(f"Перенаправлений со старых адресов: {made}")
+    return made
+
 
 def plural_ru(n, one, two, five):
     """Склоняет существительное: 1 картина, 2 картины, 5 картин"""
@@ -931,7 +1251,7 @@ def render_post_page(post, all_posts=None):
 
     tags_html = ""
     if post["tags"]:
-        tags_html = '<div class="tags">' + " ".join(f'<a href="tag-{h(t)}.html" class="tag">#{h(t)}</a>' for t in post["tags"]) + "</div>"
+        tags_html = '<div class="tags">' + " ".join(f'<a href="tag-{h(tag_slug(t))}.html" class="tag">#{h(t)}</a>' for t in post["tags"]) + "</div>"
     tags_block = f'<div class="aside-block"><h3>Теги</h3>{tags_html}</div>' if tags_html else ""
 
     desc_html = ""
@@ -1204,7 +1524,7 @@ def render_tag_page(tag, posts, cat_no=None, cat_width=3):
     head = head_common(
         title=f"#{h(tag)} — Old Picture Art",
         description=f"Картины по тегу #{tag} — подборка из {len(posts)} работ в галерее Old Picture Art.",
-        canonical=f"{BASE_URL}/tag-{tag}.html",
+        canonical=f"{BASE_URL}/tag-{tag_slug(tag)}.html",
     )
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 {head}
@@ -1981,7 +2301,14 @@ def catalogue_numbers(all_posts):
 
 
 def artist_slug(name):
-    return "artist-" + slugify(name) + ".html"
+    """Имя страницы художника.
+
+    Берётся та же фамилия, что и в адресах его работ, — чтобы
+    renoir-para-1868.html и artist-renoir.html читались как одно
+    семейство, а не как два разных способа записать человека.
+    """
+    key = _ARTIST_LATIN.get((name or "").strip()) or latin_slug(surname_of(name), 40)
+    return "artist-" + (key or "author") + ".html"
 
 
 def year_span(posts):
@@ -2524,7 +2851,13 @@ def refresh_visits(visits):
         if any(v.get(k) != val for k, val in fresh.items()):
             changed += 1
         v.update(fresh)
-        v["filename"] = visit_filename(v)
+        # Имя считается заново из заголовка, поэтому прежнее надо
+        # запомнить здесь: до rename_pages дело дойдёт, когда имя уже
+        # будет новым, и перенаправлять станет не с чего.
+        name = visit_filename(v)
+        if v.get("filename") and v["filename"] != name:
+            v.setdefault("old_filenames", []).append(v["filename"])
+        v["filename"] = name
     if changed:
         logger.info(f"Посещения перечитаны заново: обновлено {changed}")
     return visits
@@ -2532,8 +2865,13 @@ def refresh_visits(visits):
 
 def visit_filename(visit):
     """Имя страницы похода. Дата записи впереди, чтобы соседние походы
-    в одно место не сливались в одно имя."""
-    return f"visit-{visit.get('date', '')}-{slugify(visit_heading(visit))}.html"
+    в одно место не сливались в одно имя.
+
+    Латиницей — по той же причине, что и остальные адреса. Важно, что
+    здесь тот же расчёт, что и в rename_pages: refresh_visits зовётся
+    при каждой пересборке и переписывает имя заново, и разойдись эти
+    два места — страница переезжала бы туда-сюда каждую сборку."""
+    return f"visit-{visit.get('date', '')}-{latin_slug(visit_heading(visit), 48)}.html"
 
 
 def visit_heading(v):
@@ -2751,7 +3089,7 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
     known_tags = {t for p in (all_posts or []) for t in p.get("tags", [])}
     tags = [t for t in visit.get("tags", []) if t in known_tags]
     if tags:
-        its = " ".join(f'<a href="tag-{h(t)}.html" class="tag">#{h(t)}</a>' for t in tags)
+        its = " ".join(f'<a href="tag-{h(tag_slug(t))}.html" class="tag">#{h(t)}</a>' for t in tags)
         tags_block = f'<div class="aside-block"><h3>Собрание</h3><div class="tags">{its}</div></div>'
 
     src_block = ""
@@ -2851,12 +3189,14 @@ def generate_visit_pages(visits, all_posts=None):
         f.write(render_visits_page(visits, all_posts))
     # Заголовок поста могли поправить — имя страницы тогда меняется,
     # а прежняя остаётся в docs/ навсегда и попадает в поиск.
-    stale = [n for n in os.listdir(OUTPUT_DIR)
-             if n.startswith("visit-") and n.endswith(".html") and n not in wanted]
-    for n in stale:
-        os.remove(os.path.join(OUTPUT_DIR, n))
-    if stale:
-        logger.info(f"Убрано устаревших страниц посещений: {len(stale)}")
+    # Прежние адреса посещений оставляем перенаправлениями, а не сносим:
+    # уборка шла по приставке visit-, под которую попадали и они.
+    legacy = {old: v["filename"] for v in visits for old in v.get("old_filenames", [])}
+    moved, removed = retire_pages("visit-", wanted, legacy)
+    if moved:
+        logger.info(f"Прежних адресов посещений оставлено перенаправлениями: {moved}")
+    if removed:
+        logger.info(f"Убрано устаревших страниц посещений: {removed}")
     logger.info(f"Посещения: {len(visits)} + список")
     return len(visits)
 
@@ -2871,7 +3211,7 @@ def generate_tag_pages(all_posts):
     cat_width = max(3, len(str(len(all_posts))))
     c = 0
     for tag, posts in tp.items():
-        with open(os.path.join(OUTPUT_DIR, f"tag-{tag}.html"), "w", encoding="utf-8") as f:
+        with open(os.path.join(OUTPUT_DIR, f"tag-{tag_slug(tag)}.html"), "w", encoding="utf-8") as f:
             f.write(render_tag_page(tag, posts, cat_no, cat_width))
         c += 1
 
@@ -2880,13 +3220,13 @@ def generate_tag_pages(all_posts):
     # навсегда: на него никто не ссылается, в карте сайта его нет, но
     # поисковик, раз его увидев, будет ходить по нему годами и показывать
     # людям пустой раздел.
-    live = {f"tag-{t}.html" for t in tp}
-    stale = [n for n in os.listdir(OUTPUT_DIR)
-             if n.startswith("tag-") and n.endswith(".html") and n not in live]
-    for name in stale:
-        os.remove(os.path.join(OUTPUT_DIR, name))
-    if stale:
-        logger.info(f"Убрано страниц исчезнувших тегов: {len(stale)} ({', '.join(sorted(stale)[:5])})")
+    live = {f"tag-{tag_slug(t)}.html" for t in tp}
+    legacy = {f"tag-{t}.html": f"tag-{tag_slug(t)}.html" for t in tp}
+    moved, removed = retire_pages("tag-", live, legacy)
+    if moved:
+        logger.info(f"Прежних адресов тегов оставлено перенаправлениями: {moved}")
+    if removed:
+        logger.info(f"Убрано страниц исчезнувших тегов: {removed}")
 
     logger.info(f"Сгенерировано {c} страниц тегов")
     return tp
@@ -2904,6 +3244,17 @@ def generate_extra_pages(all_posts):
         with open(os.path.join(OUTPUT_DIR, artist_slug(artist)), "w", encoding="utf-8") as f:
             f.write(render_artist_page(artist, posts, all_posts, cat_no, cat_width))
     logger.info(f"Сгенерировано {len(by_artist)} страниц художников")
+
+    # Та же уборка, что и у тегов: художник ушёл из собрания или его
+    # страница переехала на латинский адрес — прежний файл остаётся
+    # лежать и подбирать поисковых роботов.
+    live = {artist_slug(a) for a in by_artist}
+    legacy = {"artist-" + slugify(a) + ".html": artist_slug(a) for a in by_artist}
+    moved, removed = retire_pages("artist-", live, legacy)
+    if moved:
+        logger.info(f"Прежних адресов художников оставлено перенаправлениями: {moved}")
+    if removed:
+        logger.info(f"Убрано прежних страниц художников: {removed}")
 
     with open(os.path.join(OUTPUT_DIR, "ukazatel.html"), "w", encoding="utf-8") as f:
         f.write(render_ukazatel(all_posts))
@@ -2938,8 +3289,10 @@ def render_404():
 def generate_sitemap(all_posts, visits=None):
     logger.info("Sitemap...")
     bu = BASE_URL
-    # Имена файлов кириллические — в sitemap.xml адреса обязаны быть
-    # процентно-закодированы, иначе поисковики игнорируют строки.
+    # Кодирование оставлено, хотя имена страниц теперь латинские: в
+    # карту попадают и адреса картинок, а те по-прежнему кириллические.
+    # Страницы-перенаправления со старых адресов сюда не попадают —
+    # список строится по нынешним именам, а не по содержимому папки.
     def u(path):
         return quote(path, safe="/")
     urls = [f"  <url><loc>{bu}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>"]
@@ -2964,7 +3317,7 @@ def generate_sitemap(all_posts, visits=None):
     at = set()
     for p in all_posts:
         for t in p.get("tags",[]): at.add(t)
-    for t in sorted(at): urls.append(f"  <url><loc>{bu}/{u('tag-' + t + '.html')}</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>")
+    for t in sorted(at): urls.append(f"  <url><loc>{bu}/{u('tag-' + tag_slug(t) + '.html')}</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>")
     with open(os.path.join(OUTPUT_DIR, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + '\n</urlset>')
     logger.info(f"Sitemap ({len(urls)} URL)")
@@ -3140,7 +3493,12 @@ async def main():
     except Exception as e: logger.error(f"Ошибка сканирования: {e}"); await client.disconnect(); return
     for i, (mm, group, parsed) in enumerate(accepted, 1):
         date = mm.date.strftime("%Y-%m-%d")
-        base = f"{date}-{slugify(parsed['artist'])}"
+        # Имя страницы считаем сразу тем же способом, что и при
+        # пересборке, — иначе новая запись сначала получила бы
+        # кириллическое имя, под ним скачались бы картинки, и лишь потом
+        # страница переехала бы, оставив файлы с прежними именами.
+        provisional = {**parsed, "date": date}
+        base = post_slug(provisional, prepare_slugs(all_posts + [provisional]))
         fn = f"{base}.html"
         n = 2
         ex = {p["filename"] for p in all_posts}
@@ -3229,6 +3587,11 @@ async def main():
     # Файл посещений пишем до страниц: по нему подвал и сайдбар решают,
     # показывать ли раздел, а страницы картин собираются следом.
     refresh_visits(all_visits)
+    # Адреса страниц — до записи страниц: на имена файлов опираются
+    # ссылки между страницами, карта сайта и RSS. Переименование
+    # идемпотентно: у записей с правильным именем ничего не меняется.
+    prepare_slugs(all_posts)
+    rename_pages(all_posts, all_visits)
     save_json(VISITS_FILE, all_visits)
     for post in all_posts:
         with open(os.path.join(OUTPUT_DIR, post["filename"]), "w", encoding="utf-8") as f:
@@ -3238,6 +3601,7 @@ async def main():
     generate_visit_pages(all_visits, all_posts)
     generate_tag_pages(all_posts)
     generate_extra_pages(all_posts)
+    generate_redirects(all_posts, all_visits)
     generate_robots()
     generate_cname()
     generate_sitemap(all_posts, all_visits)

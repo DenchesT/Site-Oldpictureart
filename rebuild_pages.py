@@ -38,6 +38,15 @@ def main():
         bs.refresh_visits(visits)
         bs.save_json(bs.VISITS_FILE, visits)
 
+    # Адреса страниц. Считаются до всего остального: на имена файлов
+    # опираются и ссылки между страницами, и карта сайта, и RSS.
+    bs.prepare_slugs(meta)
+    if bs.rename_pages(meta, visits):
+        bs.save_json(bs.META_FILE, meta)
+        if visits:
+            bs.save_json(bs.VISITS_FILE, visits)
+        print("✓ Адреса страниц переведены на латиницу")
+
     os.makedirs(bs.OUTPUT_DIR, exist_ok=True)
     os.makedirs(bs.IMAGES_DIR, exist_ok=True)
     with open(os.path.join(bs.OUTPUT_DIR, ".nojekyll"), "w"):
@@ -66,6 +75,9 @@ def main():
 
     bs.generate_tag_pages(meta)
     bs.generate_extra_pages(meta)
+    # Страницы-перенаправления с прежних адресов. После них старая
+    # ссылка из переписки или из выдачи не превращается в «не найдено».
+    bs.generate_redirects(meta, visits)
     bs.generate_robots()
     bs.generate_cname()
     bs.generate_sitemap(meta, visits)
