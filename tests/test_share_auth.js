@@ -132,6 +132,52 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
   ok('без Firebase кнопка входа не висит мёртвой',
     await page.locator('#auth-btn').count() === 0);
 
+  // ------------------------------------- приветствие только на действие
+  // Firebase помнит вход между посещениями и сообщает о нём при загрузке
+  // каждой страницы тем же способом, что и о настоящем входе. Пока их не
+  // различали, «Вы вошли как Денис» выскакивало на каждой открытой
+  // картине, хотя человек ничего не нажимал.
+  const fake = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const fp = await fake.newPage();
+  await fp.route('**gstatic.com/firebasejs/**',
+    r => r.fulfill({ status: 200, contentType: 'application/javascript', body: '' }));
+  await fp.route('**firebase-config.js',
+    r => r.fulfill({ status: 200, contentType: 'application/javascript', body: 'var firebaseConfig={};' }));
+  await fp.addInitScript(() => {
+    let cb = null;
+    const USER = { email: 'denis@example.com', displayName: 'Денис Иванов' };
+    const store = {
+      collection() { return {
+        where() { return this; },
+        get() { return Promise.resolve({ forEach() {} }); },
+        doc() { return { set: () => Promise.resolve(), delete: () => Promise.resolve() }; },
+      }; },
+    };
+    window.firebase = {
+      initializeApp() {},
+      auth() { return {
+        // сессия восстановлена: человек входил когда-то раньше
+        onAuthStateChanged(f) { cb = f; setTimeout(() => f(USER), 30); },
+        getRedirectResult() { return Promise.resolve(null); },
+        signInWithEmailAndPassword() { setTimeout(() => cb(USER), 10); return Promise.resolve({ user: USER }); },
+        signInWithPopup() { setTimeout(() => cb(USER), 10); return Promise.resolve({ user: USER }); },
+        signOut() { setTimeout(() => cb(null), 10); return Promise.resolve(); },
+      }; },
+      firestore() { return store; },
+    };
+    window.firebase.auth.GoogleAuthProvider = function () {};
+    window.firebase.firestore.FieldValue = { serverTimestamp: () => 0 };
+  });
+  await fp.goto(f(POST));
+  await fp.waitForTimeout(900);
+
+  ok('восстановленная сессия не здоровается при каждой загрузке',
+    await fp.locator('.toast').count() === 0,
+    await fp.locator('.toast').first().textContent().catch(() => ''));
+  ok('но имя в кнопке показано',
+    /Денис/.test(await fp.textContent('#auth-btn').catch(() => '')));
+  await fake.close();
+
   ok('нет ошибок JS', errs.length === 0, errs.join(' | '));
 
   // ------------------------------------------------------------- телефон

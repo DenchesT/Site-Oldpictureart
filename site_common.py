@@ -1002,16 +1002,31 @@ function authName(user) {
   return 'Профиль';
 }
 
+// Поздороваться — только в ответ на действие человека.
+//
+// Firebase помнит вход между посещениями и при загрузке каждой страницы
+// сообщает о нём тем же способом, что и о настоящем входе. Отличить одно
+// от другого по событию нельзя, и «Вы вошли как Денис» выскакивало на
+// каждой открытой картине — притом что человек ничего не нажимал.
+// Поэтому здороваемся не в обработчике события, а там, где вход
+// действительно произошёл: после формы, после окна Google и после
+// возврата с его страницы.
+function greet(user) {
+  toast('Вы вошли как ' + authName(user));
+}
+
 if (FIREBASE_OK) {
   // Вход переходом (когда всплывающее окно заблокировано) возвращается
   // сюда: ошибку надо поймать, иначе она утечёт в консоль незаметно.
-  auth.getRedirectResult().catch(function (err) {
+  auth.getRedirectResult().then(function (result) {
+    // Вернулись со страницы Google — вот это вход, о нём и говорим.
+    if (result && result.user) greet(result.user);
+  }).catch(function (err) {
     var m = authMessage(err);
     if (m) toast(m);
   });
 
   auth.onAuthStateChanged(function (user) {
-    var was = currentUser;
     currentUser = user;
     var btn = document.getElementById('auth-btn');
     if (btn) {
@@ -1031,10 +1046,7 @@ if (FIREBASE_OK) {
         btn.onclick = showAuthForm;
       }
     }
-    if (user) {
-      if (!was) toast('Вы вошли как ' + authName(user));
-      syncLikesWithCloud();
-    }
+    if (user) syncLikesWithCloud();
   });
 } else {
   var authBtnOffline = document.getElementById('auth-btn');
@@ -1129,7 +1141,10 @@ function showAuthForm() {
     say('');
     var provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider)
-      .then(function () { close(false); })
+      .then(function (result) {
+        close(false);
+        if (result && result.user) greet(result.user);
+      })
       .catch(function (err) {
         var code = err && err.code;
         // Всплывающее окно заблокировано — уводим на страницу Google
@@ -1188,7 +1203,10 @@ function showAuthForm() {
     setBusy(true, isLogin ? 'Входим…' : 'Создаём…');
     var go = isLogin ? auth.signInWithEmailAndPassword(email, pass)
                      : auth.createUserWithEmailAndPassword(email, pass);
-    go.then(function () { close(false); })
+    go.then(function (result) {
+        close(false);
+        if (result && result.user) greet(result.user);
+      })
       .catch(function (err) {
         setBusy(false);
         say(authMessage(err));
