@@ -238,7 +238,7 @@ THEME_BOOT = (
 # адрес oldpictureart.ru. Метрика выдаст восьмизначный номер — впишите
 # его сюда в кавычках и пересоберите сайт. Код счётчика подставится сам,
 # на все страницы разом: и на главную, и на страницы работ, и на карту.
-METRIKA_ID = ""
+METRIKA_ID = "112760205"
 
 METRIKA_JS = "" if not METRIKA_ID else f"""<script>
 (function(m,e,t,r,i,k,a){{m[i]=m[i]||function(){{(m[i].a=m[i].a||[]).push(arguments)}};
