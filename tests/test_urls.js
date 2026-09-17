@@ -63,9 +63,28 @@ if (renoir) ok('западная фамилия взята из тега кан�
 ok('прежние адреса оставлены перенаправлениями', redirects.length > 0,
   `${redirects.length} шт.`);
 
-ok('у каждой переименованной работы есть перенаправление',
-  meta.every(p => (p.old_filenames || []).every(o => files.has(o))),
-  (meta.find(p => (p.old_filenames || []).some(o => !files.has(o))) || {}).filename || '');
+// Прежний адрес работы был <дата>-<художник>.html. Восстанавливаем его
+// по тем же данным, что и сборка, и требуем, чтобы на каждом лежало
+// перенаправление. Проверять по old_filenames мало: это поле появляется
+// только в тот прогон, который переименовывает, и на чистой базе
+// проверка проходила бы впустую, ничего не проверив.
+const slugifyRu = s => (s || '').toLowerCase()
+  .replace(/[^\p{L}\p{N}\s-]/gu, '').replace(/\s+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+const seen = new Map();
+const legacy = [];
+for (const p of meta) {
+  const base = `${p.date || ''}-${slugifyRu(p.artist)}`;
+  const n = (seen.get(base) || 0) + 1;
+  seen.set(base, n);
+  legacy.push([n === 1 ? `${base}.html` : `${base}-${n}.html`, p.filename]);
+}
+const lost = legacy.filter(([o, n]) => o !== n && !files.has(o));
+ok('на каждом прежнем адресе работы лежит перенаправление',
+  lost.length === 0, `потеряно ${lost.length}: ` + lost.slice(0, 3).map(x => x[0]).join(', '));
+
+ok('прежних адресов работ ровно столько же, сколько работ',
+  legacy.filter(([o, n]) => o !== n).length === meta.length,
+  `${legacy.filter(([o, n]) => o !== n).length} из ${meta.length}`);
 
 const dead = redirects.filter(r => {
   const m = read(r).match(/url=([^"]+)"/);
@@ -73,8 +92,13 @@ const dead = redirects.filter(r => {
 });
 ok('перенаправления ведут в существующие страницы', dead.length === 0, dead.slice(0, 3).join(', '));
 
-ok('перенаправления просят себя не индексировать',
-  redirects.every(r => /noindex/.test(read(r))));
+// noindex здесь напрашивается, но он рядом с canonical — это два
+// противоречащих указания: «этой страницы в поиске быть не должно» и
+// «перенеси всё накопленное вот на эту». Разбирая противоречие,
+// поисковик может отнести запрет к странице, на которую мы переносим.
+ok('перенаправления не запрещают себя индексировать',
+  redirects.every(r => !/noindex/.test(read(r))),
+  redirects.filter(r => /noindex/.test(read(r))).slice(0, 3).join(', '));
 
 ok('перенаправления называют новый адрес каноническим',
   redirects.every(r => /<link rel="canonical"/.test(read(r))));

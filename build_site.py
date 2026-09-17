@@ -393,9 +393,26 @@ def prepare_slugs(all_posts):
 
 
 def tag_slug(tag):
-    """Имя страницы тега. Латинские теги остаются как есть, русские
-    переводятся: tag-моризо.html читался в адресной строке, но в ссылке
-    превращался в проценты, как и всё остальное."""
+    """Имя страницы тега.
+
+    Тег, записанный обычной латиницей, остаётся ровно таким, как есть —
+    вместе с заглавными буквами. Приводить его к нижнему регистру было
+    ошибкой: #vonAlt и #Mulot_Durivage превращались в tag-vonalt.html,
+    и на Windows это тот же самый файл, что и прежний tag-vonAlt.html.
+    Сборка писала страницу и перенаправление в один файл, из репозитория
+    уезжало что-то одно, а GitHub Pages, где регистр различается, отдавал
+    на другое имя «страница не найдена».
+
+    Плюс к тому это лишний переезд: адреса 82 тегов и без того были
+    нормальными, менять их было незачем.
+
+    Переводятся только те, где латиницы недостаточно: русские теги и
+    те, где затесались ñ, ü, é — в ссылке они всё равно превращаются
+    в проценты.
+    """
+    tag = (tag or "").strip()
+    if tag and tag.isascii() and re.fullmatch(r"[A-Za-z0-9._~-]+", tag):
+        return tag
     return latin_slug(tag, 48) or "tag"
 
 
@@ -554,13 +571,47 @@ def rename_pages(all_posts, visits=None):
 
 
 
+
+def legacy_post_names(all_posts):
+    """Прежние имена страниц работ, восстановленные по самим записям.
+
+    Зачем восстанавливать, а не читать из old_filenames: история имён
+    появляется в базе только в тот прогон, который переименовывает. Если
+    переименование уже прошло, а база до перенаправлений не дожила —
+    сборкой с чужой машины, откатом файла, чем угодно, — то 88 адресов,
+    которые люди могли отправить друг другу, молча превращаются в
+    «страница не найдена», и восстановить их будет уже неоткуда.
+
+    Имя считалось как <дата поста>-<имя художника>, а повторы в тот же
+    день получали -2, -3. Правило простое и обратимое, поэтому прежний
+    адрес выводится из даты и художника — так же, как у страниц тегов
+    и художников он выводится из тега и имени.
+    """
+    seen, out = {}, {}
+    for post in all_posts:
+        base = f"{post.get('date', '')}-{slugify(post.get('artist', ''))}"
+        seen[base] = seen.get(base, 0) + 1
+        n = seen[base]
+        out[f"{base}.html" if n == 1 else f"{base}-{n}.html"] = post.get("filename")
+    return out
+
+
 def write_redirect(old_name, new_name):
-    """Кладёт на прежний адрес страницу-перенаправление."""
+    """Кладёт на прежний адрес страницу-перенаправление.
+
+    Без noindex, хотя он тут просится. Google считает мгновенный
+    meta refresh обычным постоянным переездом, и страница-перенаправление
+    в указатель не попадает сама по себе. А вот noindex рядом с canonical
+    — это два противоречащих указания на одной странице: «этой страницы в
+    поиске быть не должно» и «настоящая страница вот эта, перенеси на неё
+    всё накопленное». Разбирая противоречие, поисковик может отнести
+    запрет к той самой странице, на которую мы переносим. В отчёте Google
+    такие адреса и всплыли — в разделе «запрещено тегом noindex».
+    """
     target = urllib.parse.quote(new_name)
     with open(os.path.join(OUTPUT_DIR, old_name), "w", encoding="utf-8") as f:
         f.write(f"""<!DOCTYPE html><html lang="ru"><head>
 <meta charset="UTF-8">
-<meta name="robots" content="noindex,follow">
 <link rel="canonical" href="{BASE_URL}/{target}">
 <meta http-equiv="refresh" content="0; url={target}">
 <title>Страница переехала</title>
@@ -582,15 +633,19 @@ def retire_pages(prefix, live, legacy):
     Всё прочее с этой приставкой — след исчезнувшего тега или ушедшего
     художника, такое убирается совсем.
     """
+    live_ci = {n.lower() for n in live}
     moved = removed = 0
     for old_name, new_name in legacy.items():
-        if old_name in live or new_name not in live:
+        # Различие только в регистре — не переезд. На Windows это один и
+        # тот же файл, и перенаправление затёрло бы саму страницу.
+        if (old_name in live or new_name not in live
+                or old_name.lower() in live_ci):
             continue
         write_redirect(old_name, new_name)
         moved += 1
-    keep = live | set(legacy)
+    keep = live_ci | {n.lower() for n in legacy}
     for name in os.listdir(OUTPUT_DIR):
-        if name.startswith(prefix) and name.endswith(".html") and name not in keep:
+        if name.startswith(prefix) and name.endswith(".html") and name.lower() not in keep:
             os.remove(os.path.join(OUTPUT_DIR, name))
             removed += 1
     return moved, removed
@@ -607,14 +662,19 @@ def generate_redirects(all_posts, visits=None):
     уводит мгновенно и, в отличие от meta refresh, не засоряет кнопку
     «назад».
     """
-    made = 0
+    live = {r.get("filename") for r in list(all_posts) + list(visits or [])}
+    moves = dict(legacy_post_names(all_posts))
     for rec in list(all_posts) + list(visits or []):
-        new = rec.get("filename")
         for old in rec.get("old_filenames", []):
-            if not old or old == new or "/" in old or not old.endswith(".html"):
-                continue
-            write_redirect(old, new)
-            made += 1
+            moves[old] = rec.get("filename")
+
+    made = 0
+    for old, new in moves.items():
+        if (not old or not new or old == new or "/" in old
+                or not old.endswith(".html") or old in live):
+            continue
+        write_redirect(old, new)
+        made += 1
     if made:
         logger.info(f"Перенаправлений со старых адресов: {made}")
     return made

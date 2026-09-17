@@ -114,7 +114,7 @@ def has_visits():
 # в canonical, карту сайта, RSS, превью ссылок и разметку для поисковиков,
 # а сборка положит рядом файл CNAME, по которому GitHub Pages узнаёт домен.
 # Менять адрес в других местах не нужно — он собирается только здесь.
-CUSTOM_DOMAIN = "oldpictureart.ru"
+CUSTOM_DOMAIN = ""
 
 
 def _domain_from_cname():
@@ -228,6 +228,27 @@ THEME_BOOT = (
     "document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>"
 )
 
+
+# ------------------------------------------------------------- счётчик
+#
+# Номер счётчика Яндекс.Метрики. Пусто — счётчика на сайте нет, и в
+# страницы ничего не вставляется.
+#
+# Где взять: metrika.yandex.ru → Добавить счётчик → имя «Old Picture Art»,
+# адрес oldpictureart.ru. Метрика выдаст восьмизначный номер — впишите
+# его сюда в кавычках и пересоберите сайт. Код счётчика подставится сам,
+# на все страницы разом: и на главную, и на страницы работ, и на карту.
+METRIKA_ID = ""
+
+METRIKA_JS = "" if not METRIKA_ID else f"""<script>
+(function(m,e,t,r,i,k,a){{m[i]=m[i]||function(){{(m[i].a=m[i].a||[]).push(arguments)}};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],
+k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}})
+(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym({METRIKA_ID},"init",{{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true}});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/{METRIKA_ID}" style="position:absolute;left:-9999px" alt=""></div></noscript>"""
+
 # Общий скрипт: переключение темы, кнопка «наверх», закрытие по Escape.
 COMMON_JS = """<script>
 function toggleTheme(){
@@ -260,6 +281,10 @@ function toggleTheme(){
   upd();
 })();
 </script>"""
+
+# Счётчик приклеивается к общему скрипту: он подставляется на каждую
+# страницу сайта, поэтому отдельного места для вставки не нужно.
+COMMON_JS += METRIKA_JS
 
 
 def style_version():
