@@ -231,23 +231,52 @@ THEME_BOOT = (
 
 # ------------------------------------------------------------- счётчик
 #
-# Номер счётчика Яндекс.Метрики. Пусто — счётчика на сайте нет, и в
-# страницы ничего не вставляется.
+# Номер счётчика Яндекс.Метрики. Пусто — счётчика нет, и в страницы
+# ничего не вставляется; сайт от этого только легче.
 #
-# Где взять: metrika.yandex.ru → Добавить счётчик → имя «Old Picture Art»,
-# адрес oldpictureart.ru. Метрика выдаст восьмизначный номер — впишите
-# его сюда в кавычках и пересоберите сайт. Код счётчика подставится сам,
-# на все страницы разом: и на главную, и на страницы работ, и на карту.
+# Где взять новый: metrika.yandex.ru → Добавить счётчик. Номер видно в
+# списке счётчиков и в выданном коде — это число после tag.js?id=.
 METRIKA_ID = "112760205"
 
-METRIKA_JS = "" if not METRIKA_ID else f"""<script>
-(function(m,e,t,r,i,k,a){{m[i]=m[i]||function(){{(m[i].a=m[i].a||[]).push(arguments)}};
-m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],
-k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}})
-(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
-ym({METRIKA_ID},"init",{{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true}});
+# Код взят тот, что выдала сама Метрика, слово в слово, — кроме двух
+# мест:
+#
+#   • номер подставляется из METRIKA_ID, чтобы он стоял в одном месте,
+#     а не в трёх (в адресе tag.js, в вызове ym и в картинке noscript);
+#   • убран ecommerce: "dataLayer" — он велит Метрике следить за
+#     корзиной интернет-магазина. Магазина здесь нет, следить не за чем.
+#
+# Параметры referrer и url оставлены, хотя Метрика подставляет их и
+# сама: с ними код совпадает с тем, что показывает проверка счётчика в
+# кабинете, и не приходится гадать, от чего расхождение.
+#
+# Ещё две мелочи против выданного кода — чтобы проверка разметки
+# оставалась чистой: убран type="text/javascript" (в HTML5 он лишний и
+# подразумевается) и косая черта в <img ... />. На работу счётчика ни то
+# ни другое не влияет, а ошибки сыпались бы на всех 303 страницах.
+# Прятать картинку-пиксель тоже отправлено в style.css классом ym-pixel:
+# написанный прямо в разметке стиль давал ту же ошибку на каждой странице.
+#
+# Строка с document.scripts — защита от второго счётчика на странице:
+# если tag.js уже подключён, второй раз он не подключится. Без неё
+# повторная вставка удваивала бы все просмотры.
+#
+# Это обычная строка, не f-строка: в коде Метрики много фигурных скобок,
+# и удваивать каждую ради подстановки номера — верный способ ошибиться
+# в одной и не заметить.
+METRIKA_JS = "" if not METRIKA_ID else """<!-- Yandex.Metrika counter -->
+<script>
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=COUNTER', 'ym');
+
+    ym(COUNTER, 'init', {ssr:true, webvisor:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
 </script>
-<noscript><div><img src="https://mc.yandex.ru/watch/{METRIKA_ID}" style="position:absolute;left:-9999px" alt=""></div></noscript>"""
+<noscript><div><img src="https://mc.yandex.ru/watch/COUNTER" class="ym-pixel" alt=""></div></noscript>
+<!-- /Yandex.Metrika counter -->""".replace("COUNTER", METRIKA_ID)
 
 # Общий скрипт: переключение темы, кнопка «наверх», закрытие по Escape.
 COMMON_JS = """<script>
