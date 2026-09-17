@@ -2776,7 +2776,9 @@
     "hires": [
       "images/sorok-tri-portreta-hudozhnikov-masterskoi-gleira-1856-hires-1.jpg"
     ],
-    "thumbs": [],
+    "thumbs": [
+      "images/thumbs/sorok-tri-portreta-hudozhnikov-masterskoi-gleira-1856.jpg"
+    ],
     "artist": "Анонимные художники, Феликс Огюстен Милиус, Александр-Огюст Розе, Альфред Адольф Ленгле, Огюст Русслен, Огюст Александр Хирш, Эмиль-Анри Лапорт, Огюст Ренуар, Поль Милье, Леонс-Люсьен Кордье, Альбер Дарье",
     "title": "Quarante-trois portraits de peintres de l'atelier Gleyre (Сорок три портрета художников мастерской Глейра), между 1856 и 1868 годами",
     "medium": "Холст, масло, 114 x 146 см",
@@ -2800,7 +2802,8 @@
     "creation_year": 1856,
     "views": [
       "images/views/sorok-tri-portreta-hudozhnikov-masterskoi-gleira-1856-1.jpg"
-    ]
+    ],
+    "card": "images/cards/sorok-tri-portreta-hudozhnikov-masterskoi-gleira-1856.jpg"
   },
   {
     "id": 422,

@@ -65,7 +65,7 @@ def main():
             bs.save_json(bs.VISITS_FILE, visits)
 
     for post in meta:
-        with open(os.path.join(bs.OUTPUT_DIR, post["filename"]), "w", encoding="utf-8") as f:
+        with open(os.path.join(bs.OUTPUT_DIR, post["filename"]), "w", encoding="utf-8", newline="\n") as f:
             f.write(bs.render_post_page(post, meta))
     print(f"✓ Страницы картин: {len(meta)}")
 
@@ -84,11 +84,11 @@ def main():
     bs.generate_manifest()
     bs.generate_rss(meta)
 
-    with open(os.path.join(bs.OUTPUT_DIR, "index.html"), "w", encoding="utf-8") as f:
+    with open(os.path.join(bs.OUTPUT_DIR, "index.html"), "w", encoding="utf-8", newline="\n") as f:
         f.write(bs.render_index(meta))
     print("✓ index.html")
 
-    with open(os.path.join(bs.OUTPUT_DIR, "404.html"), "w", encoding="utf-8") as f:
+    with open(os.path.join(bs.OUTPUT_DIR, "404.html"), "w", encoding="utf-8", newline="\n") as f:
         f.write(bs.render_404())
     print("✓ 404.html")
 

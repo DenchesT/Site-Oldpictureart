@@ -54,6 +54,20 @@ except ImportError:
     Image = ImageDraw = ImageFont = None
     PIL_AVAILABLE = False
 
+if PIL_AVAILABLE:
+    # Картинка, у которой не хватает последних байтов, обычно приходит
+    # из оборвавшейся загрузки: видно её целиком, кроме нижней полоски
+    # в несколько пикселей. По умолчанию Pillow на такой бросает
+    # «image file is truncated», и миниатюра с карточкой не делаются
+    # вовсе. Показать почти целую картинку лучше, чем не показать
+    # никакой, — но в логе о ней сказано, чтобы файл можно было
+    # перекачать.
+    try:
+        from PIL import ImageFile
+        ImageFile.LOAD_TRUNCATED_IMAGES = True
+    except ImportError:
+        pass
+
 from site_common import (head_common, scroll_top_button, theme_button, site_footer,
                          mark_svg, TELEGRAM_URL, TELEGRAM_NAME, SITE_DOMAIN, hires_url,
                          COMMON_JS, SCROLL_TOP_JS, LUPA_JS, TOAST_JS, SHARE_JS, AUTH_JS, BASE_URL,
@@ -142,7 +156,7 @@ def load_dictionary():
     return default
 
 def save_dictionary(d):
-    with open(DICTIONARY_FILE, "w", encoding="utf-8") as f:
+    with open(DICTIONARY_FILE, "w", encoding="utf-8", newline="\n") as f:
         json.dump(d, f, ensure_ascii=False, indent=2)
 
 def parse_medium_details(medium_text):
@@ -609,7 +623,7 @@ def write_redirect(old_name, new_name):
     такие адреса и всплыли — в разделе «запрещено тегом noindex».
     """
     target = urllib.parse.quote(new_name)
-    with open(os.path.join(OUTPUT_DIR, old_name), "w", encoding="utf-8") as f:
+    with open(os.path.join(OUTPUT_DIR, old_name), "w", encoding="utf-8", newline="\n") as f:
         f.write(f"""<!DOCTYPE html><html lang="ru"><head>
 <meta charset="UTF-8">
 <link rel="canonical" href="{BASE_URL}/{target}">
@@ -698,7 +712,7 @@ def load_json(path, default):
     return default
 
 def save_json(path, data):
-    with open(path, "w", encoding="utf-8") as f: json.dump(data, f, ensure_ascii=False, indent=2)
+    with open(path, "w", encoding="utf-8", newline="\n") as f: json.dump(data, f, ensure_ascii=False, indent=2)
 
 def compress_if_huge(fp):
     if not PIL_AVAILABLE or not os.path.exists(fp): return fp
@@ -733,7 +747,10 @@ def make_thumbnail(src, slug, idx):
         img.save(tp, "JPEG", quality=THUMB_QUALITY, optimize=True)
         return f"images/thumbs/{tn}"
     except Exception as e:
-        logger.warning(f"Миниатюра: {e}")
+        # Имя файла в предупреждении обязательно: без него «image file is
+        # truncated» сообщает, что где-то среди полутора тысяч картинок
+        # одна битая, и искать её нечем.
+        logger.warning(f"Миниатюра не сделана — {src}: {e}")
         return ""
 
 # ---------------------------------------------------------- карточка ссылки
@@ -885,7 +902,7 @@ def make_card(post):
         card.save(out, "JPEG", quality=88, optimize=True, progressive=True)
         return f"images/cards/{name}"
     except Exception as e:
-        logger.warning(f"Карточка ссылки: {e}")
+        logger.warning(f"Карточка ссылки не сделана — {post.get('filename', '?')}: {e}")
         return ""
 
 
@@ -1214,7 +1231,7 @@ def generate_cname():
     """
     if not SITE_DOMAIN:
         return
-    with open(os.path.join(OUTPUT_DIR, "CNAME"), "w", encoding="utf-8") as f:
+    with open(os.path.join(OUTPUT_DIR, "CNAME"), "w", encoding="utf-8", newline="\n") as f:
         f.write(SITE_DOMAIN + "\n")
     logger.info(f"CNAME → {SITE_DOMAIN}")
 
@@ -1228,7 +1245,7 @@ def generate_robots():
             "Allow: /\n"
             "\n"
             f"Sitemap: {BASE_URL}/sitemap.xml\n")
-    with open(os.path.join(OUTPUT_DIR, "robots.txt"), "w", encoding="utf-8") as f:
+    with open(os.path.join(OUTPUT_DIR, "robots.txt"), "w", encoding="utf-8", newline="\n") as f:
         f.write(body)
     logger.info("robots.txt")
 
@@ -2342,7 +2359,7 @@ async def fetch_new_posts(client, processed_ids, full_scan=False, known_visits=N
                 + f". Всего проверено: {stats['total']}, обработано: {stats['already_seen']}, "
                 f"не картина: {stats['no_main_msg']+stats['no_kartina_tag']}, ошибки: {stats['parse_failed']}")
     if sf:
-        with open("rejected_posts.txt","w",encoding="utf-8") as f:
+        with open("rejected_posts.txt","w",encoding="utf-8", newline="\n") as f:
             f.write(f"# Отбракованные посты — {datetime.now():%Y-%m-%d %H:%M}\n\n")
             for i, s in enumerate(sf, 1): f.write(f"--- #{i} ---\n{s}\n\n")
         logger.info(f"rejected_posts.txt ({len(sf)} шт.)")
@@ -3243,9 +3260,9 @@ def generate_visit_pages(visits, all_posts=None):
     wanted = set()
     for v in visits:
         wanted.add(v["filename"])
-        with open(os.path.join(OUTPUT_DIR, v["filename"]), "w", encoding="utf-8") as f:
+        with open(os.path.join(OUTPUT_DIR, v["filename"]), "w", encoding="utf-8", newline="\n") as f:
             f.write(render_visit_page(v, visits, all_posts, map_names))
-    with open(os.path.join(OUTPUT_DIR, "visits.html"), "w", encoding="utf-8") as f:
+    with open(os.path.join(OUTPUT_DIR, "visits.html"), "w", encoding="utf-8", newline="\n") as f:
         f.write(render_visits_page(visits, all_posts))
     # Заголовок поста могли поправить — имя страницы тогда меняется,
     # а прежняя остаётся в docs/ навсегда и попадает в поиск.
@@ -3316,9 +3333,9 @@ def generate_extra_pages(all_posts):
     if removed:
         logger.info(f"Убрано прежних страниц художников: {removed}")
 
-    with open(os.path.join(OUTPUT_DIR, "ukazatel.html"), "w", encoding="utf-8") as f:
+    with open(os.path.join(OUTPUT_DIR, "ukazatel.html"), "w", encoding="utf-8", newline="\n") as f:
         f.write(render_ukazatel(all_posts))
-    with open(os.path.join(OUTPUT_DIR, "stats.html"), "w", encoding="utf-8") as f:
+    with open(os.path.join(OUTPUT_DIR, "stats.html"), "w", encoding="utf-8", newline="\n") as f:
         f.write(render_stats(all_posts))
     logger.info("Указатель и статистика готовы")
     return by_artist
@@ -3378,7 +3395,7 @@ def generate_sitemap(all_posts, visits=None):
     for p in all_posts:
         for t in p.get("tags",[]): at.add(t)
     for t in sorted(at): urls.append(f"  <url><loc>{bu}/{u('tag-' + tag_slug(t) + '.html')}</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>")
-    with open(os.path.join(OUTPUT_DIR, "sitemap.xml"), "w", encoding="utf-8") as f:
+    with open(os.path.join(OUTPUT_DIR, "sitemap.xml"), "w", encoding="utf-8", newline="\n") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + '\n</urlset>')
     logger.info(f"Sitemap ({len(urls)} URL)")
 
@@ -3411,7 +3428,7 @@ def generate_icons():
     в репозитории не было, а фавикон был отдельной картинкой, ничем
     не связанной с оформлением."""
     # svg пишем всегда: он не требует PIL и именно его берут современные браузеры
-    with open(os.path.join(OUTPUT_DIR, "favicon.svg"), "w", encoding="utf-8") as f:
+    with open(os.path.join(OUTPUT_DIR, "favicon.svg"), "w", encoding="utf-8", newline="\n") as f:
         f.write(mark_svg())
 
     if not PIL_AVAILABLE:
@@ -3453,7 +3470,7 @@ def generate_manifest():
         "theme_color": "#eceef1",
         "icons": icons,
     }
-    with open(os.path.join(OUTPUT_DIR, "manifest.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(OUTPUT_DIR, "manifest.json"), "w", encoding="utf-8", newline="\n") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     logger.info(f"manifest.json ({len(icons)} иконок)")
 
@@ -3494,7 +3511,7 @@ def generate_rss(all_posts):
 {''.join(items)}
 </channel>
 </rss>"""
-    with open(os.path.join(OUTPUT_DIR, "feed.xml"), "w", encoding="utf-8") as f:
+    with open(os.path.join(OUTPUT_DIR, "feed.xml"), "w", encoding="utf-8", newline="\n") as f:
         f.write(rss)
     logger.info("RSS сгенерирован")
 
@@ -3574,7 +3591,7 @@ async def main():
         post = {"id":mm.id,"date":date,"filename":fn,"images":im,"hires":hi,"thumbs":th,**parsed}
         all_posts.append(post)
         processed_ids.update(m.id for m in group)
-        with open(os.path.join(OUTPUT_DIR, fn), "w", encoding="utf-8") as f:
+        with open(os.path.join(OUTPUT_DIR, fn), "w", encoding="utf-8", newline="\n") as f:
             f.write(render_post_page(post, all_posts))
     async def visit_comments(anchor):
         out = []
@@ -3654,7 +3671,7 @@ async def main():
     rename_pages(all_posts, all_visits)
     save_json(VISITS_FILE, all_visits)
     for post in all_posts:
-        with open(os.path.join(OUTPUT_DIR, post["filename"]), "w", encoding="utf-8") as f:
+        with open(os.path.join(OUTPUT_DIR, post["filename"]), "w", encoding="utf-8", newline="\n") as f:
             f.write(render_post_page(post, all_posts))
     save_json(META_FILE, all_posts)
     save_json(PROCESSED_FILE, sorted(processed_ids))
@@ -3680,8 +3697,8 @@ async def main():
         logger.info("Таймлайн сгенерирован")
     except Exception as e:
         logger.error(f"Ошибка генерации таймлайна: {e}")
-    with open(os.path.join(OUTPUT_DIR, "index.html"), "w", encoding="utf-8") as f: f.write(render_index(all_posts))
-    with open(os.path.join(OUTPUT_DIR, "404.html"), "w", encoding="utf-8") as f: f.write(render_404())
+    with open(os.path.join(OUTPUT_DIR, "index.html"), "w", encoding="utf-8", newline="\n") as f: f.write(render_index(all_posts))
+    with open(os.path.join(OUTPUT_DIR, "404.html"), "w", encoding="utf-8", newline="\n") as f: f.write(render_404())
     save_image_sizes()
     logger.info(f"Новых постов: {len(accepted)}. Всего: {len(all_posts)}")
     push_to_github()

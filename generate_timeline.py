@@ -201,7 +201,7 @@ slider.addEventListener('input', function() {{
     
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     output_path = os.path.join(OUTPUT_DIR, "timeline.html")
-    with open(output_path, "w", encoding="utf-8") as f:
+    with open(output_path, "w", encoding="utf-8", newline="\n") as f:
         f.write(html)
     
     print(f"Таймлайн сохранён: {output_path}")

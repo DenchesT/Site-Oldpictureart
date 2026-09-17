@@ -271,25 +271,48 @@ def geocode(museum_name, cache, overrides=None, retry_failed=False, offline=Fals
         bump('override')
         return result
 
-    # 2. Кэш. Запоминаем, каким запросом получен результат: если подсказку
-    #    в справочнике поменяли, координаты нужно искать заново — иначе
+    # 2. Кэш. Вместе с координатами запоминаем подсказку из справочника,
+    #    по которой их искали: поменяли подсказку — ищем заново, иначе
     #    правка справочника молча ни на что не влияла бы.
+    #
+    #    Подсказка — это содержимое справочника, а НЕ тот запрос, которым
+    #    в итоге нашлось. Раньше сравнивали именно с ним, и выходила
+    #    ловушка: у «Музея Эжена Будена» в справочнике стоял адрес
+    #    «Place Erik Satie, Honfleur», а нашёлся он по названию — значит
+    #    записанный запрос никогда не совпадал с ожидаемым, и музей
+    #    искался заново каждую сборку. Три таких музея съедали по двадцать
+    #    секунд на каждый прогон, хотя координаты давно лежали в кэше.
     wanted_query = (manual.get('address') or manual.get('query') or '').strip()
+    wanted_hint = ((manual.get('address') or '').strip() + "\n"
+                   + (manual.get('query') or '').strip())
     stale = None      # прежние координаты на случай, если новый поиск не удастся
     if museum_name in cache:
         cached = cache[museum_name]
         if cached:
-            if wanted_query and cached.get('query', '') != wanted_query:
+            # У записей, сделанных до появления поля hint, сверяемся
+            # по-старому — один раз: дальше у них появится подсказка.
+            known = cached.get('hint')
+            changed = (known != wanted_hint) if known is not None else (
+                bool(wanted_query) and cached.get('query', '') != wanted_query)
+            if changed:
                 logger.info(f"  ↻ подсказка изменилась, ищу заново: {museum_name}")
                 stale = cached
             else:
                 logger.info(f"  ✓ (из кэша) {museum_name}")
                 bump('cache')
                 return cached
-        elif not retry_failed:
+        elif not retry_failed and not wanted_hint.strip():
             logger.info(f"  – (из кэша, без координат) {museum_name}")
             bump('cache_empty')
             return None
+        elif not retry_failed:
+            # У названия, которое не нашлось, в справочнике появилась
+            # подсказка — значит её вписали как раз затем, чтобы оно
+            # нашлось. Прежде такая правка ничего не делала: неудача
+            # запомнилась как null, а null проверку подсказки не проходил,
+            # и человек добавлял адрес, пересобирал и видел ровно тот же
+            # отказ, не понимая, за что.
+            logger.info(f"  ↻ появилась подсказка, пробую снова: {museum_name}")
 
     if offline:
         # Без сети сохраняем прежнюю метку: устаревшие координаты всё равно
@@ -316,7 +339,8 @@ def geocode(museum_name, cache, overrides=None, retry_failed=False, offline=Fals
             if km > 50:
                 logger.warning(f"  ⚠ {museum_name}: новая точка в {km:.0f} км от прежней "
                                f"(искали «{query}») — проверьте адрес в museum_overrides.json")
-        result['query'] = query
+        result['query'] = query      # чем нашлось — для разбора в логе
+        result['hint'] = wanted_hint  # из чего искали — по нему сверяется кэш
         cache[museum_name] = result
         bump('lookup')
         return result
@@ -1256,7 +1280,7 @@ def generate_museums_page(retry_failed=False, offline=False):
         elif not (overrides.get(museum) or {}).get('skip'):
             not_found.append(museum)
 
-    with open(CACHE_FILE, "w", encoding="utf-8") as f:
+    with open(CACHE_FILE, "w", encoding="utf-8", newline="\n") as f:
         json.dump(cache, f, ensure_ascii=False, indent=2)
 
     lookups = geo_stats.get('lookup', 0)
@@ -1396,7 +1420,6 @@ def generate_museums_page(retry_failed=False, offline=False):
                 'visits': len(been), 'approx': approx,
             })
 
-    missing = len(museums_dict) - found_locations
     total_paintings = sum(len(v) for v in museums_dict.values())
 
     # Конфиг с ключами создаём один раз и больше не трогаем — иначе
@@ -1404,7 +1427,7 @@ def generate_museums_page(retry_failed=False, offline=False):
     config_path = os.path.join(OUTPUT_DIR, "map-config.js")
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     if not os.path.exists(config_path):
-        with open(config_path, "w", encoding="utf-8") as f:
+        with open(config_path, "w", encoding="utf-8", newline="\n") as f:
             f.write(MAP_CONFIG_TEMPLATE)
         logger.info(f"Создан {config_path} — впишите туда ключ Яндекс.Карт")
 
@@ -1490,7 +1513,7 @@ const MUSEUMS = {json.dumps(map_data, ensure_ascii=False)};
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     output_path = os.path.join(OUTPUT_DIR, "museums.html")
-    with open(output_path, "w", encoding="utf-8") as f:
+    with open(output_path, "w", encoding="utf-8", newline="\n") as f:
         f.write(html)
     
     logger.info(f"✅ Карта собраний сохранена: {output_path}")
@@ -1499,11 +1522,21 @@ const MUSEUMS = {json.dumps(map_data, ensure_ascii=False)};
     approx = [m for m, l in locations.items() if l.get('precision') == 'approx']
     if approx:
         logger.info(f"   Приблизительно (по городу/стране): {len(approx)}")
+
+    # Частные собрания метки не получают намеренно: адреса у них нет,
+    # а Nominatim по запросу «Частная коллекция» находил магазин на
+    # Волхонке. Раньше они попадали в общее «Не найдено», и строка
+    # выглядела как шесть неполадок там, где неполадка одна.
+    on_purpose = sum(1 for m in museums_dict
+                     if (overrides.get(m) or {}).get('skip'))
+    if on_purpose:
+        logger.info(f"   Без метки намеренно (частные собрания): {on_purpose}")
     if not_found:
-        logger.warning(f"   Без координат: {len(not_found)} — добавьте их в {OVERRIDES_FILE}:")
+        logger.warning(f"   Без координат: {len(not_found)} — впишите их в {OVERRIDES_FILE}:")
         for m in not_found:
             logger.warning(f'     "{m}": {{"lat": 0.0, "lon": 0.0}},')
-    logger.info(f"   Не найдено: {missing}")
+    else:
+        logger.info("   Мест без координат нет")
 
 
 if __name__ == "__main__":
