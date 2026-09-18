@@ -6,6 +6,7 @@ import json
 import shutil
 import subprocess
 import logging
+import logging.handlers
 import random
 from datetime import datetime, timezone
 from email.utils import format_datetime
@@ -18,8 +19,16 @@ from collections import defaultdict, Counter
 from html import escape as h
 from pathlib import Path
 
+# Журнал сборки. Пишется с обрезкой по размеру: прежде это был обычный
+# FileHandler, который дописывает в конец и никогда не укорачивается —
+# за полгода parser.log дорос до мегабайта и продолжал бы расти. Теперь
+# файл обрезается на 2 МБ, а две прошлые сборки остаются в parser.log.1
+# и parser.log.2 — этого хватает, чтобы посмотреть, что было в прошлый
+# раз, и не хватает, чтобы захламить папку.
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler('parser.log', encoding='utf-8'), logging.StreamHandler()])
+    handlers=[logging.handlers.RotatingFileHandler('parser.log', maxBytes=2_000_000,
+                                                   backupCount=2, encoding='utf-8'),
+              logging.StreamHandler()])
 logger = logging.getLogger(__name__)
 
 REQUIRED_PACKAGES = ["telethon", "Pillow", "TelethonFakeTLS"]
