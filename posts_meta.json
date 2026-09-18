@@ -3745,5 +3745,42 @@
       "images/views/korovin-parizh-bulvar-kaputsinok-1906-1.jpg"
     ],
     "card": "images/cards/korovin-parizh-bulvar-kaputsinok-1906.jpg"
+  },
+  {
+    "id": 503,
+    "date": "2026-09-18",
+    "filename": "zandomeneghi-v-teatre-1885.html",
+    "images": [
+      "images/zandomeneghi-v-teatre-1885-1.jpg"
+    ],
+    "hires": [
+      "images/zandomeneghi-v-teatre-1885-hires-1.jpg"
+    ],
+    "thumbs": [
+      "images/thumbs/zandomeneghi-v-teatre-1885.jpg"
+    ],
+    "artist": "Федерико Дзандоменеги",
+    "title": "Au théâtre (В театре), 1885-1895",
+    "medium": "Холст, масло, 71 x 88 см",
+    "material": "Холст",
+    "techniques": [
+      "масло"
+    ],
+    "size": "71 x 88 см",
+    "museum": "Частная коллекция",
+    "history": [],
+    "description": "",
+    "urls": [],
+    "tags": [
+      "pc",
+      "zandomeneghi",
+      "картина"
+    ],
+    "raw": "Федерико Дзандоменеги\n⸻\nAu théâtre (В театре), 1885-1895\n⸻\nХолст, масло, 71 x 88 см\n⸻\nЧастная коллекция\n⸻\n#zandomeneghi@oldpictureart\n#pc@oldpictureart \n#картина@oldpictureart\n",
+    "creation_year": 1885,
+    "views": [
+      "images/views/zandomeneghi-v-teatre-1885-1.jpg"
+    ],
+    "card": "images/cards/zandomeneghi-v-teatre-1885.jpg"
   }
 ]
