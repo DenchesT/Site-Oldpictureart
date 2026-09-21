@@ -75,10 +75,11 @@ likes/<uid>_<postId>
 
 ## Заодно проверьте два пункта в консоли Firebase
 
-1. **Authentication → Settings → Authorized domains.** В списке должен
-   быть `oldpictureart.ru`. Домен новый, и если его туда не добавили,
-   вход через Google на сайте не сработает: Firebase ответит
-   `auth/unauthorized-domain`. Старый `denchest.github.io` можно оставить.
+1. **Authentication → Sign-in method.** Входа через Google на сайте
+   больше нет — только почта и пароль. Провайдер **Google** здесь можно
+   выключить, **Email/Password** должен оставаться включённым. В
+   **Settings → Authorized domains** пусть будет `oldpictureart.ru`:
+   по этому списку Firebase проверяет ссылки из писем для сброса пароля.
 
 2. **Google Cloud Console → APIs & Services → Credentials → ваш ключ.**
    В списке разрешённых должны быть только сервисы Firebase. Если туда

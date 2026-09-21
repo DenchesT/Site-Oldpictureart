@@ -77,6 +77,9 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
     await page.getAttribute('.auth-modal', 'aria-modal') === 'true');
   ok('поле ошибки объявлено как сообщение',
     await page.getAttribute('#auth-error', 'role') === 'alert');
+  ok('входа через Google в окне нет — только почта и пароль',
+    await page.locator('#google-login-btn, .auth-btn-google, .auth-divider').count() === 0 &&
+    await page.locator('#auth-email').count() === 1);
 
   await page.fill('#auth-email', 'не-почта');
   await page.fill('#auth-password', '123456');
@@ -158,14 +161,11 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
       auth() { return {
         // сессия восстановлена: человек входил когда-то раньше
         onAuthStateChanged(f) { cb = f; setTimeout(() => f(USER), 30); },
-        getRedirectResult() { return Promise.resolve(null); },
         signInWithEmailAndPassword() { setTimeout(() => cb(USER), 10); return Promise.resolve({ user: USER }); },
-        signInWithPopup() { setTimeout(() => cb(USER), 10); return Promise.resolve({ user: USER }); },
         signOut() { setTimeout(() => cb(null), 10); return Promise.resolve(); },
       }; },
       firestore() { return store; },
     };
-    window.firebase.auth.GoogleAuthProvider = function () {};
     window.firebase.firestore.FieldValue = { serverTimestamp: () => 0 };
   });
   await fp.goto(f(POST));

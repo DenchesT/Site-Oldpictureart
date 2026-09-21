@@ -141,7 +141,6 @@ const server = http.createServer((req, res) => {
   await page.waitForTimeout(200);
   ok('Вебвизор не пишет, что вводят в поля входа',
      await page.locator('#auth-email.ym-disable-keys, #auth-password.ym-disable-keys').count() === 2);
-  ok('в окне входа сказано, что хранится', await page.locator('.auth-note a[href="privacy.html#account"]').count() === 1);
   await c3.close();
 
   // ------------------------------------------------ телефон

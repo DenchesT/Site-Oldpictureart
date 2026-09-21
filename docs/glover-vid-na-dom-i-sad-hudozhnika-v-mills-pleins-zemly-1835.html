@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=d7a15e1d">
+<link rel="stylesheet" href="style.css?v=9a23e70e">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"VisualArtwork","name":"A view of the artist's house and garden, in Mills Plains, Van Diemen's Land (Вид на дом и сад художника в Миллс-Плейнс, Земля Ван-Димена), 1835","url":"https://oldpictureart.ru/glover-vid-na-dom-i-sad-hudozhnika-v-mills-pleins-zemly-1835.html","inLanguage":"ru","creator":{"@type":"Person","name":"Джон Гловер"},"dateCreated":"1835","artMedium":{"@value":"масло"},"artworkSurface":{"@value":"холст"},"image":"https://oldpictureart.ru/images/glover-vid-na-dom-i-sad-hudozhnika-v-mills-pleins-zemly-1835-1.jpg","isPartOf":{"@type":"Collection","name":"Художественная галерея Южной Австралии, Аделаида"},"description":"После успешной карьеры художника в Англии и накануне своего отъезда в Австралию в 1831 году Джон Гловер с нетерпением ждал начала своей новой жизни на другом конце света, отметив, что: \"Ожидание найти новый прекрасный мир — новые пейзажи, новые деревья, новые цветы, новых животных, птиц и т. д. — вызывают у меня восхищение’. На картине \"Вид на дом и сад художника\"  мы видим, что художник быстро освоился в новом мире, однако он никогда полностью не расставался со своей далёкой родиной. Сцена пред","sameAs":["https://www.agsa.sa.gov.au/collection-publications/collection/works/a-view-of-the-artists-house-and-garden-in-mills-plains-van-diemens-land/24282/"],"height":{"@type":"QuantitativeValue","value":76.4,"unitCode":{"@value":"CMT"},"unitText":{"@value":"см"}},"width":{"@type":"QuantitativeValue","value":114.4,"unitCode":{"@value":"CMT"},"unitText":{"@value":"см"}}}</script>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page">
@@ -823,8 +823,7 @@ try {
   }
 } catch (e) { console.warn('Firebase недоступен, избранное работает локально:', e.message); }
 
-// Коды Firebase человеческим языком. Пустая строка — молча промолчать:
-// пользователь сам закрыл окно, сообщать не о чем.
+// Коды Firebase человеческим языком.
 var AUTH_ERRORS = {
   'auth/invalid-email':            'Похоже, адрес почты записан с ошибкой.',
   'auth/missing-password':         'Введите пароль.',
@@ -836,8 +835,6 @@ var AUTH_ERRORS = {
   'auth/too-many-requests':        'Слишком много попыток подряд. Подождите пару минут.',
   'auth/network-request-failed':   'Не получилось связаться с сервером. Проверьте интернет.',
   'auth/user-disabled':            'Этот аккаунт отключён.',
-  'auth/popup-closed-by-user':     '',
-  'auth/cancelled-popup-request':  '',
   'auth/unauthorized-domain':      'Вход с этого адреса не разрешён в настройках Firebase.',
   'auth/operation-not-allowed':    'Этот способ входа выключен в настройках Firebase.'
 };
@@ -862,23 +859,12 @@ function authName(user) {
 // от другого по событию нельзя, и «Вы вошли как Денис» выскакивало на
 // каждой открытой картине — притом что человек ничего не нажимал.
 // Поэтому здороваемся не в обработчике события, а там, где вход
-// действительно произошёл: после формы, после окна Google и после
-// возврата с его страницы.
+// действительно произошёл, — после формы.
 function greet(user) {
   toast('Вы вошли как ' + authName(user));
 }
 
 if (FIREBASE_OK) {
-  // Вход переходом (когда всплывающее окно заблокировано) возвращается
-  // сюда: ошибку надо поймать, иначе она утечёт в консоль незаметно.
-  auth.getRedirectResult().then(function (result) {
-    // Вернулись со страницы Google — вот это вход, о нём и говорим.
-    if (result && result.user) greet(result.user);
-  }).catch(function (err) {
-    var m = authMessage(err);
-    if (m) toast(m);
-  });
-
   auth.onAuthStateChanged(function (user) {
     currentUser = user;
     var btn = document.getElementById('auth-btn');
@@ -919,23 +905,12 @@ function showAuthForm() {
       '<button type="button" class="auth-modal-close" id="auth-close-btn" aria-label="Закрыть">&times;</button>' +
       '<h3 id="auth-title">Вход в аккаунт</h3>' +
       '<p id="auth-lede">Чтобы отмеченные картины были и на телефоне, и на компьютере.</p>' +
-      '<button type="button" class="auth-btn-google" id="google-login-btn">' +
-        '<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">' +
-        '<path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>' +
-        '<path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>' +
-        '<path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>' +
-        '<path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>' +
-        'Войти через Google' +
-      '</button>' +
-      '<div class="auth-divider">или</div>' +
       '<form id="auth-form" novalidate>' +
         '<input type="email" class="auth-input ym-disable-keys" id="auth-email" name="email" placeholder="Почта" autocomplete="email" required>' +
         '<input type="password" class="auth-input ym-disable-keys" id="auth-password" name="password" placeholder="Пароль" autocomplete="current-password" required>' +
         '<button type="submit" class="auth-submit" id="auth-submit-btn">Войти</button>' +
       '</form>' +
       '<div class="auth-error" id="auth-error" role="alert"></div>' +
-      '<p class="auth-note">Сайт хранит вашу почту и список отмеченных картин — на серверах Google (Firebase). ' +
-        '<a href="privacy.html#account">Подробнее</a></p>' +
       '<div class="auth-switch">' +
         '<span id="auth-switch-text">Нет аккаунта?</span> ' +
         '<button type="button" class="auth-link" id="auth-switch-link">Создать</button>' +
@@ -951,7 +926,6 @@ function showAuthForm() {
   var emailInp = document.getElementById('auth-email');
   var passInp = document.getElementById('auth-password');
   var submitBtn = document.getElementById('auth-submit-btn');
-  var googleBtn = document.getElementById('google-login-btn');
   var switchLink = document.getElementById('auth-switch-link');
   var switchText = document.getElementById('auth-switch-text');
   var resetRow = document.getElementById('auth-reset-container');
@@ -963,7 +937,6 @@ function showAuthForm() {
   function setBusy(on, label) {
     busy = on;
     submitBtn.disabled = on;
-    googleBtn.disabled = on;
     submitBtn.textContent = on ? (label || 'Минуту…')
                                : (isLogin ? 'Войти' : 'Создать аккаунт');
   }
@@ -989,33 +962,6 @@ function showAuthForm() {
   document.addEventListener('keydown', onKey, true);
   document.getElementById('auth-close-btn').onclick = function () { close(true); };
   overlay.onclick = function (e) { if (e.target === overlay && !busy) close(true); };
-
-  googleBtn.onclick = function () {
-    if (busy) return;
-    setBusy(true);
-    say('');
-    var provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-      .then(function (result) {
-        close(false);
-        if (result && result.user) greet(result.user);
-      })
-      .catch(function (err) {
-        var code = err && err.code;
-        // Всплывающее окно заблокировано — уводим на страницу Google
-        // целиком. Раньше в этом месте просто ничего не происходило.
-        if (code === 'auth/popup-blocked'
-            || code === 'auth/operation-not-supported-in-this-environment') {
-          auth.signInWithRedirect(provider).catch(function (e2) {
-            setBusy(false);
-            say(authMessage(e2));
-          });
-          return;
-        }
-        setBusy(false);
-        say(authMessage(err));
-      });
-  };
 
   switchLink.onclick = function () {
     isLogin = !isLogin;
