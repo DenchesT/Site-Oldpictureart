@@ -3823,5 +3823,44 @@
       "images/views/boch-pristan-v-mehelene-1906-1.jpg"
     ],
     "card": "images/cards/boch-pristan-v-mehelene-1906.jpg"
+  },
+  {
+    "id": 506,
+    "date": "2026-09-21",
+    "filename": "pett-monfuko-bez-nazvaniya-1876.html",
+    "images": [
+      "images/pett-monfuko-bez-nazvaniya-1876-1.jpg"
+    ],
+    "hires": [
+      "images/pett-monfuko-bez-nazvaniya-1876-hires-1.jpg"
+    ],
+    "thumbs": [
+      "images/thumbs/pett-monfuko-bez-nazvaniya-1876.jpg"
+    ],
+    "artist": "Людовик Пьетт-Монфуко",
+    "title": "Без названия, 1876",
+    "medium": "Картон, гуашь, 37,5 x 26 см",
+    "material": "Картон",
+    "techniques": [
+      "гуашь"
+    ],
+    "size": "37,5 x 26 см",
+    "museum": "Тегеранский музей современного искусства, Тегеран",
+    "history": [],
+    "description": "",
+    "urls": [
+      "http://data.tmoca.com/uploads/images/original/66_10745cec9d2fbd768e821fe0237d8348_1540211113.jpg"
+    ],
+    "tags": [
+      "piette",
+      "tmoca",
+      "картина"
+    ],
+    "raw": "Людовик Пьетт-Монфуко\n⸻\nБез названия, 1876\n⸻\nКартон, гуашь, 37,5 x 26 см\n⸻\nТегеранский музей современного искусства, Тегеран\n⸻\nhttp://data.tmoca.com/uploads/images/original/66_10745cec9d2fbd768e821fe0237d8348_1540211113.jpg\n⸻\n#piette@oldpictureart\n#tmoca@oldpictureart \n#картина@oldpictureart\n",
+    "creation_year": 1876,
+    "views": [
+      "images/views/pett-monfuko-bez-nazvaniya-1876-1.jpg"
+    ],
+    "card": "images/cards/pett-monfuko-bez-nazvaniya-1876.jpg"
   }
 ]
