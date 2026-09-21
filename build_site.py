@@ -3426,7 +3426,7 @@ def render_privacy():
     metrika = "" if not METRIKA_ID else """
 <section class="doc-block" id="metrika">
   <h2>Статистика посещений — Яндекс Метрика</h2>
-  <p>Включается, только если вы нажали «Разрешить» на плашке внизу страницы. До этого
+  <p>Включается, только если вы нажали «Принять» на плашке внизу страницы. До этого
   счётчик не загружается и ничего не отправляет.</p>
   <div class="consent-controls" id="consent-controls">
     <p class="consent-state" id="consent-state" role="status">Статистика: вы пока не решили.</p>

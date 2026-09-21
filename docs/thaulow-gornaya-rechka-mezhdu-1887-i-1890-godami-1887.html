@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=d6f04475">
+<link rel="stylesheet" href="style.css?v=d7a15e1d">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"VisualArtwork","name":"Горная речка, между 1887 и 1890 годами","url":"https://oldpictureart.ru/thaulow-gornaya-rechka-mezhdu-1887-i-1890-godami-1887.html","inLanguage":"ru","creator":{"@type":"Person","name":"Йохан Фредерик Фриц Таулов"},"dateCreated":"1887","artMedium":{"@value":"пастель"},"artworkSurface":{"@value":"холст"},"image":"https://oldpictureart.ru/images/thaulow-gornaya-rechka-mezhdu-1887-i-1890-godami-1887-1.jpg","isPartOf":{"@type":"Collection","name":"ГМИИ им. А.С. Пушкина, Москва"},"description":"Художник изобразил норвежскую реку Лисакер (норв. Lysaker elven) возле фермы Грини (Grini) в местечке Борум (Baerum) в пригороде Осло. Считается, что Таулов нарисовал 11 версий с однотипным сюжетом — «горная речка Лисакер извивается среди заснеженных берегов ранней весной». Одна из них висит в зале №13. Работая в технике пастели, Таулов точно передаёт эффект ясного зимнего неба с характерным для этого времени года освещением, сверкающего белизной снега, тёмной глади реки с отражающимися в ней де","sameAs":["http://www.newestmuseum.ru/data/authors/t/tauli_f/j_3473/index.php","https://collection.pushkinmuseum.art/entity/OBJECT/77340"],"height":{"@type":"QuantitativeValue","value":59.5,"unitCode":{"@value":"CMT"},"unitText":{"@value":"см"}},"width":{"@type":"QuantitativeValue","value":80.0,"unitCode":{"@value":"CMT"},"unitText":{"@value":"см"}}}</script>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page">
@@ -163,13 +163,16 @@ function toggleTheme(){
     b.id = 'consent';
     b.className = 'consent';
     b.setAttribute('aria-label', 'Статистика посещений');
+    // Тон — как на обычных сайтах: спокойно и коротко, без перечня того,
+    // что Метрика умеет. Всё подробно — IP-адрес, Вебвизор, как
+    // отказаться — на странице по ссылке «Подробнее». Главное здесь не
+    // текст, а то, что до «Принять» счётчик не загружается.
     b.innerHTML =
-      '<p class="consent-text">Разрешите вести статистику посещений? Для этого подключается ' +
-      'Яндекс Метрика: она ставит cookie, получает IP-адрес и записывает действия на странице. ' +
-      'Без неё сайт работает так же. <a href="privacy.html#metrika">Подробнее</a></p>' +
+      '<p class="consent-text">Мы используем cookie и Яндекс Метрику, чтобы понимать, ' +
+      'какие картины вам интересны. <a href="privacy.html#metrika">Подробнее</a></p>' +
       '<div class="consent-actions">' +
-        '<button type="button" class="consent-btn" data-consent="yes">Разрешить</button>' +
-        '<button type="button" class="consent-btn" data-consent="no">Не разрешать</button>' +
+        '<button type="button" class="consent-btn" data-consent="yes">Принять</button>' +
+        '<button type="button" class="consent-btn" data-consent="no">Отклонить</button>' +
       '</div>';
     b.addEventListener('click', function (e) {
       var v = e.target.getAttribute && e.target.getAttribute('data-consent');

@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=d6f04475">
+<link rel="stylesheet" href="style.css?v=d7a15e1d">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"VisualArtwork","name":"Kaai in Mechelen (Пристань в Мехелене), 1906","url":"https://oldpictureart.ru/boch-pristan-v-mehelene-1906.html","inLanguage":"ru","creator":{"@type":"Person","name":"Анна Розалия Бош"},"dateCreated":"1906","artMedium":{"@value":"масло"},"artworkSurface":{"@value":"холст"},"image":"https://oldpictureart.ru/images/boch-pristan-v-mehelene-1906-1.jpg","isPartOf":{"@type":"Collection","name":"Музей изящных искусств, Гент"},"description":"На фоне ярко выраженного мужского авангарда своего времени Анна Бош предстаёт первопроходцем в мире искусства среди женщин. Она не только художница, но и меценат, коллекционер, музыкант и вдохновительница известного салона. Будучи единственной женщиной в прогрессивном брюссельском объединении художников \"Общество XX\", Бош играет важную роль в культурных инициативах \"Общество XX\". На их ежегодных выставках она выставляет свои работы, активно приобретает произведения искусства и предоставляет эксп","sameAs":["https://www.mskgent.be/en/collection/1942-AK"],"height":{"@type":"QuantitativeValue","value":136.5,"unitCode":{"@value":"CMT"},"unitText":{"@value":"см"}},"width":{"@type":"QuantitativeValue","value":86.7,"unitCode":{"@value":"CMT"},"unitText":{"@value":"см"}}}</script>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page">
@@ -163,13 +163,16 @@ function toggleTheme(){
     b.id = 'consent';
     b.className = 'consent';
     b.setAttribute('aria-label', 'Статистика посещений');
+    // Тон — как на обычных сайтах: спокойно и коротко, без перечня того,
+    // что Метрика умеет. Всё подробно — IP-адрес, Вебвизор, как
+    // отказаться — на странице по ссылке «Подробнее». Главное здесь не
+    // текст, а то, что до «Принять» счётчик не загружается.
     b.innerHTML =
-      '<p class="consent-text">Разрешите вести статистику посещений? Для этого подключается ' +
-      'Яндекс Метрика: она ставит cookie, получает IP-адрес и записывает действия на странице. ' +
-      'Без неё сайт работает так же. <a href="privacy.html#metrika">Подробнее</a></p>' +
+      '<p class="consent-text">Мы используем cookie и Яндекс Метрику, чтобы понимать, ' +
+      'какие картины вам интересны. <a href="privacy.html#metrika">Подробнее</a></p>' +
       '<div class="consent-actions">' +
-        '<button type="button" class="consent-btn" data-consent="yes">Разрешить</button>' +
-        '<button type="button" class="consent-btn" data-consent="no">Не разрешать</button>' +
+        '<button type="button" class="consent-btn" data-consent="yes">Принять</button>' +
+        '<button type="button" class="consent-btn" data-consent="no">Отклонить</button>' +
       '</div>';
     b.addEventListener('click', function (e) {
       var v = e.target.getAttribute && e.target.getAttribute('data-consent');

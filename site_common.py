@@ -316,8 +316,9 @@ METRIKA_ID = "112760205"
 # (п. 2.1 и 5.8) требуют того же: рассказать посетителям об обработке
 # данных и о том, как её отключить.
 #
-# Поэтому внизу страницы — плашка с двумя равными кнопками. Пока человек
-# не нажал «Разрешить», tag.js не загружается вовсе. Ответ хранится в
+# Поэтому внизу страницы — небольшая плашка с двумя равными кнопками
+# «Принять» и «Отклонить». Пока человек не нажал «Принять», tag.js не
+# загружается вовсе. Ответ хранится в
 # браузере (localStorage, ключ consent-metrika); передумать можно на
 # странице privacy.html.
 #
@@ -390,13 +391,16 @@ METRIKA_JS = "" if not METRIKA_ID else """<script>
     b.id = 'consent';
     b.className = 'consent';
     b.setAttribute('aria-label', 'Статистика посещений');
+    // Тон — как на обычных сайтах: спокойно и коротко, без перечня того,
+    // что Метрика умеет. Всё подробно — IP-адрес, Вебвизор, как
+    // отказаться — на странице по ссылке «Подробнее». Главное здесь не
+    // текст, а то, что до «Принять» счётчик не загружается.
     b.innerHTML =
-      '<p class="consent-text">Разрешите вести статистику посещений? Для этого подключается ' +
-      'Яндекс Метрика: она ставит cookie, получает IP-адрес и записывает действия на странице. ' +
-      'Без неё сайт работает так же. <a href="privacy.html#metrika">Подробнее</a></p>' +
+      '<p class="consent-text">Мы используем cookie и Яндекс Метрику, чтобы понимать, ' +
+      'какие картины вам интересны. <a href="privacy.html#metrika">Подробнее</a></p>' +
       '<div class="consent-actions">' +
-        '<button type="button" class="consent-btn" data-consent="yes">Разрешить</button>' +
-        '<button type="button" class="consent-btn" data-consent="no">Не разрешать</button>' +
+        '<button type="button" class="consent-btn" data-consent="yes">Принять</button>' +
+        '<button type="button" class="consent-btn" data-consent="no">Отклонить</button>' +
       '</div>';
     b.addEventListener('click', function (e) {
       var v = e.target.getAttribute && e.target.getAttribute('data-consent');

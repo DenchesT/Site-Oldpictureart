@@ -2,7 +2,7 @@
 //
 // Счётчик раньше стоял на каждой странице и начинал считать сразу, а о
 // нём нигде не было ни слова. Теперь внизу плашка: пока посетитель не
-// нажал «Разрешить», tag.js не загружается вовсе. Здесь проверяется
+// нажал «Принять», tag.js не загружается вовсе. Здесь проверяется
 // именно это — по сетевым запросам, а не по виду плашки, — а ещё что
 // отказ запоминается, что передумать можно на странице о данных и что
 // после отказа cookie Метрики на сайте стираются.
@@ -63,11 +63,13 @@ const server = http.createServer((req, res) => {
     const cs = getComputedStyle(b);
     return [cs.backgroundColor, cs.color, cs.borderColor, cs.fontSize].join(' ');
   }));
-  ok('«Разрешить» и «Не разрешать» выглядят одинаково', styles.length === 2 && styles[0] === styles[1], styles.join(' | '));
+  ok('«Принять» и «Отклонить» выглядят одинаково', styles.length === 2 && styles[0] === styles[1], styles.join(' | '));
 
   const box = await page.locator('#consent').boundingBox();
   ok('плашка не заслоняет кнопку «наверх» справа', box.x + box.width < 1280 - 80,
      `${Math.round(box.x)}…${Math.round(box.x + box.width)}`);
+  ok('плашка небольшая', box.height <= 80 && box.width <= 540,
+     `${Math.round(box.width)}×${Math.round(box.height)}`);
 
   await page.click('#consent [data-consent="no"]');
   await page.waitForTimeout(200);
@@ -85,7 +87,7 @@ const server = http.createServer((req, res) => {
   ({ page, hits } = await open(c2, '/stats.html'));
   await page.click('#consent [data-consent="yes"]');
   await page.waitForTimeout(300);
-  ok('после «Разрешить» счётчик загружается сразу', hits.some(u => u.includes('/metrika/tag.js')), hits.join(' '));
+  ok('после «Принять» счётчик загружается сразу', hits.some(u => u.includes('/metrika/tag.js')), hits.join(' '));
   ok('номер счётчика верный', hits.some(u => u.includes('id=112760205')));
   hits.length = 0;
   await page.goto(BASE + '/ukazatel.html');
@@ -146,10 +148,12 @@ const server = http.createServer((req, res) => {
   const m = await browser.newContext({ viewport: { width: 375, height: 740 }, isMobile: true, hasTouch: true });
   ({ page } = await open(m, '/'));
   const mb = await page.locator('#consent').boundingBox();
-  ok('на телефоне плашка — полоса во всю ширину снизу',
-     mb && mb.width >= 374 && Math.round(mb.y + mb.height) >= 739,
-     mb ? `${Math.round(mb.width)}×${Math.round(mb.height)} @ y=${Math.round(mb.y)}` : 'нет');
-  ok('на телефоне плашка не выше трети экрана', mb && mb.height < 740 / 3, mb && `${Math.round(mb.height)}px`);
+  ok('на телефоне плашка внизу во всю ширину, с отступами',
+     mb && mb.width >= 350 && mb.x >= 4 && Math.round(mb.y + mb.height) >= 725,
+     mb ? `${Math.round(mb.width)}×${Math.round(mb.height)} @ x=${Math.round(mb.x)}, y=${Math.round(mb.y)}` : 'нет');
+  ok('на телефоне плашка невысокая', mb && mb.height <= 100, mb && `${Math.round(mb.height)}px`);
+  const tap = await page.$$eval('#consent .consent-btn', bs => bs.map(b => Math.round(b.getBoundingClientRect().height)));
+  ok('кнопки на телефоне не мельче 32 px — попасть пальцем', tap.every(h => h >= 32), tap.join(', '));
   const over = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   ok('без горизонтальной прокрутки', over <= 1, `${over}px`);
   ({ page } = await open(m, '/privacy.html'));

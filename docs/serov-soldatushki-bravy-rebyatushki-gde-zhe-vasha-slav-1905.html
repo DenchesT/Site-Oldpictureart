@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=d6f04475">
+<link rel="stylesheet" href="style.css?v=d7a15e1d">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"VisualArtwork","name":"Солдатушки, бравы ребятушки, где же ваша слава?, 1905","url":"https://oldpictureart.ru/serov-soldatushki-bravy-rebyatushki-gde-zhe-vasha-slav-1905.html","inLanguage":"ru","creator":{"@type":"Person","name":"Валентин Александрович Серов"},"dateCreated":"1905","artMedium":{"@value":"темпера, графит, гуашь, уголь"},"artworkSurface":{"@value":"картон"},"image":"https://oldpictureart.ru/images/serov-soldatushki-bravy-rebyatushki-gde-zhe-vasha-slav-1905-1.jpg","isPartOf":{"@type":"Collection","name":"Государственный Русский музей, Санкт-Петербург"},"description":"9 января 1905 года Валентин Серов стал свидетелем разгона мирной демонстрации царскими войсками. Зрелище было страшное: из окон Академии художеств он видел, как сверкают на солнце шашки всадников, как солдаты вскидывают свои ружья, как снег становится красным от крови. Увиденное изменило Серова: прежде не имевший каких-либо политических взглядов, он больше не мог оставаться в стороне. Он вышел из состава Академии художеств (президентом которой был великий князь Владимир Александрович, по мнению ","sameAs":["https://rusmuseumvrm.ru/data/collections/painting/19_20/zh-4297/index.php"],"height":{"@type":"QuantitativeValue","value":47.5,"unitCode":{"@value":"CMT"},"unitText":{"@value":"см"}},"width":{"@type":"QuantitativeValue","value":71.5,"unitCode":{"@value":"CMT"},"unitText":{"@value":"см"}}}</script>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page">
@@ -163,13 +163,16 @@ function toggleTheme(){
     b.id = 'consent';
     b.className = 'consent';
     b.setAttribute('aria-label', 'Статистика посещений');
+    // Тон — как на обычных сайтах: спокойно и коротко, без перечня того,
+    // что Метрика умеет. Всё подробно — IP-адрес, Вебвизор, как
+    // отказаться — на странице по ссылке «Подробнее». Главное здесь не
+    // текст, а то, что до «Принять» счётчик не загружается.
     b.innerHTML =
-      '<p class="consent-text">Разрешите вести статистику посещений? Для этого подключается ' +
-      'Яндекс Метрика: она ставит cookie, получает IP-адрес и записывает действия на странице. ' +
-      'Без неё сайт работает так же. <a href="privacy.html#metrika">Подробнее</a></p>' +
+      '<p class="consent-text">Мы используем cookie и Яндекс Метрику, чтобы понимать, ' +
+      'какие картины вам интересны. <a href="privacy.html#metrika">Подробнее</a></p>' +
       '<div class="consent-actions">' +
-        '<button type="button" class="consent-btn" data-consent="yes">Разрешить</button>' +
-        '<button type="button" class="consent-btn" data-consent="no">Не разрешать</button>' +
+        '<button type="button" class="consent-btn" data-consent="yes">Принять</button>' +
+        '<button type="button" class="consent-btn" data-consent="no">Отклонить</button>' +
       '</div>';
     b.addEventListener('click', function (e) {
       var v = e.target.getAttribute && e.target.getAttribute('data-consent');
