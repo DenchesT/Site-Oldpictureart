@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=df1337be">
+<link rel="stylesheet" href="style.css?v=d6f04475">
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page visit-page">
 <a href="#main" class="skip-link">К содержанию</a>
@@ -67,7 +67,7 @@
   </aside>
 </article>
 <nav class="post-nav"><a href="visit-2025-02-13-vasnetsovy-svyaz-pokolenii-iz-xix-v-xxi-vek.html" class="prev-post" title="Васнецовы. Связь поколений. Из XIX в XXI век"><span class="icon-prev" aria-hidden="true"></span> Раньше</a><a href="visit-2025-03-19-sokrovischnitsa-grafiki.html" class="next-post" title="Сокровищница графики">Позже <span class="icon-next" aria-hidden="true"></span></a></nav>
-<footer class="site-footer"><p class="footer-source">Собрано из канала <a href="https://t.me/oldpictureart" target="_blank" rel="noopener"><span class="icon-telegram" aria-hidden="true"></span>@oldpictureart</a></p><p class="footer-links"><a href="ukazatel.html">Указатель</a> · <a href="stats.html">Статистика</a> · <a href="museums.html">Карта собраний</a> · <a href="visits.html">Посещения</a> · <a href="feed.xml">RSS</a></p></footer>
+<footer class="site-footer"><p class="footer-source">Собрано из канала <a href="https://t.me/oldpictureart" target="_blank" rel="noopener"><span class="icon-telegram" aria-hidden="true"></span>@oldpictureart</a></p><p class="footer-links"><a href="ukazatel.html">Указатель</a> · <a href="stats.html">Статистика</a> · <a href="museums.html">Карта собраний</a> · <a href="visits.html">Посещения</a> · <a href="feed.xml">RSS</a> · <a href="privacy.html">Конфиденциальность</a></p></footer>
 <script>
 function scrollToTop(){
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -104,19 +104,87 @@ function toggleTheme(){
   window.addEventListener('resize', upd, {passive:true});
   upd();
 })();
-</script><!-- Yandex.Metrika counter -->
-<script>
+</script><script>
+(function () {
+  var KEY = 'consent-metrika';
+  var loaded = false;
+
+  function load() {
+    if (loaded) return;
+    loaded = true;
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
         for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
         k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
     })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112760205', 'ym');
-
     ym(112760205, 'init', {ssr:true, webvisor:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+  }
+
+  function read() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+  function write(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+
+  // Отказ после согласия: стираем то, что Метрика оставила на этом
+  // сайте, — её cookie _ym* и записи _ym* в localStorage. Cookie на
+  // домене yandex.ru отсюда не достать; о них и о блокировщике Метрики
+  // сказано на странице privacy.html.
+  function forget() {
+    var parts = location.hostname.split('.');
+    document.cookie.split(';').forEach(function (c) {
+      var name = c.split('=')[0].trim();
+      if (name.indexOf('_ym') !== 0) return;
+      document.cookie = name + '=; Max-Age=0; path=/';
+      for (var i = 0; i < parts.length - 1; i++) {
+        document.cookie = name + '=; Max-Age=0; path=/; domain=.' + parts.slice(i).join('.');
+      }
+    });
+    try {
+      Object.keys(localStorage).forEach(function (k) {
+        if (k.indexOf('_ym') === 0) localStorage.removeItem(k);
+      });
+    } catch (e) {}
+  }
+
+  function hideBanner() {
+    var b = document.getElementById('consent');
+    if (b) b.remove();
+  }
+
+  window.metrikaConsent = {
+    state: read,
+    allow: function () { write('yes'); hideBanner(); load(); },
+    // true — счётчик на этой странице уже работал: чтобы он замолчал,
+    // страницу надо перезагрузить (остановить tag.js на ходу нельзя).
+    deny: function () { write('no'); hideBanner(); forget(); return loaded; }
+  };
+
+  function banner() {
+    var b = document.createElement('section');
+    b.id = 'consent';
+    b.className = 'consent';
+    b.setAttribute('aria-label', 'Статистика посещений');
+    b.innerHTML =
+      '<p class="consent-text">Разрешите вести статистику посещений? Для этого подключается ' +
+      'Яндекс Метрика: она ставит cookie, получает IP-адрес и записывает действия на странице. ' +
+      'Без неё сайт работает так же. <a href="privacy.html#metrika">Подробнее</a></p>' +
+      '<div class="consent-actions">' +
+        '<button type="button" class="consent-btn" data-consent="yes">Разрешить</button>' +
+        '<button type="button" class="consent-btn" data-consent="no">Не разрешать</button>' +
+      '</div>';
+    b.addEventListener('click', function (e) {
+      var v = e.target.getAttribute && e.target.getAttribute('data-consent');
+      if (v === 'yes') window.metrikaConsent.allow();
+      else if (v === 'no') window.metrikaConsent.deny();
+    });
+    document.body.appendChild(b);
+  }
+
+  var v = read();
+  if (v === 'yes') load();
+  // На странице о данных свои кнопки — плашка там только мешала бы.
+  else if (v !== 'no' && !document.getElementById('consent-controls')) banner();
+})();
 </script>
-<noscript><div><img src="https://mc.yandex.ru/watch/112760205" class="ym-pixel" alt=""></div></noscript>
-<!-- /Yandex.Metrika counter -->
 <script>
 (function () {
   var links = [].slice.call(document.querySelectorAll('a.painting-link'));

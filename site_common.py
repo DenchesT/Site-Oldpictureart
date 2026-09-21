@@ -180,6 +180,21 @@ def hires_url(path):
 TELEGRAM_URL = "https://t.me/oldpictureart"
 TELEGRAM_NAME = "@oldpictureart"
 
+# ------------------------------------------------ страница о данных
+# Кто ведёт сайт и куда писать с вопросами о данных — показывается на
+# странице privacy.html. Имя по закону о персональных данных положено
+# указывать (оператор — тот, кто решает, зачем собираются данные), но
+# вписывать его или нет — решать вам: пустая строка — строки с именем
+# на странице просто не будет.
+SITE_OWNER = ""
+# Куда писать: почта ("mailto:имя@почта.ru") или ссылка. Пока адреса
+# нет, ведёт на канал.
+PRIVACY_CONTACT = TELEGRAM_URL
+PRIVACY_CONTACT_TEXT = "через телеграм-канал " + TELEGRAM_NAME
+# Дата текста. Меняйте, когда меняете сам текст, а не при каждой сборке:
+# дата редакции говорит, с какого дня действуют эти условия.
+PRIVACY_DATE = "21 сентября 2026 г."
+
 # ---------------------------------------------------------------- знак сайта
 #
 # Одна фигура на всё: вкладку браузера, плитку на телефоне и значок рядом
@@ -238,45 +253,112 @@ THEME_BOOT = (
 # списке счётчиков и в выданном коде — это число после tag.js?id=.
 METRIKA_ID = "112760205"
 
-# Код взят тот, что выдала сама Метрика, слово в слово, — кроме двух
-# мест:
+# Метрика включается только с согласия посетителя.
 #
-#   • номер подставляется из METRIKA_ID, чтобы он стоял в одном месте,
-#     а не в трёх (в адресе tag.js, в вызове ym и в картинке noscript);
-#   • убран ecommerce: "dataLayer" — он велит Метрике следить за
-#     корзиной интернет-магазина. Магазина здесь нет, следить не за чем.
+# Она ставит cookie, получает IP-адрес, а Вебвизор записывает действия
+# на странице. Роскомнадзор считает это обработкой персональных данных,
+# а для аналитики нужно согласие, данное до того, как счётчик заработал:
+# строка «продолжая пользоваться сайтом, вы соглашаетесь» при уже
+# работающем счётчике согласием не считается. Условия самой Метрики
+# (п. 2.1 и 5.8) требуют того же: рассказать посетителям об обработке
+# данных и о том, как её отключить.
 #
-# Параметры referrer и url оставлены, хотя Метрика подставляет их и
-# сама: с ними код совпадает с тем, что показывает проверка счётчика в
-# кабинете, и не приходится гадать, от чего расхождение.
+# Поэтому внизу страницы — плашка с двумя равными кнопками. Пока человек
+# не нажал «Разрешить», tag.js не загружается вовсе. Ответ хранится в
+# браузере (localStorage, ключ consent-metrika); передумать можно на
+# странице privacy.html.
 #
-# Ещё две мелочи против выданного кода — чтобы проверка разметки
-# оставалась чистой: убран type="text/javascript" (в HTML5 он лишний и
-# подразумевается) и косая черта в <img ... />. На работу счётчика ни то
-# ни другое не влияет, а ошибки сыпались бы на всех 303 страницах.
-# Прятать картинку-пиксель тоже отправлено в style.css классом ym-pixel:
-# написанный прямо в разметке стиль давал ту же ошибку на каждой странице.
+# Цена честная: кто не разрешил или просто не нажал, в отчётах Метрики
+# не появится, и цифры станут меньше. Зато это те, кто согласился.
 #
-# Строка с document.scripts — защита от второго счётчика на странице:
-# если tag.js уже подключён, второй раз он не подключится. Без неё
-# повторная вставка удваивала бы все просмотры.
+# Картинка в <noscript> убрана: без JavaScript спросить согласия нечем,
+# а считать молча — ровно то, от чего здесь уходим.
 #
-# Это обычная строка, не f-строка: в коде Метрики много фигурных скобок,
-# и удваивать каждую ради подстановки номера — верный способ ошибиться
-# в одной и не заметить.
-METRIKA_JS = "" if not METRIKA_ID else """<!-- Yandex.Metrika counter -->
-<script>
+# Сам код счётчика — тот, что выдала Метрика, без ecommerce (магазина
+# здесь нет); номер подставляется из METRIKA_ID. Строка с document.scripts
+# — защита от второго подключения tag.js. Это обычная строка, не
+# f-строка: в коде много фигурных скобок, а номер ставится .replace.
+METRIKA_JS = "" if not METRIKA_ID else """<script>
+(function () {
+  var KEY = 'consent-metrika';
+  var loaded = false;
+
+  function load() {
+    if (loaded) return;
+    loaded = true;
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
         for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
         k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
     })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=COUNTER', 'ym');
-
     ym(COUNTER, 'init', {ssr:true, webvisor:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/COUNTER" class="ym-pixel" alt=""></div></noscript>
-<!-- /Yandex.Metrika counter -->""".replace("COUNTER", METRIKA_ID)
+  }
+
+  function read() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+  function write(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+
+  // Отказ после согласия: стираем то, что Метрика оставила на этом
+  // сайте, — её cookie _ym* и записи _ym* в localStorage. Cookie на
+  // домене yandex.ru отсюда не достать; о них и о блокировщике Метрики
+  // сказано на странице privacy.html.
+  function forget() {
+    var parts = location.hostname.split('.');
+    document.cookie.split(';').forEach(function (c) {
+      var name = c.split('=')[0].trim();
+      if (name.indexOf('_ym') !== 0) return;
+      document.cookie = name + '=; Max-Age=0; path=/';
+      for (var i = 0; i < parts.length - 1; i++) {
+        document.cookie = name + '=; Max-Age=0; path=/; domain=.' + parts.slice(i).join('.');
+      }
+    });
+    try {
+      Object.keys(localStorage).forEach(function (k) {
+        if (k.indexOf('_ym') === 0) localStorage.removeItem(k);
+      });
+    } catch (e) {}
+  }
+
+  function hideBanner() {
+    var b = document.getElementById('consent');
+    if (b) b.remove();
+  }
+
+  window.metrikaConsent = {
+    state: read,
+    allow: function () { write('yes'); hideBanner(); load(); },
+    // true — счётчик на этой странице уже работал: чтобы он замолчал,
+    // страницу надо перезагрузить (остановить tag.js на ходу нельзя).
+    deny: function () { write('no'); hideBanner(); forget(); return loaded; }
+  };
+
+  function banner() {
+    var b = document.createElement('section');
+    b.id = 'consent';
+    b.className = 'consent';
+    b.setAttribute('aria-label', 'Статистика посещений');
+    b.innerHTML =
+      '<p class="consent-text">Разрешите вести статистику посещений? Для этого подключается ' +
+      'Яндекс Метрика: она ставит cookie, получает IP-адрес и записывает действия на странице. ' +
+      'Без неё сайт работает так же. <a href="privacy.html#metrika">Подробнее</a></p>' +
+      '<div class="consent-actions">' +
+        '<button type="button" class="consent-btn" data-consent="yes">Разрешить</button>' +
+        '<button type="button" class="consent-btn" data-consent="no">Не разрешать</button>' +
+      '</div>';
+    b.addEventListener('click', function (e) {
+      var v = e.target.getAttribute && e.target.getAttribute('data-consent');
+      if (v === 'yes') window.metrikaConsent.allow();
+      else if (v === 'no') window.metrikaConsent.deny();
+    });
+    document.body.appendChild(b);
+  }
+
+  var v = read();
+  if (v === 'yes') load();
+  // На странице о данных свои кнопки — плашка там только мешала бы.
+  else if (v !== 'no' && !document.getElementById('consent-controls')) banner();
+})();
+</script>""".replace("COUNTER", METRIKA_ID)
 
 # Общий скрипт: переключение темы, кнопка «наверх», закрытие по Escape.
 COMMON_JS = """<script>
@@ -1076,11 +1158,13 @@ function showAuthForm() {
       '</button>' +
       '<div class="auth-divider">или</div>' +
       '<form id="auth-form" novalidate>' +
-        '<input type="email" class="auth-input" id="auth-email" name="email" placeholder="Почта" autocomplete="email" required>' +
-        '<input type="password" class="auth-input" id="auth-password" name="password" placeholder="Пароль" autocomplete="current-password" required>' +
+        '<input type="email" class="auth-input ym-disable-keys" id="auth-email" name="email" placeholder="Почта" autocomplete="email" required>' +
+        '<input type="password" class="auth-input ym-disable-keys" id="auth-password" name="password" placeholder="Пароль" autocomplete="current-password" required>' +
         '<button type="submit" class="auth-submit" id="auth-submit-btn">Войти</button>' +
       '</form>' +
       '<div class="auth-error" id="auth-error" role="alert"></div>' +
+      '<p class="auth-note">Сайт хранит вашу почту и список отмеченных картин — на серверах Google (Firebase). ' +
+        '<a href="privacy.html#account">Подробнее</a></p>' +
       '<div class="auth-switch">' +
         '<span id="auth-switch-text">Нет аккаунта?</span> ' +
         '<button type="button" class="auth-link" id="auth-switch-link">Создать</button>' +
@@ -1341,7 +1425,8 @@ def site_footer(rss="feed.xml"):
         '<a href="stats.html">Статистика</a> · '
         '<a href="museums.html">Карта собраний</a> · '
         + ('<a href="visits.html">Посещения</a> · ' if has_visits() else '')
-        + f'<a href="{rss}">RSS</a>'
+        + f'<a href="{rss}">RSS</a> · '
+        '<a href="privacy.html">Конфиденциальность</a>'
         '</p>'
         '</footer>'
     )

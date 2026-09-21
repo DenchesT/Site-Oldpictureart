@@ -115,7 +115,7 @@ def generate_timeline_page():
 </style>
 </head><body class="timeline-page">
 <div class="timeline-topbar">
-  <a href="index.html" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
+  <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
   {theme_button('theme-toggle-inline')}
 </div>
 <div class="timeline-container">

@@ -92,6 +92,10 @@ def main():
         f.write(bs.render_404())
     print("✓ 404.html")
 
+    with open(os.path.join(bs.OUTPUT_DIR, "privacy.html"), "w", encoding="utf-8", newline="\n") as f:
+        f.write(bs.render_privacy())
+    print("✓ privacy.html")
+
     for script, flag in (("generate_quiz.py", None), ("generate_timeline.py", None), ("generate_map.py", "--no-map")):
         if flag and flag in sys.argv:
             print(f"– {script} пропущен")

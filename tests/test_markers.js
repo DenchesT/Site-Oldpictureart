@@ -147,6 +147,48 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
   ok('375px без горизонтальной прокрутки', over <= 1, `перелив ${over}px`);
   await mctx.close();
 
+  // ---------------------------------------------- серые поля вокруг мира
+  // Мир в проекции Меркатора — квадрат 256·2^z точек. Высокое окно на
+  // отдалении было выше этого квадрата, и сверху и снизу оставались серые
+  // полосы; их же можно было вытащить перетаскиванием. Теперь отдаление
+  // ограничено высотой окна, а края мира держатся жёстко.
+  const gap = () => { const b = map.getPixelBounds(), wb = map.getPixelWorldBounds();
+    return Math.round(Math.max(0, wb.min.y - b.min.y) + Math.max(0, b.max.y - wb.max.y)); };
+  for (const [w, h, mob] of [[1920, 1080], [2560, 1440], [390, 844, true]]) {
+    const gctx = await browser.newContext({ viewport: { width: w, height: h }, isMobile: !!mob, hasTouch: !!mob });
+    const gp = await gctx.newPage();
+    await gp.goto(URL);
+    await gp.waitForTimeout(1200);
+    const g = await gp.evaluate(async (gapSrc) => {
+      const gap = eval('(' + gapSrc + ')');
+      map.setZoom(0, { animate: false });
+      await new Promise(r => setTimeout(r, 400));
+      const out = [gap()];
+      for (const dy of [-10000, 10000]) {
+        map.panBy([0, dy], { animate: false });
+        await new Promise(r => setTimeout(r, 700));
+        out.push(gap());
+      }
+      return out;
+    }, gap.toString());
+    ok(`${w}×${h}: на самом дальнем отдалении серых полос нет`, g.every(x => x === 0), g.join(', '));
+    await gctx.close();
+  }
+
+  // подпись во всплывающей карточке — по-человечески, без «походов»
+  const phrases = await (async () => {
+    const c = await browser.newContext({ viewport: { width: 1440, height: 950 } });
+    const pg = await c.newPage();
+    await pg.goto(URL);
+    await pg.waitForTimeout(1200);
+    const r = await pg.evaluate(() => [1, 2, 5, 11, 21, 22].map(beenPhrase));
+    await c.close();
+    return r;
+  })();
+  ok('«Побывал однажды / 2 раза / 5 раз»',
+    phrases.join('|') === 'Побывал однажды|Побывал 2 раза|Побывал 5 раз|Побывал 11 раз|Побывал 21 раз|Побывал 22 раза',
+    phrases.join(' · '));
+
   await browser.close();
   const fails = results.filter(r => !r.pass);
   console.log('\n============ МЕТКИ «ЭТИКЕТКА» ============');

@@ -2300,7 +2300,82 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
   @page { margin: 1.5cm; }
 }
 
-/* Пиксель Метрики для тех, у кого выключены скрипты. Метрика выдаёт его
-   со стилем прямо в разметке; здесь он вынесен в класс, чтобы проверка
-   разметки не ругалась на каждой из трёх сотен страниц. */
-.ym-pixel { position: absolute; left: -9999px; }
+/* ==========================================================================
+   СОГЛАСИЕ НА СТАТИСТИКУ И СТРАНИЦА О ДАННЫХ
+   ========================================================================== */
+
+/* Плашка внизу слева: не перекрывает картину и не заслоняет кнопку
+   «наверх» справа. Две кнопки одного вида — отказ не должен выглядеть
+   второстепенным, иначе это уже не выбор, а уговоры. */
+.consent {
+  position: fixed;
+  left: var(--s4);
+  bottom: var(--s4);
+  z-index: 2500;
+  max-width: 27rem;
+  padding: var(--s4) var(--s5);
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  box-shadow: 0 6px 24px var(--shadow-strong);
+}
+.consent-text { margin: 0 0 var(--s3); font-size: var(--fs-md); line-height: 1.45; }
+.consent-text a { color: var(--link); }
+.consent-actions { display: flex; flex-wrap: wrap; gap: var(--s2); margin: 0; }
+.consent-btn {
+  flex: 1 1 auto;
+  padding: var(--s2) var(--s4);
+  background: transparent;
+  color: var(--active);
+  border: 1px solid var(--active);
+  border-radius: 2px;
+  font-family: var(--ff-data);
+  font-size: var(--fs-sm);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.consent-btn:hover,
+.consent-btn[aria-pressed="true"] { background: var(--active); color: var(--on-active); }
+.consent-btn:focus-visible { outline: 2px solid var(--active); outline-offset: 2px; }
+
+@media (max-width: 620px) {
+  .consent {
+    left: 0; right: 0; bottom: 0;
+    max-width: none;
+    border-width: 1px 0 0;
+    padding: var(--s3) var(--s4) max(var(--s3), env(safe-area-inset-bottom));
+  }
+}
+@media print { .consent { display: none; } }
+
+/* Страница «Конфиденциальность»: обычный текст для чтения — строка
+   не длиннее 68 знаков, разделы с тонкой чертой, как в статистике. */
+.doc-lede { max-width: 60ch; margin: 0 0 var(--s2); color: var(--text-2); }
+.doc-date { margin: 0; font-family: var(--ff-data); font-size: var(--fs-xs); color: var(--muted); letter-spacing: .04em; }
+.doc-body { max-width: 68ch; }
+.doc-block { padding: var(--s5) 0 0; }
+.doc-block h2 {
+  font-size: var(--fs-lg);
+  margin: 0 0 var(--s3);
+  padding-bottom: var(--s2);
+  border-bottom: 1px solid var(--border);
+}
+.doc-block h3 { font-size: var(--fs-base); margin: var(--s4) 0 var(--s2); }
+.doc-block p, .doc-block li { line-height: 1.55; }
+.doc-block ul { padding-left: 1.2em; margin: 0 0 var(--s3); }
+.doc-block li + li { margin-top: var(--s1); }
+.doc-block code { font-family: var(--ff-data); font-size: .9em; }
+.consent-controls {
+  margin: var(--s4) 0;
+  padding: var(--s4);
+  background: var(--panel);
+  border: 1px solid var(--rule-soft);
+  border-radius: 2px;
+}
+.consent-state { margin: 0 0 var(--s3); font-weight: 700; }
+
+/* Строка о данных в окне входа */
+.auth-note { margin: var(--s2) 0 0; font-size: var(--fs-xs); line-height: 1.45; color: var(--muted); }
+.auth-note a { color: var(--link); }

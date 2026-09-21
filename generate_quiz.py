@@ -6,13 +6,109 @@
 
 import json
 import os
-import random
-from html import escape as h
+import re
+import statistics
 
 from site_common import head_common, theme_button, site_footer, COMMON_JS, BASE_URL
 
 META_FILE = "posts_meta.json"
 OUTPUT_DIR = "docs"
+
+# ------------------------------------------------------------ школы
+# Варианты ответа раньше брались наугад из всех художников, и вопрос
+# решался без знания живописи: к французскому пейзажу 1870-х рядом
+# стояли Репин, Пуссен и Бирштадт, и лишнее отпадало само. Теперь
+# варианты подбираются из той же школы и того же времени.
+#
+# Страны в записях канала нет, поэтому она записана здесь — по фамилии
+# (слово из имени художника, как на сайте; «ё» можно писать как «е»).
+# Новый художник: допишите фамилию в нужную строку. Забыли — не беда:
+# русского узнаем по отчеству, а остальных квиз подберёт по годам и
+# напомнит о себе строкой при сборке.
+SCHOOLS = {
+    # Франция — и те, кто стал французским художником (Сислей, Луар)
+    "fr": """Сислей Дега Писсарро Кайботт Базиль Курбе Форен Гийомен Мане
+             Ренуар Пуссен Брюн Луар Мартен Делакруа Тройон Лотрек Эллё
+             Латур Дюриваж Буден Руар Милле Детай Моризо Ангран Пьетт""",
+    "ru": """Репин Тархов Морозов Кузнецов Куинджи Юон Грабарь Серов
+             Савицкий Левитан Брюллов Кустодиев Жуковский Сверчков
+             Маковский Коровин""",
+    # Германия, Австрия, Швейцария
+    "de": "Фридрих Штук Либерман Слефогт Ходлер Альт Штерль",
+    # Скандинавия и Финляндия
+    "north": "Таулов Даль Петерссен Юхансен Каллела Цорн Осслунд",
+    "us": "Гассам Бирштадт Кент Сарджент",
+    "gb": "Гловер Каделл Констебл",
+    "es": "Беруэте Мейфрен Рузиньол",
+    "it": "Дзандоменеги",
+    # Нидерланды и Бельгия
+    "nl": "Сегерс Гог Бош",
+}
+
+# Если своей школы на три варианта не хватает (британцев всего трое),
+# добираем из близкой, а не из первой попавшейся.
+NEAR = {
+    "gb": ["us"], "us": ["gb"],
+    "es": ["it", "fr"], "it": ["es", "fr"],
+    "nl": ["de", "fr"], "de": ["north", "nl"], "north": ["de", "ru"],
+    "fr": ["nl", "it", "es"], "ru": ["north"],
+}
+
+_SURNAME_SCHOOL = {w.lower().replace("ё", "е"): code
+                   for code, names in SCHOOLS.items() for w in names.split()}
+_PATRONYMIC = re.compile(r"(ович|евич|ьич|ична|овна|евна)$")
+
+
+def _words(name):
+    return re.findall(r"[а-яa-z]+", name.lower().replace("ё", "е"))
+
+
+def school_of(artist):
+    """Код школы художника или None, если он не записан и не узнаётся."""
+    words = _words(artist)
+    for w in words:
+        if w in _SURNAME_SCHOOL:
+            return _SURNAME_SCHOOL[w]
+    if any(_PATRONYMIC.search(w) for w in words):
+        return "ru"
+    return None
+
+
+def year_of(post):
+    m = re.search(r"\d{4}", str(post.get("creation_year") or ""))
+    return int(m.group()) if m else None
+
+
+def quiz_data(all_posts):
+    """Посты для квиза и сведения о художниках для подбора вариантов.
+
+    Записи, где авторов несколько («Анонимные художники, Феликс Милиус…»),
+    в квиз не идут: ответ в них угадывается по длине кнопки, а вариантом
+    к чужой картине такая строчка выглядит нелепо.
+    """
+    posts = [p for p in all_posts
+             if p.get("images") and p.get("artist") and "," not in p["artist"]]
+    years = {}
+    for p in posts:
+        y = year_of(p)
+        if y:
+            years.setdefault(p["artist"], []).append(y)
+
+    artists, unknown = {}, []
+    for a in sorted({p["artist"] for p in posts}):
+        code = school_of(a)
+        if code is None:
+            unknown.append(a)
+        ys = years.get(a)
+        artists[a] = [code, int(statistics.median(ys)) if ys else None]
+
+    items = [{"artist": p["artist"],
+              "title": p.get("title", ""),
+              "filename": p.get("filename", ""),
+              "images": p["images"][:1],
+              "y": year_of(p)}
+             for p in posts]
+    return items, artists, unknown
 
 def generate_quiz_page():
     if not os.path.exists(META_FILE):
@@ -22,18 +118,14 @@ def generate_quiz_page():
     with open(META_FILE, "r", encoding="utf-8") as f:
         all_posts = json.load(f)
     
-    # В страницу кладём только те четыре поля, которыми квиз пользуется.
-    # Раньше сюда целиком уезжала база постов — со всеми описаниями,
-    # ссылками на источники, размерами, тегами и путями к оригиналам:
-    # 286 КБ из 473 КБ веса страницы, которые браузер честно скачивал и
-    # разбирал ради имени художника и адреса одной картинки.
-    valid_posts = [
-        {"artist": p.get("artist", ""),
-         "title": p.get("title", ""),
-         "filename": p.get("filename", ""),
-         "images": p["images"][:1]}
-        for p in all_posts if p.get("images") and len(p["images"]) > 0
-    ]
+    # В страницу кладём только то, чем квиз пользуется. Раньше сюда
+    # целиком уезжала база постов — со всеми описаниями, ссылками на
+    # источники, размерами, тегами и путями к оригиналам: 286 КБ из 473 КБ
+    # веса страницы ради имени художника и адреса одной картинки.
+    valid_posts, artists, unknown = quiz_data(all_posts)
+    for a in unknown:
+        print(f"Квиз: не знаю, из какой школы «{a}» — допишите фамилию в SCHOOLS "
+              f"в generate_quiz.py (пока варианты к нему подбираются по годам)")
 
     if len(valid_posts) < 4:
         print("Недостаточно постов для квиза")
@@ -303,7 +395,7 @@ def generate_quiz_page():
 </style>
 </head><body class="quiz-page">
 <div class="quiz-topbar">
-  <a href="index.html" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
+  <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
   {theme_button('theme-toggle-inline')}
 </div>
 <div class="quiz-wrapper">
@@ -325,6 +417,9 @@ def generate_quiz_page():
 {COMMON_JS}
 <script>
 const ALL_POSTS = {json.dumps(valid_posts, ensure_ascii=False)};
+// художник → [школа, год середины его работ на сайте]
+const ARTISTS = {json.dumps(artists, ensure_ascii=False)};
+const NEAR = {json.dumps(NEAR)};
 
 let saved = JSON.parse(localStorage.getItem('quizProgress') || '{{"score":0,"total":0}}');
 let score = saved.score || 0;
@@ -343,24 +438,53 @@ function shuffle(arr) {{
     return a;
 }}
 
+// Картины идут колодой: пока не показаны все, ни одна не повторяется.
+// Раньше каждая бралась наугад заново, и одна и та же могла выпасть
+// дважды подряд, пока другие не выпадали ни разу.
+let deck = [];
+function nextPost(available) {{
+    if (!deck.length) {{
+        deck = shuffle(available);
+        // новая колода не начинается с картины, которой кончилась старая
+        if (currentPost && deck.length > 1 && deck[deck.length - 1] === currentPost) deck.unshift(deck.pop());
+    }}
+    return deck.pop();
+}}
+
+// Три неверных варианта: сначала художники той же школы и близкого
+// времени, потом соседней школы. Щепотка случайности — чтобы к одной
+// картине не выпадала каждый раз одна и та же тройка.
+function pickOthers(post) {{
+    const own = ARTISTS[post.artist] || [null, null];
+    const school = own[0];
+    const year = post.y || own[1];
+    return Object.keys(ARTISTS)
+        .filter(a => a !== post.artist)
+        .map(a => {{
+            const [s, y] = ARTISTS[a];
+            let score = (school && s) ? (s === school ? 0 : (NEAR[school] || []).includes(s) ? 60 : 150) : 80;
+            score += (year && y) ? Math.min(Math.abs(y - year), 150) * 0.6 : 40;
+            score += Math.random() * 40;
+            return [score, a];
+        }})
+        .sort((p, q) => p[0] - q[0])
+        .slice(0, 3)
+        .map(x => x[1]);
+}}
+
 function newQuestion() {{
     const feedback = document.getElementById('quiz-feedback');
     feedback.textContent = '';
     document.getElementById('quiz-next').style.display = 'none';
 
     const available = ALL_POSTS.filter(p => p.artist && p.images && p.images.length > 0);
-    const uniqueArtists = new Set(available.map(p => p.artist));
-    if (available.length < 4 || uniqueArtists.size < 2) {{
+    if (available.length < 4 || Object.keys(ARTISTS).length < 4) {{
         feedback.textContent = 'Недостаточно картин для игры';
         return;
     }}
 
-    currentPost = available[Math.floor(Math.random() * available.length)];
-
-    // Варианты ответа. Раньше цикл крутился, пока не наберётся 4 разных
-    // художника — при малом числе авторов это был вечный цикл и зависание.
-    const others = shuffle([...uniqueArtists].filter(a => a !== currentPost.artist));
-    const options = shuffle([currentPost.artist].concat(others.slice(0, 3)));
+    currentPost = nextPost(available);
+    const options = shuffle([currentPost.artist].concat(pickOthers(currentPost)));
 
     const img = document.getElementById('quiz-image');
     img.src = currentPost.images[0];

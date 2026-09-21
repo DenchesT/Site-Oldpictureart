@@ -80,7 +80,8 @@ if PIL_AVAILABLE:
 from site_common import (head_common, scroll_top_button, theme_button, site_footer,
                          mark_svg, TELEGRAM_URL, TELEGRAM_NAME, SITE_DOMAIN, hires_url,
                          COMMON_JS, SCROLL_TOP_JS, LUPA_JS, TOAST_JS, SHARE_JS, AUTH_JS, BASE_URL,
-                         VISITS_FILE, has_visits, visit_places)
+                         VISITS_FILE, has_visits, visit_places,
+                         METRIKA_ID, SITE_OWNER, PRIVACY_CONTACT, PRIVACY_CONTACT_TEXT, PRIVACY_DATE)
 
 def load_dotenv(path=".env"):
     if not os.path.exists(path): return
@@ -1405,14 +1406,14 @@ def render_post_page(post, all_posts=None):
 </head><body class="post-page">
 <a href="#main" class="skip-link">К содержанию</a>
 <div class="post-topbar">
-  <a href="index.html" class="topbar-back"><span class="icon-back" aria-hidden="true"></span> Галерея</a>
+  <a href="./" class="topbar-back"><span class="icon-back" aria-hidden="true"></span> Галерея</a>
   <div class="post-topbar-right">
     <button type="button" onclick="goRandom()" class="topbar-btn" aria-label="Случайная картина" title="Случайная картина"><span class="icon-random" aria-hidden="true"></span></button>
     <button type="button" data-share-btn onclick="sharePage(this)" class="topbar-btn" aria-label="Поделиться" title="Поделиться" aria-haspopup="menu"><span class="icon-share" aria-hidden="true"></span></button>
     {download_btn}
     <button type="button" id="like-btn" data-post-id="{post_id}" onclick="toggleLike()" class="topbar-btn topbar-like" aria-pressed="false" aria-label="В избранное" title="В избранное"><span class="icon-heart" aria-hidden="true"></span></button>
     <button type="button" class="topbar-btn" data-theme-toggle onclick="toggleTheme()" aria-label="Переключить тему" title="Светлая / тёмная тема"><span class="icon-theme-toggle" aria-hidden="true"></span></button>
-    <button type="button" id="auth-btn" class="topbar-btn" title="Войти"><span class="icon-login" aria-hidden="true"></span> Войти</button>
+    <button type="button" id="auth-btn" class="topbar-btn ym-hide-content" title="Войти"><span class="icon-login" aria-hidden="true"></span> Войти</button>
   </div>
 </div>
 {scroll_top_button()}
@@ -1498,7 +1499,7 @@ function goRandom() {{
     var p = [];
     try {{ p = JSON.parse(localStorage.getItem('allPosts') || '[]'); }} catch (e) {{}}
     if (p && p.length) location.href = p[Math.floor(Math.random() * p.length)];
-    else location.href = 'index.html?random=1';
+    else location.href = './?random=1';
 }}
 
 // ---------- Счётчик просмотров (локальный) ----------
@@ -1539,7 +1540,7 @@ document.addEventListener('keydown', function(e) {{
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
     var k = e.key;
     if (k === 'r' || k === 'к') goRandom();
-    else if (k === 'h' || k === 'р') window.location.href = 'index.html';
+    else if (k === 'h' || k === 'р') window.location.href = './';
     else if (k === 't' || k === 'е') toggleTheme();
     else if (k === 'Escape') {{
         var m = document.querySelector('.auth-modal-overlay');
@@ -1616,7 +1617,7 @@ def render_tag_page(tag, posts, cat_no=None, cat_width=3):
 {head}
 </head><body class="tag-page">
 <div class="tag-topbar">
-  <a href="index.html" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
+  <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
   {theme_button('theme-toggle-inline')}
 </div>
 {scroll_top_button()}
@@ -2537,7 +2538,7 @@ def render_artist_page(artist, posts, all_posts, cat_no, cat_width):
 {head}
 </head><body class="tag-page artist-page">
 <div class="tag-topbar">
-  <a href="index.html" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
+  <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
   <a href="ukazatel.html" class="back">Указатель</a>
   {theme_button('theme-toggle-inline')}
 </div>
@@ -2603,8 +2604,8 @@ def render_ukazatel(all_posts):
     body = "".join([
         column("Художники", artists, artist_slug, key=surname_key, anchor="hudozhniki"),
         column("Собрания", museums, lambda m: f"museums.html#museum-{slugify(m)}", anchor="sobraniya"),
-        column("Материал", mats, lambda m: f"index.html#mat-{slugify(m)}", anchor="material"),
-        column("Техника", techs, lambda t: f"index.html#tech-{slugify(t)}", anchor="tehnika"),
+        column("Материал", mats, lambda m: f"./#mat-{slugify(m)}", anchor="material"),
+        column("Техника", techs, lambda t: f"./#tech-{slugify(t)}", anchor="tehnika"),
     ])
 
     head = head_common(
@@ -2618,7 +2619,7 @@ def render_ukazatel(all_posts):
 {head}
 </head><body class="tag-page index-page">
 <div class="tag-topbar">
-  <a href="index.html" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
+  <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
   <a href="stats.html" class="back">Статистика</a>
   {theme_button('theme-toggle-inline')}
 </div>
@@ -2761,7 +2762,7 @@ def render_stats(all_posts):
 {head}
 </head><body class="tag-page stats-page">
 <div class="tag-topbar">
-  <a href="index.html" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
+  <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
   <a href="ukazatel.html" class="back">Указатель</a>
   {theme_button('theme-toggle-inline')}
 </div>
@@ -3041,7 +3042,7 @@ def render_visits_page(visits, all_posts=None):
 {head}
 </head><body class="tag-page visits-page">
 <div class="tag-topbar">
-  <a href="index.html" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
+  <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
   <a href="museums.html" class="back">Карта собраний</a>
   {theme_button('theme-toggle-inline')}
 </div>
@@ -3353,10 +3354,20 @@ def generate_extra_pages(all_posts):
 def render_404():
     """Раньше 404 была пустой страницей с meta refresh: без заголовка,
     без объяснения, и на вложенных адресах редирект вёл в никуда."""
+    # base href="/" — обязательно. GitHub Pages показывает эту страницу
+    # по любому несуществующему адресу, в том числе вложенному вроде
+    # /старое/имя.html. Все адреса на странице относительные — стили,
+    # значок, ссылки, — и без base они считались бы от /старое/: стили не
+    # загрузились бы, а «В галерею» вело бы на ещё одну страницу 404.
     head = head_common(
         title="Страница не найдена — Old Picture Art",
         description="Такой страницы нет. Вернитесь в галерею Old Picture Art.",
     )
+    # Сразу после кодировки, до всего остального: элементы, стоящие в
+    # head раньше base, успевают разрешить свои адреса по адресу самой
+    # страницы. Поставь base в конец — и стиль на вложенном адресе
+    # всё равно бы не загрузился.
+    head = head.replace('<meta charset="UTF-8">', '<meta charset="UTF-8">\n<base href="/">', 1)
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 {head}
 </head><body class="error-page">
@@ -3364,13 +3375,171 @@ def render_404():
   <p class="error-code">404</p>
   <h1>Страница не найдена</h1>
   <p class="error-text">Возможно, картину переименовали или ссылка устарела.</p>
-  <p><a class="random-btn" href="index.html">В галерею</a></p>
+  <p><a class="random-btn" href="./">В галерею</a></p>
   <p class="error-links"><a href="quiz.html">Квиз</a> · <a href="timeline.html">Таймлайн</a> · <a href="museums.html">Карта собраний</a></p>
 </main>
 {site_footer()}
 {COMMON_JS}
 </body></html>"""
 
+
+
+@tidy
+def render_privacy():
+    """Страница о данных: что сайт узнаёт о посетителе, зачем и как отказаться.
+
+    Написана для людей, а не для проверяющих: коротко, по разделам, без
+    «настоящим уведомляем». Каждый раздел отвечает на три вопроса — что
+    собирается, кем и как это выключить. Раздел о Метрике исчезает, если
+    счётчик выключен (METRIKA_ID пуст), — не описывать того, чего нет.
+    """
+    head = head_common(
+        title="Конфиденциальность — Old Picture Art",
+        description="Какие данные собирает сайт Old Picture Art, зачем и как от этого отказаться: "
+                    "Яндекс Метрика, вход в аккаунт, настройки в браузере.",
+        canonical=f"{BASE_URL}/privacy.html",
+    )
+    contact = (f'<a href="{h(PRIVACY_CONTACT)}"'
+               + ('' if PRIVACY_CONTACT.startswith("mailto:") else ' target="_blank" rel="noopener"')
+               + f'>{h(PRIVACY_CONTACT_TEXT)}</a>')
+    owner = f"Сайт ведёт {h(SITE_OWNER)}. " if SITE_OWNER else ""
+
+    metrika = "" if not METRIKA_ID else """
+<section class="doc-block" id="metrika">
+  <h2>Статистика посещений — Яндекс Метрика</h2>
+  <p>Включается, только если вы нажали «Разрешить» на плашке внизу страницы. До этого
+  счётчик не загружается и ничего не отправляет.</p>
+  <div class="consent-controls" id="consent-controls">
+    <p class="consent-state" id="consent-state" role="status">Статистика: вы пока не решили.</p>
+    <p class="consent-actions">
+      <button type="button" class="consent-btn" data-consent="yes">Разрешить статистику</button>
+      <button type="button" class="consent-btn" data-consent="no">Отключить статистику</button>
+    </p>
+  </div>
+  <h3>Что получает Метрика</h3>
+  <ul>
+    <li>cookie <code>_ym_uid</code>, <code>_ym_d</code>, <code>_ym_isad</code> и другие — чтобы отличить повторный визит от нового; самая долгая живёт год;</li>
+    <li>IP-адрес, тип устройства, браузер, размер экрана, язык;</li>
+    <li>адрес страницы и откуда вы на неё пришли;</li>
+    <li>действия на странице — прокрутку, нажатия, движение указателя (это Вебвизор). Что вы вводите в поля входа, не записывается.</li>
+  </ul>
+  <p>Имени, почты и телефона Метрика не получает.</p>
+  <h3>Зачем</h3>
+  <p>Чтобы понимать, какие картины смотрят, откуда приходят и где на сайте неудобно.
+  Рекламы здесь нет, и данные для неё не используются.</p>
+  <h3>Кто обрабатывает</h3>
+  <p>ООО «ЯНДЕКС» — по своим <a href="https://yandex.ru/legal/metrica_termsofuse/" target="_blank" rel="noopener">условиям
+  использования Метрики</a> и <a href="https://yandex.ru/legal/confidential/" target="_blank" rel="noopener">политике
+  конфиденциальности</a>.</p>
+  <h3>Как отказаться</h3>
+  <ul>
+    <li>кнопкой «Отключить статистику» выше — сайт сотрёт cookie Метрики на своём адресе и больше её не загрузит;</li>
+    <li>для всех сайтов сразу — <a href="https://yandex.ru/support/metrica/ru/general/opt-out" target="_blank" rel="noopener">блокировщиком
+    Яндекс Метрики</a>, расширением для браузера от самого Яндекса;</li>
+    <li>в настройках браузера — запретив cookie или очистив данные сайта.</li>
+  </ul>
+</section>"""
+
+    return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
+{head}
+</head><body class="tag-page doc-page">
+<div class="tag-topbar">
+  <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
+  {theme_button('theme-toggle-inline')}
+</div>
+<header class="artist-head">
+  <p class="eyebrow">О сайте</p>
+  <h1>Конфиденциальность</h1>
+  <p class="doc-lede">Old Picture Art — некоммерческое собрание картин из телеграм-канала
+  {h(TELEGRAM_NAME)}. {owner}Здесь коротко о том, что сайт узнаёт о посетителях, зачем и как от этого отказаться.</p>
+  <p class="doc-date">Редакция от {h(PRIVACY_DATE)}</p>
+</header>
+<main class="doc-body">
+<section class="doc-block" id="short">
+  <h2>Коротко</h2>
+  <ul>
+    <li>Смотреть картины, искать, играть в квиз можно без регистрации и без согласия на статистику.</li>
+    <li>Статистика посещений включается, только если вы её разрешили.</li>
+    <li>Почта хранится, только если вы сами завели аккаунт.</li>
+    <li>Данные не продаются и не передаются никому, кроме названных ниже сервисов.</li>
+  </ul>
+</section>
+{metrika}
+<section class="doc-block" id="account">
+  <h2>Вход в аккаунт</h2>
+  <p>Нужен только для одного — чтобы отмеченные картины были на всех ваших устройствах.
+  Без входа отметки хранятся в вашем браузере и никуда не отправляются.</p>
+  <h3>Что хранится</h3>
+  <ul>
+    <li>почта; при входе через Google — ещё имя и фотография профиля, которые передаёт Google;</li>
+    <li>служебный номер аккаунта, даты создания и последнего входа;</li>
+    <li>список отмеченных картин и время отметки.</li>
+  </ul>
+  <p>Пароль сайт не видит: его проверяет сервис входа.</p>
+  <h3>Где</h3>
+  <p>В сервисах Firebase Authentication и Cloud Firestore компании Google LLC, на серверах
+  за пределами России — <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">как Firebase
+  обращается с данными</a>.</p>
+  <h3>Как удалить</h3>
+  <p>Снятая отметка удаляется сразу. Чтобы удалить аккаунт целиком вместе с почтой, напишите {contact} —
+  удалю не позже чем через 30 дней.</p>
+</section>
+
+<section class="doc-block" id="browser">
+  <h2>Что остаётся только в вашем браузере</h2>
+  <p>В хранилище браузера (localStorage) сайт запоминает тему оформления, отметки без
+  входа, счёт в квизе и ваш ответ насчёт статистики. Это не уходит ни на какой сервер;
+  стереть — очистить данные сайта в настройках браузера.</p>
+</section>
+
+<section class="doc-block" id="services">
+  <h2>Откуда загружаются части страниц</h2>
+  <p>Чтобы показать страницу, браузер обращается к этим сервисам и, как при любом запросе
+  в интернете, сообщает им свой IP-адрес:</p>
+  <ul>
+    <li>GitHub Pages — хостинг сайта (<a href="https://docs.github.com/ru/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">политика GitHub</a>);</li>
+    <li>Google Fonts — шрифты;</li>
+    <li>gstatic.com и cdnjs.cloudflare.com — код входа в аккаунт и подбора цвета рамки;</li>
+    <li>на карте собраний — подложки OpenStreetMap, OpenTopoMap, Esri и Яндекс Карт и библиотека карты с unpkg.com.</li>
+  </ul>
+</section>
+
+<section class="doc-block" id="contact">
+  <h2>Вопросы</h2>
+  <p>О данных, об удалении аккаунта и обо всём остальном — {contact}.</p>
+</section>
+</main>
+{site_footer()}
+{COMMON_JS}
+<script>
+// Кнопки согласия на этой странице и строка с текущим выбором.
+(function () {{
+  var box = document.getElementById('consent-controls');
+  if (!box || !window.metrikaConsent) return;
+  var state = document.getElementById('consent-state');
+  function show() {{
+    var v = window.metrikaConsent.state();
+    state.textContent = v === 'yes' ? 'Статистика сейчас разрешена.'
+                      : v === 'no' ? 'Статистика сейчас отключена.'
+                      : 'Статистика: вы пока не решили — счётчик не загружается.';
+    box.querySelectorAll('[data-consent]').forEach(function (b) {{
+      b.setAttribute('aria-pressed', b.getAttribute('data-consent') === v ? 'true' : 'false');
+    }});
+  }}
+  box.addEventListener('click', function (e) {{
+    var v = e.target.getAttribute && e.target.getAttribute('data-consent');
+    if (v === 'yes') window.metrikaConsent.allow();
+    else if (v === 'no' && window.metrikaConsent.deny()) {{
+      // счётчик уже работал на этой странице — остановить его можно только перезагрузкой
+      location.reload();
+      return;
+    }}
+    show();
+  }});
+  show();
+}})();
+</script>
+</body></html>"""
 
 def generate_sitemap(all_posts, visits=None):
     logger.info("Sitemap...")
@@ -3389,6 +3558,7 @@ def generate_sitemap(all_posts, visits=None):
     urls.append(f"  <url><loc>{bu}/timeline.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>")
     urls.append(f"  <url><loc>{bu}/ukazatel.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>")
     urls.append(f"  <url><loc>{bu}/stats.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>")
+    urls.append(f"  <url><loc>{bu}/privacy.html</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>")
     # Посещения — только если они есть: ссылка на несуществующую
     # страницу в карте сайта портит её целиком.
     visits = visits or []
@@ -3708,6 +3878,7 @@ async def main():
         logger.error(f"Ошибка генерации таймлайна: {e}")
     with open(os.path.join(OUTPUT_DIR, "index.html"), "w", encoding="utf-8", newline="\n") as f: f.write(render_index(all_posts))
     with open(os.path.join(OUTPUT_DIR, "404.html"), "w", encoding="utf-8", newline="\n") as f: f.write(render_404())
+    with open(os.path.join(OUTPUT_DIR, "privacy.html"), "w", encoding="utf-8", newline="\n") as f: f.write(render_privacy())
     save_image_sizes()
     logger.info(f"Новых постов: {len(accepted)}. Всего: {len(all_posts)}")
     push_to_github()

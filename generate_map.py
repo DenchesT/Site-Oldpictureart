@@ -411,6 +411,18 @@ def slugify(text):
     t = re.sub(r"\s+", "-", t).strip("-")
     return t[:60] or "post"
 
+def been_phrase(n):
+    """«Побывал 5 раз», «Побывал 2 раза», «Побывал однажды».
+
+    Было «Побывал — 5 походов». В музей не ходят походом, туда заходят,
+    и слово в подписи резало слух. То же правило, что и в подсказке на
+    самой карте (beenPhrase), — чтобы они не разошлись.
+    """
+    if n == 1:
+        return "Побывал однажды"
+    return f"Побывал {n} {plural_ru(n, 'раз', 'раза', 'раз')}"
+
+
 def plural_ru(n, one, two, five):
     """Склоняет существительное: 1 картина, 2 картины, 5 картин"""
     n = abs(n) % 100
@@ -500,7 +512,11 @@ MUSEUMS_CSS = """
   box-shadow: 0 4px 20px var(--shadow);
 }
 
-#map { height: calc(100vh - 8rem); min-height: 420px; z-index: 1; background: var(--border); }
+/* Подложка окна — цвет моря со схемы. Пустых полос теперь не бывает
+   (см. fitWorldHeight), но пока плитки грузятся, окно видно: серое
+   выглядело как поломка, морское — как карта, которая вот-вот проявится. */
+#map { height: calc(100vh - 8rem); min-height: 420px; z-index: 1; background: #aad3df; }
+#map.map-dark { background: #2b3e46; }
 
 .map-expand {
   position: absolute;
@@ -820,6 +836,22 @@ function updateMapTheme() {
   box.classList.toggle('map-dark', currentTheme() === 'dark' && allowed);
 }
 
+// Самый мелкий масштаб, при котором мир не ниже окна карты.
+//
+// На уровне z мир в проекции Меркатора — квадрат 256·2^z точек. Если окно
+// выше этого квадрата, над Арктикой и под Антарктидой видна подложка.
+// Поэтому уровень берётся с округлением вверх: мир чуть выше окна лучше,
+// чем окно чуть выше мира. Пересчитывается при каждом изменении размера:
+// у развёрнутой на весь экран карты и у карты на телефоне он разный.
+function fitWorldHeight() {
+  if (!map) return;
+  var h = map.getSize().y;
+  if (!h) return;
+  var z = Math.max(1, Math.ceil(Math.log(h / 256) / Math.LN2));
+  map.setMinZoom(z);
+  if (map.getZoom() < z) map.setZoom(z);
+}
+
 function initMap() {
   if (typeof L === 'undefined') {
     var box = document.getElementById('map');
@@ -827,7 +859,26 @@ function initMap() {
     return;
   }
 
-  map = L.map('map', {scrollWheelZoom: true}).setView([48, 10], 4);
+  // Серые поля сверху и снизу — это подложка самого окна карты, видная
+  // там, где мир кончился. В проекции Меркатора он ограничен широтой
+  // ±85°, и на мелком масштабе окно оказывалось выше целого мира.
+  //
+  // Три меры сразу:
+  //   • maxBounds с вязкостью 1 — мир нельзя стащить вверх или вниз
+  //     за край: карта упирается, как бумага в рамку;
+  //   • minZoom считается от высоты окна (fitWorldHeight ниже) — мир
+  //     всегда не ниже окна, и пустых полос не остаётся вовсе;
+  //   • worldCopyJump — при прокрутке через Тихий океан метки
+  //     перепрыгивают на соседнюю копию мира, а не остаются позади.
+  // По долготе запас в две копии мира: вбок крутить можно свободно.
+  map = L.map('map', {
+    scrollWheelZoom: true,
+    worldCopyJump: true,
+    maxBounds: [[-85.0511, -540], [85.0511, 540]],
+    maxBoundsViscosity: 1.0
+  }).setView([48, 10], 4);
+  fitWorldHeight();
+  map.on('resize', fitWorldHeight);
 
   BASE_LAYERS.forEach(function (cfg) { layers[cfg.name] = makeLayer(cfg); });
 
@@ -905,6 +956,17 @@ function clusterIcon(cluster) {
   });
 }
 
+// «Побывал 5 раз», а не «Побывал: 5 походов». Слово «поход» в подписи
+// резало слух: в музей не ходят походом, туда заходят. «Однажды» вместо
+// «1 раз» — так говорят. Та же фраза собирается питоном в карточке
+// (been_phrase), и держать их надо одинаковыми.
+function beenPhrase(n) {
+  if (n === 1) return 'Побывал однажды';
+  var d = n % 10, h = n % 100;
+  var w = (d >= 2 && d <= 4 && (h < 10 || h >= 20)) ? 'раза' : 'раз';
+  return 'Побывал ' + n + ' ' + w;
+}
+
 function addMarkers() {
   // Музеи одного города накладывались друг на друга: до Лувра нельзя было
   // дотянуться мышью из-за д’Орсе. Теперь близкие метки собираются в одну,
@@ -953,10 +1015,7 @@ function addMarkers() {
     }
     if (m.visits) {
       var vs = document.createElement('div');
-      var vw = m.visits % 10 === 1 && m.visits % 100 !== 11 ? 'поход'
-             : (m.visits % 10 >= 2 && m.visits % 10 <= 4 && (m.visits % 100 < 10 || m.visits % 100 >= 20)) ? 'похода'
-             : 'походов';
-      vs.textContent = 'Побывал: ' + m.visits + ' ' + vw;
+      vs.textContent = beenPhrase(m.visits);
       html.appendChild(vs);
     }
     var link = document.createElement('a');
@@ -1378,8 +1437,7 @@ def generate_museums_page(retry_failed=False, offline=False):
         # снимки из зала.
         visits_html = ""
         if been:
-            word = plural_ru(len(been), "поход", "похода", "походов")
-            visits_html = (f'<div class="museum-visits"><h4>Побывал — {len(been)} {word}</h4>'
+            visits_html = (f'<div class="museum-visits"><h4>{been_phrase(len(been))}</h4>'
                            f'<ul class="museum-visit-list">{"".join(visit_link(v) for v in been)}</ul></div>')
 
         # Число на значке — работы собрания; если их нет, а поход был,
@@ -1444,7 +1502,7 @@ def generate_museums_page(retry_failed=False, offline=False):
     total_visits = sum(len(v) for v in visits_dict.values())
     stats = (f"<b>{len(museums_dict)}</b> {plural_ru(len(museums_dict), 'место', 'места', 'мест')} · "
              f"<b>{total_paintings}</b> {plural_ru(total_paintings, 'картина', 'картины', 'картин')} · "
-             + (f"<b>{total_visits}</b> {plural_ru(total_visits, 'поход', 'похода', 'походов')} · " if total_visits else "")
+             + (f"<b>{total_visits}</b> {plural_ru(total_visits, 'посещение', 'посещения', 'посещений')} · " if total_visits else "")
              + f"<b>{len(countries)}</b> {plural_ru(len(countries), 'страна', 'страны', 'стран')} · "
              f"{found_locations} на карте")
 
@@ -1456,7 +1514,7 @@ def generate_museums_page(retry_failed=False, offline=False):
 </style>
 </head><body class="museums-page">
 <div class="map-topbar">
-  <a href="index.html" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
+  <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
   {theme_button('theme-toggle-inline')}
 </div>
 

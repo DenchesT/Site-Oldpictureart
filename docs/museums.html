@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=df1337be">
+<link rel="stylesheet" href="style.css?v=d6f04475">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha256-YU3qCpj/P06tdPBJGPax0bm6Q1wltfwjsho5TR4+TYc=" crossorigin>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
@@ -80,7 +80,11 @@
   box-shadow: 0 4px 20px var(--shadow);
 }
 
-#map { height: calc(100vh - 8rem); min-height: 420px; z-index: 1; background: var(--border); }
+/* Подложка окна — цвет моря со схемы. Пустых полос теперь не бывает
+   (см. fitWorldHeight), но пока плитки грузятся, окно видно: серое
+   выглядело как поломка, морское — как карта, которая вот-вот проявится. */
+#map { height: calc(100vh - 8rem); min-height: 420px; z-index: 1; background: #aad3df; }
+#map.map-dark { background: #2b3e46; }
 
 .map-expand {
   position: absolute;
@@ -337,13 +341,13 @@
 </style>
 </head><body class="museums-page">
 <div class="map-topbar">
-  <a href="index.html" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
+  <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
   <button type="button" class="theme-toggle theme-toggle-inline" data-theme-toggle onclick="toggleTheme()" aria-label="Переключить тему" title="Светлая / тёмная тема"><span class="icon-theme-toggle" aria-hidden="true"></span></button>
 </div>
 
 <header class="museums-hero">
   <h1><span class="icon-map-header" aria-hidden="true"></span> Карта собраний</h1>
-  <p class="museums-stats"><b>68</b> мест · <b>92</b> картины · <b>20</b> походов · <b>15</b> стран · 63 на карте</p>
+  <p class="museums-stats"><b>68</b> мест · <b>92</b> картины · <b>20</b> посещений · <b>15</b> стран · 63 на карте</p>
 </header>
 
 <div class="museums-toolbar">
@@ -393,7 +397,7 @@
   <p class="museum-address">улица Волхонка, 12, Москва</p>
   <p class="museum-site"><a href="https://pushkinmuseum.art" target="_blank" rel="noopener">Сайт музея ↗</a></p>
   <div class="museum-thumbs"><a class="museum-thumb" href="gallen-kallela-ozero-ruovesi-1896.html" title="Аксели Галлен-Каллела — Ruovesi (Озеро Руовеси), 1896"><img src="images/thumbs/gallen-kallela-ozero-ruovesi-1896.jpg" alt="Аксели Галлен-Каллела — Ruovesi (Озеро Руовеси), 1896" width="62" height="62" loading="lazy" decoding="async"></a><a class="museum-thumb" href="forain-skachki-1888.html" title="Жан Луи Форен — Les courses (Скачки), 1888"><img src="images/thumbs/forain-skachki-1888.jpg" alt="Жан Луи Форен — Les courses (Скачки), 1888" width="62" height="62" loading="lazy" decoding="async"></a><a class="museum-thumb" href="thaulow-gornaya-rechka-mezhdu-1887-i-1890-godami-1887.html" title="Йохан Фредерик Фриц Таулов — Горная речка, между 1887 и 1890 годами"><img src="images/thumbs/thaulow-gornaya-rechka-mezhdu-1887-i-1890-godami-1887.jpg" alt="Йохан Фредерик Фриц Таулов — Горная речка, между 1887 и 1890 годами" width="62" height="62" loading="lazy" decoding="async"></a><a class="museum-thumb" href="loir-dym-okruzhnoi-parizhskoi-zheleznoi-dorogi-1885.html" title="Луиджи Алоис-Франсуа-Жозеф Луар — Smoke on the Paris Circuit Line (Дым окружной парижской железной дороги), 1885"><img src="images/thumbs/loir-dym-okruzhnoi-parizhskoi-zheleznoi-dorogi-1885.jpg" alt="Луиджи Алоис-Франсуа-Жозеф Луар — Smoke on the Paris Circuit Line (Дым окружной парижской железной дороги), 1885" width="62" height="62" loading="lazy" decoding="async"></a><a class="museum-thumb" href="sisley-moroz-v-luvesenne-1873.html" title="Альфред Сислей — La gelée à Louvecienne (Мороз в Лувесьенне), 1873"><img src="images/thumbs/sisley-moroz-v-luvesenne-1873.jpg" alt="Альфред Сислей — La gelée à Louvecienne (Мороз в Лувесьенне), 1873" width="62" height="62" loading="lazy" decoding="async"></a><a class="museum-thumb" href="poussin-peizazh-s-gerkulesom-i-kakusom-1660.html" title="Никола Пуссен — Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660"><img src="images/thumbs/poussin-peizazh-s-gerkulesom-i-kakusom-1660.jpg" alt="Никола Пуссен — Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660" width="62" height="62" loading="lazy" decoding="async"></a></div>
-  <div class="museum-visits"><h4>Побывал — 1 поход</h4><ul class="museum-visit-list"><li><a href="visit-2025-03-19-sokrovischnitsa-grafiki.html"><span class="visit-when">19.03.2025</span> Сокровищница графики<span class="visit-tag">выставка</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2025-03-19-sokrovischnitsa-grafiki.html"><span class="visit-when">19.03.2025</span> Сокровищница графики<span class="visit-tag">выставка</span></a></li></ul></div>
   <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-гмии-им-ас-пушкина-москва" onclick="toggleMuseumPosts(this, 'гмии-им-ас-пушкина-москва')">Список картин ▾</button>
   <ul class="museum-posts-list" id="posts-гмии-им-ас-пушкина-москва" hidden><li><a href="gallen-kallela-ozero-ruovesi-1896.html">Аксели Галлен-Каллела — Ruovesi (Озеро Руовеси), 1896</a></li><li><a href="forain-skachki-1888.html">Жан Луи Форен — Les courses (Скачки), 1888</a></li><li><a href="thaulow-gornaya-rechka-mezhdu-1887-i-1890-godami-1887.html">Йохан Фредерик Фриц Таулов — Горная речка, между 1887 и 1890 годами</a></li><li><a href="loir-dym-okruzhnoi-parizhskoi-zheleznoi-dorogi-1885.html">Луиджи Алоис-Франсуа-Жозеф Луар — Smoke on the Paris Circuit Line (Дым окружной парижской железной дороги), 1885</a></li><li><a href="sisley-moroz-v-luvesenne-1873.html">Альфред Сислей — La gelée à Louvecienne (Мороз в Лувесьенне), 1873</a></li><li><a href="poussin-peizazh-s-gerkulesom-i-kakusom-1660.html">Никола Пуссен — Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660</a></li></ul>
 </article>
@@ -548,7 +552,7 @@
   <p class="museum-address">7-7 Ueno-koen, Taito-ku, Tokyo</p>
   <p class="museum-site"><a href="https://www.nmwa.go.jp" target="_blank" rel="noopener">Сайт музея ↗</a></p>
   <div class="museum-thumbs"><a class="museum-thumb" href="sisley-peizazh-v-luvesene-1873.html" title="Альфред Сислей — Landscape at Louveciennes (Пейзаж в Лувесьене), 1873"><img src="images/thumbs/sisley-peizazh-v-luvesene-1873.jpg" alt="Альфред Сислей — Landscape at Louveciennes (Пейзаж в Лувесьене), 1873" width="62" height="62" loading="lazy" decoding="async"></a></div>
-  <div class="museum-visits"><h4>Побывал — 1 поход</h4><ul class="museum-visit-list"><li><a href="visit-2025-11-02-impressionist-interiors-intimacy-decoration-mode.html"><span class="visit-when">26.10.2025</span> Impressionist Interiors: Intimacy, Decoration, Modernity<span class="visit-tag">выставка</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2025-11-02-impressionist-interiors-intimacy-decoration-mode.html"><span class="visit-when">26.10.2025</span> Impressionist Interiors: Intimacy, Decoration, Modernity<span class="visit-tag">выставка</span></a></li></ul></div>
   <button type="button" class="museum-toggle" aria-expanded="false" aria-controls="posts-национальный-музей-западного-искусства-токио" onclick="toggleMuseumPosts(this, 'национальный-музей-западного-искусства-токио')">Список картин ▾</button>
   <ul class="museum-posts-list" id="posts-национальный-музей-западного-искусства-токио" hidden><li><a href="sisley-peizazh-v-luvesene-1873.html">Альфред Сислей — Landscape at Louveciennes (Пейзаж в Лувесьене), 1873</a></li></ul>
 </article>
@@ -1099,7 +1103,7 @@
   <header class="museum-card-head"><h3>Музей русского импрессионизма</h3><span class="museum-badge museum-badge-visit" title="посещений">5</span></header>
   <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> </p>
   <p class="museum-address">Ленинградский проспект, 15 стр. 11, Москва</p>
-  <div class="museum-visits"><h4>Побывал — 5 походов</h4><ul class="museum-visit-list"><li><a href="visit-2026-07-18-mitropoliche-varene.html"><span class="visit-when">14.07.2026</span> Митрополичье варенье<span class="visit-tag">выставка</span></a></li><li><a href="visit-2025-11-24-svoi-chelovek-vladimir-gilyarovskii.html"><span class="visit-when">24.11.2025</span> Свой человек. Владимир Гиляровский<span class="visit-tag">выставка</span></a></li><li><a href="visit-2025-09-25-russkie-dikie.html"><span class="visit-when">25.09.2025</span> Русские дикие<span class="visit-tag">выставка</span></a></li><li><a href="visit-2025-05-20-izobrazhaya-vozduh-russkii-impressionizm.html"><span class="visit-when">17.05.2025</span> Изображая воздух. Русский импрессионизм<span class="visit-tag">выставка</span></a></li><li><a href="visit-2025-02-13-avtor-neizvesten-kosnutsya-glavnogo.html"><span class="visit-when">04.11.2023</span> Автор неизвестен. Коснуться главного<span class="visit-tag">выставка</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал 5 раз</h4><ul class="museum-visit-list"><li><a href="visit-2026-07-18-mitropoliche-varene.html"><span class="visit-when">14.07.2026</span> Митрополичье варенье<span class="visit-tag">выставка</span></a></li><li><a href="visit-2025-11-24-svoi-chelovek-vladimir-gilyarovskii.html"><span class="visit-when">24.11.2025</span> Свой человек. Владимир Гиляровский<span class="visit-tag">выставка</span></a></li><li><a href="visit-2025-09-25-russkie-dikie.html"><span class="visit-when">25.09.2025</span> Русские дикие<span class="visit-tag">выставка</span></a></li><li><a href="visit-2025-05-20-izobrazhaya-vozduh-russkii-impressionizm.html"><span class="visit-when">17.05.2025</span> Изображая воздух. Русский импрессионизм<span class="visit-tag">выставка</span></a></li><li><a href="visit-2025-02-13-avtor-neizvesten-kosnutsya-glavnogo.html"><span class="visit-when">04.11.2023</span> Автор неизвестен. Коснуться главного<span class="visit-tag">выставка</span></a></li></ul></div>
 </article>
 <article class="museum-card" id="museum-государственный-эрмитаж" data-id="государственный-эрмитаж"
          data-search="государственный эрмитаж новый эрмитаж россия дворцовая набережная, 34, санкт-петербург государственный эрмитаж, главный штаб ландшафт души. каспар давид фридрих и россия" data-count="0"
@@ -1109,7 +1113,7 @@
   <header class="museum-card-head"><h3>Государственный Эрмитаж</h3><span class="museum-badge museum-badge-visit" title="посещений">2</span></header>
   <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Новый Эрмитаж, Россия</p>
   <p class="museum-address">Дворцовая набережная, 34, Санкт-Петербург</p>
-  <div class="museum-visits"><h4>Побывал — 2 похода</h4><ul class="museum-visit-list"><li><a href="visit-2025-04-06-gosudarstvennyi-ermitazh-glavnyi-shtab.html"><span class="visit-when">05.04.2025</span> Государственный Эрмитаж, Главный штаб<span class="visit-tag">музей</span></a></li><li><a href="visit-2025-04-10-landshaft-dushi-kaspar-david-fridrih-i-rossiya.html"><span class="visit-when">05.04.2025</span> Ландшафт души. Каспар Давид Фридрих и Россия<span class="visit-tag">выставка</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал 2 раза</h4><ul class="museum-visit-list"><li><a href="visit-2025-04-06-gosudarstvennyi-ermitazh-glavnyi-shtab.html"><span class="visit-when">05.04.2025</span> Государственный Эрмитаж, Главный штаб<span class="visit-tag">музей</span></a></li><li><a href="visit-2025-04-10-landshaft-dushi-kaspar-david-fridrih-i-rossiya.html"><span class="visit-when">05.04.2025</span> Ландшафт души. Каспар Давид Фридрих и Россия<span class="visit-tag">выставка</span></a></li></ul></div>
 </article>
 <article class="museum-card" id="museum-новая-третьяковка" data-id="новая-третьяковка"
          data-search="новая третьяковка 10 россия крымский вал, 10, москва карл брюллов. рим - москва - петербург васнецовы. связь поколений. из xix в xxi век" data-count="0"
@@ -1119,7 +1123,7 @@
   <header class="museum-card-head"><h3>Новая Третьяковка</h3><span class="museum-badge museum-badge-visit" title="посещений">2</span></header>
   <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> 10, Россия</p>
   <p class="museum-address">Крымский Вал, 10, Москва</p>
-  <div class="museum-visits"><h4>Побывал — 2 похода</h4><ul class="museum-visit-list"><li><a href="visit-2025-10-18-karl-bryullov-rim-moskva-peterburg.html"><span class="visit-when">17.10.2025</span> Карл Брюллов. Рим - Москва - Петербург<span class="visit-tag">выставка</span></a></li><li><a href="visit-2025-02-13-vasnetsovy-svyaz-pokolenii-iz-xix-v-xxi-vek.html"><span class="visit-when">06.10.2024</span> Васнецовы. Связь поколений. Из XIX в XXI век<span class="visit-tag">выставка</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал 2 раза</h4><ul class="museum-visit-list"><li><a href="visit-2025-10-18-karl-bryullov-rim-moskva-peterburg.html"><span class="visit-when">17.10.2025</span> Карл Брюллов. Рим - Москва - Петербург<span class="visit-tag">выставка</span></a></li><li><a href="visit-2025-02-13-vasnetsovy-svyaz-pokolenii-iz-xix-v-xxi-vek.html"><span class="visit-when">06.10.2024</span> Васнецовы. Связь поколений. Из XIX в XXI век<span class="visit-tag">выставка</span></a></li></ul></div>
 </article>
 <article class="museum-card" id="museum-новосибирский-государственный-художественный-музей" data-id="новосибирский-государственный-художественный-музей"
          data-search="новосибирский государственный художественный музей 5 россия красный проспект, 5, новосибирск новосибирский государственный художественный музей импрессионисты в сибири" data-count="0"
@@ -1129,7 +1133,7 @@
   <header class="museum-card-head"><h3>Новосибирский государственный художественный музей</h3><span class="museum-badge museum-badge-visit" title="посещений">2</span></header>
   <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> 5, Россия</p>
   <p class="museum-address">Красный проспект, 5, Новосибирск</p>
-  <div class="museum-visits"><h4>Побывал — 2 похода</h4><ul class="museum-visit-list"><li><a href="visit-2026-03-02-novosibirskii-gosudarstvennyi-hudozhestvennyi-mu.html"><span class="visit-when">20.02.2026</span> Новосибирский государственный художественный музей<span class="visit-tag">музей</span></a></li><li><a href="visit-2026-02-24-impressionisty-v-sibiri.html"><span class="visit-when">19.02.2026</span> Импрессионисты в Сибири<span class="visit-tag">выставка</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал 2 раза</h4><ul class="museum-visit-list"><li><a href="visit-2026-03-02-novosibirskii-gosudarstvennyi-hudozhestvennyi-mu.html"><span class="visit-when">20.02.2026</span> Новосибирский государственный художественный музей<span class="visit-tag">музей</span></a></li><li><a href="visit-2026-02-24-impressionisty-v-sibiri.html"><span class="visit-when">19.02.2026</span> Импрессионисты в Сибири<span class="visit-tag">выставка</span></a></li></ul></div>
 </article>
 <article class="museum-card" id="museum-волго-вятский-филиал-гмии-им-а-с-пушкина-арсенал" data-id="волго-вятский-филиал-гмии-им-а-с-пушкина-арсенал"
          data-search="волго-вятский филиал гмии им. а. с. пушкина (арсенал) арсенал нижегородский кремль кремль, корпус 6, нижний новгород вокруг импрессионизма" data-count="0"
@@ -1139,7 +1143,7 @@
   <header class="museum-card-head"><h3>Волго-Вятский филиал ГМИИ им. А. С. Пушкина (Арсенал)</h3><span class="museum-badge museum-badge-visit" title="посещений">1</span></header>
   <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Арсенал, Нижегородский кремль</p>
   <p class="museum-address">Кремль, корпус 6, Нижний Новгород</p>
-  <div class="museum-visits"><h4>Побывал — 1 поход</h4><ul class="museum-visit-list"><li><a href="visit-2026-06-21-vokrug-impressionizma.html"><span class="visit-when">19.06.2026</span> Вокруг импрессионизма<span class="visit-tag">выставка</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2026-06-21-vokrug-impressionizma.html"><span class="visit-when">19.06.2026</span> Вокруг импрессионизма<span class="visit-tag">выставка</span></a></li></ul></div>
 </article>
 <article class="museum-card" id="museum-картинная-галерея-псковского-музея-заповедника" data-id="картинная-галерея-псковского-музея-заповедника"
          data-search="картинная галерея псковского музея-заповедника 7 россия улица некрасова, 7, псков картинная галерея псковского музея-заповедника" data-count="0"
@@ -1149,7 +1153,7 @@
   <header class="museum-card-head"><h3>Картинная галерея Псковского музея-заповедника</h3><span class="museum-badge museum-badge-visit" title="посещений">1</span></header>
   <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> 7, Россия</p>
   <p class="museum-address">улица Некрасова, 7, Псков</p>
-  <div class="museum-visits"><h4>Побывал — 1 поход</h4><ul class="museum-visit-list"><li><a href="visit-2025-03-02-kartinnaya-galereya-pskovskogo-muzeya-zapovednik.html"><span class="visit-when">02.03.2025</span> Картинная галерея Псковского музея-заповедника<span class="visit-tag">музей</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2025-03-02-kartinnaya-galereya-pskovskogo-muzeya-zapovednik.html"><span class="visit-when">02.03.2025</span> Картинная галерея Псковского музея-заповедника<span class="visit-tag">музей</span></a></li></ul></div>
 </article>
 <article class="museum-card" id="museum-корпус-на-кадашёвской-набережной" data-id="корпус-на-кадашёвской-набережной"
          data-search="корпус на кадашёвской набережной третьяковская галерея на кадашёвской набережной россия кадашёвская набережная, 12, москва арктика. полюс цвета" data-count="0"
@@ -1159,7 +1163,7 @@
   <header class="museum-card-head"><h3>Корпус на Кадашёвской набережной</h3><span class="museum-badge museum-badge-visit" title="посещений">1</span></header>
   <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Третьяковская галерея на Кадашёвской набережной, Россия</p>
   <p class="museum-address">Кадашёвская набережная, 12, Москва</p>
-  <div class="museum-visits"><h4>Побывал — 1 поход</h4><ul class="museum-visit-list"><li><a href="visit-2026-01-19-arktika-polyus-tsveta.html"><span class="visit-when">17.01.2026</span> Арктика. Полюс цвета<span class="visit-tag">выставка</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2026-01-19-arktika-polyus-tsveta.html"><span class="visit-when">17.01.2026</span> Арктика. Полюс цвета<span class="visit-tag">выставка</span></a></li></ul></div>
 </article>
 <article class="museum-card" id="museum-нижегородский-государственный-художественный-музей" data-id="нижегородский-государственный-художественный-музей"
          data-search="нижегородский государственный художественный музей нижегородский государственный художественный музей россия кремль, корпус 3, нижний новгород нижегородский государственный художественный музей, зарубежное искусство" data-count="0"
@@ -1169,7 +1173,7 @@
   <header class="museum-card-head"><h3>Нижегородский государственный художественный музей</h3><span class="museum-badge museum-badge-visit" title="посещений">1</span></header>
   <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Нижегородский государственный художественный музей, Россия</p>
   <p class="museum-address">Кремль, корпус 3, Нижний Новгород</p>
-  <div class="museum-visits"><h4>Побывал — 1 поход</h4><ul class="museum-visit-list"><li><a href="visit-2026-06-25-nizhegorodskii-gosudarstvennyi-hudozhestvennyi-m.html"><span class="visit-when">19.06.2026</span> Нижегородский государственный художественный музей, Зарубежное искусство<span class="visit-tag">музей</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2026-06-25-nizhegorodskii-gosudarstvennyi-hudozhestvennyi-m.html"><span class="visit-when">19.06.2026</span> Нижегородский государственный художественный музей, Зарубежное искусство<span class="visit-tag">музей</span></a></li></ul></div>
 </article>
 <article class="museum-card" id="museum-пензенская-областная-картинная-галерея-имени-ка-савицкого" data-id="пензенская-областная-картинная-галерея-имени-ка-савицкого"
          data-search="пензенская областная картинная галерея имени к.а. савицкого 3 россия улица советская, 3, пенза пензенская областная картинная галерея имени к.а. савицкого" data-count="0"
@@ -1179,7 +1183,7 @@
   <header class="museum-card-head"><h3>Пензенская областная картинная галерея имени К.А. Савицкого</h3><span class="museum-badge museum-badge-visit" title="посещений">1</span></header>
   <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> 3, Россия</p>
   <p class="museum-address">улица Советская, 3, Пенза</p>
-  <div class="museum-visits"><h4>Побывал — 1 поход</h4><ul class="museum-visit-list"><li><a href="visit-2025-08-15-penzenskaya-oblastnaya-kartinnaya-galereya-imeni.html"><span class="visit-when">15.08.2025</span> Пензенская областная картинная галерея имени К.А. Савицкого<span class="visit-tag">музей</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2025-08-15-penzenskaya-oblastnaya-kartinnaya-galereya-imeni.html"><span class="visit-when">15.08.2025</span> Пензенская областная картинная галерея имени К.А. Савицкого<span class="visit-tag">музей</span></a></li></ul></div>
 </article>
 <article class="museum-card" id="museum-саратовский-государственный-художественный-музей-имени-ан-ра" data-id="саратовский-государственный-художественный-музей-имени-ан-ра"
          data-search="саратовский государственный художественный музей имени а.н. радищева саратовский государственный художественный музей им. а. н. радищева россия улица радищева, 39, саратов саратовский государственный художественный музей имени а.н. радищева" data-count="0"
@@ -1189,7 +1193,7 @@
   <header class="museum-card-head"><h3>Саратовский государственный художественный музей имени А.Н. Радищева</h3><span class="museum-badge museum-badge-visit" title="посещений">1</span></header>
   <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Саратовский государственный художественный музей им. А. Н. Радищева, Россия</p>
   <p class="museum-address">улица Радищева, 39, Саратов</p>
-  <div class="museum-visits"><h4>Побывал — 1 поход</h4><ul class="museum-visit-list"><li><a href="visit-2026-08-25-saratovskii-gosudarstvennyi-hudozhestvennyi-muze.html"><span class="visit-when">18.08.2026</span> Саратовский государственный художественный музей имени А.Н. Радищева<span class="visit-tag">музей</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2026-08-25-saratovskii-gosudarstvennyi-hudozhestvennyi-muze.html"><span class="visit-when">18.08.2026</span> Саратовский государственный художественный музей имени А.Н. Радищева<span class="visit-tag">музей</span></a></li></ul></div>
 </article>
 <article class="museum-card" id="museum-центр-эрмитаж-казань" data-id="центр-эрмитаж-казань"
          data-search="центр &quot;эрмитаж-казань&quot; 12 россия кремль, 12, казань прекрасная эпоха. европейское искусство рубежа xix–xx вв." data-count="0"
@@ -1199,7 +1203,7 @@
   <header class="museum-card-head"><h3>Центр &quot;Эрмитаж-Казань&quot;</h3><span class="museum-badge museum-badge-visit" title="посещений">1</span></header>
   <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> 12, Россия</p>
   <p class="museum-address">Кремль, 12, Казань</p>
-  <div class="museum-visits"><h4>Побывал — 1 поход</h4><ul class="museum-visit-list"><li><a href="visit-2025-07-17-prekrasnaya-epoha-evropeiskoe-iskusstvo-rubezha.html"><span class="visit-when">17.07.2025</span> Прекрасная эпоха. Европейское искусство рубежа XIX–XX вв.<span class="visit-tag">выставка</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2025-07-17-prekrasnaya-epoha-evropeiskoe-iskusstvo-rubezha.html"><span class="visit-when">17.07.2025</span> Прекрасная эпоха. Европейское искусство рубежа XIX–XX вв.<span class="visit-tag">выставка</span></a></li></ul></div>
 </article>
     <p class="no-results" id="museums-empty" hidden>Ничего не найдено.</p>
   </div>
@@ -1211,7 +1215,7 @@
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"
         integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin></script>
 <script src="map-config.js"></script>
-<footer class="site-footer"><p class="footer-source">Собрано из канала <a href="https://t.me/oldpictureart" target="_blank" rel="noopener"><span class="icon-telegram" aria-hidden="true"></span>@oldpictureart</a></p><p class="footer-links"><a href="ukazatel.html">Указатель</a> · <a href="stats.html">Статистика</a> · <a href="museums.html">Карта собраний</a> · <a href="visits.html">Посещения</a> · <a href="feed.xml">RSS</a></p></footer>
+<footer class="site-footer"><p class="footer-source">Собрано из канала <a href="https://t.me/oldpictureart" target="_blank" rel="noopener"><span class="icon-telegram" aria-hidden="true"></span>@oldpictureart</a></p><p class="footer-links"><a href="ukazatel.html">Указатель</a> · <a href="stats.html">Статистика</a> · <a href="museums.html">Карта собраний</a> · <a href="visits.html">Посещения</a> · <a href="feed.xml">RSS</a> · <a href="privacy.html">Конфиденциальность</a></p></footer>
 <script>
 function scrollToTop(){
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1248,19 +1252,87 @@ function toggleTheme(){
   window.addEventListener('resize', upd, {passive:true});
   upd();
 })();
-</script><!-- Yandex.Metrika counter -->
-<script>
+</script><script>
+(function () {
+  var KEY = 'consent-metrika';
+  var loaded = false;
+
+  function load() {
+    if (loaded) return;
+    loaded = true;
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
         for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
         k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
     })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112760205', 'ym');
-
     ym(112760205, 'init', {ssr:true, webvisor:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+  }
+
+  function read() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+  function write(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+
+  // Отказ после согласия: стираем то, что Метрика оставила на этом
+  // сайте, — её cookie _ym* и записи _ym* в localStorage. Cookie на
+  // домене yandex.ru отсюда не достать; о них и о блокировщике Метрики
+  // сказано на странице privacy.html.
+  function forget() {
+    var parts = location.hostname.split('.');
+    document.cookie.split(';').forEach(function (c) {
+      var name = c.split('=')[0].trim();
+      if (name.indexOf('_ym') !== 0) return;
+      document.cookie = name + '=; Max-Age=0; path=/';
+      for (var i = 0; i < parts.length - 1; i++) {
+        document.cookie = name + '=; Max-Age=0; path=/; domain=.' + parts.slice(i).join('.');
+      }
+    });
+    try {
+      Object.keys(localStorage).forEach(function (k) {
+        if (k.indexOf('_ym') === 0) localStorage.removeItem(k);
+      });
+    } catch (e) {}
+  }
+
+  function hideBanner() {
+    var b = document.getElementById('consent');
+    if (b) b.remove();
+  }
+
+  window.metrikaConsent = {
+    state: read,
+    allow: function () { write('yes'); hideBanner(); load(); },
+    // true — счётчик на этой странице уже работал: чтобы он замолчал,
+    // страницу надо перезагрузить (остановить tag.js на ходу нельзя).
+    deny: function () { write('no'); hideBanner(); forget(); return loaded; }
+  };
+
+  function banner() {
+    var b = document.createElement('section');
+    b.id = 'consent';
+    b.className = 'consent';
+    b.setAttribute('aria-label', 'Статистика посещений');
+    b.innerHTML =
+      '<p class="consent-text">Разрешите вести статистику посещений? Для этого подключается ' +
+      'Яндекс Метрика: она ставит cookie, получает IP-адрес и записывает действия на странице. ' +
+      'Без неё сайт работает так же. <a href="privacy.html#metrika">Подробнее</a></p>' +
+      '<div class="consent-actions">' +
+        '<button type="button" class="consent-btn" data-consent="yes">Разрешить</button>' +
+        '<button type="button" class="consent-btn" data-consent="no">Не разрешать</button>' +
+      '</div>';
+    b.addEventListener('click', function (e) {
+      var v = e.target.getAttribute && e.target.getAttribute('data-consent');
+      if (v === 'yes') window.metrikaConsent.allow();
+      else if (v === 'no') window.metrikaConsent.deny();
+    });
+    document.body.appendChild(b);
+  }
+
+  var v = read();
+  if (v === 'yes') load();
+  // На странице о данных свои кнопки — плашка там только мешала бы.
+  else if (v !== 'no' && !document.getElementById('consent-controls')) banner();
+})();
 </script>
-<noscript><div><img src="https://mc.yandex.ru/watch/112760205" class="ym-pixel" alt=""></div></noscript>
-<!-- /Yandex.Metrika counter -->
 <script>
 const MUSEUMS = [{"id": "гмии-им-ас-пушкина-москва", "name": "ГМИИ им. А.С. Пушкина, Москва", "place": "Государственный музей изобразительных искусств имени А. С. Пушкина, Россия", "lat": 55.747285, "lon": 37.6054233, "count": 6, "visits": 1, "approx": false}, {"id": "государственная-третьяковская-галерея-москва", "name": "Государственная Третьяковская галерея, Москва", "place": "Третьяковская галерея, Россия", "lat": 55.7413613, "lon": 37.6202196, "count": 6, "visits": 0, "approx": false}, {"id": "национальная-галерея-искусства-вашингтон", "name": "Национальная галерея искусства, Вашингтон", "place": "Constitution Avenue Northwest, Соединённые Штаты Америки", "lat": 38.8920825, "lon": -77.0226804, "count": 5, "visits": 0, "approx": false}, {"id": "музей-дорсе-париж", "name": "Музей д’Орсе, Париж", "place": "Музей Орсе, Франция", "lat": 48.8599179, "lon": 2.3265849, "count": 3, "visits": 0, "approx": false}, {"id": "государственный-русский-музей-санкт-петербург", "name": "Государственный Русский музей, Санкт-Петербург", "place": "Михайловский дворец, Россия", "lat": 59.9387113, "lon": 30.3323111, "count": 2, "visits": 0, "approx": false}, {"id": "малый-дворец-музей-изящных-искусств-города-парижа-париж", "name": "Малый дворец, музей изящных искусств города Парижа, Париж", "place": "Малый дворец, Франция", "lat": 48.866042, "lon": 2.3153496, "count": 2, "visits": 0, "approx": false}, {"id": "метрополитен-музей-нью-йорк", "name": "Метрополитен-музей, Нью-Йорк", "place": "Метрополитан Музей Искусства, Соединённые Штаты Америки", "lat": 40.7794396, "lon": -73.9633825, "count": 2, "visits": 0, "approx": false}, {"id": "музей-изящных-искусств-гент", "name": "Музей изящных искусств, Гент", "place": "Museum voor Schone Kunsten, Бельгия", "lat": 51.0379751, "lon": 3.7242437, "count": 2, "visits": 0, "approx": false}, {"id": "музей-фабра-монпелье", "name": "Музей Фабра, Монпелье", "place": "Musée Fabre, Франция", "lat": 43.6117542, "lon": 3.8801274, "count": 2, "visits": 0, "approx": false}, {"id": "национальный-музей-прадо-мадрид", "name": "Национальный музей Прадо, Мадрид", "place": "Calle de Ruiz de Alarcón, Испания", "lat": 40.5558827, "lon": -3.3242669, "count": 2, "visits": 0, "approx": false}, {"id": "чикагский-институт-искусств-чикаго", "name": "Чикагский институт искусств, Чикаго", "place": "The Art Institute of Chicago, Соединённые Штаты Америки", "lat": 41.879605, "lon": -87.6230716, "count": 2, "visits": 0, "approx": false}, {"id": "национальный-музей-западного-искусства-токио", "name": "Национальный музей западного искусства, Токио", "place": "上野公園, Япония", "lat": 35.7152915, "lon": 139.7738278, "count": 1, "visits": 1, "approx": false}, {"id": "ассоциация-живопись-в-нормандии-довиль", "name": "Ассоциация \"Живопись в Нормандии\", Довиль", "place": "Довиль", "lat": 49.359166666667, "lon": 0.074444444444444, "count": 1, "visits": 0, "approx": true}, {"id": "базельский-художественный-музей-базель", "name": "Базельский художественный музей, Базель", "place": "Kunstmuseum Basel | Hauptbau, Швейцария", "lat": 47.5539294, "lon": 7.5944513, "count": 1, "visits": 0, "approx": false}, {"id": "британская-галерея-тейт-лондон", "name": "Британская галерея Тейт, Лондон", "place": "Millbank, Соединённое Королевство", "lat": 51.4965477, "lon": -0.1255167, "count": 1, "visits": 0, "approx": false}, {"id": "винтертурский-художественный-музей-винтертур", "name": "Винтертурский художественный музей, Винтертур", "place": "52, Швейцария", "lat": 47.5015809, "lon": 8.7302751, "count": 1, "visits": 0, "approx": false}, {"id": "гим-москва", "name": "ГИМ, Москва", "place": "Исторический музей, Россия", "lat": 55.755323, "lon": 37.6178815, "count": 1, "visits": 0, "approx": false}, {"id": "государственные-художественные-собрания-дрездена-дрезден", "name": "Государственные художественные собрания Дрездена, Дрезден", "place": "Дрезден", "lat": 51.0528, "lon": 13.7369, "count": 1, "visits": 0, "approx": false}, {"id": "государственный-музей-истории-религии-санкт-петербург", "name": "Государственный музей истории религии, Санкт-Петербург", "place": "Музей истории религии, Россия", "lat": 59.9318443, "lon": 30.3014533, "count": 1, "visits": 0, "approx": false}, {"id": "государственный-музей-тюрингии-хайдексбург", "name": "Государственный музей Тюрингии, Хайдексбург", "place": "Naturhistorisches Museum Rudolstadt, Германия", "lat": 50.7225817, "lon": 11.3378434, "count": 1, "visits": 0, "approx": false}, {"id": "государственный-художественный-музей-платтсбурга-галерея-рок", "name": "Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург", "place": "Tim Hortons, Соединённые Штаты Америки", "lat": 44.6931881, "lon": -73.4667363, "count": 1, "visits": 0, "approx": false}, {"id": "гётеборгский-художественный-музей-гётеборг", "name": "Гётеборгский художественный музей, Гётеборг", "place": "6, Швеция", "lat": 57.696653, "lon": 11.9803269, "count": 1, "visits": 0, "approx": false}, {"id": "институт-искусств-миннеаполиса-миннеаполис", "name": "Институт искусств Миннеаполиса, Миннеаполис", "place": "Minneapolis Institute of Art, Соединённые Штаты Америки", "lat": 44.9585946, "lon": -93.2741526, "count": 1, "visits": 0, "approx": false}, {"id": "институт-искусств-стерлинга-и-франсин-кларк-уильямстаун", "name": "Институт искусств Стерлинга и Франсин Кларк, Уильямстаун", "place": "Clark Art Museum, Соединённые Штаты Америки", "lat": 42.7075528, "lon": -73.2136571, "count": 1, "visits": 0, "approx": false}, {"id": "коллекции-версальского-дворца-версаль", "name": "Коллекции Версальского дворца, Версаль", "place": "Place d'Armes, Франция", "lat": 48.8038406, "lon": 2.1246463, "count": 1, "visits": 0, "approx": false}, {"id": "королевский-музей-изящных-искусств-брюссель", "name": "Королевский музей изящных искусств, Брюссель", "place": "3, Бельгия", "lat": 50.8415295, "lon": 4.358156, "count": 1, "visits": 0, "approx": false}, {"id": "лувр-париж-в-запаснике", "name": "Лувр, Париж (в запаснике)", "place": "улица Риволи, Франция", "lat": 48.8643028, "lon": 2.3305559, "count": 1, "visits": 0, "approx": false}, {"id": "музей-барберини-потсдам", "name": "Музей Барберини, Потсдам", "place": "Museum Barberini, Германия", "lat": 52.395233, "lon": 13.0618998, "count": 1, "visits": 0, "approx": false}, {"id": "музей-вальрафа-рихарца-и-фонд-корбо-кёльн", "name": "Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн", "place": "Obenmarspforten, Германия", "lat": 50.9375879, "lon": 6.958484, "count": 1, "visits": 0, "approx": false}, {"id": "музей-виктории-и-альберта-лондон", "name": "Музей Виктории и Альберта, Лондон", "place": "Музей Виктории и Альберта, Соединённое Королевство", "lat": 51.4968838, "lon": -0.1716372, "count": 1, "visits": 0, "approx": false}, {"id": "музей-гетти-лос-анджелес", "name": "Музей Гетти, Лос-Анджелес", "place": "Getty Research Institute, Соединённые Штаты Америки", "lat": 34.0769513, "lon": -118.475712, "count": 1, "visits": 0, "approx": false}, {"id": "музей-искусств-охара-курасики", "name": "Музей искусств Охара, Курасики", "place": "瀬戸中央自動車道, Япония", "lat": 34.4520606, "lon": 133.7908885, "count": 1, "visits": 0, "approx": false}, {"id": "музей-кунстпаласт-дюссельдорф", "name": "Музей Кунстпаласт, Дюссельдорф", "place": "Museum Kunstpalast, Германия", "lat": 51.234998, "lon": 6.7731045, "count": 1, "visits": 0, "approx": false}, {"id": "музей-леопольда-вена", "name": "Музей Леопольда, Вена", "place": "Музей Леопольда, Австрия", "lat": 48.2025896, "lon": 16.3590667, "count": 1, "visits": 0, "approx": false}, {"id": "музей-скагена-скаген", "name": "Музей Скагена, Скаген", "place": "4, Дания", "lat": 57.724468, "lon": 10.597215, "count": 1, "visits": 0, "approx": false}, {"id": "музей-современного-искусства-андре-мальро-гавр", "name": "Музей современного искусства Андре Мальро, Гавр", "place": "Musée d'Art Moderne André Malraux, Франция", "lat": 49.4850174, "lon": 0.1026567, "count": 1, "visits": 0, "approx": false}, {"id": "музей-эжена-будена-онфлёр", "name": "Музей Эжена Будена, Онфлёр", "place": "Онфлёр", "lat": 49.422299, "lon": 0.23063, "count": 1, "visits": 0, "approx": false}, {"id": "национальная-галерея-шотландии-эдинбург", "name": "Национальная галерея Шотландии, Эдинбург", "place": "The Mound, Соединённое Королевство", "lat": 55.9502288, "lon": -3.1958576, "count": 1, "visits": 0, "approx": false}, {"id": "национальный-музей-искусства-каталонии-барселона", "name": "Национальный музей искусства Каталонии, Барселона", "place": "Национальный музей искусства Каталонии, Испания", "lat": 41.3686024, "lon": 2.1534616, "count": 1, "visits": 0, "approx": false}, {"id": "национальный-музей-искусства-архитектуры-и-дизайна-осло", "name": "Национальный музей искусства, архитектуры и дизайна, Осло", "place": "Осло", "lat": 59.913333333333334, "lon": 10.738888888888889, "count": 1, "visits": 0, "approx": true}, {"id": "национальный-музей-швеции-стокгольм", "name": "Национальный музей Швеции, Стокгольм", "place": "Стокгольм", "lat": 59.32861111111111, "lon": 18.078055555555554, "count": 1, "visits": 0, "approx": false}, {"id": "национальный-художественный-музей-республики-беларусь-минск", "name": "Национальный художественный музей Республики Беларусь, Минск", "place": "Национальный художественный музей, Беларусь", "lat": 53.898377, "lon": 27.5606454, "count": 1, "visits": 0, "approx": false}, {"id": "отдел-личных-коллекций-гмии-им-ас-пушкина-москва", "name": "Отдел личных коллекций, ГМИИ им. А.С. Пушкина, Москва", "place": "10, Россия", "lat": 55.7474789, "lon": 37.6072183, "count": 1, "visits": 0, "approx": false}, {"id": "пермская-государственная-художественная-галерея-пермь", "name": "Пермская государственная художественная галерея, Пермь", "place": "Цех №4, Россия", "lat": 58.0193002, "lon": 56.2521113, "count": 1, "visits": 0, "approx": false}, {"id": "портлендский-художественный-музей-портленд", "name": "Портлендский художественный музей, Портленд", "place": "Portland Art Museum, Соединённые Штаты Америки", "lat": 45.5165483, "lon": -122.6834106, "count": 1, "visits": 0, "approx": false}, {"id": "собрание-фонда-эмиля-бюрле-цюрих", "name": "Собрание Фонда Эмиля Бюрле, Цюрих", "place": "Kunsthaus, Швейцария", "lat": 47.3702241, "lon": 8.5479797, "count": 1, "visits": 0, "approx": false}, {"id": "собрание-хиршпрунга-копенгаген", "name": "Собрание Хиршпрунга, Копенгаген", "place": "20, Дания", "lat": 55.689956, "lon": 12.577423, "count": 1, "visits": 0, "approx": false}, {"id": "старая-национальная-галерея-берлин", "name": "Старая национальная галерея, Берлин", "place": "Старая национальная галерея, Германия", "lat": 52.520862, "lon": 13.3982661, "count": 1, "visits": 0, "approx": false}, {"id": "тегеранский-музей-современного-искусства-тегеран", "name": "Тегеранский музей современного искусства, Тегеран", "place": "Тегеран", "lat": 35.71138888888889, "lon": 51.39055555555556, "count": 1, "visits": 0, "approx": false}, {"id": "художественная-галерея-южной-австралии-аделаида", "name": "Художественная галерея Южной Австралии, Аделаида", "place": "North Terrace, Австралия", "lat": -34.9180224, "lon": 138.6180994, "count": 1, "visits": 0, "approx": false}, {"id": "художественный-музей-колледжа-смит-нортхемптон", "name": "Художественный музей колледжа Смит, Нортхемптон", "place": "Smith College Museum of Art, Соединённые Штаты Америки", "lat": 42.318633, "lon": -72.636124, "count": 1, "visits": 0, "approx": false}, {"id": "штеделевский-художественный-институт-франкфурт-на-майне", "name": "Штеделевский художественный институт, Франкфурт-на-Майне", "place": "Hauptgebäude Städel Museum (Mainflügel), Германия", "lat": 50.1032187, "lon": 8.6738203, "count": 1, "visits": 0, "approx": false}, {"id": "музей-русского-импрессионизма", "name": "Музей русского импрессионизма", "place": "", "lat": 55.78076, "lon": 37.5715, "count": 0, "visits": 5, "approx": false}, {"id": "государственный-эрмитаж", "name": "Государственный Эрмитаж", "place": "Новый Эрмитаж, Россия", "lat": 59.9415943, "lon": 30.3165121, "count": 0, "visits": 2, "approx": false}, {"id": "новая-третьяковка", "name": "Новая Третьяковка", "place": "10, Россия", "lat": 55.7345823, "lon": 37.6062789, "count": 0, "visits": 2, "approx": false}, {"id": "новосибирский-государственный-художественный-музей", "name": "Новосибирский государственный художественный музей", "place": "5, Россия", "lat": 55.0217628, "lon": 82.9212954, "count": 0, "visits": 2, "approx": false}, {"id": "волго-вятский-филиал-гмии-им-а-с-пушкина-арсенал", "name": "Волго-Вятский филиал ГМИИ им. А. С. Пушкина (Арсенал)", "place": "Арсенал, Нижегородский кремль", "lat": 56.3275, "lon": 44.0058, "count": 0, "visits": 1, "approx": false}, {"id": "картинная-галерея-псковского-музея-заповедника", "name": "Картинная галерея Псковского музея-заповедника", "place": "7, Россия", "lat": 56.7077841, "lon": 28.6685166, "count": 0, "visits": 1, "approx": false}, {"id": "корпус-на-кадашёвской-набережной", "name": "Корпус на Кадашёвской набережной", "place": "Третьяковская галерея на Кадашёвской набережной, Россия", "lat": 55.7429766, "lon": 37.6187578, "count": 0, "visits": 1, "approx": false}, {"id": "нижегородский-государственный-художественный-музей", "name": "Нижегородский государственный художественный музей", "place": "Нижегородский государственный художественный музей, Россия", "lat": 56.3295482, "lon": 44.0064045, "count": 0, "visits": 1, "approx": false}, {"id": "пензенская-областная-картинная-галерея-имени-ка-савицкого", "name": "Пензенская областная картинная галерея имени К.А. Савицкого", "place": "3, Россия", "lat": 53.2366171, "lon": 43.4855094, "count": 0, "visits": 1, "approx": false}, {"id": "саратовский-государственный-художественный-музей-имени-ан-ра", "name": "Саратовский государственный художественный музей имени А.Н. Радищева", "place": "Саратовский государственный художественный музей им. А. Н. Радищева, Россия", "lat": 51.5322356, "lon": 46.0350619, "count": 0, "visits": 1, "approx": false}, {"id": "центр-эрмитаж-казань", "name": "Центр \"Эрмитаж-Казань\"", "place": "12, Россия", "lat": 55.7926771, "lon": 49.117559, "count": 0, "visits": 1, "approx": false}];
 
@@ -1327,6 +1399,22 @@ function updateMapTheme() {
   box.classList.toggle('map-dark', currentTheme() === 'dark' && allowed);
 }
 
+// Самый мелкий масштаб, при котором мир не ниже окна карты.
+//
+// На уровне z мир в проекции Меркатора — квадрат 256·2^z точек. Если окно
+// выше этого квадрата, над Арктикой и под Антарктидой видна подложка.
+// Поэтому уровень берётся с округлением вверх: мир чуть выше окна лучше,
+// чем окно чуть выше мира. Пересчитывается при каждом изменении размера:
+// у развёрнутой на весь экран карты и у карты на телефоне он разный.
+function fitWorldHeight() {
+  if (!map) return;
+  var h = map.getSize().y;
+  if (!h) return;
+  var z = Math.max(1, Math.ceil(Math.log(h / 256) / Math.LN2));
+  map.setMinZoom(z);
+  if (map.getZoom() < z) map.setZoom(z);
+}
+
 function initMap() {
   if (typeof L === 'undefined') {
     var box = document.getElementById('map');
@@ -1334,7 +1422,26 @@ function initMap() {
     return;
   }
 
-  map = L.map('map', {scrollWheelZoom: true}).setView([48, 10], 4);
+  // Серые поля сверху и снизу — это подложка самого окна карты, видная
+  // там, где мир кончился. В проекции Меркатора он ограничен широтой
+  // ±85°, и на мелком масштабе окно оказывалось выше целого мира.
+  //
+  // Три меры сразу:
+  //   • maxBounds с вязкостью 1 — мир нельзя стащить вверх или вниз
+  //     за край: карта упирается, как бумага в рамку;
+  //   • minZoom считается от высоты окна (fitWorldHeight ниже) — мир
+  //     всегда не ниже окна, и пустых полос не остаётся вовсе;
+  //   • worldCopyJump — при прокрутке через Тихий океан метки
+  //     перепрыгивают на соседнюю копию мира, а не остаются позади.
+  // По долготе запас в две копии мира: вбок крутить можно свободно.
+  map = L.map('map', {
+    scrollWheelZoom: true,
+    worldCopyJump: true,
+    maxBounds: [[-85.0511, -540], [85.0511, 540]],
+    maxBoundsViscosity: 1.0
+  }).setView([48, 10], 4);
+  fitWorldHeight();
+  map.on('resize', fitWorldHeight);
 
   BASE_LAYERS.forEach(function (cfg) { layers[cfg.name] = makeLayer(cfg); });
 
@@ -1412,6 +1519,17 @@ function clusterIcon(cluster) {
   });
 }
 
+// «Побывал 5 раз», а не «Побывал: 5 походов». Слово «поход» в подписи
+// резало слух: в музей не ходят походом, туда заходят. «Однажды» вместо
+// «1 раз» — так говорят. Та же фраза собирается питоном в карточке
+// (been_phrase), и держать их надо одинаковыми.
+function beenPhrase(n) {
+  if (n === 1) return 'Побывал однажды';
+  var d = n % 10, h = n % 100;
+  var w = (d >= 2 && d <= 4 && (h < 10 || h >= 20)) ? 'раза' : 'раз';
+  return 'Побывал ' + n + ' ' + w;
+}
+
 function addMarkers() {
   // Музеи одного города накладывались друг на друга: до Лувра нельзя было
   // дотянуться мышью из-за д’Орсе. Теперь близкие метки собираются в одну,
@@ -1460,10 +1578,7 @@ function addMarkers() {
     }
     if (m.visits) {
       var vs = document.createElement('div');
-      var vw = m.visits % 10 === 1 && m.visits % 100 !== 11 ? 'поход'
-             : (m.visits % 10 >= 2 && m.visits % 10 <= 4 && (m.visits % 100 < 10 || m.visits % 100 >= 20)) ? 'похода'
-             : 'походов';
-      vs.textContent = 'Побывал: ' + m.visits + ' ' + vw;
+      vs.textContent = beenPhrase(m.visits);
       html.appendChild(vs);
     }
     var link = document.createElement('a');
