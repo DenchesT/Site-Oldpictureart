@@ -11,6 +11,8 @@
 Запуск:
     python rebuild_pages.py            # всё
     python rebuild_pages.py --no-map   # без карты (не ходить в Nominatim)
+    python rebuild_pages.py --offline  # вообще без сети: карта по готовым
+                                       # координатам, квиз — по готовым школам
 """
 
 import os
@@ -40,6 +42,9 @@ def main():
 
     # Адреса страниц. Считаются до всего остального: на имена файлов
     # опираются и ссылки между страницами, и карта сайта, и RSS.
+    if bs.fix_work_years(meta):
+        bs.save_json(bs.META_FILE, meta)
+        print("✓ Годы создания пересчитаны по дате в названии")
     bs.prepare_slugs(meta)
     if bs.rename_pages(meta, visits):
         bs.save_json(bs.META_FILE, meta)
@@ -100,9 +105,19 @@ def main():
         if flag and flag in sys.argv:
             print(f"– {script} пропущен")
             continue
-        # Флаги карты пробрасываем дальше: --no-geocode собирает карту
-        # только по готовым координатам и в сеть не ходит вообще.
-        args = [a for a in ("--no-geocode", "--regeocode") if a in sys.argv] if script == "generate_map.py" else []
+        # Флаги пробрасываем дальше. --no-geocode собирает карту только по
+        # готовым координатам и в сеть не ходит вообще; квиз с ним тоже не
+        # спрашивает Wikidata о школах новых художников. --offline — то же
+        # самое для обоих, одним словом.
+        offline = "--offline" in sys.argv or "--no-geocode" in sys.argv
+        if script == "generate_map.py":
+            args = [a for a in ("--no-geocode", "--regeocode") if a in sys.argv]
+            if offline and "--no-geocode" not in args:
+                args.append("--no-geocode")
+        elif script == "generate_quiz.py":
+            args = ["--offline"] if offline else []
+        else:
+            args = []
         try:
             subprocess.run([sys.executable, script] + args, check=True)
             print(f"✓ {script}")

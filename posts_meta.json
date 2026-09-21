@@ -789,7 +789,7 @@
   {
     "id": 227,
     "date": "2025-05-09",
-    "filename": "yuon-parad-na-krasnoi-ploschadi-7-noyabrya-1941-goda-1941.html",
+    "filename": "yuon-parad-na-krasnoi-ploschadi-7-noyabrya-1941-goda-1949.html",
     "images": [
       "images/yuon-parad-na-krasnoi-ploschadi-7-noyabrya-1941-goda-1941-1.jpg"
     ],
@@ -819,11 +819,14 @@
       "юон"
     ],
     "raw": "Константин Фёдорович Юон\n⸻\nПарад на Красной площади 7 ноября 1941 года, 1949\n⸻\nХолст, масло,  71,5 x 105 см\n⸻\nГИМ, Москва\n⸻\nСюжетный центр картины Константина Юона — парад на Красной площади в честь 24-й годовщины Октябрьской революции в 1941 году. Это было тревожное время: битва за Москву в самом разгаре, линия фронта находилась всего в нескольких десятках километров от столицы. Многие политические деятели считали проведение парада в критический для страны момент нецелесообразным, так как денег не хватало даже на первостепенные нужды Красной армии. И всё же он состоялся, показав тем самым — боевой дух народа не сломлен, а Москва никогда не будет отдана врагам.\n\nСама Москва на картине Юона — это не просто фон. Столица выступает одним из главных действующих лиц наряду с военными. Небо заволокло тучами, снег хрустит под тяжёлым стройным шагом солдат, вдалеке дымят трубы МОГЭСа… Такую Москву, суровую, сосредоточившуюся, мобилизовавшую все свои силы, изображает на полотне художник. Парад не похож на те, которые столько раз видела Красная площадь: нет зрителей, с флагами и цветами приветствующих красноармейцев, да и сами солдаты одеты не в парадную, а в походную форму: отсюда — прямиком на фронт. Двумя центрами картины становятся Спасская башня и храм Василия Блаженного как символы Москвы и грандиозных военных побед прошлого.\n⸻\nhttps://catalog.shm.ru/entity/OBJECT/3039571\n⸻\n#юон@oldpictureart\n#гим@oldpictureart\n#картина@oldpictureart\n",
-    "creation_year": 1941,
+    "creation_year": 1949,
     "views": [
       "images/views/yuon-parad-na-krasnoi-ploschadi-7-noyabrya-1941-goda-1941-1.jpg"
     ],
-    "card": "images/cards/yuon-parad-na-krasnoi-ploschadi-7-noyabrya-1941-goda-1941.jpg"
+    "card": "images/cards/yuon-parad-na-krasnoi-ploschadi-7-noyabrya-1941-goda-1941.jpg",
+    "old_filenames": [
+      "yuon-parad-na-krasnoi-ploschadi-7-noyabrya-1941-goda-1941.html"
+    ]
   },
   {
     "id": 229,
@@ -2603,7 +2606,7 @@
   {
     "id": 395,
     "date": "2026-02-04",
-    "filename": "detaille-otkrytie-parizhskoi-opery-5-yanvarya-1875-goda-1875.html",
+    "filename": "detaille-otkrytie-parizhskoi-opery-5-yanvarya-1875-goda-1878.html",
     "images": [
       "images/detaille-otkrytie-parizhskoi-opery-5-yanvarya-1875-goda-1875-1.jpg"
     ],
@@ -2634,11 +2637,14 @@
       "картина"
     ],
     "raw": "Жан Батист Эдуар Детай\n⸺\nInauguration de l'Opéra de Paris, 5 janvier 1875 (Открытие Парижской оперы, 5 января 1875 года), 1878\n⸻\nХолст, размывка бистром, китайская тушь,  66,5 x 50,7 см\n⸻\nКоллекции Версальского дворца, Версаль\n⸻\nРисунок, предназначенный для гравюры, был заказан у Детайя указом министра народного образования, религиозных дел и изящных искусств 9 января 1875 года за сумму в 4000 франков, доставлен 23 мая 1878 года и представлен в Салоне (№ 2784); помещён в Люксембургский музей 18 августа 1882 года.\n⸻\nhttps://collections.chateauversailles.fr?queryid=ba201de5-1bba-495f-9add-dcf6b4eb118a\n⸻\n#detaille@oldpictureart\n#versailles@oldpictureart\n#картина@oldpictureart\n",
-    "creation_year": 1875,
+    "creation_year": 1878,
     "views": [
       "images/views/detaille-otkrytie-parizhskoi-opery-5-yanvarya-1875-goda-1875-1.jpg"
     ],
-    "card": "images/cards/detaille-otkrytie-parizhskoi-opery-5-yanvarya-1875-goda-1875.jpg"
+    "card": "images/cards/detaille-otkrytie-parizhskoi-opery-5-yanvarya-1875-goda-1875.jpg",
+    "old_filenames": [
+      "detaille-otkrytie-parizhskoi-opery-5-yanvarya-1875-goda-1875.html"
+    ]
   },
   {
     "id": 397,

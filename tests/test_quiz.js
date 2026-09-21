@@ -1,4 +1,5 @@
-// Квиз: варианты ответа из той же школы и того же времени.
+// Квиз: варианты ответа из той же школы и того же времени,
+// и второй вопрос — «когда написано».
 //
 // Раньше три неверных варианта брались наугад из всех художников, и к
 // французскому пейзажу 1870-х рядом стояли Репин, Пуссен и Бирштадт —
@@ -80,7 +81,7 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
 
   // колода: пока не прошли все картины, ни одна не повторилась
   const deckOk = await page.evaluate(() => {
-    deck = [];
+    decks.artist = [];
     const n = ALL_POSTS.length, seen = new Set();
     for (let i = 0; i < n; i++) { newQuestion(); seen.add(currentPost.filename); }
     return [seen.size, n];
@@ -93,6 +94,67 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
     .find(b => b.textContent === currentPost.artist).click());
   ok('верный ответ засчитан', await page.textContent('#score') === '1' && await page.textContent('#total') === '1');
   ok('после ответа — ссылка на картину', await page.locator('.quiz-link').count() === 1);
+
+  // ============================================ «когда написано»
+  await page.click('.quiz-modes [data-mode="year"]');
+  await page.waitForTimeout(200);
+  ok('переключатель ведёт в вопрос «когда»',
+     /десятилетие/.test(await page.textContent('#quiz-heading')) &&
+     await page.getAttribute('.quiz-modes [data-mode="year"]', 'aria-pressed') === 'true');
+  ok('адрес меняется на #year — вопрос можно дать ссылкой', page.url().endsWith('#year'));
+  const yq = await page.evaluate(() => ({
+    opts: [...document.querySelectorAll('.quiz-btn')].map(b => b.textContent),
+    correct: correctLabel,
+    title: document.getElementById('quiz-title').textContent,
+    artist: document.getElementById('quiz-artist').textContent,
+    artistShown: !document.getElementById('quiz-artist').hidden,
+    real: currentPost.artist,
+  }));
+  const decs = yq.opts.map(o => parseInt(o, 10));
+  ok('четыре десятилетия подряд', yq.opts.length === 4 && yq.opts.every(o => /^\d{4}-е$/.test(o)) &&
+     decs.every((d, i) => i === 0 || d - decs[i - 1] === 10), yq.opts.join(' · '));
+  ok('верное среди них', yq.opts.includes(yq.correct), yq.correct);
+  ok('под картиной нет даты — иначе ответ написан', !/\d{4}/.test(yq.title), yq.title);
+  ok('художник показан как подсказка', yq.artistShown && yq.artist === yq.real, yq.artist);
+
+  const pos = await page.evaluate(() => {
+    const seen = new Set();
+    for (let i = 0; i < 60; i++) {
+      newQuestion();
+      seen.add([...document.querySelectorAll('.quiz-btn')].findIndex(b => b.textContent === correctLabel));
+    }
+    return [...seen].sort();
+  });
+  ok('верный ответ стоит на разных местах', pos.length === 4, pos.join(','));
+
+  const yDeck = await page.evaluate(() => {
+    decks.year = [];
+    const eligible = ALL_POSTS.filter(p => p.dec).length, seen = new Set();
+    for (let i = 0; i < eligible; i++) { newQuestion(); seen.add(currentPost.filename); }
+    return [seen.size, eligible, ALL_POSTS.filter(p => p.dec && /\d{4}/.test(p.t)).length];
+  });
+  ok('за круг ни одна картина не повторилась', yDeck[0] === yDeck[1], `${yDeck[0]} из ${yDeck[1]}`);
+  ok('картины с годом в названии в вопрос «когда» не попали', yDeck[2] === 0);
+
+  await page.evaluate(() => resetScore());
+  await page.evaluate(() => [...document.querySelectorAll('.quiz-btn')]
+    .find(b => b.textContent === correctLabel).click());
+  const fb = await page.textContent('#quiz-feedback');
+  ok('верное десятилетие засчитано, точная дата показана',
+     await page.textContent('#score') === '1' && /Написана:/.test(fb), fb.slice(0, 80));
+
+  await page.click('.quiz-modes [data-mode="artist"]');
+  await page.waitForTimeout(200);
+  ok('у «художника» свой счёт', await page.textContent('#score') === '1' && await page.textContent('#total') === '1');
+  ok('в «художнике» строка с именем скрыта', await page.locator('#quiz-artist').isHidden());
+
+  const p2 = await ctx.newPage();
+  await p2.goto(URL + '#year');
+  await p2.waitForTimeout(400);
+  ok('ссылка quiz.html#year открывает сразу вопрос «когда»',
+     await p2.evaluate(() => mode === 'year' && /^\d{4}-е$/.test(document.querySelector('.quiz-btn').textContent)));
+  ok('счёт «когда» сохранился', await p2.textContent('#score') === '1');
+  await p2.close();
 
   ok('нет ошибок JS', errs.length === 0, errs.join(' | '));
   await browser.close();

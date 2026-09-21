@@ -14,6 +14,7 @@ generate_timeline.py, generate_map.py).
 
 import json
 import os
+import re
 
 SITE_NAME = "Old Picture Art"
 
@@ -95,6 +96,58 @@ def visit_places(visits, museum_names):
             known.append(hit)
         out[place] = hit
     return out
+
+
+# ------------------------------------------------ дата в названии работы
+# В канале название пишется так: «Les Fiancés (Пара), около 1868» — дата
+# идёт последней, после запятой. Раньше год брался как первое четырёхзначное
+# число в названии, и у «Парада на Красной площади 7 ноября 1941 года, 1949»
+# годом создания становился 1941, у «Открытия Парижской оперы, 5 января
+# 1875 года, 1878» — 1875: год события вместо года картины.
+_YEAR_RE = re.compile(r"(\d{4})(?:\s*[-–—]\s*(\d{2,4})(?!\d))?")
+_CENTURY_RE = re.compile(r"\b[IVXLC]+\s*(?:век|в\.)", re.I)
+
+
+def split_title_date(title):
+    """«Les Fiancés (Пара), около 1868» → («Les Fiancés (Пара)», «около 1868»).
+
+    Дата — последний кусок после запятой, если в нём есть год или век и нет
+    закрывающей скобки (иначе это запятая внутри названия). Даты нет —
+    вторым элементом идёт пустая строка.
+    """
+    t = (title or "").strip()
+    head, comma, tail = t.rpartition(",")
+    tail = tail.strip()
+    if comma and ")" not in tail and (re.search(r"\d{3,4}", tail) or _CENTURY_RE.search(tail)):
+        return head.strip(), tail
+    return t, ""
+
+
+def date_years(date):
+    """Первый и последний год даты: «1805–06» → (1805, 1806),
+    «между 1887 и 1890 годами» → (1887, 1890), «XIX век» → (None, None)."""
+    years = []
+    for m in _YEAR_RE.finditer(date or ""):
+        first = int(m.group(1))
+        years.append(first)
+        if m.group(2):
+            tail = m.group(2)
+            second = int(str(first)[:4 - len(tail)] + tail)
+            if second >= first:
+                years.append(second)
+    if not years:
+        return None, None
+    return years[0], max(years)
+
+
+def work_year(title):
+    """Год создания работы по её названию или None."""
+    _, date = split_title_date(title)
+    if date:
+        return date_years(date)[0]
+    # Даты после запятой нет — как раньше, первый год в названии.
+    m = re.search(r"\d{4}", title or "")
+    return int(m.group()) if m else None
 
 
 def has_visits():

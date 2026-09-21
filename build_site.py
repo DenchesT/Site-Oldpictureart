@@ -81,7 +81,8 @@ from site_common import (head_common, scroll_top_button, theme_button, site_foot
                          mark_svg, TELEGRAM_URL, TELEGRAM_NAME, SITE_DOMAIN, hires_url,
                          COMMON_JS, SCROLL_TOP_JS, LUPA_JS, TOAST_JS, SHARE_JS, AUTH_JS, BASE_URL,
                          VISITS_FILE, has_visits, visit_places,
-                         METRIKA_ID, SITE_OWNER, PRIVACY_CONTACT, PRIVACY_CONTACT_TEXT, PRIVACY_DATE)
+                         METRIKA_ID, SITE_OWNER, PRIVACY_CONTACT, PRIVACY_CONTACT_TEXT, PRIVACY_DATE,
+                         work_year)
 
 def load_dotenv(path=".env"):
     if not os.path.exists(path): return
@@ -289,12 +290,8 @@ def parse_post(text):
         
         md = parse_medium_details(medium)
         
-        # Извлекаем год создания
-        creation_year = None
-        if title:
-            year_match = re.search(r'(\d{4})', title)
-            if year_match:
-                creation_year = int(year_match.group(1))
+        # Год создания — из даты в конце названия (см. work_year)
+        creation_year = work_year(title) if title else None
         
         return {
             "artist": artist,
@@ -407,6 +404,28 @@ def surname_of(artist):
 # художников нужны в десятке мест, и таскать словарь через все вызовы
 # было бы хуже, чем держать его здесь.
 _ARTIST_LATIN = {}
+
+
+def fix_work_years(all_posts):
+    """Пересчитывает год создания у уже скачанных записей. Возвращает,
+    сколько записей поправлено.
+
+    Год раньше брался как первое четырёхзначное число в названии, и у
+    работ, в названии которых есть дата события, годом становилось само
+    событие: «Парад на Красной площади 7 ноября 1941 года, 1949» стоял в
+    таймлайне и статистике в 1941-м. Разбор поправлен, а записи, скачанные
+    до этого, чинятся здесь — без похода в Telegram. Вместе с годом
+    меняется и адрес страницы (год — его последняя часть); прежний адрес
+    остаётся перенаправлением.
+    """
+    fixed = 0
+    for post in all_posts:
+        year = work_year(post.get("title"))
+        if year != post.get("creation_year"):
+            logger.info(f"Год создания: {post.get('creation_year')} → {year} — {post.get('title', '')[:70]}")
+            post["creation_year"] = year
+            fixed += 1
+    return fixed
 
 
 def prepare_slugs(all_posts):
@@ -3846,6 +3865,7 @@ async def main():
     # Адреса страниц — до записи страниц: на имена файлов опираются
     # ссылки между страницами, карта сайта и RSS. Переименование
     # идемпотентно: у записей с правильным именем ничего не меняется.
+    fix_work_years(all_posts)
     prepare_slugs(all_posts)
     rename_pages(all_posts, all_visits)
     save_json(VISITS_FILE, all_visits)
