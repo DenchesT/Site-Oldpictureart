@@ -397,7 +397,7 @@ METRIKA_JS = "" if not METRIKA_ID else """<script>
     // текст, а то, что до «Принять» счётчик не загружается.
     b.innerHTML =
       '<p class="consent-text">Используются cookie и Яндекс Метрика, чтобы понимать, ' +
-      'какие картины вам интересны <a href="privacy.html#metrika">Подробнее</a></p>' +
+      'какие картины вам интересны. <a href="privacy.html#metrika">Подробнее</a></p>' +
       '<div class="consent-actions">' +
         '<button type="button" class="consent-btn" data-consent="yes">Принять</button>' +
         '<button type="button" class="consent-btn" data-consent="no">Отклонить</button>' +

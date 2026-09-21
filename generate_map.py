@@ -176,22 +176,36 @@ def distance_km(a, b):
 _city_points = {}
 
 
-def city_point(museum_name):
-    """Координаты города из названия музея — опора для проверки находок.
+def museum_city(museum_name, manual=None):
+    """Город музея: из названия («Музей Фабра, Монпелье»), а если в названии
+    его нет — из адреса в справочнике («Кремль, корпус 3, Нижний Новгород»).
+    Поле "city" в справочнике главнее того и другого."""
+    manual = manual or {}
+    if (manual.get('city') or '').strip():
+        return manual['city'].strip()
+    parts = split_parts(museum_name)
+    if len(parts) >= 2:
+        return parts[-1]
+    addr = [p.strip() for p in (manual.get('address') or '').split(',') if p.strip()]
+    if len(addr) >= 2 and not re.search(r'\d', addr[-1]):
+        return addr[-1]
+    return ''
+
+
+def city_point(place):
+    """Координаты города — опора для проверки находок.
 
     Города повторяются (в Москве четыре музея, в Париже три), поэтому
     ответ запоминается: лишних запросов к геокодеру не будет.
     """
-    parts = split_parts(museum_name)
-    if len(parts) < 2:
+    if not place:
         return None
-    place = parts[-1]
     if place not in _city_points:
         _city_points[place] = wikidata_search(place) or nominatim_search(place)
     return _city_points[place]
 
 
-def wrong_city(museum_name, result, limit_km=100):
+def wrong_city(museum_name, result, limit_km=100, manual=None):
     """Проверяет, что найденная точка лежит рядом с городом из названия.
 
     Геокодер охотно отдаёт одноимённое заведение в другой стране:
@@ -200,28 +214,32 @@ def wrong_city(museum_name, result, limit_km=100):
     из Петербурга — в Гродно. Сверка по расстоянию ловит такое и не
     придирается к написанию: «Нортхемптон» и «Нортгемптон» — один город.
 
+    Город берётся из названия, а если его там нет — из адреса в
+    справочнике. Без второго проверять было не с чем, и картинная
+    галерея Псковского музея встала в Опочке, а пензенская — в селе
+    Белынь: улица Некрасова и улица Советская есть не в одном городе.
+
     Возвращает расстояние в км, если точка явно не та, иначе None.
     """
     if not result:
         return None
-    anchor = city_point(museum_name)
+    anchor = city_point(museum_city(museum_name, manual))
     if not anchor:
         return None            # город не опознан — проверять не с чем
     km = distance_km(anchor, result)
     return km if km > limit_km else None
 
 
-def city_fallback(museum_name):
+def city_fallback(museum_name, manual=None):
     """Последний рубеж: ставим метку хотя бы на город или страну.
 
     Для «Частная коллекция, Швейцария» точного адреса не существует
     в принципе, но показать регион на карте всё равно осмысленно —
     такие метки помечаются как приблизительные.
     """
-    parts = split_parts(museum_name)
-    if len(parts) < 2:
+    place = museum_city(museum_name, manual)
+    if not place:
         return None
-    place = parts[-1]
     result = wikidata_search(place) or nominatim_search(place)
     if result:
         result['precision'] = 'approx'
@@ -353,7 +371,7 @@ def geocode(museum_name, cache, overrides=None, retry_failed=False, offline=Fals
     def accept(result, query):
         """Отбрасывает находку, улетевшую в чужой город: пусть лучше
         сработает следующий способ поиска, чем метка встанет не там."""
-        off = wrong_city(museum_name, result)
+        off = wrong_city(museum_name, result, manual=manual)
         if off:
             logger.warning(f"  ✗ {museum_name}: «{query}» нашлось в {off:.0f} км от города "
                            f"({result.get('display_name', '')[:60]}) — не беру")
@@ -387,7 +405,7 @@ def geocode(museum_name, cache, overrides=None, retry_failed=False, offline=Fals
                 return remember(result, query)
 
     # 6. Хотя бы город
-    result = city_fallback(museum_name)
+    result = city_fallback(museum_name, manual)
     if result:
         logger.info(f"  ≈ {museum_name} → приблизительно, по месту «{result['display_name']}»")
         return remember(result, wanted_query or museum_name)
@@ -432,11 +450,37 @@ def plural_ru(n, one, two, five):
     if 2 <= n <= 4: return two
     return five
 
-def extract_city_country(display_name):
-    parts = [p.strip() for p in display_name.split(',')]
-    if len(parts) >= 2:
-        return parts[0], parts[-1]
-    return "", ""
+# Длинные официальные названия стран, которые отдаёт геокодер, в подписи
+# не нужны: «Соединённые Штаты Америки» не помещались в строку карточки.
+COUNTRY_SHORT = {
+    "Соединённые Штаты Америки": "США",
+    "Соединённое Королевство": "Великобритания",
+    "Российская Федерация": "Россия",
+}
+
+
+def museum_place(museum_name, manual, result):
+    """Город и страна для подписи: «Нижний Новгород, Россия».
+
+    Раньше городом считался первый кусок адреса от геокодера, а там стоит
+    сам объект, улица или номер дома. Подписи выходили «52, Швейцария»,
+    «Tim Hortons, Соединённые Штаты Америки», «瀬戸中央自動車道, Япония»,
+    а у Нижегородского музея под названием стояло его же название.
+    Теперь город — из названия музея или адреса в справочнике (как
+    пишет сам канал), а из ответа геокодера берётся только страна —
+    последний кусок полного адреса. Поле "country" в справочнике главнее.
+    """
+    manual = manual or {}
+    city = museum_city(museum_name, manual)
+    country = (manual.get('country') or '').strip()
+    if not country:
+        parts = [p.strip() for p in ((result or {}).get('display_name') or '').split(',') if p.strip()]
+        if len(parts) >= 3:          # полный адрес, а не просто название
+            country = parts[-1]
+    country = COUNTRY_SHORT.get(country, country)
+    if country == city:
+        country = ''
+    return city, country
 
 
 MAP_CONFIG_TEMPLATE = """// Ключи картографических сервисов.
@@ -734,7 +778,8 @@ MUSEUMS_CSS = """
 .leaflet-cluster-spider-leg { stroke: var(--active); stroke-opacity: .55; }
 
 .leaflet-popup-content { margin: .8rem 1rem; font-family: inherit; }
-.leaflet-popup-content b { font-size: .95rem; }
+/* название — отдельной строкой и не под крестиком закрытия */
+.leaflet-popup-content b { display: block; font-size: .95rem; line-height: 1.25; margin: 0 14px 2px 0; }
 .popup-link { color: var(--active); }
 .popup-place { color: #555; font-size: .85rem; }
 
@@ -753,6 +798,9 @@ MUSEUMS_CSS = """
 
 /* ---------- телефон и планшет ---------- */
 @media (max-width: 1000px) {
+  .leaflet-popup-content { margin: .55rem .8rem; font-size: 12.5px; line-height: 1.35; }
+  .leaflet-popup-content b { font-size: 13.5px; }
+  .popup-place { font-size: 12px; }
   .museums-layout { grid-template-columns: 1fr; gap: 1rem; padding: 0 .8rem 2rem; }
   .museums-map-col { position: static; }
   #map { height: 320px; min-height: 0; }
@@ -879,6 +927,7 @@ function initMap() {
   }).setView([48, 10], 4);
   fitWorldHeight();
   map.on('resize', fitWorldHeight);
+  map.on('resize', resizePopups);
 
   BASE_LAYERS.forEach(function (cfg) { layers[cfg.name] = makeLayer(cfg); });
 
@@ -967,6 +1016,38 @@ function beenPhrase(n) {
   return 'Побывал ' + n + ' ' + w;
 }
 
+// Карточка музея над меткой. На телефоне карта узкая, а в верхних углах
+// стоят кнопки — слева «+ / −», справа выбор подложки. Карточка шириной
+// во всю карту залезала под них, и начало названия пряталось за «+», а
+// крестик закрытия уезжал за край. Теперь карточка не шире промежутка
+// между кнопками, и при открытии карта сдвигается так, чтобы кнопки её
+// не накрывали.
+// Место под кнопки в углах вместе с отступом от края карты: слева
+// «+ / −» (44 px), справа выбор подложки (58 px), и ещё немного воздуха.
+var POPUP_LEFT = 52, POPUP_RIGHT = 66;
+function popupOptions() {
+  var w = map ? map.getSize().x : 400;
+  var room = w - POPUP_LEFT - POPUP_RIGHT - 28;   // 28 — поля внутри карточки
+  return {
+    maxWidth: Math.max(150, Math.min(280, room)),
+    minWidth: Math.max(120, Math.min(180, room)),
+    autoPanPaddingTopLeft: L.point(POPUP_LEFT, 10),
+    autoPanPaddingBottomRight: L.point(POPUP_RIGHT, 10),
+    className: 'opa-popup'
+  };
+}
+// Телефон повернули — ширина карты другая, пересчитываем размеры карточек.
+function resizePopups() {
+  var o = popupOptions();
+  Object.keys(markers).forEach(function (id) {
+    var p = markers[id].getPopup();
+    if (!p) return;
+    p.options.maxWidth = o.maxWidth;
+    p.options.minWidth = o.minWidth;
+    if (p.isOpen()) p.update();
+  });
+}
+
 function addMarkers() {
   // Музеи одного города накладывались друг на друга: до Лувра нельзя было
   // дотянуться мышью из-за д’Орсе. Теперь близкие метки собираются в одну,
@@ -1002,7 +1083,7 @@ function addMarkers() {
     var title = document.createElement('b');
     title.textContent = m.name;
     html.appendChild(title);
-    if (m.place) {
+    if (m.place && m.place !== m.name) {
       var place = document.createElement('div');
       place.className = 'popup-place';
       place.textContent = m.place + (m.approx ? ' — расположение приблизительное' : '');
@@ -1025,7 +1106,7 @@ function addMarkers() {
     link.addEventListener('click', function (e) { e.preventDefault(); focusCard(m.id); });
     html.appendChild(link);
 
-    marker.bindPopup(html);
+    marker.bindPopup(html, popupOptions());
     marker.on('click', function () { highlightCard(m.id); });
     markers[m.id] = marker;
     group.push(marker);
@@ -1328,7 +1409,7 @@ def generate_museums_page(retry_failed=False, offline=False):
         result = geocode(museum, cache, overrides=overrides,
                          retry_failed=retry_failed, offline=offline, stats=geo_stats)
         if result:
-            city, country = extract_city_country(result.get('display_name', museum))
+            city, country = museum_place(museum, overrides.get(museum), result)
             locations[museum] = {
                 'lat': result['lat'],
                 'lon': result['lon'],
@@ -1338,6 +1419,17 @@ def generate_museums_page(retry_failed=False, offline=False):
             }
         elif not (overrides.get(museum) or {}).get('skip'):
             not_found.append(museum)
+
+    # Страна по соседям: если у музея адрес без страны (Викиданные отдают
+    # одно название), а в том же городе есть другой музей со страной —
+    # берём её оттуда. Остальным страну можно вписать в справочник.
+    by_city = {}
+    for loc in locations.values():
+        if loc['city'] and loc['country']:
+            by_city.setdefault(loc['city'], loc['country'])
+    for loc in locations.values():
+        if loc['city'] and not loc['country']:
+            loc['country'] = by_city.get(loc['city'], '')
 
     with open(CACHE_FILE, "w", encoding="utf-8", newline="\n") as f:
         json.dump(cache, f, ensure_ascii=False, indent=2)
@@ -1399,13 +1491,9 @@ def generate_museums_page(retry_failed=False, offline=False):
 
         loc_line = ", ".join(x for x in (city, country) if x)
         if not loc_line:
-            # Викиданные отдают координаты без города и страны, и карточка
-            # объявляла «нет на карте» у четырнадцати музеев, метки которых
-            # преспокойно стояли на карте. Город берём из самого названия:
-            # «Музей Фабра, Монпелье» — он там всегда последним.
-            parts = split_parts(museum)
-            if len(parts) >= 2:
-                loc_line = parts[-1]
+            # Координат нет, а город известен — пишем хотя бы его:
+            # «Париж — нет на карте» понятнее, чем просто «нет на карте».
+            loc_line = museum_city(museum, overrides.get(museum))
 
         if lat and lon:
             approx_note = ' <span class="approx-note">(приблизительно)</span>' if approx else ""

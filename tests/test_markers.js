@@ -175,6 +175,61 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
     await gctx.close();
   }
 
+  // --------------------------------------- карточка метки на телефоне
+  // На телефоне карточка музея шириной во всю карту залезала под кнопки
+  // в углах: начало названия пряталось за «+», крестик уезжал за край.
+  // А строка под названием повторяла само название — город брался из
+  // адреса геокодера, где первым стоит сам объект.
+  const boxOf = (pg, sel) => pg.evaluate(s => {
+    const e = document.querySelector(s); if (!e) return null;
+    const r = e.getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom };
+  }, sel);
+  const cross = (a, b) => a && b && a.l < b.r && b.l < a.r && a.t < b.b && b.t < a.b;
+  for (const [w, h] of [[390, 844], [320, 640]]) {
+    const pctx = await browser.newContext({ viewport: { width: w, height: h }, isMobile: true, hasTouch: true });
+    const pp = await pctx.newPage();
+    await pp.goto(URL);
+    await pp.waitForTimeout(1200);
+    await pp.evaluate(() => {
+      const card = [...document.querySelectorAll('.museum-card[data-mapped="1"]')]
+        .find(c => /Нижегородский государственный художественный/.test(c.querySelector('h3').textContent));
+      focusMuseum(card.dataset.id);
+    });
+    await pp.waitForTimeout(1800);
+    const pop = await boxOf(pp, '.leaflet-popup');
+    const mapBox = await boxOf(pp, '#map');
+    const zoom = await boxOf(pp, '.leaflet-control-zoom');
+    const layersBox = await boxOf(pp, '.leaflet-control-layers');
+    const close = await boxOf(pp, '.leaflet-popup-close-button');
+    ok(`${w}px: карточка метки открылась`, !!pop);
+    ok(`${w}px: карточка не залезает под «+ / −»`, pop && !cross(pop, zoom),
+       pop && zoom ? `карточка ${Math.round(pop.l)}…${Math.round(pop.r)}, кнопки до ${Math.round(zoom.r)}` : '');
+    ok(`${w}px: и под выбор подложки`, pop && !cross(pop, layersBox),
+       pop && layersBox ? `карточка до ${Math.round(pop.r)}, кнопка с ${Math.round(layersBox.l)}` : '');
+    ok(`${w}px: крестик закрытия внутри карты`, close && mapBox && close.l >= mapBox.l && close.r <= mapBox.r && close.t >= mapBox.t,
+       close && mapBox ? `${Math.round(close.l)}…${Math.round(close.r)} при карте ${Math.round(mapBox.l)}…${Math.round(mapBox.r)}` : '');
+    const txt = await pp.evaluate(() => ({
+      title: document.querySelector('.leaflet-popup-content b').textContent,
+      place: (document.querySelector('.leaflet-popup-content .popup-place') || {}).textContent || '',
+    }));
+    ok(`${w}px: под названием город, а не снова название`, txt.place === 'Нижний Новгород, Россия', txt.place);
+    await pctx.close();
+  }
+
+  // подписи мест в списке: город и страна, без номеров домов и улиц
+  const lctx = await browser.newContext({ viewport: { width: 1440, height: 950 } });
+  const lp = await lctx.newPage();
+  await lp.goto(URL);
+  await lp.waitForTimeout(800);
+  const bad = await lp.evaluate(() => [...document.querySelectorAll('.museum-card')].map(c => {
+    const loc = (c.querySelector('.museum-location') || {}).textContent || '';
+    const name = c.querySelector('h3').textContent.trim();
+    return { name, loc: loc.trim() };
+  }).filter(x => /^\d|[\u3000-\u9fff]|Tim Hortons/.test(x.loc) || (x.loc && x.loc.startsWith(x.name))));
+  ok('в подписях мест нет «52, Швейцария» и повторов названия', bad.length === 0,
+     bad.slice(0, 3).map(x => x.loc).join(' | '));
+  await lctx.close();
+
   // подпись во всплывающей карточке — по-человечески, без «походов»
   const phrases = await (async () => {
     const c = await browser.newContext({ viewport: { width: 1440, height: 950 } });
