@@ -1091,7 +1091,7 @@ LUPA_JS = """<script>
 # отметки работают в браузере, как и раньше.
 AUTH_API_URL = "https://functions.yandexcloud.net/d4e2jv2t457u5oldt269"        # адрес функции: https://functions.yandexcloud.net/…
 YANDEX_CLIENT_ID = "7a85cd4ed113494c82722380127c35f1"    # ClientID приложения на oauth.yandex.ru
-VK_CLIENT_ID = ""        # ID приложения на id.vk.ru
+VK_CLIENT_ID = "54785333"        # ID приложения на id.vk.ru
 AUTH_REDIRECT = f"{BASE_URL}/auth.html"
 # Адрес сервиса VK ID. Документация VK переехала на id.vk.ru; если VK
 # снова сменит адрес, достаточно поправить здесь и в функции (VK_HOST).
