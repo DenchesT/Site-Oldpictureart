@@ -3,7 +3,7 @@
 test_login.js. Яндекс ID, VK ID и база подменены; всё остальное — ровно
 тот код, что уедет в Yandex Cloud.
 
-Запуск: python tests/_auth_server.py <порт> <разрешённый Origin>
+Запуск: python tests/_auth_server.py <порт> <разрешённый Origin> [номера картин через запятую]
 """
 import base64
 import hashlib
@@ -32,10 +32,20 @@ class Memory:
     def remove(self, u, p): self.rows.get(u, set()).discard(p)
     def clear(self, u): self.rows.pop(u, None)
 
+    def counts(self):
+        out = {}
+        for ps in self.rows.values():
+            for p in ps:
+                out[p] = out.get(p, 0) + 1
+        return out
+
 
 fn._store = Memory()
 # у «облачного» Денниса уже отмечена картина 7 — после входа она должна появиться в браузере
 fn._store.rows["ya:1001"] = {"7"}
+# другой посетитель уже отметил несколько картин — для «Популярного»
+if len(sys.argv) > 3 and sys.argv[3]:
+    fn._store.rows["vk:9"] = set(sys.argv[3].split(","))
 LOG = []
 
 

@@ -20,6 +20,9 @@ const LAUNCH = process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PA
 const PY = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
 const META = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'posts_meta.json'), 'utf8'));
 const POST = META.find(p => p.images && p.images.length).filename;
+const PID = String(META.find(p => p.filename === POST).id);
+// три картины, которые «уже отметил» другой посетитель, — для «Популярного»
+const SEEDED = [PID].concat(META.filter(p => String(p.id) !== PID && p.thumbs && p.thumbs.length).slice(0, 2).map(p => String(p.id)));
 
 const results = [];
 const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extra || '' });
@@ -32,14 +35,17 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
   const BASE = `http://127.0.0.1:${WEB}`;
   const APIURL = `http://127.0.0.1:${API}/`;
 
-  const py = spawn(PY, [path.join(__dirname, '_auth_server.py'), String(API), BASE], { stdio: ['ignore', 'pipe', 'inherit'] });
+  const py = spawn(PY, [path.join(__dirname, '_auth_server.py'), String(API), BASE, SEEDED.join(',')], { stdio: ['ignore', 'pipe', 'inherit'] });
   await new Promise((res, rej) => {
     py.stdout.on('data', d => { if (String(d).includes('READY')) res(); });
     py.on('exit', c => rej(new Error('функция не запустилась: ' + c)));
   });
 
   const CONFIG = `var CLOUD = {api: '${APIURL}', yandex: 'ya-app', vk: 'vk-app', redirect: '${BASE}/auth.html', vkHost: 'https://id.vk.ru'};`;
+  // ?noauth — страница как до настройки входа: все настройки пустые
+  const EMPTY = `var CLOUD = {api: '', yandex: '', vk: '', redirect: '${BASE}/auth.html', vkHost: 'https://id.vk.ru'};`;
   const web = http.createServer((req, res) => {
+    const noauth = /[?&]noauth\b/.test(req.url);
     let p = decodeURIComponent(req.url.split('?')[0]);
     if (p.endsWith('/')) p += 'index.html';
     const file = path.join(DOCS, p);
@@ -47,7 +53,7 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
     const ext = path.extname(file);
     res.writeHead(200, { 'Content-Type': TYPES[ext] || 'application/octet-stream' });
     if (ext === '.html') {
-      res.end(fs.readFileSync(file, 'utf8').replace(/var CLOUD = \{api: '[^']*', yandex: '[^']*', vk: '[^']*',\s*redirect: '[^']*', vkHost: '[^']*'\};/, CONFIG));
+      res.end(fs.readFileSync(file, 'utf8').replace(/var CLOUD = \{api: '[^']*', yandex: '[^']*', vk: '[^']*',\s*redirect: '[^']*', vkHost: '[^']*'\};/, noauth ? EMPTY : CONFIG));
     } else fs.createReadStream(file).pipe(res);
   });
   await new Promise(r => web.listen(WEB, '127.0.0.1', r));
@@ -83,6 +89,11 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
   ok('Firebase и скрипты Google не загружаются', !seen.external.some(u => /firebase|gstatic\.com\/firebasejs/.test(u)),
      seen.external.filter(u => /firebase/.test(u)).join(' '));
   ok('кнопка «Войти» на месте', /Войти/.test(await page.textContent('#auth-btn')));
+  ok('у сердечка — сколько человек добавили картину в избранное',
+     await page.isVisible('#like-count') && (await page.textContent('#like-count')).trim() === '1',
+     await page.textContent('#like-count'));
+  ok('число подписано и для чтения с экрана', /добавили: 1/.test(await page.getAttribute('#like-btn', 'aria-label')),
+     await page.getAttribute('#like-btn', 'aria-label'));
   // отметка до входа — после входа она должна уехать в облако
   await page.click('#like-btn');
   await page.waitForTimeout(150);
@@ -116,6 +127,8 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
   ok('отметка, поставленная до входа, ушла в облако',
      log1.some(r => r.action === 'sync' && (r.likes || []).includes(pid)), JSON.stringify(log1.map(r => r.action)));
   ok('сердечко на картине горит', await page.getAttribute('#like-btn', 'aria-pressed') === 'true');
+  ok('после входа своя отметка вошла в общее число', (await page.textContent('#like-count')).trim() === '2',
+     await page.textContent('#like-count'));
 
   await page.reload();
   await page.waitForTimeout(400);
@@ -125,12 +138,33 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
   await page.waitForTimeout(300);
   const log2 = await apiLog();
   const un = log2.filter(r => r.action === 'unlike').pop();
+  ok('снятая отметка сразу видна в числе', (await page.textContent('#like-count')).trim() === '1',
+     await page.textContent('#like-count'));
   ok('снятая отметка уходит в облако с пропуском', un && un.post_id === pid && typeof un.token === 'string' && un.token.includes('.'),
      JSON.stringify(un || {}).slice(0, 80));
 
   // ------------------------------------------------ главная
   await page.goto(`${BASE}/`);
   await page.waitForTimeout(400);
+  await page.waitForTimeout(300);
+  const pop = await page.evaluate(() => ({
+    shown: !document.getElementById('popular').hidden,
+    items: [...document.querySelectorAll('#popular-list li a')].map(a => ({
+      href: a.getAttribute('href'), n: a.querySelector('.popular-count').textContent.replace(/\D+/g, ''),
+      img: !!a.querySelector('img'), name: a.querySelector('.popular-name').textContent })),
+  }));
+  ok('на главной — «Популярное у посетителей»', pop.shown && pop.items.length >= 3, `${pop.items.length} картин`);
+  const seededFiles = SEEDED.map(id => META.find(p => String(p.id) === id).filename);
+  ok('в «Популярном» — отмеченные картины со ссылками и картинками',
+     pop.items.every(i => seededFiles.concat(['']).includes(i.href) || i.href) &&
+     seededFiles.every(f => pop.items.some(i => i.href === f)) && pop.items.every(i => i.img && i.name && +i.n >= 1),
+     pop.items.map(i => i.href + ':' + i.n).join(' '));
+  await page.fill('#search', 'ренуар');
+  await page.waitForTimeout(300);
+  ok('во время поиска «Популярное» убирается', await page.evaluate(
+     () => getComputedStyle(document.getElementById('popular')).display === 'none'));
+  await page.fill('#search', '');
+  await page.waitForTimeout(200);
   ok('на главной «Избранное» знает облачную отметку',
      await page.evaluate(() => /\(1\)/.test((document.getElementById('fav-count') || {}).textContent || '')),
      await page.evaluate(() => (document.getElementById('fav-count') || {}).textContent));
@@ -188,6 +222,15 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
   await page.waitForTimeout(300);
   ok('отказ на странице Яндекса — «Вход отменён»', /отменён/.test(await page.textContent('#auth-msg')));
   ok('auth.html закрыта от поиска', await page.locator('meta[name="robots"][content="noindex"]').count() === 1);
+
+  // ------------------------------------------------ вход не настроен
+  await page.goto(`${BASE}/${encodeURIComponent(POST)}?noauth`);
+  await page.waitForTimeout(400);
+  ok('пока вход не настроен, кнопки «Войти» нет', await page.locator('#auth-btn').count() === 0);
+  ok('и числа у сердечка тоже нет', await page.isHidden('#like-count'));
+  await page.goto(`${BASE}/?noauth`);
+  await page.waitForTimeout(400);
+  ok('и «Популярного» на главной нет', await page.evaluate(() => document.getElementById('popular').hidden));
 
   ok('нет ошибок JS', errs.length === 0, errs.join(' | '));
 

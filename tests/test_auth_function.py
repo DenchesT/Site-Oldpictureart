@@ -62,6 +62,14 @@ class Memory:
     def clear(self, user):
         self.rows.pop(user, None)
 
+    def counts(self):
+        self.count_calls = getattr(self, "count_calls", 0) + 1
+        out = {}
+        for posts in self.rows.values():
+            for p in posts:
+                out[p] = out.get(p, 0) + 1
+        return out
+
 
 mem = Memory()
 fn._store = mem
@@ -174,6 +182,23 @@ ok("просроченный пропуск — 401 и просьба войти
 st, d, _ = call({"action": "sync", "likes": []})
 ok("без пропуска отметки не отдаются", st == 401)
 
+# ------------------------------------------------------------ общие числа
+call({"action": "like", "token": vk_token, "post_id": "40"})
+call({"action": "like", "token": vk_token, "post_id": "7"})
+st, d, _ = call({"action": "counts", "post_ids": ["40", "41", "7", "99", "<x>"]})
+ok("counts: сколько раз отмечена каждая картина", st == 200 and d.get("counts") == {"40": 2, "41": 1, "7": 1}, f"{d}")
+ok("counts отвечает без пропуска и без имён", "token" not in json.dumps(d) and "ya:" not in json.dumps(d))
+st, d, _ = call({"action": "top", "limit": 2})
+ok("top: самые отмечаемые, по убыванию", d.get("top") == [["40", 2], ["41", 1]], f"{d}")
+st, d, _ = call({"action": "top", "limit": "много"})
+ok("top с кривым limit не падает", st == 200 and len(d.get("top", [])) == 3, f"{d}")
+before = mem.count_calls
+call({"action": "counts", "post_ids": ["40"]}); call({"action": "top"})
+ok("подсчёт берётся из памяти, а не из базы на каждый запрос", mem.count_calls == before)
+call({"action": "unlike", "token": vk_token, "post_id": "40"})
+st, d, _ = call({"action": "counts", "post_ids": ["40"]})
+ok("после снятия отметки число сразу обновилось", d.get("counts") == {"40": 1} and mem.count_calls == before + 1, f"{d}")
+
 # ------------------------------------------------------------ удаление
 st, d, _ = call({"action": "delete", "token": ya_token})
 ok("delete стирает все отметки человека", st == 200 and "ya:1001" not in mem.rows)
@@ -235,17 +260,18 @@ class FakeYdb:
 
 y = fn.YdbStore.__new__(fn.YdbStore)
 y.ydb, y.pool = FakeYdb, FakePool()
-y.list("ya:1"); y.add("ya:1", ["1", "2"]); y.remove("ya:1", "1"); y.clear("ya:1")
+y.list("ya:1"); y.add("ya:1", ["1", "2"]); y.remove("ya:1", "1"); y.clear("ya:1"); y.counts()
 queries = [(q, p) for q, p in y.pool.log if q != "COMMIT"]
 bad = []
 for q, p in queries:
     for name in (p or {}):
         if f"DECLARE {name} AS Utf8" not in q:
             bad.append(f"{name} не объявлен: {q[:50]}")
-    if "likes" not in q or "user_id" not in q:
+    if "likes" not in q or ("user_id" not in q and "GROUP BY post_id" not in q):
         bad.append("нет таблицы или ключа: " + q[:50])
-ok("запросы к YDB: все параметры объявлены, ключ на месте", not bad and len(queries) == 5, "; ".join(bad) or str(len(queries)))
-ok("каждая операция закрывается commit", sum(1 for q, _ in y.pool.log if q == "COMMIT") == 4)
+ok("запросы к YDB: все параметры объявлены, таблица на месте", not bad and len(queries) == 6, "; ".join(bad) or str(len(queries)))
+ok("подсчёт группирует по картине", any("GROUP BY post_id" in q for q, _ in queries))
+ok("каждая операция закрывается commit", sum(1 for q, _ in y.pool.log if q == "COMMIT") == 5)
 
 print("\n====== ФУНКЦИЯ ВХОДА И ИЗБРАННОГО ======")
 for name, passed, extra in results:

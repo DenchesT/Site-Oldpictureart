@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=142194d6">
+<link rel="stylesheet" href="style.css?v=0868e107">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"VisualArtwork","name":"Le Chien Minnay (Собака Минней), 1879","url":"https://oldpictureart.ru/manet-sobaka-minnei-1879.html","inLanguage":"ru","creator":{"@type":"Person","name":"Эдуард Мане"},"dateCreated":"1879","artMedium":{"@value":"масло"},"artworkSurface":{"@value":"холст"},"image":"https://oldpictureart.ru/images/manet-sobaka-minnei-1879-1.jpg","isPartOf":{"@type":"Collection","name":"Частная коллекция"},"height":{"@type":"QuantitativeValue","value":32.5,"unitCode":{"@value":"CMT"},"unitText":{"@value":"см"}},"width":{"@type":"QuantitativeValue","value":24.5,"unitCode":{"@value":"CMT"},"unitText":{"@value":"см"}}}</script>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page">
@@ -38,7 +38,7 @@
     <button type="button" onclick="goRandom()" class="topbar-btn" aria-label="Случайная картина" title="Случайная картина"><span class="icon-random" aria-hidden="true"></span></button>
     <button type="button" data-share-btn onclick="sharePage(this)" class="topbar-btn" aria-label="Поделиться" title="Поделиться" aria-haspopup="menu"><span class="icon-share" aria-hidden="true"></span></button>
     <a href="images/manet-sobaka-minnei-1879-hires-1.jpg" download="Эдуард Мане — Le Chien Minnay (Собака Минней), 1879.jpg" class="topbar-btn" aria-label="Скачать картину" title="Скачать картину"><span class="icon-download" aria-hidden="true"></span></a>
-    <button type="button" id="like-btn" data-post-id="429" onclick="toggleLike()" class="topbar-btn topbar-like" aria-pressed="false" aria-label="В избранное" title="В избранное"><span class="icon-heart" aria-hidden="true"></span></button>
+    <button type="button" id="like-btn" data-post-id="429" onclick="toggleLike()" class="topbar-btn topbar-like" aria-pressed="false" aria-label="В избранное" title="В избранное"><span class="icon-heart" aria-hidden="true"></span><span class="like-count" id="like-count" hidden></span></button>
     <button type="button" class="topbar-btn" data-theme-toggle onclick="toggleTheme()" aria-label="Переключить тему" title="Светлая / тёмная тема"><span class="icon-theme-toggle" aria-hidden="true"></span></button>
     <button type="button" id="auth-btn" class="topbar-btn ym-hide-content" title="Войти"><span class="icon-login" aria-hidden="true"></span> Войти</button>
   </div>
@@ -1045,12 +1045,33 @@ function showAccount() {
 }
 
 // ---------- Избранное ----------
+// Сколько посетителей добавили картину в избранное (по облаку — то есть
+// те, кто вошёл). null — число ещё не пришло.
+var likeCount = null;
+function paintCount() {
+  var el = document.getElementById('like-count'), btn = document.getElementById('like-btn');
+  if (!el || !btn) return;
+  var on = btn.getAttribute('aria-pressed') === 'true';
+  var base = on ? 'Убрать из избранного' : 'В избранное';
+  if (likeCount > 0) {
+    el.textContent = likeCount;
+    el.hidden = false;
+    btn.title = base + ' · добавили: ' + likeCount;
+    btn.setAttribute('aria-label', base + '. Уже добавили: ' + likeCount);
+  } else {
+    el.hidden = true;
+    btn.title = base;
+    btn.setAttribute('aria-label', base);
+  }
+}
+
 function paintLike(on) {
   var btn = document.getElementById('like-btn');
   if (!btn) return;
   btn.classList.toggle('liked', on);
   btn.setAttribute('aria-pressed', on ? 'true' : 'false');
   btn.setAttribute('aria-label', on ? 'Убрать из избранного' : 'В избранное');
+  paintCount();
 }
 
 function syncLike(postId, liked) {
@@ -1058,7 +1079,11 @@ function syncLike(postId, liked) {
   if (liked) local[postId] = true; else delete local[postId];
   writeLocalLikes(local);
   if (!CLOUD.on || !getSession()) return Promise.resolve();
-  return cloudCall(liked ? 'like' : 'unlike', {post_id: postId}).catch(function (e) {
+  return cloudCall(liked ? 'like' : 'unlike', {post_id: postId}).then(function () {
+    // своя отметка сразу видна в общем числе
+    likeCount = Math.max(0, (likeCount || 0) + (liked ? 1 : -1));
+    paintCount();
+  }).catch(function (e) {
     if (e.status === 401) { showAuthButton(); toast('Срок входа истёк — войдите снова'); return; }
     var p = readPending(); p[postId] = liked; writePending(p);
     toast('Нет связи с облаком — отметка сохранится, когда связь появится');
@@ -1090,6 +1115,13 @@ showAuthButton();
     var btn = document.getElementById('like-btn');
     if (changed && btn) paintLike(!!readLocalLikes()[btn.dataset.postId]);
   });
+  var lb = document.getElementById('like-btn');
+  if (CLOUD.on && lb) {
+    cloudCall('counts', {post_ids: [lb.dataset.postId]}).then(function (j) {
+      likeCount = (j.counts || {})[lb.dataset.postId] || 0;
+      paintCount();
+    }).catch(function () {});
+  }
 })();
 </script>
 </body></html>

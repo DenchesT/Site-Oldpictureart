@@ -5,9 +5,8 @@
 // принято, а окно входа показывало коды Firebase по-английски и выпускало
 // клавиатуру на страницу под собой.
 //
-// Вход в собранных страницах не настроен (пустые client_id), и это
-// нарочно: так видно, что страница работает без него — отметки ложатся
-// в память браузера, а кнопки входа нет, а не висит мёртвой.
+// Сети в проверках нет, и это нарочно: так видно, что страница работает
+// и без облака — отметки ложатся в память браузера.
 const { chromium } = require('playwright');
 const path = require('path');
 const DOCS = path.join(__dirname, '..', 'docs');
@@ -69,8 +68,7 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
     await page.locator('.lupa').count() === 0);
 
   // ------------------------------------------------------------ окно входа
-  // Вход (Яндекс ID и VK ID) в собранных страницах ещё не настроен, поэтому
-  // здесь проверяется только сама рамка окна; путь входа целиком — в
+  // Здесь проверяется только сама рамка окна; путь входа целиком — в
   // test_login.js.
   await page.evaluate(() => showAuthForm());
   await page.waitForTimeout(200);
@@ -111,8 +109,12 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
   ok('снятая отметка удаляется, а не остаётся записью', await page.evaluate(
     id => !(id in JSON.parse(localStorage.getItem('likes') || '{}')), pid));
 
-  ok('пока вход не настроен, кнопки «Войти» нет',
-    await page.locator('#auth-btn').count() === 0);
+  // Кнопка «Войти» есть, только если вход настроен (адрес функции и
+  // client_id в site_common.py); а если нет — её нет совсем. Оба случая
+  // проверяет test_login.js; здесь — что страница не зависит от входа.
+  ok('кнопка «Войти» либо работает, либо её нет — не висит мёртвой',
+    await page.evaluate(() => !document.getElementById('auth-btn') ||
+      (CLOUD.on && typeof document.getElementById('auth-btn').onclick === 'function')));
   ok('Firebase на странице больше нет', await page.evaluate(
     () => typeof firebase === 'undefined' && ![...document.scripts].some(s => /firebase/.test(s.src))));
 

@@ -21,6 +21,8 @@
     sync    — свести отметки браузера с облачными, вернуть общий список
     like    — отметить картину        unlike — снять отметку
     delete  — удалить все отметки этого человека из облака
+    counts  — сколько раз отмечены картины (без пропуска, только числа)
+    top     — самые отмечаемые картины (без пропуска, только числа)
 
 Настройки — переменные окружения функции (см. AUTH_SETUP.md):
     SESSION_SECRET        длинная случайная строка для подписи пропусков
@@ -44,6 +46,11 @@ import urllib.request
 
 SESSION_DAYS = 180
 MAX_LIKES = 5000
+# Число отметок у картин видно всем, поэтому его спрашивает каждая
+# открытая страница. Чтобы не гонять по базе полный подсчёт на каждый
+# просмотр, итог держится в памяти функции пару минут; своя отметка или
+# снятие сбрасывает его сразу.
+COUNTS_TTL = 120
 POST_ID_RE = re.compile(r"^[0-9A-Za-z_-]{1,40}$")
 VK_HOST = os.environ.get("VK_HOST", "https://id.vk.ru").rstrip("/")
 
@@ -201,8 +208,28 @@ class YdbStore:
     def clear(self, user):
         self._run([("DECLARE $u AS Utf8; DELETE FROM likes WHERE user_id = $u;", {"$u": user})])
 
+    def counts(self):
+        """{номер картины: сколько человек её отметили}."""
+        res = self._run([("SELECT post_id, COUNT(*) AS n FROM likes GROUP BY post_id "
+                          "ORDER BY n DESC LIMIT 1000;", {})])
+        rows = res[0][0].rows if res and res[0] else []
+        return {r.post_id: int(r.n) for r in rows}
+
 
 _store = None
+_counts = {"at": 0.0, "data": {}}
+
+
+def all_counts(db, now=None):
+    now = now or time.time()
+    if now - _counts["at"] > COUNTS_TTL:
+        _counts["data"] = db.counts()
+        _counts["at"] = now
+    return _counts["data"]
+
+
+def forget_counts():
+    _counts["at"] = 0.0
 
 
 def store():
@@ -246,11 +273,26 @@ def act(req):
         token, payload = make_token(user, name, provider)
         return {"token": token, "name": name, "provider": provider, "exp": payload["exp"]}
 
+    # Общие числа — без пропуска: кто отметил, в ответе нет, только сколько.
+    if action == "counts":
+        ids = clean_ids(req.get("post_ids"), limit=200)
+        data = all_counts(store())
+        return {"counts": {i: data[i] for i in ids if data.get(i)}}
+    if action == "top":
+        try:
+            limit = max(1, min(24, int(req.get("limit") or 6)))
+        except (TypeError, ValueError):
+            limit = 6
+        data = all_counts(store())
+        best = sorted(data.items(), key=lambda kv: (-kv[1], kv[0]))[:limit]
+        return {"top": [[k, v] for k, v in best if v > 0]}
+
     if action not in ("sync", "like", "unlike", "delete"):
         raise Fail(400, "Неизвестное действие")
 
     who = read_token(req.get("token"))["u"]
     db = store()
+    forget_counts()          # отметки меняются — общий счёт пересчитается
     if action == "sync":
         cloud = db.list(who)
         local = clean_ids(req.get("likes"))

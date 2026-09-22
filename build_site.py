@@ -1430,7 +1430,7 @@ def render_post_page(post, all_posts=None):
     <button type="button" onclick="goRandom()" class="topbar-btn" aria-label="Случайная картина" title="Случайная картина"><span class="icon-random" aria-hidden="true"></span></button>
     <button type="button" data-share-btn onclick="sharePage(this)" class="topbar-btn" aria-label="Поделиться" title="Поделиться" aria-haspopup="menu"><span class="icon-share" aria-hidden="true"></span></button>
     {download_btn}
-    <button type="button" id="like-btn" data-post-id="{post_id}" onclick="toggleLike()" class="topbar-btn topbar-like" aria-pressed="false" aria-label="В избранное" title="В избранное"><span class="icon-heart" aria-hidden="true"></span></button>
+    <button type="button" id="like-btn" data-post-id="{post_id}" onclick="toggleLike()" class="topbar-btn topbar-like" aria-pressed="false" aria-label="В избранное" title="В избранное"><span class="icon-heart" aria-hidden="true"></span><span class="like-count" id="like-count" hidden></span></button>
     <button type="button" class="topbar-btn" data-theme-toggle onclick="toggleTheme()" aria-label="Переключить тему" title="Светлая / тёмная тема"><span class="icon-theme-toggle" aria-hidden="true"></span></button>
     <button type="button" id="auth-btn" class="topbar-btn ym-hide-content" title="Войти"><span class="icon-login" aria-hidden="true"></span> Войти</button>
   </div>
@@ -1810,7 +1810,9 @@ def render_index(all_posts):
     
     af = json.dumps([p["filename"] for p in ps])
     post_map_data = {
-        str(p.get("id", "")): {"file": p["filename"], "title": p.get("title", f"Картина #{p.get('id', '')}")} 
+        str(p.get("id", "")): {"file": p["filename"], "title": p.get("title", f"Картина #{p.get('id', '')}"),
+                               "artist": p.get("artist", ""),
+                               "thumb": (p.get("thumbs") or p.get("images") or [""])[0]}
         for p in ps if p.get("id")
     }
     pm_js = json.dumps(post_map_data, ensure_ascii=False)
@@ -1893,6 +1895,10 @@ def render_index(all_posts):
 {quiz_link_html}
 {timeline_link_html}
 </aside><main class="main-content">
+<section class="popular" id="popular" aria-labelledby="popular-title" hidden>
+  <h2 class="popular-title" id="popular-title">Популярное у посетителей</h2>
+  <ol class="popular-list" id="popular-list"></ol>
+</section>
 <div class="results-bar">
   <span id="results-count" class="results-count" role="status" aria-live="polite"></span>
   <div class="bar-controls">
@@ -2108,6 +2114,9 @@ function applyFilters() {{
                          activeFilters.from !== null || activeFilters.to !== null);
     const resetBtn = document.getElementById('reset-filter');
     if (resetBtn) resetBtn.classList.toggle('visible', hasActive);
+    // Пока человек ищет или фильтрует, «Популярное» только мешает.
+    const popular = document.getElementById('popular');
+    if (popular) popular.classList.toggle('is-filtered', hasActive);
 
     const counter = document.getElementById('results-count');
     if (counter) counter.textContent = hasActive ? (visible + ' ' + plural(visible, 'картина', 'картины', 'картин')) : '';
@@ -2240,6 +2249,51 @@ document.addEventListener('DOMContentLoaded', function() {{
 <script>
 // Вошедшему в аккаунт — отметки из облака в список «Избранное».
 cloudSync().then(function (changed) {{ if (changed) updateFavList(); }});
+
+// «Популярное у посетителей»: самые отмечаемые картины. Функция отдаёт
+// только номера картин и числа — кто отмечал, в ответе нет. Блок
+// появляется, когда отмеченных картин набралось хотя бы три: полка из
+// одной картины выглядела бы случайной.
+if (CLOUD.on) cloudCall('top', {{limit: 6}}).then(function (j) {{
+  var items = (j.top || []).filter(function (x) {{ return POSTS_DATA[x[0]]; }});
+  if (items.length < 3) return;
+  var list = document.getElementById('popular-list');
+  items.forEach(function (x) {{
+    var info = POSTS_DATA[x[0]], n = x[1];
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    a.href = info.file;
+    if (info.thumb) {{
+      var img = document.createElement('img');
+      img.src = info.thumb; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+      img.width = 160; img.height = 120;
+      a.appendChild(img);
+    }}
+    var name = document.createElement('span');
+    name.className = 'popular-name';
+    name.textContent = info.title;
+    a.appendChild(name);
+    if (info.artist) {{
+      var who = document.createElement('span');
+      who.className = 'popular-artist';
+      who.textContent = info.artist;
+      a.appendChild(who);
+    }}
+    var cnt = document.createElement('span');
+    cnt.className = 'popular-count';
+    cnt.innerHTML = '<span class="icon-heart" aria-hidden="true"></span> ';
+    cnt.appendChild(document.createTextNode(n));
+    cnt.title = 'Добавили в избранное: ' + n;
+    var hidden = document.createElement('span');
+    hidden.className = 'visually-hidden';
+    hidden.textContent = ' — добавили в избранное';
+    cnt.appendChild(hidden);
+    a.appendChild(cnt);
+    li.appendChild(a);
+    list.appendChild(li);
+  }});
+  document.getElementById('popular').hidden = false;
+}}).catch(function () {{}});
 </script></body></html>"""
 
 # ===================== TELEGRAM =====================
@@ -3415,6 +3469,8 @@ def render_privacy():
     в базе на серверах Yandex Cloud в России;</li>
     <li>имя — только в вашем браузере, чтобы показать его на кнопке; на сервер оно не записывается.</li>
   </ul>
+  <p>Сколько раз отмечена картина, видят все посетители — только число, без имён и
+  аккаунтов; из этих же чисел собран блок «Популярное у посетителей» на главной.</p>
   <p>Почту, телефон и список друзей сайт не запрашивает. Базу держит ООО «Яндекс.Облако»,
   вход проверяют ООО «ЯНДЕКС» (Яндекс ID) и ООО «ВК» (VK ID) — каждый по своим правилам.</p>
   <h3>Как удалить</h3>

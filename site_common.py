@@ -1342,12 +1342,33 @@ function showAccount() {
 }
 
 // ---------- Избранное ----------
+// Сколько посетителей добавили картину в избранное (по облаку — то есть
+// те, кто вошёл). null — число ещё не пришло.
+var likeCount = null;
+function paintCount() {
+  var el = document.getElementById('like-count'), btn = document.getElementById('like-btn');
+  if (!el || !btn) return;
+  var on = btn.getAttribute('aria-pressed') === 'true';
+  var base = on ? 'Убрать из избранного' : 'В избранное';
+  if (likeCount > 0) {
+    el.textContent = likeCount;
+    el.hidden = false;
+    btn.title = base + ' · добавили: ' + likeCount;
+    btn.setAttribute('aria-label', base + '. Уже добавили: ' + likeCount);
+  } else {
+    el.hidden = true;
+    btn.title = base;
+    btn.setAttribute('aria-label', base);
+  }
+}
+
 function paintLike(on) {
   var btn = document.getElementById('like-btn');
   if (!btn) return;
   btn.classList.toggle('liked', on);
   btn.setAttribute('aria-pressed', on ? 'true' : 'false');
   btn.setAttribute('aria-label', on ? 'Убрать из избранного' : 'В избранное');
+  paintCount();
 }
 
 function syncLike(postId, liked) {
@@ -1355,7 +1376,11 @@ function syncLike(postId, liked) {
   if (liked) local[postId] = true; else delete local[postId];
   writeLocalLikes(local);
   if (!CLOUD.on || !getSession()) return Promise.resolve();
-  return cloudCall(liked ? 'like' : 'unlike', {post_id: postId}).catch(function (e) {
+  return cloudCall(liked ? 'like' : 'unlike', {post_id: postId}).then(function () {
+    // своя отметка сразу видна в общем числе
+    likeCount = Math.max(0, (likeCount || 0) + (liked ? 1 : -1));
+    paintCount();
+  }).catch(function (e) {
     if (e.status === 401) { showAuthButton(); toast('Срок входа истёк — войдите снова'); return; }
     var p = readPending(); p[postId] = liked; writePending(p);
     toast('Нет связи с облаком — отметка сохранится, когда связь появится');
@@ -1387,6 +1412,13 @@ showAuthButton();
     var btn = document.getElementById('like-btn');
     if (changed && btn) paintLike(!!readLocalLikes()[btn.dataset.postId]);
   });
+  var lb = document.getElementById('like-btn');
+  if (CLOUD.on && lb) {
+    cloudCall('counts', {post_ids: [lb.dataset.postId]}).then(function (j) {
+      likeCount = (j.counts || {})[lb.dataset.postId] || 0;
+      paintCount();
+    }).catch(function () {});
+  }
 })();
 </script>"""
 
