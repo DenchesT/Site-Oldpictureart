@@ -1,13 +1,13 @@
-// Кнопка «Поделиться» и вход в аккаунт.
+// Кнопка «Поделиться», окно входа и избранное без аккаунта.
 //
 // Обе части раньше молча ломались, и заметить это было нечем: «Поделиться»
 // на компьютере просто копировала адрес без единого знака, что нажатие
 // принято, а окно входа показывало коды Firebase по-английски и выпускало
 // клавиатуру на страницу под собой.
 //
-// Firebase здесь недоступен (в проверках нет сети), и это нарочно: так
-// заодно видно, что страница работает без него — лайки должны ложиться
-// в память браузера, а кнопка входа исчезать, а не висеть мёртвой.
+// Вход в собранных страницах не настроен (пустые client_id), и это
+// нарочно: так видно, что страница работает без него — отметки ложатся
+// в память браузера, а кнопки входа нет, а не висит мёртвой.
 const { chromium } = require('playwright');
 const path = require('path');
 const DOCS = path.join(__dirname, '..', 'docs');
@@ -69,6 +69,9 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
     await page.locator('.lupa').count() === 0);
 
   // ------------------------------------------------------------ окно входа
+  // Вход (Яндекс ID и VK ID) в собранных страницах ещё не настроен, поэтому
+  // здесь проверяется только сама рамка окна; путь входа целиком — в
+  // test_login.js.
   await page.evaluate(() => showAuthForm());
   await page.waitForTimeout(200);
 
@@ -77,31 +80,8 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
     await page.getAttribute('.auth-modal', 'aria-modal') === 'true');
   ok('поле ошибки объявлено как сообщение',
     await page.getAttribute('#auth-error', 'role') === 'alert');
-  ok('входа через Google в окне нет — только почта и пароль',
-    await page.locator('#google-login-btn, .auth-btn-google, .auth-divider').count() === 0 &&
-    await page.locator('#auth-email').count() === 1);
-
-  await page.fill('#auth-email', 'не-почта');
-  await page.fill('#auth-password', '123456');
-  await page.click('#auth-submit-btn');
-  await page.waitForTimeout(150);
-  let msg = await page.textContent('#auth-error');
-  ok('кривая почта разбирается до отправки', /ошибк/i.test(msg), msg);
-
-  await page.fill('#auth-email', 'a@b.ru');
-  await page.fill('#auth-password', '123');
-  await page.click('#auth-submit-btn');
-  await page.waitForTimeout(150);
-  msg = await page.textContent('#auth-error');
-  ok('короткий пароль разбирается до отправки', /шести/i.test(msg), msg);
-  ok('сообщения об ошибках по-русски', !/auth\/[a-z-]+/.test(msg), msg);
-
-  await page.click('#auth-switch-link');
-  await page.waitForTimeout(120);
-  ok('переключение на регистрацию меняет заголовок',
-    await page.textContent('#auth-title') === 'Создание аккаунта');
-  ok('браузеру сказано, что пароль новый',
-    await page.getAttribute('#auth-password', 'autocomplete') === 'new-password');
+  ok('ни почты, ни пароля, ни входа через Google',
+    await page.locator('.auth-modal input, #google-login-btn, .auth-btn-google').count() === 0);
 
   await page.evaluate(() => document.getElementById('auth-close-btn').focus());
   await page.keyboard.down('Shift');
@@ -127,56 +107,14 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
 
   await page.click('#like-btn');
   await page.waitForTimeout(200);
-  // Прежняя версия писала liked:false и оставляла запись навсегда —
-  // правила Firestore такую запись не приняли бы.
+  // Прежняя версия писала liked:false и оставляла запись навсегда.
   ok('снятая отметка удаляется, а не остаётся записью', await page.evaluate(
     id => !(id in JSON.parse(localStorage.getItem('likes') || '{}')), pid));
 
-  ok('без Firebase кнопка входа не висит мёртвой',
+  ok('пока вход не настроен, кнопки «Войти» нет',
     await page.locator('#auth-btn').count() === 0);
-
-  // ------------------------------------- приветствие только на действие
-  // Firebase помнит вход между посещениями и сообщает о нём при загрузке
-  // каждой страницы тем же способом, что и о настоящем входе. Пока их не
-  // различали, «Вы вошли как Денис» выскакивало на каждой открытой
-  // картине, хотя человек ничего не нажимал.
-  const fake = await browser.newContext({ viewport: { width: 1280, height: 900 } });
-  const fp = await fake.newPage();
-  await fp.route('**gstatic.com/firebasejs/**',
-    r => r.fulfill({ status: 200, contentType: 'application/javascript', body: '' }));
-  await fp.route('**firebase-config.js',
-    r => r.fulfill({ status: 200, contentType: 'application/javascript', body: 'var firebaseConfig={};' }));
-  await fp.addInitScript(() => {
-    let cb = null;
-    const USER = { email: 'denis@example.com', displayName: 'Денис Иванов' };
-    const store = {
-      collection() { return {
-        where() { return this; },
-        get() { return Promise.resolve({ forEach() {} }); },
-        doc() { return { set: () => Promise.resolve(), delete: () => Promise.resolve() }; },
-      }; },
-    };
-    window.firebase = {
-      initializeApp() {},
-      auth() { return {
-        // сессия восстановлена: человек входил когда-то раньше
-        onAuthStateChanged(f) { cb = f; setTimeout(() => f(USER), 30); },
-        signInWithEmailAndPassword() { setTimeout(() => cb(USER), 10); return Promise.resolve({ user: USER }); },
-        signOut() { setTimeout(() => cb(null), 10); return Promise.resolve(); },
-      }; },
-      firestore() { return store; },
-    };
-    window.firebase.firestore.FieldValue = { serverTimestamp: () => 0 };
-  });
-  await fp.goto(f(POST));
-  await fp.waitForTimeout(900);
-
-  ok('восстановленная сессия не здоровается при каждой загрузке',
-    await fp.locator('.toast').count() === 0,
-    await fp.locator('.toast').first().textContent().catch(() => ''));
-  ok('но имя в кнопке показано',
-    /Денис/.test(await fp.textContent('#auth-btn').catch(() => '')));
-  await fake.close();
+  ok('Firebase на странице больше нет', await page.evaluate(
+    () => typeof firebase === 'undefined' && ![...document.scripts].some(s => /firebase/.test(s.src))));
 
   ok('нет ошибок JS', errs.length === 0, errs.join(' | '));
 

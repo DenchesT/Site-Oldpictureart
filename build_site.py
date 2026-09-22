@@ -79,10 +79,10 @@ if PIL_AVAILABLE:
 
 from site_common import (head_common, scroll_top_button, theme_button, site_footer,
                          mark_svg, TELEGRAM_URL, TELEGRAM_NAME, SITE_DOMAIN, hires_url,
-                         COMMON_JS, SCROLL_TOP_JS, LUPA_JS, TOAST_JS, SHARE_JS, AUTH_JS, BASE_URL,
+                         COMMON_JS, SCROLL_TOP_JS, LUPA_JS, TOAST_JS, SHARE_JS, AUTH_JS, CLOUD_JS, BASE_URL,
                          VISITS_FILE, has_visits, visit_places,
                          METRIKA_ID, SITE_OWNER, PRIVACY_CONTACT, PRIVACY_CONTACT_TEXT, PRIVACY_DATE,
-                         work_year)
+                         work_year, AUTH_API_URL, YANDEX_CLIENT_ID, VK_CLIENT_ID)
 
 def load_dotenv(path=".env"):
     if not os.path.exists(path): return
@@ -2236,37 +2236,10 @@ document.addEventListener('DOMContentLoaded', function() {{
     applyFilters();
 }});
 </script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
+{CLOUD_JS}
 <script>
-// Firebase — необязательная часть: если скрипты Google не загрузились,
-// главная должна продолжать работать (раньше падала вся страница).
-try {{
-  if (typeof firebase !== 'undefined' && typeof firebaseConfig !== 'undefined') {{
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    auth.onAuthStateChanged(user => {{
-      if (!user) return;
-      // Запись существует — значит отмечено; снятая отметка удаляется.
-      // Поля liked больше нет: правила Firestore разрешают в записи
-      // ровно userId, postId и createdAt (см. FIRESTORE.md).
-      db.collection('likes')
-        .where('userId', '==', user.uid).get()
-        .then(snap => {{
-          const cloud = {{}};
-          snap.forEach(d => cloud[d.data().postId] = true);
-          let local = {{}};
-          try {{ local = JSON.parse(localStorage.getItem('likes') || '{{}}'); }} catch (e) {{}}
-          localStorage.setItem('likes', JSON.stringify({{...local, ...cloud}}));
-          updateFavList();
-        }})
-        .catch(e => console.warn('Избранное из облака недоступно:', e.message));
-    }});
-  }}
-}} catch (e) {{ console.warn('Firebase недоступен:', e.message); }}
+// Вошедшему в аккаунт — отметки из облака в список «Избранное».
+cloudSync().then(function (changed) {{ if (changed) updateFavList(); }});
 </script></body></html>"""
 
 # ===================== TELEGRAM =====================
@@ -3412,16 +3385,43 @@ def render_privacy():
     собирается, кем и как это выключить. Раздел о Метрике исчезает, если
     счётчик выключен (METRIKA_ID пуст), — не описывать того, чего нет.
     """
+    auth_on = bool(AUTH_API_URL and (YANDEX_CLIENT_ID or VK_CLIENT_ID))
     head = head_common(
         title="Конфиденциальность — Old Picture Art",
         description="Какие данные собирает сайт Old Picture Art, зачем и как от этого отказаться: "
-                    "Яндекс Метрика, вход в аккаунт, настройки в браузере.",
+                    + ("Яндекс Метрика, вход через Яндекс ID и VK ID, настройки в браузере."
+                       if auth_on else "Яндекс Метрика и настройки в браузере."),
         canonical=f"{BASE_URL}/privacy.html",
     )
     contact = (f'<a href="{h(PRIVACY_CONTACT)}"'
                + ('' if PRIVACY_CONTACT.startswith("mailto:") else ' target="_blank" rel="noopener"')
                + f'>{h(PRIVACY_CONTACT_TEXT)}</a>')
     owner = f"Сайт ведёт {h(SITE_OWNER)}. " if SITE_OWNER else ""
+    # Про вход рассказываем, только когда он настроен (AUTH_API_URL и хотя
+    # бы один из YANDEX_CLIENT_ID / VK_CLIENT_ID в site_common.py):
+    # описывать на странице о данных то, чего на сайте нет, — путать людей.
+    # Пока входа нет, страница так и говорит: аккаунтов нет, отметки —
+    # только в браузере. Входа через Google и Firebase больше нет совсем.
+    account = f"""<section class="doc-block" id="account">
+  <h2>Вход в аккаунт</h2>
+  <p>Нужен только для одного — чтобы отмеченные картины были на всех ваших устройствах.
+  Без входа отметки хранятся в вашем браузере и никуда не отправляются.</p>
+  <h3>Как входят</h3>
+  <p>Через Яндекс ID или VK ID. Пароль вы вводите на странице Яндекса или VK — сайт его
+  не видит. Яндекс или VK сообщают сайту номер вашего аккаунта у них и имя.</p>
+  <h3>Что хранится</h3>
+  <ul>
+    <li>номер аккаунта у Яндекса или VK и список отмеченных картин со временем отметки —
+    в базе на серверах Yandex Cloud в России;</li>
+    <li>имя — только в вашем браузере, чтобы показать его на кнопке; на сервер оно не записывается.</li>
+  </ul>
+  <p>Почту, телефон и список друзей сайт не запрашивает. Базу держит ООО «Яндекс.Облако»,
+  вход проверяют ООО «ЯНДЕКС» (Яндекс ID) и ООО «ВК» (VK ID) — каждый по своим правилам.</p>
+  <h3>Как удалить</h3>
+  <p>Снятая отметка удаляется сразу. Все отметки разом — кнопкой «Удалить мои отметки из
+  облака» в окне аккаунта (нажмите на своё имя вверху страницы картины). Выйти из аккаунта
+  можно там же. Вопросы — {contact}.</p>
+</section>"""
 
     metrika = "" if not METRIKA_ID else """
 <section class="doc-block" id="metrika">
@@ -3440,7 +3440,7 @@ def render_privacy():
     <li>cookie <code>_ym_uid</code>, <code>_ym_d</code>, <code>_ym_isad</code> и другие — чтобы отличить повторный визит от нового; самая долгая живёт год;</li>
     <li>IP-адрес, тип устройства, браузер, размер экрана, язык;</li>
     <li>адрес страницы и откуда вы на неё пришли;</li>
-    <li>действия на странице — прокрутку, нажатия, движение указателя (это Вебвизор). Что вы вводите в поля входа, не записывается.</li>
+    <li>действия на странице — прокрутку, нажатия, движение указателя (это Вебвизор).</li>
   </ul>
   <p>Имени, почты и телефона Метрика не получает.</p>
   <h3>Зачем</h3>
@@ -3479,35 +3479,17 @@ def render_privacy():
   <ul>
     <li>Смотреть картины, искать, играть в квиз можно без регистрации и без согласия на статистику.</li>
     <li>Статистика посещений включается, только если вы её разрешили.</li>
-    <li>Почта хранится, только если вы сами завели аккаунт.</li>
+{'    <li>Аккаунт нужен только для переноса отметок между устройствами; вход — через Яндекс ID или VK ID. Номер аккаунта хранится, только если вы сами вошли.</li>' if auth_on else '    <li>Аккаунтов на сайте нет: отмеченные картины хранятся только в вашем браузере.</li>'}
     <li>Данные не продаются и не передаются никому, кроме названных ниже сервисов.</li>
   </ul>
 </section>
 {metrika}
-<section class="doc-block" id="account">
-  <h2>Вход в аккаунт</h2>
-  <p>Нужен только для одного — чтобы отмеченные картины были на всех ваших устройствах.
-  Без входа отметки хранятся в вашем браузере и никуда не отправляются.</p>
-  <h3>Что хранится</h3>
-  <ul>
-    <li>почта;</li>
-    <li>служебный номер аккаунта, даты создания и последнего входа;</li>
-    <li>список отмеченных картин и время отметки.</li>
-  </ul>
-  <p>Пароль сайт не видит: его проверяет сервис входа.</p>
-  <h3>Где</h3>
-  <p>В сервисах Firebase Authentication и Cloud Firestore компании Google LLC, на серверах
-  за пределами России — <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">как Firebase
-  обращается с данными</a>.</p>
-  <h3>Как удалить</h3>
-  <p>Снятая отметка удаляется сразу. Чтобы удалить аккаунт целиком вместе с почтой, напишите {contact} —
-  удалю не позже чем через 30 дней.</p>
-</section>
-
+{account if auth_on else ""}
 <section class="doc-block" id="browser">
   <h2>Что остаётся только в вашем браузере</h2>
-  <p>В хранилище браузера (localStorage) сайт запоминает тему оформления, отметки без
-  входа, счёт в квизе и ваш ответ насчёт статистики. Это не уходит ни на какой сервер;
+  <p>В хранилище браузера (localStorage) сайт запоминает тему оформления, отмеченные
+  картины, счёт в квизе и ваш ответ насчёт статистики{", а если вы вошли — ещё пропуск для входа и ваше имя" if auth_on else ""}.
+  {"Отметки вошедших дублируются в облако (см. выше), остальное" if auth_on else "Это"} не уходит ни на какой сервер;
   стереть — очистить данные сайта в настройках браузера.</p>
 </section>
 
@@ -3518,14 +3500,15 @@ def render_privacy():
   <ul>
     <li>GitHub Pages — хостинг сайта (<a href="https://docs.github.com/ru/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">политика GitHub</a>);</li>
     <li>Google Fonts — шрифты;</li>
-    <li>gstatic.com и cdnjs.cloudflare.com — код входа в аккаунт и подбора цвета рамки;</li>
+    <li>cdnjs.cloudflare.com — код подбора цвета рамки;</li>
+{'    <li>functions.yandexcloud.net — отметки тех, кто вошёл в аккаунт;</li>' if auth_on else ''}
     <li>на карте собраний — подложки OpenStreetMap, OpenTopoMap, Esri и Яндекс Карт и библиотека карты с unpkg.com.</li>
   </ul>
 </section>
 
 <section class="doc-block" id="contact">
   <h2>Вопросы</h2>
-  <p>О данных, об удалении аккаунта и обо всём остальном — {contact}.</p>
+  <p>О данных{", об удалении отметок из облака" if auth_on else ""} и обо всём остальном — {contact}.</p>
 </section>
 </main>
 {site_footer()}
@@ -3556,6 +3539,69 @@ def render_privacy():
     show();
   }});
   show();
+}})();
+</script>
+</body></html>"""
+
+
+@tidy
+def render_auth_page():
+    """auth.html — куда Яндекс ID и VK ID возвращают человека после входа.
+
+    Страница служебная: забирает из адреса код входа, проверяет, что это
+    ответ на наш же запрос (state), отдаёт код функции в Yandex Cloud,
+    получает пропуск, сводит отметки и возвращает человека туда, откуда
+    он нажал «Войти». Если что-то не так — говорит об этом словами и
+    даёт вернуться. В поиск ей незачем, отсюда noindex.
+    """
+    head = head_common(
+        title="Вход — Old Picture Art",
+        description="Вход в аккаунт Old Picture Art.",
+        extra='\n<meta name="robots" content="noindex">',
+    )
+    return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
+{head}
+</head><body class="error-page">
+<main class="error-box">
+  <h1 id="auth-status">Входим…</h1>
+  <p class="error-text" id="auth-msg" role="status">Минуту — сверяемся с Яндексом или VK.</p>
+  <p><a class="random-btn" id="auth-back" href="./">Вернуться на сайт</a></p>
+</main>
+{CLOUD_JS}
+<script>
+(function () {{
+  var q = new URLSearchParams(location.search);
+  var flow = null;
+  try {{ flow = JSON.parse(sessionStorage.getItem('auth-flow') || 'null'); sessionStorage.removeItem('auth-flow'); }} catch (e) {{}}
+  // Вернуть можно только на свой же сайт — чужой адрес в back не пройдёт.
+  var back = './';
+  try {{ if (flow && flow.back && new URL(flow.back).origin === location.origin) back = flow.back; }} catch (e) {{}}
+  document.getElementById('auth-back').href = back;
+
+  function fail(text) {{
+    document.getElementById('auth-status').textContent = 'Войти не получилось';
+    document.getElementById('auth-msg').textContent = text;
+  }}
+  if (!CLOUD.on) return fail('Вход на сайте сейчас выключен.');
+  if (q.get('error')) {{
+    return fail(q.get('error') === 'access_denied' ? 'Вход отменён.'
+                : 'Ответ сервиса входа: ' + (q.get('error_description') || q.get('error')));
+  }}
+  if (!flow || !q.get('code') || q.get('state') !== flow.state) {{
+    return fail('Не удалось проверить, что это ваш вход. Попробуйте войти ещё раз.');
+  }}
+  var data = {{provider: flow.provider, code: q.get('code'), state: q.get('state')}};
+  if (flow.provider === 'vk') {{ data.code_verifier = flow.verifier; data.device_id = q.get('device_id'); }}
+  cloudCall('login', data)
+    .then(function (j) {{
+      setSession({{token: j.token, name: j.name, provider: j.provider, exp: j.exp}});
+      return cloudSync('merge');
+    }})
+    .then(function () {{
+      try {{ sessionStorage.setItem('auth-greet', '1'); }} catch (e) {{}}
+      location.replace(back);
+    }})
+    .catch(function (e) {{ fail(e.message || 'Сервер не ответил. Попробуйте позже.'); }});
 }})();
 </script>
 </body></html>"""
@@ -3899,6 +3945,7 @@ async def main():
     with open(os.path.join(OUTPUT_DIR, "index.html"), "w", encoding="utf-8", newline="\n") as f: f.write(render_index(all_posts))
     with open(os.path.join(OUTPUT_DIR, "404.html"), "w", encoding="utf-8", newline="\n") as f: f.write(render_404())
     with open(os.path.join(OUTPUT_DIR, "privacy.html"), "w", encoding="utf-8", newline="\n") as f: f.write(render_privacy())
+    with open(os.path.join(OUTPUT_DIR, "auth.html"), "w", encoding="utf-8", newline="\n") as f: f.write(render_auth_page())
     save_image_sizes()
     logger.info(f"Новых постов: {len(accepted)}. Всего: {len(all_posts)}")
     push_to_github()

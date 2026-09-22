@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=9a23e70e">
+<link rel="stylesheet" href="style.css?v=142194d6">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"VisualArtwork","name":"Bouquet de fleurs (Ваза с цветами), 1833","url":"https://oldpictureart.ru/delacroix-vaza-s-tsvetami-1833.html","inLanguage":"ru","creator":{"@type":"Person","name":"Фердинан Виктор Эжен Делакруа"},"dateCreated":"1833","artMedium":{"@value":"масло"},"artworkSurface":{"@value":"холст"},"image":"https://oldpictureart.ru/images/delacroix-vaza-s-tsvetami-1833-1.jpg","isPartOf":{"@type":"Collection","name":"Национальная галерея Шотландии, Эдинбург"},"description":"Картина, вероятно, принадлежала близкому другу Делакруа Фредерику Вийо, коллеге-художнику и куратору Лувра. По словам Вийо, картина была написана в Шампрозе, недалеко от Фонтенбло. На ней изображена хрустальная ваза с цветами, в основном георгинами. Это самая ранняя из сохранившихся цветочных работ Делакруа, и она написана более свободно, чем другие, более амбициозные работы того времени. Делакруа был ведущим художником романтической школы, ставившим цвет превыше линии, в отличие от более класси","sameAs":["https://www.nationalgalleries.org/art-and-artists/5661"],"height":{"@type":"QuantitativeValue","value":57.7,"unitCode":{"@value":"CMT"},"unitText":{"@value":"см"}},"width":{"@type":"QuantitativeValue","value":48.8,"unitCode":{"@value":"CMT"},"unitText":{"@value":"см"}}}</script>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page">
@@ -808,310 +808,288 @@ document.addEventListener('keydown', function(e) {
     }
 });
 </script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
 <script>
-var auth = null, db = null, currentUser = null, FIREBASE_OK = false;
-try {
-  if (typeof firebase !== 'undefined' && typeof firebaseConfig !== 'undefined') {
-    firebase.initializeApp(firebaseConfig);
-    auth = firebase.auth();
-    db = firebase.firestore();
-    FIREBASE_OK = true;
+var CLOUD = {api: 'https://functions.yandexcloud.net/d4e2jv2t457u5oldt269', yandex: '7a85cd4ed113494c82722380127c35f1', vk: '',
+             redirect: 'https://oldpictureart.ru/auth.html', vkHost: 'https://id.vk.ru'};
+CLOUD.on = !!(CLOUD.api && (CLOUD.yandex || CLOUD.vk));
+
+function readLocalLikes() {
+  try { return JSON.parse(localStorage.getItem('likes') || '{}') || {}; } catch (e) { return {}; }
+}
+function writeLocalLikes(map) {
+  try { localStorage.setItem('likes', JSON.stringify(map)); } catch (e) {}
+}
+
+// Пропуск от функции: {token, name, provider, exp}. Сам токен подписан
+// на сервере, подделать его в браузере нельзя; здесь он только хранится.
+function getSession() {
+  try {
+    var s = JSON.parse(localStorage.getItem('session') || 'null');
+    if (s && s.token && s.exp * 1000 > Date.now()) return s;
+  } catch (e) {}
+  return null;
+}
+function setSession(s) {
+  try {
+    if (s) localStorage.setItem('session', JSON.stringify(s));
+    else { localStorage.removeItem('session'); localStorage.removeItem('likes-synced'); }
+  } catch (e) {}
+}
+
+// Все запросы — POST с Content-Type text/plain: так браузер не шлёт перед
+// каждым предварительный OPTIONS-запрос, и функции не нужно его ждать.
+function cloudCall(action, data) {
+  var body = {action: action}, k, s = getSession();
+  for (k in (data || {})) body[k] = data[k];
+  if (s && action !== 'login') body.token = s.token;
+  return fetch(CLOUD.api, {method: 'POST', body: JSON.stringify(body),
+                           headers: {'Content-Type': 'text/plain;charset=UTF-8'}})
+    .then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (r.status === 401) setSession(null);       // пропуск истёк — выходим
+        if (!r.ok) { var e = new Error(j.error || ('Ошибка ' + r.status)); e.status = r.status; throw e; }
+        return j;
+      });
+    });
+}
+
+// Отметки, которые не удалось отправить (не было сети), — отправим позже.
+function readPending() {
+  try { return JSON.parse(localStorage.getItem('likes-pending') || '{}') || {}; } catch (e) { return {}; }
+}
+function writePending(map) {
+  try {
+    if (Object.keys(map).length) localStorage.setItem('likes-pending', JSON.stringify(map));
+    else localStorage.removeItem('likes-pending');
+  } catch (e) {}
+}
+
+// Свести отметки браузера и облака.
+//   merge — сразу после входа: всё, что отмечено в браузере, уходит в облако.
+//   иначе — облако главное: снятая на телефоне отметка снимается и здесь.
+//     Не чаще раза в пять минут, чтобы не дёргать функцию на каждой странице.
+// Возвращает true, если список в браузере обновился.
+function cloudSync(mode) {
+  if (!CLOUD.on || !getSession()) return Promise.resolve(false);
+  var last = 0;
+  try { last = +localStorage.getItem('likes-synced') || 0; } catch (e) {}
+  if (mode !== 'merge' && mode !== 'force' && Date.now() - last < 5 * 60 * 1000) return Promise.resolve(false);
+  var local = readLocalLikes(), pending = readPending(), k, up = [], down = [];
+  for (k in (mode === 'merge' ? local : {})) if (local[k]) up.push(k);
+  for (k in pending) (pending[k] ? up : down).push(k);
+  return Promise.all(down.map(function (id) { return cloudCall('unlike', {post_id: id}); }))
+    .then(function () { return cloudCall('sync', {likes: up}); })
+    .then(function (j) {
+      var merged = {};
+      (j.likes || []).forEach(function (id) { merged[id] = true; });
+      writeLocalLikes(merged);
+      writePending({});
+      try { localStorage.setItem('likes-synced', String(Date.now())); } catch (e) {}
+      return true;
+    })
+    .catch(function (e) { console.warn('Избранное из облака недоступно:', e.message); return false; });
+}
+</script>
+<script>
+var PROVIDERS = {yandex: 'Яндекс ID', vk: 'VK ID'};
+
+function randomString(n) {
+  var abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+  var a = new Uint8Array(n), s = '';
+  crypto.getRandomValues(a);
+  for (var i = 0; i < n; i++) s += abc[a[i] % 64];
+  return s;
+}
+function b64url(buf) {
+  var s = '', b = new Uint8Array(buf);
+  for (var i = 0; i < b.length; i++) s += String.fromCharCode(b[i]);
+  return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+// Уйти на страницу Яндекса или VK. Вернутся оттуда на auth.html с кодом;
+// что проверить и куда потом вернуть человека, запоминаем здесь.
+function startLogin(provider) {
+  var flow = {provider: provider, state: randomString(43), back: location.href};
+  var go = function (url) {
+    try { sessionStorage.setItem('auth-flow', JSON.stringify(flow)); } catch (e) {}
+    location.assign(url);
+  };
+  if (provider === 'yandex') {
+    go('https://oauth.yandex.ru/authorize?' + new URLSearchParams({
+      response_type: 'code', client_id: CLOUD.yandex,
+      redirect_uri: CLOUD.redirect, state: flow.state}).toString());
+    return;
   }
-} catch (e) { console.warn('Firebase недоступен, избранное работает локально:', e.message); }
-
-// Коды Firebase человеческим языком.
-var AUTH_ERRORS = {
-  'auth/invalid-email':            'Похоже, адрес почты записан с ошибкой.',
-  'auth/missing-password':         'Введите пароль.',
-  'auth/user-not-found':           'Такой почты здесь нет. Проверьте адрес или создайте аккаунт.',
-  'auth/wrong-password':           'Неверный пароль.',
-  'auth/invalid-credential':       'Неверная почта или пароль.',
-  'auth/email-already-in-use':     'На эту почту аккаунт уже есть — войдите в него.',
-  'auth/weak-password':            'Пароль слишком простой: нужно хотя бы шесть знаков.',
-  'auth/too-many-requests':        'Слишком много попыток подряд. Подождите пару минут.',
-  'auth/network-request-failed':   'Не получилось связаться с сервером. Проверьте интернет.',
-  'auth/user-disabled':            'Этот аккаунт отключён.',
-  'auth/unauthorized-domain':      'Вход с этого адреса не разрешён в настройках Firebase.',
-  'auth/operation-not-allowed':    'Этот способ входа выключен в настройках Firebase.'
-};
-
-function authMessage(err) {
-  var code = err && err.code;
-  if (code && AUTH_ERRORS.hasOwnProperty(code)) return AUTH_ERRORS[code];
-  return 'Не получилось войти. ' + ((err && err.message) || '');
-}
-
-function authName(user) {
-  if (!user) return '';
-  if (user.displayName) return user.displayName.split(' ')[0];
-  if (user.email) return user.email.split('@')[0];
-  return 'Профиль';
-}
-
-// Поздороваться — только в ответ на действие человека.
-//
-// Firebase помнит вход между посещениями и при загрузке каждой страницы
-// сообщает о нём тем же способом, что и о настоящем входе. Отличить одно
-// от другого по событию нельзя, и «Вы вошли как Денис» выскакивало на
-// каждой открытой картине — притом что человек ничего не нажимал.
-// Поэтому здороваемся не в обработчике события, а там, где вход
-// действительно произошёл, — после формы.
-function greet(user) {
-  toast('Вы вошли как ' + authName(user));
-}
-
-if (FIREBASE_OK) {
-  auth.onAuthStateChanged(function (user) {
-    currentUser = user;
-    var btn = document.getElementById('auth-btn');
-    if (btn) {
-      if (user) {
-        var name = authName(user);
-        btn.innerHTML = '<span class="icon-user" aria-hidden="true"></span> ';
-        btn.appendChild(document.createTextNode(name));
-        btn.title = 'Выйти из аккаунта: ' + name;
-        btn.setAttribute('aria-label', 'Выйти из аккаунта: ' + name);
-        btn.onclick = function () {
-          auth.signOut().then(function () { toast('Вы вышли из аккаунта'); });
-        };
-      } else {
-        btn.innerHTML = '<span class="icon-login" aria-hidden="true"></span> Войти';
-        btn.title = 'Войти';
-        btn.setAttribute('aria-label', 'Войти');
-        btn.onclick = showAuthForm;
-      }
-    }
-    if (user) syncLikesWithCloud();
+  // VK ID требует PKCE: случайная строка остаётся у нас, её отпечаток
+  // уходит в VK, а при обмене кода функция предъявит саму строку.
+  flow.verifier = randomString(64);
+  crypto.subtle.digest('SHA-256', new TextEncoder().encode(flow.verifier)).then(function (d) {
+    go(CLOUD.vkHost + '/authorize?' + new URLSearchParams({
+      response_type: 'code', client_id: CLOUD.vk, redirect_uri: CLOUD.redirect,
+      state: flow.state, code_challenge: b64url(d), code_challenge_method: 'S256',
+      scope: 'vkid.personal_info'}).toString());
   });
-} else {
-  var authBtnOffline = document.getElementById('auth-btn');
-  if (authBtnOffline) authBtnOffline.remove();
 }
 
-// ---------- Окно входа ----------
-function showAuthForm() {
+function showAuthButton() {
+  var btn = document.getElementById('auth-btn');
+  if (!btn) return;
+  if (!CLOUD.on) { btn.remove(); return; }       // вход не настроен — кнопки нет
+  var s = getSession();
+  if (s) {
+    btn.innerHTML = '<span class="icon-user" aria-hidden="true"></span> ';
+    btn.appendChild(document.createTextNode(s.name || 'Профиль'));
+    btn.title = 'Аккаунт: ' + (s.name || '');
+    btn.setAttribute('aria-label', 'Аккаунт: ' + (s.name || ''));
+    btn.onclick = showAccount;
+  } else {
+    btn.innerHTML = '<span class="icon-login" aria-hidden="true"></span> Войти';
+    btn.title = 'Войти';
+    btn.setAttribute('aria-label', 'Войти');
+    btn.onclick = showAuthForm;
+  }
+}
+
+// Общая рамка для окна входа и окна аккаунта: затемнение, Escape,
+// клавиатура не уходит на страницу под окном, фокус возвращается назад.
+function openDialog(title, lede, build) {
   var old = document.querySelector('.auth-modal-overlay');
   if (old) old.remove();
-
   var opener = document.activeElement;
   var overlay = document.createElement('div');
   overlay.className = 'auth-modal-overlay';
   overlay.innerHTML =
     '<div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">' +
       '<button type="button" class="auth-modal-close" id="auth-close-btn" aria-label="Закрыть">&times;</button>' +
-      '<h3 id="auth-title">Вход в аккаунт</h3>' +
-      '<p id="auth-lede">Чтобы отмеченные картины были и на телефоне, и на компьютере.</p>' +
-      '<form id="auth-form" novalidate>' +
-        '<input type="email" class="auth-input ym-disable-keys" id="auth-email" name="email" placeholder="Почта" autocomplete="email" required>' +
-        '<input type="password" class="auth-input ym-disable-keys" id="auth-password" name="password" placeholder="Пароль" autocomplete="current-password" required>' +
-        '<button type="submit" class="auth-submit" id="auth-submit-btn">Войти</button>' +
-      '</form>' +
+      '<h3 id="auth-title"></h3><p id="auth-lede"></p>' +
+      '<div class="auth-actions" id="auth-actions"></div>' +
       '<div class="auth-error" id="auth-error" role="alert"></div>' +
-      '<div class="auth-switch">' +
-        '<span id="auth-switch-text">Нет аккаунта?</span> ' +
-        '<button type="button" class="auth-link" id="auth-switch-link">Создать</button>' +
-      '</div>' +
-      '<div class="auth-switch auth-reset-row" id="auth-reset-container">' +
-        '<button type="button" class="auth-link" id="auth-reset-link">Забыли пароль?</button>' +
-      '</div>' +
     '</div>';
-
   document.body.appendChild(overlay);
-
+  document.getElementById('auth-title').textContent = title;
+  document.getElementById('auth-lede').textContent = lede;
   var modal = overlay.querySelector('.auth-modal');
-  var emailInp = document.getElementById('auth-email');
-  var passInp = document.getElementById('auth-password');
-  var submitBtn = document.getElementById('auth-submit-btn');
-  var switchLink = document.getElementById('auth-switch-link');
-  var switchText = document.getElementById('auth-switch-text');
-  var resetRow = document.getElementById('auth-reset-container');
-  var errorDiv = document.getElementById('auth-error');
-  var isLogin = true, busy = false;
-
-  function say(text) { errorDiv.textContent = text || ''; }
-
-  function setBusy(on, label) {
-    busy = on;
-    submitBtn.disabled = on;
-    submitBtn.textContent = on ? (label || 'Минуту…')
-                               : (isLogin ? 'Войти' : 'Создать аккаунт');
-  }
-
   function close(back) {
     overlay.remove();
     document.removeEventListener('keydown', onKey, true);
     if (back && opener && opener.focus) opener.focus();
   }
-
-  // Пока окно открыто, клавиатура не должна уходить на страницу под ним.
   function onKey(e) {
     if (e.key === 'Escape') { e.stopPropagation(); close(true); return; }
     if (e.key !== 'Tab') return;
-    var items = [].slice.call(modal.querySelectorAll(
-      'button:not([disabled]), input:not([disabled]), a[href]'));
+    var items = [].slice.call(modal.querySelectorAll('button:not([disabled]), a[href]'));
     if (!items.length) return;
     var first = items[0], last = items[items.length - 1];
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   }
-
   document.addEventListener('keydown', onKey, true);
   document.getElementById('auth-close-btn').onclick = function () { close(true); };
-  overlay.onclick = function (e) { if (e.target === overlay && !busy) close(true); };
+  overlay.onclick = function (e) { if (e.target === overlay) close(true); };
+  build(document.getElementById('auth-actions'), close, function (t) {
+    document.getElementById('auth-error').textContent = t || '';
+  });
+  var firstBtn = modal.querySelector('.auth-actions button');
+  setTimeout(function () { (firstBtn || document.getElementById('auth-close-btn')).focus(); }, 60);
+}
 
-  switchLink.onclick = function () {
-    isLogin = !isLogin;
-    document.getElementById('auth-title').textContent = isLogin ? 'Вход в аккаунт' : 'Создание аккаунта';
-    document.getElementById('auth-lede').textContent = isLogin
-      ? 'Чтобы отмеченные картины были и на телефоне, и на компьютере.'
-      : 'Нужны только почта и пароль от шести знаков.';
-    submitBtn.textContent = isLogin ? 'Войти' : 'Создать аккаунт';
-    switchText.textContent = isLogin ? 'Нет аккаунта?' : 'Уже есть аккаунт?';
-    switchLink.textContent = isLogin ? 'Создать' : 'Войти';
-    passInp.setAttribute('autocomplete', isLogin ? 'current-password' : 'new-password');
-    resetRow.style.display = 'none';
-    say('');
-  };
+function actionButton(box, cls, text, onclick) {
+  var b = document.createElement('button');
+  b.type = 'button';
+  b.className = cls;
+  b.textContent = text;
+  b.onclick = onclick;
+  box.appendChild(b);
+  return b;
+}
 
-  document.getElementById('auth-reset-link').onclick = function () {
-    var email = emailInp.value.trim();
-    if (!email) { say('Введите почту — на неё придёт письмо.'); emailInp.focus(); return; }
-    if (busy) return;
-    busy = true;
-    auth.sendPasswordResetEmail(email)
-      .then(function () {
+function showAuthForm() {
+  openDialog('Вход', 'Чтобы отмеченные картины были и на телефоне, и на компьютере.',
+    function (box) {
+      if (CLOUD.yandex) {
+        var y = actionButton(box, 'auth-provider auth-yandex', 'Войти с Яндекс ID', function () {
+          y.disabled = true; startLogin('yandex'); });
+      }
+      if (CLOUD.vk) {
+        var v = actionButton(box, 'auth-provider auth-vk', 'Войти с VK ID', function () {
+          v.disabled = true; startLogin('vk'); });
+      }
+    });
+}
+
+function showAccount() {
+  var s = getSession();
+  if (!s) { showAuthButton(); showAuthForm(); return; }
+  openDialog(s.name || 'Аккаунт', 'Вы вошли через ' + (PROVIDERS[s.provider] || 'аккаунт') +
+             '. Отмеченные картины видны на всех ваших устройствах.',
+    function (box, close, say) {
+      actionButton(box, 'auth-provider', 'Выйти', function () {
+        setSession(null);
         close(true);
-        toast('Письмо для смены пароля отправлено на ' + email);
-      })
-      .catch(function (err) { busy = false; say(authMessage(err)); });
-  };
-
-  document.getElementById('auth-form').onsubmit = function (e) {
-    e.preventDefault();
-    if (busy) return;
-    var email = emailInp.value.trim(), pass = passInp.value;
-    if (!email) { say('Введите почту.'); emailInp.focus(); return; }
-    if (email.indexOf('@') < 1 || email.indexOf('.', email.indexOf('@')) < 0) {
-      say('Похоже, адрес почты записан с ошибкой.'); emailInp.focus(); return;
-    }
-    if (pass.length < 6) { say('Пароль: не меньше шести знаков.'); passInp.focus(); return; }
-
-    say('');
-    setBusy(true, isLogin ? 'Входим…' : 'Создаём…');
-    var go = isLogin ? auth.signInWithEmailAndPassword(email, pass)
-                     : auth.createUserWithEmailAndPassword(email, pass);
-    go.then(function (result) {
-        close(false);
-        if (result && result.user) greet(result.user);
-      })
-      .catch(function (err) {
-        setBusy(false);
-        say(authMessage(err));
-        var code = err && err.code;
-        // «Забыли пароль?» показываем там, где он к месту, и не показываем
-        // там, где дело не в пароле.
-        resetRow.style.display =
-          (code === 'auth/wrong-password' || code === 'auth/invalid-credential'
-           || code === 'auth/email-already-in-use') ? 'block' : 'none';
+        showAuthButton();
+        toast('Вы вышли из аккаунта');
       });
-  };
-
-  setTimeout(function () { emailInp.focus(); }, 60);
+      // Удаление — в два нажатия: первое спрашивает, второе удаляет.
+      var sure = false;
+      var del = actionButton(box, 'auth-link auth-danger', 'Удалить мои отметки из облака', function () {
+        if (!sure) { sure = true; del.textContent = 'Точно удалить? Нажмите ещё раз'; return; }
+        del.disabled = true;
+        cloudCall('delete').then(function () {
+          setSession(null);
+          close(true);
+          showAuthButton();
+          toast('Отметки удалены из облака; в этом браузере они остались');
+        }).catch(function (e) { del.disabled = false; say(e.message); });
+      });
+    });
 }
 
 // ---------- Избранное ----------
-// Запись называется <uid>_<адрес страницы> и содержит ровно три поля:
-// userId, postId, createdAt. Ровно это разрешают правила из FIRESTORE.md —
-// лишнее поле в записи привело бы к отказу в доступе.
-function likeDoc(postId) {
-  return db.collection('likes').doc(currentUser.uid + '_' + postId);
+function paintLike(on) {
+  var btn = document.getElementById('like-btn');
+  if (!btn) return;
+  btn.classList.toggle('liked', on);
+  btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  btn.setAttribute('aria-label', on ? 'Убрать из избранного' : 'В избранное');
 }
 
-function readLocalLikes() {
-  try { return JSON.parse(localStorage.getItem('likes') || '{}'); } catch (e) { return {}; }
-}
-
-function writeLocalLikes(map) {
-  try { localStorage.setItem('likes', JSON.stringify(map)); } catch (e) {}
-}
-
-async function syncLike(postId, liked) {
+function syncLike(postId, liked) {
   var local = readLocalLikes();
   if (liked) local[postId] = true; else delete local[postId];
   writeLocalLikes(local);
-
-  if (!FIREBASE_OK || !currentUser) return;
-  try {
-    if (liked) {
-      await likeDoc(postId).set({
-        userId: currentUser.uid,
-        postId: postId,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    } else {
-      await likeDoc(postId).delete();
-    }
-  } catch (e) {
-    console.warn('Не удалось сохранить избранное в облако:', e.message);
-    toast('Отметка сохранена только в этом браузере');
-  }
+  if (!CLOUD.on || !getSession()) return Promise.resolve();
+  return cloudCall(liked ? 'like' : 'unlike', {post_id: postId}).catch(function (e) {
+    if (e.status === 401) { showAuthButton(); toast('Срок входа истёк — войдите снова'); return; }
+    var p = readPending(); p[postId] = liked; writePending(p);
+    toast('Нет связи с облаком — отметка сохранится, когда связь появится');
+  });
 }
 
-// При входе списки сводятся в обе стороны: облачные отметки приходят в
-// браузер, а те, что человек успел поставить до входа, уходят в облако.
-// Раньше они просто терялись из виду при переходе на другое устройство.
-async function syncLikesWithCloud() {
-  if (!FIREBASE_OK || !currentUser) return;
-  try {
-    var snap = await db.collection('likes')
-      .where('userId', '==', currentUser.uid).get();
-    var cloud = {};
-    snap.forEach(function (d) { cloud[d.data().postId] = true; });
-
-    var local = readLocalLikes(), merged = {}, k;
-    for (k in cloud) merged[k] = true;
-    for (k in local) if (local[k]) merged[k] = true;
-    writeLocalLikes(merged);
-
-    var upload = [];
-    for (k in merged) if (!cloud[k]) upload.push(k);
-    await Promise.all(upload.slice(0, 200).map(function (postId) {
-      return likeDoc(postId).set({
-        userId: currentUser.uid,
-        postId: postId,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    }));
-
-    var btn = document.getElementById('like-btn');
-    if (btn && merged[btn.dataset.postId]) {
-      btn.classList.add('liked');
-      btn.setAttribute('aria-pressed', 'true');
-      btn.setAttribute('aria-label', 'Убрать из избранного');
-    }
-    if (typeof updateFavList === 'function') updateFavList();
-  } catch (e) {
-    console.warn('Избранное из облака недоступно:', e.message);
-  }
-}
-
-// Работает и без аккаунта, и без Firebase вообще.
-async function toggleLike() {
+// Работает и без аккаунта: отметка всегда сначала ложится в браузер.
+function toggleLike() {
   var btn = document.getElementById('like-btn');
   if (!btn) return;
   var pid = btn.dataset.postId;
   var next = !readLocalLikes()[pid];
-  btn.classList.toggle('liked', next);
-  btn.setAttribute('aria-pressed', next ? 'true' : 'false');
-  btn.setAttribute('aria-label', next ? 'Убрать из избранного' : 'В избранное');
-  await syncLike(pid, next);
+  paintLike(next);
+  var done = syncLike(pid, next);
   try {
     if (window.opener && window.opener.updateFavList) window.opener.updateFavList();
   } catch (e) {}
+  return done;
 }
+
+showAuthButton();
+(function () {
+  var greet = null;
+  try { greet = sessionStorage.getItem('auth-greet'); sessionStorage.removeItem('auth-greet'); } catch (e) {}
+  var s = getSession();
+  // Поздороваться — только сразу после входа, а не на каждой странице.
+  if (greet && s) toast('Вы вошли как ' + (s.name || 'пользователь'));
+  cloudSync().then(function (changed) {
+    var btn = document.getElementById('like-btn');
+    if (changed && btn) paintLike(!!readLocalLikes()[btn.dataset.postId]);
+  });
+})();
 </script>
 </body></html>

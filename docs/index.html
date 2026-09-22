@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=9a23e70e">
+<link rel="stylesheet" href="style.css?v=142194d6">
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="index-page">
 <a href="#cards" class="skip-link">К галерее</a>
@@ -1452,35 +1452,89 @@ document.addEventListener('DOMContentLoaded', function() {
     applyFilters();
 });
 </script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
 <script>
-// Firebase — необязательная часть: если скрипты Google не загрузились,
-// главная должна продолжать работать (раньше падала вся страница).
-try {
-  if (typeof firebase !== 'undefined' && typeof firebaseConfig !== 'undefined') {
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    auth.onAuthStateChanged(user => {
-      if (!user) return;
-      // Запись существует — значит отмечено; снятая отметка удаляется.
-      // Поля liked больше нет: правила Firestore разрешают в записи
-      // ровно userId, postId и createdAt (см. FIRESTORE.md).
-      db.collection('likes')
-        .where('userId', '==', user.uid).get()
-        .then(snap => {
-          const cloud = {};
-          snap.forEach(d => cloud[d.data().postId] = true);
-          let local = {};
-          try { local = JSON.parse(localStorage.getItem('likes') || '{}'); } catch (e) {}
-          localStorage.setItem('likes', JSON.stringify({...local, ...cloud}));
-          updateFavList();
-        })
-        .catch(e => console.warn('Избранное из облака недоступно:', e.message));
+var CLOUD = {api: 'https://functions.yandexcloud.net/d4e2jv2t457u5oldt269', yandex: '7a85cd4ed113494c82722380127c35f1', vk: '',
+             redirect: 'https://oldpictureart.ru/auth.html', vkHost: 'https://id.vk.ru'};
+CLOUD.on = !!(CLOUD.api && (CLOUD.yandex || CLOUD.vk));
+
+function readLocalLikes() {
+  try { return JSON.parse(localStorage.getItem('likes') || '{}') || {}; } catch (e) { return {}; }
+}
+function writeLocalLikes(map) {
+  try { localStorage.setItem('likes', JSON.stringify(map)); } catch (e) {}
+}
+
+// Пропуск от функции: {token, name, provider, exp}. Сам токен подписан
+// на сервере, подделать его в браузере нельзя; здесь он только хранится.
+function getSession() {
+  try {
+    var s = JSON.parse(localStorage.getItem('session') || 'null');
+    if (s && s.token && s.exp * 1000 > Date.now()) return s;
+  } catch (e) {}
+  return null;
+}
+function setSession(s) {
+  try {
+    if (s) localStorage.setItem('session', JSON.stringify(s));
+    else { localStorage.removeItem('session'); localStorage.removeItem('likes-synced'); }
+  } catch (e) {}
+}
+
+// Все запросы — POST с Content-Type text/plain: так браузер не шлёт перед
+// каждым предварительный OPTIONS-запрос, и функции не нужно его ждать.
+function cloudCall(action, data) {
+  var body = {action: action}, k, s = getSession();
+  for (k in (data || {})) body[k] = data[k];
+  if (s && action !== 'login') body.token = s.token;
+  return fetch(CLOUD.api, {method: 'POST', body: JSON.stringify(body),
+                           headers: {'Content-Type': 'text/plain;charset=UTF-8'}})
+    .then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (r.status === 401) setSession(null);       // пропуск истёк — выходим
+        if (!r.ok) { var e = new Error(j.error || ('Ошибка ' + r.status)); e.status = r.status; throw e; }
+        return j;
+      });
     });
-  }
-} catch (e) { console.warn('Firebase недоступен:', e.message); }
+}
+
+// Отметки, которые не удалось отправить (не было сети), — отправим позже.
+function readPending() {
+  try { return JSON.parse(localStorage.getItem('likes-pending') || '{}') || {}; } catch (e) { return {}; }
+}
+function writePending(map) {
+  try {
+    if (Object.keys(map).length) localStorage.setItem('likes-pending', JSON.stringify(map));
+    else localStorage.removeItem('likes-pending');
+  } catch (e) {}
+}
+
+// Свести отметки браузера и облака.
+//   merge — сразу после входа: всё, что отмечено в браузере, уходит в облако.
+//   иначе — облако главное: снятая на телефоне отметка снимается и здесь.
+//     Не чаще раза в пять минут, чтобы не дёргать функцию на каждой странице.
+// Возвращает true, если список в браузере обновился.
+function cloudSync(mode) {
+  if (!CLOUD.on || !getSession()) return Promise.resolve(false);
+  var last = 0;
+  try { last = +localStorage.getItem('likes-synced') || 0; } catch (e) {}
+  if (mode !== 'merge' && mode !== 'force' && Date.now() - last < 5 * 60 * 1000) return Promise.resolve(false);
+  var local = readLocalLikes(), pending = readPending(), k, up = [], down = [];
+  for (k in (mode === 'merge' ? local : {})) if (local[k]) up.push(k);
+  for (k in pending) (pending[k] ? up : down).push(k);
+  return Promise.all(down.map(function (id) { return cloudCall('unlike', {post_id: id}); }))
+    .then(function () { return cloudCall('sync', {likes: up}); })
+    .then(function (j) {
+      var merged = {};
+      (j.likes || []).forEach(function (id) { merged[id] = true; });
+      writeLocalLikes(merged);
+      writePending({});
+      try { localStorage.setItem('likes-synced', String(Date.now())); } catch (e) {}
+      return true;
+    })
+    .catch(function (e) { console.warn('Избранное из облака недоступно:', e.message); return false; });
+}
+</script>
+<script>
+// Вошедшему в аккаунт — отметки из облака в список «Избранное».
+cloudSync().then(function (changed) { if (changed) updateFavList(); });
 </script></body></html>

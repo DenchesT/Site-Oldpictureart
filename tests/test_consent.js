@@ -136,11 +136,6 @@ const server = http.createServer((req, res) => {
   const meta = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'posts_meta.json'), 'utf8'));
   ok('имя в кнопке входа скрыто от Вебвизора',
      /id="auth-btn" class="[^"]*ym-hide-content/.test(fs.readFileSync(path.join(DOCS, meta[0].filename), 'utf8')));
-  ({ page } = await open(c3, '/' + encodeURIComponent(meta[0].filename)));
-  await page.evaluate(() => showAuthForm());
-  await page.waitForTimeout(200);
-  ok('Вебвизор не пишет, что вводят в поля входа',
-     await page.locator('#auth-email.ym-disable-keys, #auth-password.ym-disable-keys').count() === 2);
   await c3.close();
 
   // ------------------------------------------------ телефон

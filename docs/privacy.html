@@ -3,12 +3,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#eceef1" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#14181c" media="(prefers-color-scheme: dark)">
-<meta name="description" content="Какие данные собирает сайт Old Picture Art, зачем и как от этого отказаться: Яндекс Метрика, вход в аккаунт, настройки в браузере.">
+<meta name="description" content="Какие данные собирает сайт Old Picture Art, зачем и как от этого отказаться: Яндекс Метрика, вход через Яндекс ID и VK ID, настройки в браузере.">
 <meta name="color-scheme" content="light dark">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta property="og:title" content="Конфиденциальность — Old Picture Art">
-<meta property="og:description" content="Какие данные собирает сайт Old Picture Art, зачем и как от этого отказаться: Яндекс Метрика, вход в аккаунт, настройки в браузере.">
+<meta property="og:description" content="Какие данные собирает сайт Old Picture Art, зачем и как от этого отказаться: Яндекс Метрика, вход через Яндекс ID и VK ID, настройки в браузере.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Old Picture Art">
 <meta property="og:url" content="https://oldpictureart.ru/privacy.html">
@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=9a23e70e">
+<link rel="stylesheet" href="style.css?v=142194d6">
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="tag-page doc-page">
 <div class="tag-topbar">
@@ -44,7 +44,7 @@
   <ul>
     <li>Смотреть картины, искать, играть в квиз можно без регистрации и без согласия на статистику.</li>
     <li>Статистика посещений включается, только если вы её разрешили.</li>
-    <li>Почта хранится, только если вы сами завели аккаунт.</li>
+    <li>Аккаунт нужен только для переноса отметок между устройствами; вход — через Яндекс ID или VK ID. Номер аккаунта хранится, только если вы сами вошли.</li>
     <li>Данные не продаются и не передаются никому, кроме названных ниже сервисов.</li>
   </ul>
 </section>
@@ -65,7 +65,7 @@
     <li>cookie <code>_ym_uid</code>, <code>_ym_d</code>, <code>_ym_isad</code> и другие — чтобы отличить повторный визит от нового; самая долгая живёт год;</li>
     <li>IP-адрес, тип устройства, браузер, размер экрана, язык;</li>
     <li>адрес страницы и откуда вы на неё пришли;</li>
-    <li>действия на странице — прокрутку, нажатия, движение указателя (это Вебвизор). Что вы вводите в поля входа, не записывается.</li>
+    <li>действия на странице — прокрутку, нажатия, движение указателя (это Вебвизор).</li>
   </ul>
   <p>Имени, почты и телефона Метрика не получает.</p>
   <h3>Зачем</h3>
@@ -87,26 +87,27 @@
   <h2>Вход в аккаунт</h2>
   <p>Нужен только для одного — чтобы отмеченные картины были на всех ваших устройствах.
   Без входа отметки хранятся в вашем браузере и никуда не отправляются.</p>
+  <h3>Как входят</h3>
+  <p>Через Яндекс ID или VK ID. Пароль вы вводите на странице Яндекса или VK — сайт его
+  не видит. Яндекс или VK сообщают сайту номер вашего аккаунта у них и имя.</p>
   <h3>Что хранится</h3>
   <ul>
-    <li>почта;</li>
-    <li>служебный номер аккаунта, даты создания и последнего входа;</li>
-    <li>список отмеченных картин и время отметки.</li>
+    <li>номер аккаунта у Яндекса или VK и список отмеченных картин со временем отметки —
+    в базе на серверах Yandex Cloud в России;</li>
+    <li>имя — только в вашем браузере, чтобы показать его на кнопке; на сервер оно не записывается.</li>
   </ul>
-  <p>Пароль сайт не видит: его проверяет сервис входа.</p>
-  <h3>Где</h3>
-  <p>В сервисах Firebase Authentication и Cloud Firestore компании Google LLC, на серверах
-  за пределами России — <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">как Firebase
-  обращается с данными</a>.</p>
+  <p>Почту, телефон и список друзей сайт не запрашивает. Базу держит ООО «Яндекс.Облако»,
+  вход проверяют ООО «ЯНДЕКС» (Яндекс ID) и ООО «ВК» (VK ID) — каждый по своим правилам.</p>
   <h3>Как удалить</h3>
-  <p>Снятая отметка удаляется сразу. Чтобы удалить аккаунт целиком вместе с почтой, напишите <a href="https://t.me/oldpictureart" target="_blank" rel="noopener">через телеграм-канал @oldpictureart</a> —
-  удалю не позже чем через 30 дней.</p>
+  <p>Снятая отметка удаляется сразу. Все отметки разом — кнопкой «Удалить мои отметки из
+  облака» в окне аккаунта (нажмите на своё имя вверху страницы картины). Выйти из аккаунта
+  можно там же. Вопросы — <a href="https://t.me/oldpictureart" target="_blank" rel="noopener">через телеграм-канал @oldpictureart</a>.</p>
 </section>
-
 <section class="doc-block" id="browser">
   <h2>Что остаётся только в вашем браузере</h2>
-  <p>В хранилище браузера (localStorage) сайт запоминает тему оформления, отметки без
-  входа, счёт в квизе и ваш ответ насчёт статистики. Это не уходит ни на какой сервер;
+  <p>В хранилище браузера (localStorage) сайт запоминает тему оформления, отмеченные
+  картины, счёт в квизе и ваш ответ насчёт статистики, а если вы вошли — ещё пропуск для входа и ваше имя.
+  Отметки вошедших дублируются в облако (см. выше), остальное не уходит ни на какой сервер;
   стереть — очистить данные сайта в настройках браузера.</p>
 </section>
 
@@ -117,14 +118,15 @@
   <ul>
     <li>GitHub Pages — хостинг сайта (<a href="https://docs.github.com/ru/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">политика GitHub</a>);</li>
     <li>Google Fonts — шрифты;</li>
-    <li>gstatic.com и cdnjs.cloudflare.com — код входа в аккаунт и подбора цвета рамки;</li>
+    <li>cdnjs.cloudflare.com — код подбора цвета рамки;</li>
+    <li>functions.yandexcloud.net — отметки тех, кто вошёл в аккаунт;</li>
     <li>на карте собраний — подложки OpenStreetMap, OpenTopoMap, Esri и Яндекс Карт и библиотека карты с unpkg.com.</li>
   </ul>
 </section>
 
 <section class="doc-block" id="contact">
   <h2>Вопросы</h2>
-  <p>О данных, об удалении аккаунта и обо всём остальном — <a href="https://t.me/oldpictureart" target="_blank" rel="noopener">через телеграм-канал @oldpictureart</a>.</p>
+  <p>О данных, об удалении отметок из облака и обо всём остальном — <a href="https://t.me/oldpictureart" target="_blank" rel="noopener">через телеграм-канал @oldpictureart</a>.</p>
 </section>
 </main>
 <footer class="site-footer"><p class="footer-source">Собрано из канала <a href="https://t.me/oldpictureart" target="_blank" rel="noopener"><span class="icon-telegram" aria-hidden="true"></span>@oldpictureart</a></p><p class="footer-links"><a href="ukazatel.html">Указатель</a> · <a href="stats.html">Статистика</a> · <a href="museums.html">Карта собраний</a> · <a href="visits.html">Посещения</a> · <a href="feed.xml">RSS</a> · <a href="privacy.html">Конфиденциальность</a></p></footer>

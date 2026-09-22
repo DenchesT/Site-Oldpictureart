@@ -1429,41 +1429,43 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 
 .auth-modal p { color: var(--muted); font-size: .9rem; margin: 0 0 1.5rem; }
 
-.auth-input {
+/* Кнопки входа: Яндекс ID и VK ID. Значок сервиса — цветная плашка с
+   буквами, без чужих картинок: так кнопка не зависит от внешних файлов. */
+.auth-actions { display: flex; flex-direction: column; gap: .6rem; }
+.auth-provider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
   width: 100%;
   padding: .75rem 1rem;
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  font-size: .95rem;
-  font-family: inherit;
-  background: var(--bg);
+  background: var(--card-bg);
   color: var(--text);
-  margin-bottom: .75rem;
-  transition: border-color .2s;
-}
-
-.auth-input:focus { outline: none; border-color: var(--active); }
-
-.auth-submit {
-  width: 100%;
-  padding: .75rem;
-  background: var(--active);
-  color: var(--on-active);
-  border: none;
+  border: 1px solid var(--border);
   border-radius: 10px;
+  font: inherit;
   font-size: 1rem;
-  font-weight: 600;
   cursor: pointer;
-  font-family: inherit;
-  transition: opacity .2s;
-  margin-top: .25rem;
+  transition: border-color .2s, background .2s;
 }
-
-.auth-submit:hover { opacity: .9; }
-
-.auth-switch { margin-top: 1rem; font-size: .85rem; color: var(--muted); }
-
-.auth-switch a { color: var(--active); cursor: pointer; text-decoration: underline; }
+.auth-provider:hover { border-color: var(--active); background: var(--accent-soft); }
+.auth-provider:focus-visible { outline: 2px solid var(--active); outline-offset: 2px; }
+.auth-provider[disabled] { opacity: .55; cursor: progress; }
+.auth-yandex::before, .auth-vk::before {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  font-size: .85rem;
+  flex: none;
+}
+.auth-yandex::before { content: "Я"; background: #fc3f1d; }
+.auth-vk::before { content: "VK"; background: #0077ff; font-size: .7rem; border-radius: 6px; }
 
 .auth-error {
   color: var(--like-color);
@@ -1472,17 +1474,8 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
   min-height: 1.2rem;
 }
 
-/* Окно входа живёт в теме сайта.
-   Раньше здесь стояло color-scheme: light only !important и белые поля
-   через !important — защита от расширения Dark Reader. Ценой было то, что
-   в тёмной теме посреди тёмной страницы вспыхивал белый прямоугольник.
-   Цвета берутся из тех же переменных, что и вся страница, поэтому окно
-   выглядит частью сайта в обеих темах. */
-/* Занятая кнопка: видно, что нажатие принято и идёт запрос. */
-.auth-submit[disabled] {
-  opacity: .55;
-  cursor: progress;
-}
+/* Окно входа живёт в теме сайта: цвета берутся из тех же переменных,
+   что и вся страница, поэтому окно выглядит частью сайта в обеих темах. */
 
 .auth-error:empty { min-height: 0; margin-top: 0; }
 
@@ -1492,17 +1485,18 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
    Классы, которые ставит разметка отдельных страниц.
    ========================================================================== */
 
-/* Ссылки-кнопки в окне входа: это <button>, а выглядеть должны ссылкой */
+/* Ссылки-кнопки в окне аккаунта: это <button>, а выглядеть должны ссылкой */
 .auth-link {
   background: none;
   border: none;
   padding: 0;
   color: var(--link);
   font: inherit;
+  font-size: .9rem;
   cursor: pointer;
   text-decoration: underline;
 }
-.auth-reset-row { display: none; margin-top: var(--s1); }
+.auth-danger { color: var(--error); margin-top: .4rem; }
 
 /* Переходы к соседним работам */
 .prev-post, .next-post { max-width: 48%; }

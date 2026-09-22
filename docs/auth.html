@@ -1,0 +1,152 @@
+<!DOCTYPE html><html lang="ru" data-theme="light"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#eceef1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14181c" media="(prefers-color-scheme: dark)">
+<meta name="description" content="Вход в аккаунт Old Picture Art.">
+<meta name="color-scheme" content="light dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta property="og:title" content="Вход — Old Picture Art">
+<meta property="og:description" content="Вход в аккаунт Old Picture Art.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Old Picture Art">
+<meta name="twitter:card" content="summary_large_image">
+<title>Вход — Old Picture Art</title>
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<link rel="alternate" type="application/rss+xml" title="Old Picture Art" href="feed.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css?v=142194d6">
+<meta name="robots" content="noindex">
+<script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+</head><body class="error-page">
+<main class="error-box">
+  <h1 id="auth-status">Входим…</h1>
+  <p class="error-text" id="auth-msg" role="status">Минуту — сверяемся с Яндексом или VK.</p>
+  <p><a class="random-btn" id="auth-back" href="./">Вернуться на сайт</a></p>
+</main>
+<script>
+var CLOUD = {api: 'https://functions.yandexcloud.net/d4e2jv2t457u5oldt269', yandex: '7a85cd4ed113494c82722380127c35f1', vk: '',
+             redirect: 'https://oldpictureart.ru/auth.html', vkHost: 'https://id.vk.ru'};
+CLOUD.on = !!(CLOUD.api && (CLOUD.yandex || CLOUD.vk));
+
+function readLocalLikes() {
+  try { return JSON.parse(localStorage.getItem('likes') || '{}') || {}; } catch (e) { return {}; }
+}
+function writeLocalLikes(map) {
+  try { localStorage.setItem('likes', JSON.stringify(map)); } catch (e) {}
+}
+
+// Пропуск от функции: {token, name, provider, exp}. Сам токен подписан
+// на сервере, подделать его в браузере нельзя; здесь он только хранится.
+function getSession() {
+  try {
+    var s = JSON.parse(localStorage.getItem('session') || 'null');
+    if (s && s.token && s.exp * 1000 > Date.now()) return s;
+  } catch (e) {}
+  return null;
+}
+function setSession(s) {
+  try {
+    if (s) localStorage.setItem('session', JSON.stringify(s));
+    else { localStorage.removeItem('session'); localStorage.removeItem('likes-synced'); }
+  } catch (e) {}
+}
+
+// Все запросы — POST с Content-Type text/plain: так браузер не шлёт перед
+// каждым предварительный OPTIONS-запрос, и функции не нужно его ждать.
+function cloudCall(action, data) {
+  var body = {action: action}, k, s = getSession();
+  for (k in (data || {})) body[k] = data[k];
+  if (s && action !== 'login') body.token = s.token;
+  return fetch(CLOUD.api, {method: 'POST', body: JSON.stringify(body),
+                           headers: {'Content-Type': 'text/plain;charset=UTF-8'}})
+    .then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (r.status === 401) setSession(null);       // пропуск истёк — выходим
+        if (!r.ok) { var e = new Error(j.error || ('Ошибка ' + r.status)); e.status = r.status; throw e; }
+        return j;
+      });
+    });
+}
+
+// Отметки, которые не удалось отправить (не было сети), — отправим позже.
+function readPending() {
+  try { return JSON.parse(localStorage.getItem('likes-pending') || '{}') || {}; } catch (e) { return {}; }
+}
+function writePending(map) {
+  try {
+    if (Object.keys(map).length) localStorage.setItem('likes-pending', JSON.stringify(map));
+    else localStorage.removeItem('likes-pending');
+  } catch (e) {}
+}
+
+// Свести отметки браузера и облака.
+//   merge — сразу после входа: всё, что отмечено в браузере, уходит в облако.
+//   иначе — облако главное: снятая на телефоне отметка снимается и здесь.
+//     Не чаще раза в пять минут, чтобы не дёргать функцию на каждой странице.
+// Возвращает true, если список в браузере обновился.
+function cloudSync(mode) {
+  if (!CLOUD.on || !getSession()) return Promise.resolve(false);
+  var last = 0;
+  try { last = +localStorage.getItem('likes-synced') || 0; } catch (e) {}
+  if (mode !== 'merge' && mode !== 'force' && Date.now() - last < 5 * 60 * 1000) return Promise.resolve(false);
+  var local = readLocalLikes(), pending = readPending(), k, up = [], down = [];
+  for (k in (mode === 'merge' ? local : {})) if (local[k]) up.push(k);
+  for (k in pending) (pending[k] ? up : down).push(k);
+  return Promise.all(down.map(function (id) { return cloudCall('unlike', {post_id: id}); }))
+    .then(function () { return cloudCall('sync', {likes: up}); })
+    .then(function (j) {
+      var merged = {};
+      (j.likes || []).forEach(function (id) { merged[id] = true; });
+      writeLocalLikes(merged);
+      writePending({});
+      try { localStorage.setItem('likes-synced', String(Date.now())); } catch (e) {}
+      return true;
+    })
+    .catch(function (e) { console.warn('Избранное из облака недоступно:', e.message); return false; });
+}
+</script>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var flow = null;
+  try { flow = JSON.parse(sessionStorage.getItem('auth-flow') || 'null'); sessionStorage.removeItem('auth-flow'); } catch (e) {}
+  // Вернуть можно только на свой же сайт — чужой адрес в back не пройдёт.
+  var back = './';
+  try { if (flow && flow.back && new URL(flow.back).origin === location.origin) back = flow.back; } catch (e) {}
+  document.getElementById('auth-back').href = back;
+
+  function fail(text) {
+    document.getElementById('auth-status').textContent = 'Войти не получилось';
+    document.getElementById('auth-msg').textContent = text;
+  }
+  if (!CLOUD.on) return fail('Вход на сайте сейчас выключен.');
+  if (q.get('error')) {
+    return fail(q.get('error') === 'access_denied' ? 'Вход отменён.'
+                : 'Ответ сервиса входа: ' + (q.get('error_description') || q.get('error')));
+  }
+  if (!flow || !q.get('code') || q.get('state') !== flow.state) {
+    return fail('Не удалось проверить, что это ваш вход. Попробуйте войти ещё раз.');
+  }
+  var data = {provider: flow.provider, code: q.get('code'), state: q.get('state')};
+  if (flow.provider === 'vk') { data.code_verifier = flow.verifier; data.device_id = q.get('device_id'); }
+  cloudCall('login', data)
+    .then(function (j) {
+      setSession({token: j.token, name: j.name, provider: j.provider, exp: j.exp});
+      return cloudSync('merge');
+    })
+    .then(function () {
+      try { sessionStorage.setItem('auth-greet', '1'); } catch (e) {}
+      location.replace(back);
+    })
+    .catch(function (e) { fail(e.message || 'Сервер не ответил. Попробуйте позже.'); });
+})();
+</script>
+</body></html>
