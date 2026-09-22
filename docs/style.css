@@ -498,6 +498,13 @@ time { color: var(--muted); font-family: var(--ff-data); font-size: var(--fs-sm)
 .filter-reset.visible { display: block; }
 .filter-reset:hover { border-color: var(--reset-text); }
 
+/* «Избранное»: значок и название прижаты влево. Общее правило .sidebar a
+   растягивает строку (space-between) — это нужно спискам с числом справа,
+   а здесь у короткого названия текст уезжал к правому краю, и одна
+   строка стояла с отступом, а соседние — нет. */
+#fav-list a { justify-content: flex-start; }
+#fav-list a > span { flex: none; }
+
 .fav-empty { color: var(--muted); font-size: var(--fs-sm); padding: var(--s2); }
 .fav-empty .icon-heart { display: inline-block; width: 13px; height: 13px; vertical-align: middle; }
 
