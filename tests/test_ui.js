@@ -33,8 +33,11 @@ const LAUNCH = process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PA
     ok(`${theme}: элементы управления одной высоты`, new Set(hs).size===1, hs.join('/'));
 
     // подписи разделов сайдбара выровнены по левому краю
+    // Скрытые разделы (например «Популярное», пока отметок нет) не в счёт:
+    // у невидимого элемента координаты нулевые.
     const lefts = await p.evaluate(()=>[...document.querySelectorAll('.sidebar-content')].length &&
-      [...document.querySelectorAll('.sidebar-title')].map(t=>Math.round(t.getBoundingClientRect().left)));
+      [...document.querySelectorAll('.sidebar-title')].filter(t=>t.offsetParent !== null)
+        .map(t=>Math.round(t.getBoundingClientRect().left)));
     ok(`${theme}: разделы сайдбара выровнены`, new Set(lefts).size===1, [...new Set(lefts)].join('/'));
 
     // кольцо прогресса не пропадает при наведении

@@ -146,25 +146,33 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
   // ------------------------------------------------ главная
   await page.goto(`${BASE}/`);
   await page.waitForTimeout(400);
-  await page.waitForTimeout(300);
+  await page.waitForTimeout(400);
   const pop = await page.evaluate(() => ({
     shown: !document.getElementById('popular').hidden,
+    inSidebar: !!document.getElementById('popular').closest('.sidebar'),
+    open: document.querySelector('#popular .sidebar-title').getAttribute('aria-expanded') === 'true',
+    label: document.getElementById('popular-count').textContent,
     items: [...document.querySelectorAll('#popular-list li a')].map(a => ({
-      href: a.getAttribute('href'), n: a.querySelector('.popular-count').textContent.replace(/\D+/g, ''),
-      img: !!a.querySelector('img'), name: a.querySelector('.popular-name').textContent })),
+      href: a.getAttribute('href'),
+      n: a.querySelector('.popular-count').textContent.replace(/\D+/g, ''),
+      img: !!a.querySelector('img'),
+      name: a.querySelector('.popular-name').textContent,
+    })),
   }));
-  ok('на главной — «Популярное у посетителей»', pop.shown && pop.items.length >= 3, `${pop.items.length} картин`);
+  ok('«Популярное» — раздел сайдбара, рядом с «Избранным»', pop.shown && pop.inSidebar && pop.open,
+     JSON.stringify({ shown: pop.shown, inSidebar: pop.inSidebar, open: pop.open }));
+  ok('у раздела число картин в заголовке', pop.label === '(3)', pop.label);
   const seededFiles = SEEDED.map(id => META.find(p => String(p.id) === id).filename);
-  ok('в «Популярном» — отмеченные картины со ссылками и картинками',
-     pop.items.every(i => seededFiles.concat(['']).includes(i.href) || i.href) &&
-     seededFiles.every(f => pop.items.some(i => i.href === f)) && pop.items.every(i => i.img && i.name && +i.n >= 1),
+  ok('в «Популярном» — отмеченные картины со ссылками, миниатюрами и числами',
+     seededFiles.every(f => pop.items.some(i => i.href === f)) &&
+     pop.items.every(i => i.img && i.name && +i.n >= 1),
      pop.items.map(i => i.href + ':' + i.n).join(' '));
-  await page.fill('#search', 'ренуар');
-  await page.waitForTimeout(300);
-  ok('во время поиска «Популярное» убирается', await page.evaluate(
-     () => getComputedStyle(document.getElementById('popular')).display === 'none'));
-  await page.fill('#search', '');
-  await page.waitForTimeout(200);
+  ok('список картин начинается сразу, без полки наверху',
+     await page.evaluate(() => {
+       const cards = document.getElementById('cards').getBoundingClientRect().top;
+       const bar = document.querySelector('.results-bar').getBoundingClientRect().top;
+       return cards > 0 && bar < cards && bar < 500;
+     }));
   ok('на главной «Избранное» знает облачную отметку',
      await page.evaluate(() => /\(1\)/.test((document.getElementById('fav-count') || {}).textContent || '')),
      await page.evaluate(() => (document.getElementById('fav-count') || {}).textContent));
@@ -230,7 +238,7 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
   ok('и числа у сердечка тоже нет', await page.isHidden('#like-count'));
   await page.goto(`${BASE}/?noauth`);
   await page.waitForTimeout(400);
-  ok('и «Популярного» на главной нет', await page.evaluate(() => document.getElementById('popular').hidden));
+  ok('и раздела «Популярное» в сайдбаре нет', await page.evaluate(() => document.getElementById('popular').hidden));
 
   ok('нет ошибок JS', errs.length === 0, errs.join(' | '));
 

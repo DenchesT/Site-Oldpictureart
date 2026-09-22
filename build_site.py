@@ -1825,6 +1825,14 @@ def render_index(all_posts):
                 'aria-expanded="false" onclick="toggleSection(this)">Избранное '
                 '<span id="fav-count" class="count"></span></button>'
                 f'<div class="sidebar-content collapsed"><ul id="fav-list">{empty_fav}</ul></div></div>')
+    # «Популярное у посетителей» — рядом с «Избранным»: то же по сути,
+    # только отметки чужие. Раздел появляется, когда список пришёл из
+    # облака; пока отмеченных картин мало, в сайдбаре ничего не висит.
+    popular_html = ('<div class="sidebar-section" id="popular" hidden>'
+                    '<button type="button" class="sidebar-title sidebar-icon icon-popular open" '
+                    'aria-expanded="true" onclick="toggleSection(this)">Популярное '
+                    '<span id="popular-count" class="count"></span></button>'
+                    '<div class="sidebar-content"><ul id="popular-list"></ul></div></div>')
     theme_html = ('<div class="sidebar-section"><button type="button" class="sidebar-title sidebar-icon icon-theme no-arrow" '
                   'data-theme-toggle aria-pressed="false" onclick="toggleTheme()">Тема</button></div>')
     quiz_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-quiz no-arrow" '
@@ -1886,6 +1894,7 @@ def render_index(all_posts):
 {section('icon-material', 'Материал', mth)}
 {section('icon-technique', 'Техника', th)}
 {fav_html}
+{popular_html}
 {theme_html}
 {map_link_html}
 {visits_link_html}
@@ -1895,10 +1904,6 @@ def render_index(all_posts):
 {quiz_link_html}
 {timeline_link_html}
 </aside><main class="main-content">
-<section class="popular" id="popular" aria-labelledby="popular-title" hidden>
-  <h2 class="popular-title" id="popular-title">Популярное у посетителей</h2>
-  <ol class="popular-list" id="popular-list"></ol>
-</section>
 <div class="results-bar">
   <span id="results-count" class="results-count" role="status" aria-live="polite"></span>
   <div class="bar-controls">
@@ -2114,9 +2119,6 @@ function applyFilters() {{
                          activeFilters.from !== null || activeFilters.to !== null);
     const resetBtn = document.getElementById('reset-filter');
     if (resetBtn) resetBtn.classList.toggle('visible', hasActive);
-    // Пока человек ищет или фильтрует, «Популярное» только мешает.
-    const popular = document.getElementById('popular');
-    if (popular) popular.classList.toggle('is-filtered', hasActive);
 
     const counter = document.getElementById('results-count');
     if (counter) counter.textContent = hasActive ? (visible + ' ' + plural(visible, 'картина', 'картины', 'картин')) : '';
@@ -2263,27 +2265,22 @@ if (CLOUD.on) cloudCall('top', {{limit: 6}}).then(function (j) {{
     var li = document.createElement('li');
     var a = document.createElement('a');
     a.href = info.file;
+    a.className = 'popular-link';
+    a.title = info.artist ? info.artist + ' — ' + info.title : info.title;
     if (info.thumb) {{
       var img = document.createElement('img');
       img.src = info.thumb; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
-      img.width = 160; img.height = 120;
+      img.width = 34; img.height = 34;
       a.appendChild(img);
     }}
     var name = document.createElement('span');
     name.className = 'popular-name';
     name.textContent = info.title;
     a.appendChild(name);
-    if (info.artist) {{
-      var who = document.createElement('span');
-      who.className = 'popular-artist';
-      who.textContent = info.artist;
-      a.appendChild(who);
-    }}
     var cnt = document.createElement('span');
-    cnt.className = 'popular-count';
+    cnt.className = 'popular-count count';
     cnt.innerHTML = '<span class="icon-heart" aria-hidden="true"></span> ';
     cnt.appendChild(document.createTextNode(n));
-    cnt.title = 'Добавили в избранное: ' + n;
     var hidden = document.createElement('span');
     hidden.className = 'visually-hidden';
     hidden.textContent = ' — добавили в избранное';
@@ -2292,6 +2289,7 @@ if (CLOUD.on) cloudCall('top', {{limit: 6}}).then(function (j) {{
     li.appendChild(a);
     list.appendChild(li);
   }});
+  document.getElementById('popular-count').textContent = '(' + items.length + ')';
   document.getElementById('popular').hidden = false;
 }}).catch(function () {{}});
 </script></body></html>"""

@@ -1255,6 +1255,7 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 .icon-fav::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e74c3c' stroke-width='2'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/%3E%3C/svg%3E"); }
 .icon-theme::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='5'/%3E%3Cpath d='M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42'/%3E%3C/svg%3E"); }
 .icon-map::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M1 6v16l7-5 8 5 7-5V2l-7 5-8-5-7 5z'/%3E%3C/svg%3E"); }
+.icon-popular::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpolygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/%3E%3C/svg%3E"); }
 .icon-quiz::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E"); }
 .icon-timeline::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cpolyline points='8 5 3 12 8 19'/%3E%3Cpolyline points='16 5 21 12 16 19'/%3E%3C/svg%3E"); }
 /* Посещения — билет: раздел про то, куда ходил, а не про то, что висит. */
@@ -1270,6 +1271,7 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 [data-theme="dark"] .icon-technique::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpath d='m12 19 7-7 3 3-7 7-3-3z'/%3E%3Cpath d='m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z'/%3E%3C/svg%3E"); }
 [data-theme="dark"] .icon-theme::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='5'/%3E%3Cpath d='M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42'/%3E%3C/svg%3E"); }
 [data-theme="dark"] .icon-map::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpath d='M1 6v16l7-5 8 5 7-5V2l-7 5-8-5-7 5z'/%3E%3C/svg%3E"); }
+[data-theme="dark"] .icon-popular::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpolygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/%3E%3C/svg%3E"); }
 [data-theme="dark"] .icon-quiz::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E"); }
 [data-theme="dark"] .icon-tg::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23aaa'%3E%3Cpath d='M21.9 4.3 18.8 19c-.2 1-.9 1.3-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-.9.5l.3-4.7 8.6-7.8c.4-.3-.1-.5-.6-.2L6.9 13.1 2.3 11.6c-1-.3-1-1 .2-1.5l18.1-7c.8-.3 1.5.2 1.3 1.2z'/%3E%3C/svg%3E"); }
 [data-theme="dark"] .icon-timeline::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cpolyline points='8 5 3 12 8 19'/%3E%3Cpolyline points='16 5 21 12 16 19'/%3E%3C/svg%3E"); }
@@ -2261,66 +2263,29 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 /* Число рядом с сердечком: сколько человек добавили картину в избранное */
 .like-count { font-variant-numeric: tabular-nums; letter-spacing: 0; }
 
-/* Полка на главной: до шести самых отмечаемых картин. На узком экране —
-   лента, которую листают пальцем, а не столбик на три экрана. */
-.popular { margin: 0 0 var(--s5); }
-.popular.is-filtered { display: none; }
-.popular-title {
-  font-size: var(--fs-lg);
-  margin: 0 0 var(--s3);
-  padding-bottom: var(--s2);
-  border-bottom: 1px solid var(--border);
-}
-.popular-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: var(--s4);
-}
-.popular-list a { display: flex; flex-direction: column; gap: 2px; color: var(--text); text-decoration: none; }
-.popular-list a:hover .popular-name { text-decoration: underline; }
-.popular-list a:focus-visible { outline: 2px solid var(--active); outline-offset: 3px; }
-.popular-list img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 4 / 3;
+/* «Популярное у посетителей» — раздел сайдбара рядом с «Избранным»:
+   маленькая миниатюра, название и число отметок. Полка во всю ширину над
+   списком съедала пол-экрана до первой картины. */
+.popular-link { align-items: center !important; }
+.popular-link img {
+  width: 34px;
+  height: 34px;
   object-fit: cover;
+  flex: none;
   background: var(--panel);
-  box-shadow: 0 1px 3px var(--shadow);
-  margin-bottom: var(--s1);
+  box-shadow: 0 1px 2px var(--shadow);
 }
 .popular-name {
+  flex: 1;
   font-size: var(--fs-sm);
-  line-height: 1.3;
+  line-height: 1.25;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.popular-artist { font-size: var(--fs-xs); color: var(--muted); }
-.popular-count {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-family: var(--ff-data);
-  font-size: var(--fs-xs);
-  color: var(--like-color);
-}
-.popular-count .icon-heart { width: 12px; height: 12px; }
-
-@media (max-width: 900px) {
-  .popular-list {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    grid-auto-columns: 42%;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding-bottom: var(--s2);
-  }
-  .popular-list li { scroll-snap-align: start; }
-}
+.popular-count { color: var(--like-color); display: inline-flex; align-items: center; gap: 3px; flex: none; }
+.popular-count .icon-heart { width: 11px; height: 11px; }
 
 /* ==========================================================================
    СОГЛАСИЕ НА СТАТИСТИКУ И СТРАНИЦА О ДАННЫХ
