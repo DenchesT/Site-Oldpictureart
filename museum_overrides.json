@@ -22,7 +22,9 @@
     "address": "улица Волхонка, 12, Москва"
   },
   "ГРМ, Санкт-Петербург": {
-    "query": "Государственный Русский музей"
+    "query": "Государственный Русский музей",
+    "site": "https://rusmuseum.ru",
+    "address": "Инженерная улица, 2-4Д, Санкт-Петербург"
   },
   "Государственный музей Тюрингии, Хайдексбург": {
     "query": "Schloss Heidecksburg",
@@ -96,7 +98,7 @@
   },
   "Музей Фабра, Монпелье": {
     "query": "Musée Fabre",
-    "site": "https://museefabre.montpellier3m.fr",
+    "site": "https://www.museefabre.fr",
     "address": "39 boulevard Bonne Nouvelle, Montpellier"
   },
   "Музей Эжена Будена, Онфлёр": {
@@ -267,7 +269,9 @@
     "country": "Россия"
   },
   "The National Museum of Western Art": {
-    "same_as": "Национальный музей западного искусства, Токио"
+    "same_as": "Национальный музей западного искусства, Токио",
+    "site": "https://www.nmwa.go.jp/en",
+    "address": "7-7 Ueno Imperial Grant Park, Taitō, Tokyo"
   },
   "Новосибирский государственный художественный музей": {
     "address": "Красный проспект, 5, Новосибирск"
@@ -285,18 +289,32 @@
     "address": "улица Радищева, 39, Саратов"
   },
   "Ассоциация \"Живопись в Нормандии\", Довиль": {
-    "country": "Франция"
+    "country": "Франция",
+    "address": "Deauville"
   },
   "Государственные художественные собрания Дрездена, Дрезден": {
-    "country": "Германия"
+    "country": "Германия",
+    "site": "https://www.skd.museum",
+    "address": "Tzschirnerplatz 2, Dresden"
   },
   "Национальный музей Швеции, Стокгольм": {
-    "country": "Швеция"
+    "country": "Швеция",
+    "site": "https://www.nationalmuseum.se",
+    "address": "Södra Blasieholmshamnen 2, Stockholm"
   },
   "Национальный музей искусства, архитектуры и дизайна, Осло": {
-    "country": "Норвегия"
+    "country": "Норвегия",
+    "lat": 59.911627,
+    "lon": 10.729235,
+    "query": "Nasjonalmuseet",
+    "site": "https://www.nasjonalmuseet.no",
+    "address": "Brynjulf Bulls plass 3, Oslo"
   },
   "Тегеранский музей современного искусства, Тегеран": {
-    "country": "Иран"
+    "country": "Иран",
+    "lat": 35.711217,
+    "lon": 51.390500,
+    "site": "https://tmoca.com",
+    "address": "Парк Лале, Тегеран"
   }
 }

@@ -8,6 +8,7 @@ import json
 import os
 import re
 import time
+import difflib
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -105,9 +106,57 @@ def wikidata_search(query):
 
 # --------------------------------------------------------------- Nominatim
 
-def nominatim_search(query):
-    """Один запрос к Nominatim (OpenStreetMap)."""
-    params = {'q': query, 'format': 'json', 'limit': 1, 'accept-language': 'ru'}
+# Род объекта, как его понимает OpenStreetMap: «tourism=museum»,
+# «amenity=fast_food». По адресу музея геокодер с равным правом отдаёт
+# и само здание, и кофейню в его вестибюле — так Художественный музей
+# Платтсбурга однажды оказался «Tim Hortons, 101 Broad Street».
+KIND_SCORE = {
+    'tourism': {'museum': 5, 'gallery': 5, 'attraction': 3, 'artwork': 2},
+    'amenity': {'arts_centre': 4, 'exhibition_centre': 4, 'library': 3,
+                'university': 2, 'college': 2, 'theatre': 2, 'townhall': 2,
+                'place_of_worship': 2},
+    'historic': {'*': 3},
+    'man_made': {'*': 1},
+    'building': {'*': 1},
+}
+# Что музеем не бывает никогда: такие находки сборка отмечает в конце.
+NOT_MUSEUM = {'fast_food', 'cafe', 'restaurant', 'bar', 'pub', 'fuel', 'bank',
+              'pharmacy', 'parking', 'supermarket', 'convenience', 'hotel',
+              'hostel', 'bus_stop', 'bicycle_parking', 'atm', 'toilets',
+              'car_wash', 'hairdresser', 'bakery', 'clothes', 'kiosk'}
+
+
+def kind_of(item):
+    """Род находки Nominatim одной строкой: «tourism=museum»."""
+    cls, typ = (item.get('class') or ''), (item.get('type') or '')
+    return f"{cls}={typ}" if cls and typ else ''
+
+
+def kind_score(kind):
+    """Насколько находка похожа на музей: больше — лучше, 0 — не похожа."""
+    cls, _, typ = (kind or '').partition('=')
+    table = KIND_SCORE.get(cls) or {}
+    return table.get(typ, table.get('*', 0))
+
+
+def odd_kind(kind):
+    """Точно не музей: кофейня, заправка, магазин. Пустая строка —
+    старая запись в кэше, о роде объекта ничего не известно, не судим."""
+    cls, _, typ = (kind or '').partition('=')
+    if not cls or kind_score(kind):
+        return False
+    return cls == 'shop' or typ in NOT_MUSEUM
+
+
+def nominatim_search(query, limit=5):
+    """Запрос к Nominatim (OpenStreetMap).
+
+    Из нескольких находок берём ту, что больше похожа на музей. Раньше
+    брали первую попавшуюся (limit=1), и по адресу музея находилась
+    кофейня в том же доме. Порядок Nominatim при этом сохраняется: он
+    сортирует по значимости, и при равном роде объекта побеждает первый.
+    """
+    params = {'q': query, 'format': 'json', 'limit': limit, 'accept-language': 'ru'}
     try:
         data = _get_json('https://nominatim.openstreetmap.org/search?' + urllib.parse.urlencode(params))
     except Exception as e:
@@ -117,12 +166,15 @@ def nominatim_search(query):
     time.sleep(1.1)  # правила Nominatim: не чаще одного запроса в секунду
     if not data:
         return None
+    best = max(range(len(data)), key=lambda i: (kind_score(kind_of(data[i])), -i))
+    item = data[best]
     return {
-        'lat': float(data[0]['lat']),
-        'lon': float(data[0]['lon']),
-        'display_name': data[0].get('display_name', query),
+        'lat': float(item['lat']),
+        'lon': float(item['lon']),
+        'display_name': item.get('display_name', query),
         'source': 'nominatim',
         'precision': 'exact',
+        'kind': kind_of(item),
     }
 
 
@@ -312,7 +364,18 @@ def geocode(museum_name, cache, overrides=None, retry_failed=False, offline=Fals
             known = cached.get('hint')
             changed = (known != wanted_hint) if known is not None else (
                 bool(wanted_query) and cached.get('query', '') != wanted_query)
-            if changed:
+            # Записи, сделанные прежним поиском, брали первую находку
+            # Nominatim — так в кэше оказывались кофейни в вестибюле.
+            # Такую запись переспрашиваем один раз: теперь из нескольких
+            # находок выбирается похожая на музей, а род объекта
+            # записывается и служит проверкой на будущее.
+            if (not changed and cached.get('source') == 'nominatim'
+                    and 'kind' not in cached):
+                logger.info(f"  ↻ прежняя запись без рода объекта, "
+                            f"проверяю заново: {museum_name}")
+                stale = cached
+                changed = True
+            elif changed:
                 logger.info(f"  ↻ подсказка изменилась, ищу заново: {museum_name}")
                 stale = cached
             else:
@@ -1344,16 +1407,208 @@ def visit_link(v):
             f'<span class="visit-tag">{h(kind)}</span></a></li>')
 
 
-def generate_museums_page(retry_failed=False, offline=False):
+# ======================================================================
+#                  РАЗБОР ПОЛЁТОВ:  generate_map.py --check
+# ======================================================================
+#
+# Метка встала не туда — обычное дело: геокодер отдаёт одноимённое
+# заведение в другом городе, кофейню в вестибюле музея или просто центр
+# города. Часть таких находок сборка отбрасывает сама (см. accept), но
+# всё поймать нельзя, а глазами 60 меток не пересмотришь.
+#
+#     python generate_map.py --check
+#
+# Отчёт ничего не меняет: он только показывает, на что посмотреть, и
+# пишет готовые строки для museum_overrides.json. Сеть нужна лишь для
+# проверки ссылок на сайты музеев (--no-sites — без неё).
+
+
+def city_named(city, display_name):
+    """Есть ли город из названия музея в найденном адресе.
+
+    Сверяем нестрого: «Нортхемптон» и «Нортгемптон» — один город, а
+    «Хайдексбург» и «Rudolstadt» — нет. Строгое сравнение ругалось бы
+    на каждую вторую метку.
+    """
+    if not city or not display_name:
+        return True
+    def norm(s):
+        return re.sub(r'[^а-яa-z]', '', (s or '').lower().replace('ё', 'е'))
+
+    def close(a, b):
+        """Похожи ли два названия. «Псков» и «Псковская» — нет: иначе
+        музей, уехавший в Опочку Псковской области, сошёл бы за свой."""
+        if not a or not b:
+            return False
+        if a == b:
+            return True
+        if (a in b or b in a) and abs(len(a) - len(b)) <= 2:
+            return True
+        return difflib.SequenceMatcher(None, a, b).ratio() >= 0.82
+
+    want = norm(city)
+    if not want:
+        return True
+    for part in display_name.split(','):
+        if close(want, norm(part)):
+            return True
+        for word in part.split():
+            if close(want, norm(word)):
+                return True
+    return False
+
+
+def map_warnings(museums, cache, overrides):
+    """Метки, на которые стоит посмотреть. Сеть не нужна: судим по тому,
+    что уже записано в кэше координат.
+
+    Возвращает список пар (название музея, что не так).
+    """
+    out = []
+    points = []
+    for museum in sorted(museums):
+        manual = overrides.get(museum) or {}
+        if manual.get('skip'):
+            continue
+        loc = cache.get(museum)
+        if not loc:
+            continue        # про «не нашлось» пишет сама сборка, отдельной строкой
+        if 'lat' in manual and 'lon' in manual:
+            # Метка поставлена руками — обсуждать нечего. В список точек
+            # всё же кладём: двойники ищутся и среди таких.
+            points.append((museum, {'lat': float(manual['lat']), 'lon': float(manual['lon'])}))
+            continue
+        kind = loc.get('kind', '')
+        name = (loc.get('display_name') or '').strip()
+        if odd_kind(kind):
+            out.append((museum, f"нашлось «{name[:60]}» ({kind}) — это не музей"))
+        elif (not (manual.get('address') or '').strip()
+              and not (loc.get('source') or '').startswith('wikidata')
+              and not city_named(museum_city(museum, manual), name)):
+            out.append((museum, f"города «{museum_city(museum, manual)}» нет "
+                                f"в найденном адресе ({name[:60]})"))
+        if loc.get('precision') == 'approx':
+            out.append((museum, "метка приблизительная — поставлена по городу"))
+        if loc.get('lat') is not None:
+            points.append((museum, loc))
+
+    # Две метки в одной точке — обычно один и тот же дом, записанный
+    # в постах по-разному: на карте они наложатся друг на друга.
+    for i, (m1, l1) in enumerate(points):
+        for m2, l2 in points[i + 1:]:
+            try:
+                if distance_km(l1, l2) < 0.05:
+                    out.append((m1, f"стоит ровно там же, где «{m2}»"))
+            except (KeyError, TypeError, ValueError):
+                continue
+    return out
+
+
+def check_site(url, timeout=15):
+    """Открывается ли ссылка «Сайт музея». Возвращает (всё ли хорошо, что именно)."""
+    req = urllib.request.Request(url, method='HEAD', headers={
+        'User-Agent': 'OldPictureArt/1.0 (+https://oldpictureart.ru)'})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            final = resp.geturl()
+    except urllib.error.HTTPError as e:
+        if e.code in (400, 403, 405, 501):
+            # Иные сайты на HEAD обижаются — спросим обычным способом.
+            try:
+                req = urllib.request.Request(url, headers={
+                    'User-Agent': 'OldPictureArt/1.0 (+https://oldpictureart.ru)'})
+                with urllib.request.urlopen(req, timeout=timeout) as resp:
+                    final = resp.geturl()
+            except Exception as e2:
+                return False, f"не открывается ({e2})"
+        else:
+            return False, f"ответ {e.code}"
+    except Exception as e:
+        return False, f"не открывается ({e})"
+    def host_of(link):
+        return re.sub(r'^www\.', '', urllib.parse.urlsplit(link).netloc.lower())
+
+    host, new_host = host_of(url), host_of(final)
+    if new_host and new_host != host:
+        return False, f"уводит на другой адрес: {final}"
+    return True, ""
+
+
+def check_map(sites=True):
+    """Отчёт о метках и ссылках. Ничего не меняет и не пересобирает."""
+    museums_dict, _ = collect_places()
+    if museums_dict is None:
+        return 0
+    cache = load_cache()
+    overrides = load_overrides()
+    museums = sorted(museums_dict.keys())
+
+    print("\n════════ ПРОВЕРКА КАРТЫ ════════")
+
+    missing = [m for m in museums
+               if not cache.get(m) and not (overrides.get(m) or {}).get('skip')]
+    if missing:
+        print(f"\nБез координат: {len(missing)}. Впишите их в {OVERRIDES_FILE}:")
+        for m in missing:
+            print(f'    "{m}": {{"lat": 0.0, "lon": 0.0}},')
+
+    warnings = map_warnings(museums, cache, overrides)
+    if warnings:
+        print(f"\nПосмотрите на эти метки ({len(warnings)}):")
+        for museum, why in warnings:
+            print(f"  • {museum}\n      {why}")
+        print("\nЕсли метка и правда не там, поправьте её в "
+              f"{OVERRIDES_FILE} — справочник всегда главнее найденного:")
+        print('    "Название музея как в посте": {"lat": 48.8606, "lon": 2.3376},')
+        print('    ... или подсказкой, по чему искать:')
+        print('    "Название музея как в посте": {"query": "Musée du Louvre"},')
+        print('    "Название музея как в посте": {"address": "Rue de Rivoli, Paris"},')
+        print("  и запустите generate_map.py заново: подсказка изменилась — "
+              "музей ищется снова.")
+    else:
+        print("\nМетки: ничего подозрительного")
+
+    bad_links = 0
+    if sites:
+        linked = [(m, (overrides.get(m) or {}).get('site')) for m in museums]
+        linked = [(m, s) for m, s in linked if s]
+        print(f"\nСсылки «Сайт музея»: проверяю {len(linked)}…")
+        for museum, url in linked:
+            good, why = check_site(url)
+            if not good:
+                bad_links += 1
+                print(f"  ✗ {museum}\n      {url}\n      {why}")
+        print("  Все ссылки открываются" if not bad_links
+              else f"  Не в порядке: {bad_links}")
+        no_site = [m for m in museums
+                   if not (overrides.get(m) or {}).get('site')
+                   and not (overrides.get(m) or {}).get('skip')]
+        if no_site:
+            print(f"\nБез ссылки на сайт: {len(no_site)} "
+                  f'(необязательно; добавляется полем "site" в {OVERRIDES_FILE})')
+
+    total = len(missing) + len(warnings) + bad_links
+    print(f"\nИтого поводов посмотреть: {total}\n")
+    return total
+
+
+def collect_places():
+    """Места для карты: собрания из постов о картинах и места из походов.
+
+    Вынесено отдельно, чтобы тем же списком мог пользоваться разбор
+    полётов (--check), не собирая страницу заново.
+
+    Возвращает (museums_dict, visits_dict); (None, None) — если базы нет.
+    """
     if not os.path.exists(META_FILE):
         logger.error(f"Файл {META_FILE} не найден!")
-        return
-    
+        return None, None
+
     with open(META_FILE, "r", encoding="utf-8") as f:
         all_posts = json.load(f)
-    
+
     logger.info(f"Загружено {len(all_posts)} постов")
-    
+
     museums_dict = defaultdict(list)
     for p in all_posts:
         museum = p.get("museum", "")
@@ -1384,17 +1639,35 @@ def generate_museums_page(retry_failed=False, offline=False):
 
     logger.info(f"Найдено {len(museums_dict)} мест"
                 + (f", из них по посещениям {len(visits_dict)}" if visits_dict else ""))
-    
-    cache = {}
+    return museums_dict, visits_dict
+
+
+def load_cache():
+    """Кэш координат: что уже находили прежде."""
     if os.path.exists(CACHE_FILE):
         with open(CACHE_FILE, "r", encoding="utf-8") as f:
-            cache = json.load(f)
-    
-    overrides = {}
-    if os.path.exists(OVERRIDES_FILE):
-        with open(OVERRIDES_FILE, "r", encoding="utf-8") as f:
-            overrides = {k: v for k, v in json.load(f).items() if not k.startswith("_")}
+            return json.load(f)
+    return {}
+
+
+def load_overrides(quiet=False):
+    """Ручной справочник музеев. Служебные ключи с подчёркиванием — пояснения."""
+    if not os.path.exists(OVERRIDES_FILE):
+        return {}
+    with open(OVERRIDES_FILE, "r", encoding="utf-8") as f:
+        overrides = {k: v for k, v in json.load(f).items() if not k.startswith("_")}
+    if not quiet:
         logger.info(f"Ручной справочник: {len(overrides)} записей")
+    return overrides
+
+
+def generate_museums_page(retry_failed=False, offline=False):
+    museums_dict, visits_dict = collect_places()
+    if museums_dict is None:
+        return
+
+    cache = load_cache()
+    overrides = load_overrides()
 
     logger.info("🔍 Координаты музеев...")
     if retry_failed:
@@ -1684,13 +1957,28 @@ const MUSEUMS = {json.dumps(map_data, ensure_ascii=False)};
     else:
         logger.info("   Мест без координат нет")
 
+    # Метки, которые стоит пересмотреть. Сеть для этого не нужна — судим
+    # по тому, что уже записано, — поэтому проверяем на каждой сборке,
+    # а не по особому ключу: молча кривая метка хуже лишней строчки.
+    doubts = map_warnings(museums_dict.keys(), cache, overrides)
+    if doubts:
+        logger.warning(f"   Посмотрите на метки ({len(doubts)}) — "
+                       f"подробности: python generate_map.py --check")
+        for museum, why in doubts:
+            logger.warning(f"     • {museum}: {why}")
+
 
 if __name__ == "__main__":
     import sys
+    # --check       разбор полётов: что стоит не там и куда не ведут ссылки
+    # --no-sites    при --check не ходить по ссылкам на сайты музеев
     # --regeocode   заново искать музеи, которые в прошлый раз не нашлись
     # --no-geocode  вообще не ходить в сеть, взять только готовые координаты
-    generate_museums_page(
-        retry_failed="--regeocode" in sys.argv,
-        offline="--no-geocode" in sys.argv,
-    )
-    print("\nГотово! Откройте docs/museums.html в браузере.")
+    if "--check" in sys.argv:
+        check_map(sites="--no-sites" not in sys.argv)
+    else:
+        generate_museums_page(
+            retry_failed="--regeocode" in sys.argv,
+            offline="--no-geocode" in sys.argv,
+        )
+        print("\nГотово! Откройте docs/museums.html в браузере.")
