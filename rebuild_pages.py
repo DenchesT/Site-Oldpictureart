@@ -40,6 +40,14 @@ def main():
         bs.refresh_visits(visits)
         bs.save_json(bs.VISITS_FILE, visits)
 
+    # Текст поста тоже лежит в базе целиком, поэтому починку разбора —
+    # и правку самого текста прямо в posts_meta.json — видно сразу, без
+    # похода в Телеграм. Текст, поправленный уже в канале, притягивает
+    # python build_site.py --refresh …
+    if bs.refresh_posts(meta):
+        bs.save_json(bs.META_FILE, meta)
+        print("✓ Посты перечитаны по сохранённому тексту")
+
     # Адреса страниц. Считаются до всего остального: на имена файлов
     # опираются и ссылки между страницами, и карта сайта, и RSS.
     if bs.fix_work_years(meta):

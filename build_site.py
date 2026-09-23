@@ -2994,6 +2994,61 @@ def refresh_visits(visits):
     return visits
 
 
+# Поля, которые видно на карточке ссылки: изменились — карточку надо
+# нарисовать заново, иначе в превью останется прежняя подпись.
+CARD_FIELDS = ("artist", "title", "creation_year", "museum")
+
+
+def refresh_posts(all_posts):
+    """Перечитывает сохранённые посты тем разбором, что сейчас в коде.
+
+    Текст поста лежит в базе целиком (поле raw), поэтому починить разбор
+    или подправить текст можно не перекачивая снимки: обновляются только
+    разобранные поля. Новое имя страницы посчитает rename_pages, а
+    прежний адрес сам уйдёт в перенаправление.
+
+    Текст в базе — тот, что был при скачивании. Если пост подправлен уже
+    в канале, сперва притяните новый текст: python build_site.py --refresh …
+    """
+    changed = 0
+    for post in all_posts:
+        raw = post.get("raw")
+        if not raw:
+            continue
+        fresh = parse_post(raw)
+        if not fresh:
+            logger.warning(f"Пост {post.get('filename', '?')} не разобрался — "
+                           "оставляю как был")
+            continue
+        if not any(post.get(k) != v for k, v in fresh.items()):
+            continue
+        changed += 1
+        if any(post.get(k) != fresh.get(k) for k in CARD_FIELDS):
+            drop_card(post)
+        post.update(fresh)
+    if changed:
+        logger.info(f"Посты перечитаны заново: обновлено {changed}")
+    return changed
+
+
+def drop_card(post):
+    """Убирает карточку ссылки, чтобы её нарисовали заново.
+
+    Файл именно удаляем: make_card отдаёт уже лежащую картинку, и без
+    этого в превью осталась бы прежняя подпись — имя файла-то от имени
+    страницы, а оно могло и не поменяться.
+    """
+    card = post.pop("card", None)
+    if not card:
+        return
+    path = os.path.join(OUTPUT_DIR, card)
+    if os.path.exists(path):
+        try:
+            os.remove(path)
+        except OSError as e:
+            logger.warning(f"Карточка {card} не удалилась: {e}")
+
+
 def visit_filename(visit):
     """Имя страницы похода. Дата записи впереди, чтобы соседние походы
     в одно место не сливались в одно имя.
@@ -3833,6 +3888,138 @@ def push_to_github():
         logger.info("Отправлено")
     except Exception as e: logger.error(f"Ошибка: {e}")
 
+# ======================================================================
+#              ПРАВКА СТАРОГО ПОСТА:  python build_site.py --refresh
+# ======================================================================
+#
+# Пост в канале можно подправить и через год после выхода, а сайт о
+# правке не узнает: скачанные посты отсеиваются по processed_ids.json и
+# второй раз не читаются. Ключ --refresh притягивает нынешний текст
+# указанных постов, а разбор и страницы обновляются обычным ходом сборки.
+#
+#     python build_site.py --refresh 1234           # номер поста в канале
+#     python build_site.py --refresh sisley-lug-1875.html   # или адрес страницы
+#     python build_site.py --refresh "Union Square" # или кусок названия
+#     python build_site.py --refresh               # все посты разом
+#
+# Снимки при этом не перекачиваются: правка подписи их не меняет.
+
+REFRESH_FLAG = "--refresh"
+
+
+def match_posts(all_posts, needle):
+    """Посты, подходящие под одно слово из --refresh.
+
+    Понимает номер поста, ссылку на канал, имя страницы (в том числе
+    прежнее) и просто кусок имени художника или названия — чтобы не
+    искать номер поста вручную.
+    """
+    n = (needle or "").strip()
+    if not n:
+        return []
+    if n.isdigit():
+        return [p for p in all_posts if str(p.get("id")) == n]
+    m = re.search(r"t\.me/[^/]+/(\d+)", n)
+    if m:
+        return [p for p in all_posts if str(p.get("id")) == m.group(1)]
+    name = n.rstrip("/").rsplit("/", 1)[-1]
+    if name.endswith(".html"):
+        hit = [p for p in all_posts if p.get("filename") == name
+               or name in (p.get("old_filenames") or [])]
+        if hit:
+            return hit
+        name = name[:-5]
+    low = name.lower()
+    hit = [p for p in all_posts if p.get("filename", "")[:-5].lower() == low]
+    if hit:
+        return hit
+    return [p for p in all_posts if low in
+            f"{p.get('artist', '')} {p.get('title', '')} {p.get('filename', '')}".lower()]
+
+
+def refresh_targets(all_posts, argv=None):
+    """Посты, у которых надо перечитать текст. None — ключа нет вовсе."""
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if REFRESH_FLAG not in argv:
+        return None
+    needles = []
+    for a in argv[argv.index(REFRESH_FLAG) + 1:]:
+        if a.startswith("--"):
+            break
+        needles.append(a)
+    if not needles or any(a.lower() in ("all", "все") for a in needles):
+        return list(all_posts)
+    out = []
+    for needle in needles:
+        hit = match_posts(all_posts, needle)
+        if not hit:
+            logger.warning(f"--refresh {needle}: такого поста в базе нет")
+        for p in hit:
+            if p not in out:
+                out.append(p)
+    return out
+
+
+async def refetch_texts(client, posts):
+    """Притягивает из канала нынешний текст постов.
+
+    Пост в канале мог поменяться, а снимки — нет, поэтому качаем только
+    текст: разбор, имя страницы, карточка ссылки и сами страницы
+    обновятся дальше обычным ходом сборки.
+    """
+    if not posts:
+        return 0
+    logger.info(f"Перечитываю текст постов: {len(posts)}")
+    # Подпись в посте из нескольких снимков лежит на одном из них,
+    # поэтому вокруг каждого номера берём небольшое окно: в альбоме
+    # Телеграма не больше десяти записей.
+    wanted = set()
+    for post in posts:
+        pid = post.get("id")
+        if pid:
+            wanted.update(x for x in range(pid - 9, pid + 10) if x > 0)
+    got = {}
+    wanted = sorted(wanted)
+    for i in range(0, len(wanted), 100):
+        try:
+            for m in await client.get_messages(CHANNEL_URL, ids=wanted[i:i + 100]):
+                if m:
+                    got[m.id] = m
+        except Exception as e:
+            logger.error(f"Не прочитались посты {wanted[i]}…: {e}")
+
+    changed = 0
+    for i, post in enumerate(posts, 1):
+        who = post.get("filename", "?")
+        main = got.get(post.get("id"))
+        if main is None:
+            logger.warning(f"[{i}/{len(posts)}] {who}: поста {post.get('id')} "
+                           "в канале нет — пропускаю")
+            continue
+        gid = getattr(main, "grouped_id", None)
+        group = ([m for m in got.values() if getattr(m, "grouped_id", None) == gid]
+                 if gid else [main])
+        text = ""
+        for m in sorted(group, key=lambda m: m.id):
+            t = m.raw_text or ""
+            if t:
+                text += t + "\n"
+        if not text.strip():
+            logger.warning(f"[{i}/{len(posts)}] {who}: текста в посте нет — пропускаю")
+            continue
+        if text == post.get("raw"):
+            continue
+        if not parse_post(text):
+            logger.error(f"[{i}/{len(posts)}] {who}: новый текст не разбирается "
+                         "(не хватает разделителей ⸻?) — оставляю прежний")
+            continue
+        post["raw"] = text
+        changed += 1
+        logger.info(f"[{i}/{len(posts)}] {who}: текст обновлён")
+    logger.info("Текст изменился у постов: " + (str(changed) if changed else "нет"))
+    return changed
+
+
 def rebuild_reset():
     logger.warning("--rebuild: удаление старых страниц")
     if input("Продолжить? [y/N]: ").strip().lower() not in ("y","yes","д","да"): print("Отмена."); sys.exit(0)
@@ -3852,9 +4039,17 @@ async def main():
     processed_ids = set(load_json(PROCESSED_FILE, []))
     all_posts = load_json(META_FILE, [])
     all_visits = load_json(VISITS_FILE, [])
+    # Ключ --refresh разбираем до Телеграма: если ни один пост не подошёл,
+    # незачем и подключаться.
+    to_refresh = refresh_targets(all_posts)
+    if to_refresh is not None and not to_refresh:
+        logger.error("--refresh: ни один пост не подошёл, сборка не начата")
+        return
     logger.info("Подключение к Telegram...")
     api_id, api_hash, phone = require_credentials()
     client = await connect_with_proxy(api_id, api_hash, phone, PROXY_LIST)
+    if to_refresh:
+        await refetch_texts(client, to_refresh)
     # Полный проход нужен дважды: когда файла посещений ещё нет (сборка
     # первая, которая умеет #выставка и #галерея) и когда у прежних походов
     # ещё не собраны безымянные посты со снимками. Картинам это не мешает —
@@ -3965,6 +4160,9 @@ async def main():
     # Адреса страниц — до записи страниц: на имена файлов опираются
     # ссылки между страницами, карта сайта и RSS. Переименование
     # идемпотентно: у записей с правильным именем ничего не меняется.
+    # Посты перечитываются тем разбором, что сейчас в коде: так видна и
+    # правка текста, притянутая ключом --refresh, и починка разбора.
+    refresh_posts(all_posts)
     fix_work_years(all_posts)
     prepare_slugs(all_posts)
     rename_pages(all_posts, all_visits)
