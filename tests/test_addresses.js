@@ -31,9 +31,12 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
 
 // Сколько адресов ждать, считаем по справочнику, а не числом в проверке:
 // адреса дописываются вручную, и жёсткая цифра устаревала каждый раз.
+// Записи с same_as своей карточки не имеют — это второе название того же
+// места, и адрес у них показывать негде: карточка одна, у основного
+// названия. Считать их значило бы ждать на странице лишний адрес.
 const OVERRIDES = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'museum_overrides.json'), 'utf8'));
 const WANT_ADDR = Object.entries(OVERRIDES)
-  .filter(([k, v]) => !k.startsWith('_') && v && v.address).length;
+  .filter(([k, v]) => !k.startsWith('_') && v && v.address && !v.same_as).length;
 
 (async () => {
   const browser = await chromium.launch(LAUNCH);

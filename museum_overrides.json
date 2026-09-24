@@ -7,6 +7,9 @@
     "address": "St. Alban-Graben 16, Basel"
   },
   "Британская галерея Тейт, Лондон": {
+    "lat": 51.490833,
+    "lon": -0.127222,
+    "country": "Великобритания",
     "query": "Tate Britain",
     "site": "https://www.tate.org.uk",
     "address": "Millbank, London"
@@ -20,11 +23,6 @@
     "query": "Государственный музей изобразительных искусств имени А. С. Пушкина",
     "site": "https://pushkinmuseum.art",
     "address": "улица Волхонка, 12, Москва"
-  },
-  "ГРМ, Санкт-Петербург": {
-    "query": "Государственный Русский музей",
-    "site": "https://rusmuseum.ru",
-    "address": "Инженерная улица, 2-4Д, Санкт-Петербург"
   },
   "Государственный музей Тюрингии, Хайдексбург": {
     "query": "Schloss Heidecksburg",
@@ -57,6 +55,9 @@
     "address": "225 South St, Williamstown"
   },
   "Коллекции Версальского дворца, Версаль": {
+    "lat": 48.804865,
+    "lon": 2.120355,
+    "country": "Франция",
     "query": "Château de Versailles",
     "site": "https://www.chateauversailles.fr",
     "address": "Place d'Armes, Versailles"
@@ -67,6 +68,9 @@
     "address": "Rue de la Régence 3, Bruxelles"
   },
   "Лувр, Париж (в запаснике)": {
+    "lat": 48.861,
+    "lon": 2.335861,
+    "country": "Франция",
     "query": "Musée du Louvre",
     "site": "https://www.louvre.fr",
     "address": "Rue de Rivoli, Paris"
@@ -82,9 +86,12 @@
     "address": "1000 5th Ave, New York"
   },
   "Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн": {
+    "lat": 50.937433,
+    "lon": 6.958486,
+    "country": "Германия",
     "query": "Wallraf-Richartz-Museum",
     "site": "https://www.wallraf.museum",
-    "address": "Obenmarspforten, Köln"
+    "address": "Obenmarspforten 40, Köln"
   },
   "Музей Гетти, Лос-Анджелес": {
     "query": "Getty Center",
@@ -93,7 +100,7 @@
   },
   "Музей Скагена, Скаген": {
     "query": "Skagens Museum",
-    "site": "https://skagenskunstmuseer.dk",
+    "site": "https://skagensmuseum.dk",
     "address": "Brøndumsvej 4, Skagen"
   },
   "Музей Фабра, Монпелье": {
@@ -126,14 +133,20 @@
     "address": "2 boulevard Clemenceau, Le Havre"
   },
   "Национальная галерея искусства, Вашингтон": {
+    "lat": 38.891389,
+    "lon": -77.02,
+    "country": "США",
     "query": "National Gallery of Art Washington",
     "site": "https://www.nga.gov",
-    "address": "6th & Constitution Ave NW, Washington"
+    "address": "6th Street and Constitution Avenue NW, Washington"
   },
   "Национальный музей Прадо, Мадрид": {
+    "lat": 40.413889,
+    "lon": -3.692222,
+    "country": "Испания",
     "query": "Museo del Prado",
     "site": "https://www.museodelprado.es",
-    "address": "Calle de Ruiz de Alarcón 23, Madrid"
+    "address": "Paseo del Prado, Madrid"
   },
   "Национальный художественный музей Республики Беларусь, Минск": {
     "query": "Нацыянальны мастацкі музей Рэспублікі Беларусь",
@@ -161,6 +174,9 @@
     "address": "Stockholmsgade 20, København"
   },
   "Художественная галерея Южной Австралии, Аделаида": {
+    "lat": -34.920556,
+    "lon": 138.603889,
+    "country": "Австралия",
     "query": "Art Gallery of South Australia",
     "site": "https://www.agsa.sa.gov.au",
     "address": "490 North Terrace, Adelaide"
@@ -200,6 +216,9 @@
     "address": "Лаврушинский переулок, 10, Москва"
   },
   "Государственный Русский музей, Санкт-Петербург": {
+    "lat": 59.938611,
+    "lon": 30.332222,
+    "country": "Россия",
     "site": "https://rusmuseum.ru",
     "address": "Инженерная улица, 4, Санкт-Петербург"
   },
@@ -208,14 +227,20 @@
     "address": "Красная площадь, 1, Москва"
   },
   "Пермская государственная художественная галерея, Пермь": {
+    "lat": 58.021156,
+    "lon": 56.25747,
+    "country": "Россия",
     "site": "https://permartmuseum.ru",
-    "address": "улица Советская, 1, Пермь"
+    "address": "улица Советская, 1, корпус 5, Пермь"
   },
   "Музей д’Орсе, Париж": {
     "site": "https://www.musee-orsay.fr",
     "address": "1 Rue de la Légion d'Honneur, Paris"
   },
   "Национальная галерея Шотландии, Эдинбург": {
+    "lat": 55.950833,
+    "lon": -3.195556,
+    "country": "Великобритания",
     "site": "https://www.nationalgalleries.org",
     "address": "The Mound, Edinburgh"
   },
@@ -236,13 +261,20 @@
     "address": "Museumsplatz 1, Wien"
   },
   "Национальный музей западного искусства, Токио": {
+    "lat": 35.715556,
+    "lon": 139.775833,
+    "country": "Япония",
     "site": "https://www.nmwa.go.jp",
-    "address": "7-7 Ueno-koen, Taito-ku, Tokyo"
+    "address": "Ueno Park 7-7, Taito-ku, Tokyo"
   },
   "_сайты": "Поле site — официальный сайт музея, показывается ссылкой в карточке на странице карты. Добавляйте так же, как query или lat/lon.",
   "_адреса": "Поле address — почтовый адрес музея. Показывается в карточке на странице карты, участвует в поиске и используется первым запросом при поиске координат: по улице и дому геокодер попадает точнее, чем по названию музея. Если адрес изменить, координаты этого музея будут найдены заново.",
   "Музей русского импрессионизма": {
-    "address": "Ленинградский проспект, 15 стр. 11, Москва"
+    "lat": 55.780365,
+    "lon": 37.570299,
+    "country": "Россия",
+    "site": "https://www.rusimp.su",
+    "address": "Ленинградский проспект, 15, строение 11, Москва"
   },
   "Новая Третьяковка": {
     "address": "Крымский Вал, 10, Москва"
@@ -254,13 +286,18 @@
     "address": "Дворцовая набережная, 34, Санкт-Петербург"
   },
   "Центр \"Эрмитаж-Казань\"": {
-    "address": "Кремль, 12, Казань"
+    "lat": 55.798497,
+    "lon": 49.106135,
+    "country": "Россия",
+    "site": "https://kazan-kremlin.ru",
+    "address": "территория Кремль, 12, Казань"
   },
   "Картинная галерея Псковского музея-заповедника": {
-    "address": "улица Некрасова, 7, Псков",
-    "lat": 57.811581,
-    "lon": 28.337549,
-    "country": "Россия"
+    "lat": 57.81208,
+    "lon": 28.338258,
+    "country": "Россия",
+    "site": "https://museumpskov.ru",
+    "address": "улица Некрасова, 7, Псков"
   },
   "Пензенская областная картинная галерея имени К.А. Савицкого": {
     "address": "улица Советская, 3, Пенза",
@@ -283,7 +320,11 @@
     "display_name": "Арсенал, Нижегородский кремль"
   },
   "Нижегородский государственный художественный музей": {
-    "address": "Кремль, корпус 3, Нижний Новгород"
+    "lat": 56.329384,
+    "lon": 44.01286,
+    "country": "Россия",
+    "site": "https://artmuseumnn.ru",
+    "address": "Верхне-Волжская набережная, 3, Нижний Новгород"
   },
   "Саратовский государственный художественный музей имени А.Н. Радищева": {
     "address": "улица Радищева, 39, Саратов"
@@ -313,8 +354,22 @@
   "Тегеранский музей современного искусства, Тегеран": {
     "country": "Иран",
     "lat": 35.711217,
-    "lon": 51.390500,
+    "lon": 51.3905,
     "site": "https://tmoca.com",
     "address": "Парк Лале, Тегеран"
+  },
+  "Музей Виктории и Альберта, Лондон": {
+    "lat": 51.496667,
+    "lon": -0.171944,
+    "country": "Великобритания",
+    "site": "https://www.vam.ac.uk",
+    "address": "Cromwell Road, London"
+  },
+  "Национальный музей искусства Каталонии, Барселона": {
+    "lat": 41.368333,
+    "lon": 2.153306,
+    "country": "Испания",
+    "site": "https://www.museunacional.cat",
+    "address": "Palau Nacional, Parc de Montjuïc, Barcelona"
   }
 }

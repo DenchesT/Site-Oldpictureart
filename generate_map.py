@@ -7,6 +7,8 @@
 import json
 import os
 import re
+import socket
+import ssl
 import time
 import difflib
 import urllib.request
@@ -1504,35 +1506,91 @@ def map_warnings(museums, cache, overrides):
     return out
 
 
-def check_site(url, timeout=15):
-    """Открывается ли ссылка «Сайт музея». Возвращает (всё ли хорошо, что именно)."""
-    req = urllib.request.Request(url, method='HEAD', headers={
-        'User-Agent': 'OldPictureArt/1.0 (+https://oldpictureart.ru)'})
-    try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            final = resp.geturl()
-    except urllib.error.HTTPError as e:
-        if e.code in (400, 403, 405, 501):
-            # Иные сайты на HEAD обижаются — спросим обычным способом.
-            try:
-                req = urllib.request.Request(url, headers={
-                    'User-Agent': 'OldPictureArt/1.0 (+https://oldpictureart.ru)'})
-                with urllib.request.urlopen(req, timeout=timeout) as resp:
-                    final = resp.geturl()
-            except Exception as e2:
-                return False, f"не открывается ({e2})"
-        else:
-            return False, f"ответ {e.code}"
-    except Exception as e:
-        return False, f"не открывается ({e})"
+# Заголовки браузера. Половина музейных сайтов стоит за Cloudflare и
+# отвечает роботу 403, хотя в браузере открывается: без этих заголовков
+# проверка ругалась бы на исправные ссылки.
+BROWSER_HEADERS = {
+    'User-Agent': ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                   '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'),
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'ru,en;q=0.8',
+}
+
+# Ответы, которые говорят «я живой, но роботу не отвечаю». Ссылка при
+# этом рабочая: в браузере такая страница открывается.
+NOT_FOR_ROBOTS = {401, 402, 403, 405, 406, 409, 418, 429, 503}
+
+
+def open_site(url, timeout, insecure=False):
+    """Открывает страницу как браузер. Возвращает конечный адрес."""
+    ctx = None
+    if insecure:
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+    opener = urllib.request.build_opener(urllib.request.HTTPSHandler(context=ctx))
+    with opener.open(urllib.request.Request(url, headers=BROWSER_HEADERS),
+                     timeout=timeout) as resp:
+        resp.read(2048)      # немного тела: убедиться, что страница отдаётся
+        return resp.geturl()
+
+
+def check_site(url, timeout=20):
+    """Проверяет ссылку «Сайт музея».
+
+    Возвращает (состояние, пояснение):
+      'ok'      — открылась и осталась на своём домене;
+      'bad'     — ссылка не работает: нет такого адреса, 404, сертификат
+                  выписан на чужое имя, уводит на другой домен;
+      'unknown' — проверить не вышло не по вине ссылки. Так отвечают сайты
+                  за Cloudflare (403, 429), медленные сайты и сайты
+                  с российскими сертификатами Минцифры: в хранилище
+                  Python такого корня нет, а в браузере они открываются.
+
+    Различать это важнее, чем кажется: если валить всё в одну кучу,
+    в отчёте будет тринадцать «битых» ссылок, из которых не работает
+    одна, и читать его перестанут.
+    """
     def host_of(link):
         return re.sub(r'^www\.', '', urllib.parse.urlsplit(link).netloc.lower())
 
-    host, new_host = host_of(url), host_of(final)
-    if new_host and new_host != host:
-        return False, f"уводит на другой адрес: {final}"
-    return True, ""
+    try:
+        final = open_site(url, timeout)
+    except urllib.error.HTTPError as e:
+        if e.code in NOT_FOR_ROBOTS:
+            return 'unknown', f"сайт отвечает, но не пускает проверку ({e.code})"
+        if e.code in (404, 410):
+            return 'bad', f"страницы нет ({e.code})"
+        return 'unknown', f"ответ {e.code}"
+    except ssl.SSLCertVerificationError as e:
+        reason = getattr(e, 'verify_message', '') or str(e)
+        if 'Hostname mismatch' in str(e):
+            return 'bad', ("сертификат выписан на другое имя — в браузере "
+                           "будет предупреждение, поищите правильный адрес")
+        try:
+            open_site(url, timeout, insecure=True)
+        except Exception:
+            return 'bad', f"сертификат не проверился и сайт не ответил ({reason})"
+        return 'unknown', ("сертификат не проверился хранилищем Python: либо "
+                           "сайт отдаёт неполную цепочку, либо корень не оттуда "
+                           "(российские сертификаты Минцифры). В браузере открывается")
+    except (socket.timeout, TimeoutError):
+        return 'unknown', "не ответил вовремя"
+    except urllib.error.URLError as e:
+        why = e.reason
+        if isinstance(why, (socket.timeout, TimeoutError)):
+            return 'unknown', "не ответил вовремя"
+        if isinstance(why, ssl.SSLError):
+            return 'unknown', f"не удалось договориться о шифровании ({why})"
+        if isinstance(why, socket.gaierror):
+            return 'bad', "такого домена нет"
+        return 'bad', f"не открывается ({why})"
+    except Exception as e:
+        return 'unknown', f"проверить не вышло ({e})"
 
+    if host_of(final) and host_of(final) != host_of(url):
+        return 'bad', f"уводит на другой адрес — обновите ссылку: {final}"
+    return 'ok', ""
 
 def check_map(sites=True):
     """Отчёт о метках и ссылках. Ничего не меняет и не пересобирает."""
@@ -1573,13 +1631,25 @@ def check_map(sites=True):
         linked = [(m, (overrides.get(m) or {}).get('site')) for m in museums]
         linked = [(m, s) for m, s in linked if s]
         print(f"\nСсылки «Сайт музея»: проверяю {len(linked)}…")
+        broken, unclear = [], []
         for museum, url in linked:
-            good, why = check_site(url)
-            if not good:
-                bad_links += 1
+            state, why = check_site(url)
+            if state == 'bad':
+                broken.append((museum, url, why))
+            elif state == 'unknown':
+                unclear.append((museum, url, why))
+        bad_links = len(broken)
+        if broken:
+            print(f"\n  Не работают ({len(broken)}) — это надо поправить:")
+            for museum, url, why in broken:
                 print(f"  ✗ {museum}\n      {url}\n      {why}")
-        print("  Все ссылки открываются" if not bad_links
-              else f"  Не в порядке: {bad_links}")
+        if unclear:
+            print(f"\n  Проверить не вышло ({len(unclear)}) — скорее всего, "
+                  f"ссылки в порядке, загляните глазами:")
+            for museum, url, why in unclear:
+                print(f"  ? {museum}\n      {url}\n      {why}")
+        if not broken:
+            print("  Нерабочих ссылок нет")
         no_site = [m for m in museums
                    if not (overrides.get(m) or {}).get('site')
                    and not (overrides.get(m) or {}).get('skip')]

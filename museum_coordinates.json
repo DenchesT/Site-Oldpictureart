@@ -10,14 +10,11 @@
     "hint": "St. Alban-Graben 16, Basel\nKunstmuseum Basel"
   },
   "Британская галерея Тейт, Лондон": {
-    "lat": 51.4965477,
-    "lon": -0.1255167,
-    "display_name": "Millbank, Westminster, Millbank, Вестминстер, Большой Лондон, Англия, SW1P 3JH, Соединённое Королевство",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "highway=primary",
-    "query": "Millbank, London",
-    "hint": "Millbank, London\nTate Britain"
+    "lat": 51.490833,
+    "lon": -0.127222,
+    "display_name": "Британская галерея Тейт, Лондон",
+    "source": "override",
+    "precision": "exact"
   },
   "Винтертурский художественный музей, Винтертур": {
     "lat": 47.5015809,
@@ -111,14 +108,11 @@
     "hint": "225 South St, Williamstown\nClark Art Institute"
   },
   "Коллекции Версальского дворца, Версаль": {
-    "lat": 48.8038406,
-    "lon": 2.1246463,
-    "display_name": "Place d'Armes, Notre-Dame, Версаль, Versailles, Ивелин, Иль-де-Франс, Метрополия Франции, 78000, Франция",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "highway=pedestrian",
-    "query": "Place d'Armes, Versailles",
-    "hint": "Place d'Armes, Versailles\nChâteau de Versailles"
+    "lat": 48.804865,
+    "lon": 2.120355,
+    "display_name": "Коллекции Версальского дворца, Версаль",
+    "source": "override",
+    "precision": "exact"
   },
   "Королевский музей изящных искусств, Брюссель": {
     "lat": 50.8415295,
@@ -131,14 +125,11 @@
     "hint": "Rue de la Régence 3, Bruxelles\nRoyal Museums of Fine Arts of Belgium"
   },
   "Лувр, Париж (в запаснике)": {
-    "lat": 48.8659699,
-    "lon": 2.3254107,
-    "display_name": "Rue de Rivoli, Quartier Vendôme, I округ, Париж, Иль-де-Франс, Метрополия Франции, 75001, Франция",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "highway=tertiary",
-    "query": "Rue de Rivoli, Paris",
-    "hint": "Rue de Rivoli, Paris\nMusée du Louvre"
+    "lat": 48.861,
+    "lon": 2.335861,
+    "display_name": "Лувр, Париж (в запаснике)",
+    "source": "override",
+    "precision": "exact"
   },
   "Малый дворец, музей изящных искусств города Парижа, Париж": {
     "lat": 48.866042,
@@ -161,14 +152,11 @@
     "hint": "Humboldtstraße 5-6, Potsdam\n"
   },
   "Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн": {
-    "lat": 50.9376874,
-    "lon": 6.9571773,
-    "display_name": "Obenmarspforten, Martinsviertel, Altstadt-Nord, Innenstadt, Кёльн, Северный Рейн — Вестфалия, 50667, Германия",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "highway=residential",
-    "query": "Obenmarspforten, Köln",
-    "hint": "Obenmarspforten, Köln\nWallraf-Richartz-Museum"
+    "lat": 50.937433,
+    "lon": 6.958486,
+    "display_name": "Музей Вальрафа-Рихарца и Фонд Корбо, Кёльн",
+    "source": "override",
+    "precision": "exact"
   },
   "Музей Кунстпаласт, Дюссельдорф": {
     "lat": 51.234998,
@@ -257,44 +245,32 @@
     "hint": "2 boulevard Clemenceau, Le Havre\nMusée d'art moderne André Malraux"
   },
   "Национальная галерея Шотландии, Эдинбург": {
-    "lat": 55.9502288,
-    "lon": -3.1958576,
-    "display_name": "The Mound, Abbeyhill, Old Town, Эдинбург, Шотландия, EH1 2LX, Соединённое Королевство",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "highway=tertiary",
-    "query": "The Mound, Edinburgh",
-    "hint": "The Mound, Edinburgh\n"
+    "lat": 55.950833,
+    "lon": -3.195556,
+    "display_name": "Национальная галерея Шотландии, Эдинбург",
+    "source": "override",
+    "precision": "exact"
   },
   "Национальная галерея искусства, Вашингтон": {
-    "lat": 38.8920976,
-    "lon": -77.030467,
-    "display_name": "Constitution Avenue Northwest, Ward 2, Вашингтон, Округ Колумбия, 20423, Соединённые Штаты Америки",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "highway=trunk",
-    "query": "6th & Constitution Ave NW, Washington",
-    "hint": "6th & Constitution Ave NW, Washington\nNational Gallery of Art Washington"
+    "lat": 38.891389,
+    "lon": -77.02,
+    "display_name": "Национальная галерея искусства, Вашингтон",
+    "source": "override",
+    "precision": "exact"
   },
   "Национальный музей Прадо, Мадрид": {
-    "lat": 40.5558827,
-    "lon": -3.3242669,
-    "display_name": "Calle de Ruiz de Alarcón, Меко, Мадрид, 28880, Испания",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "highway=residential",
-    "query": "Calle de Ruiz de Alarcón 23, Madrid",
-    "hint": "Calle de Ruiz de Alarcón 23, Madrid\nMuseo del Prado"
+    "lat": 40.413889,
+    "lon": -3.692222,
+    "display_name": "Национальный музей Прадо, Мадрид",
+    "source": "override",
+    "precision": "exact"
   },
   "Национальный музей западного искусства, Токио": {
-    "lat": 35.7152915,
-    "lon": 139.7738278,
-    "display_name": "上野公園, Тайто, Токио, 110-0007, Япония",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "boundary=administrative",
-    "query": "7-7 Ueno-koen, Taito-ku, Tokyo",
-    "hint": "7-7 Ueno-koen, Taito-ku, Tokyo\n"
+    "lat": 35.715556,
+    "lon": 139.775833,
+    "display_name": "Национальный музей западного искусства, Токио",
+    "source": "override",
+    "precision": "exact"
   },
   "Национальный художественный музей Республики Беларусь, Минск": {
     "lat": 53.898377,
@@ -317,14 +293,11 @@
     "hint": "улица Волхонка, 10, Москва\nОтдел личных коллекций ГМИИ имени Пушкина"
   },
   "Пермская государственная художественная галерея, Пермь": {
-    "lat": 58.0193002,
-    "lon": 56.2521113,
-    "display_name": "Цех №4, 1, Советская улица, Ленинский район, Пермь, Пермский городской округ, Пермский край, Приволжский федеральный округ, 614000, Россия",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "amenity=arts_centre",
-    "query": "улица Советская, 1, Пермь",
-    "hint": "улица Советская, 1, Пермь\n"
+    "lat": 58.021156,
+    "lon": 56.25747,
+    "display_name": "Пермская государственная художественная галерея, Пермь",
+    "source": "override",
+    "precision": "exact"
   },
   "Портлендский художественный музей, Портленд": {
     "lat": 45.5165483,
@@ -367,14 +340,11 @@
     "hint": "Bodestraße 1-3, Berlin\n"
   },
   "Художественная галерея Южной Австралии, Аделаида": {
-    "lat": -34.9174118,
-    "lon": 138.6192897,
-    "display_name": "North Terrace, Hackney, Аделаида, Южная Австралия, 5069, Австралия",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "highway=primary",
-    "query": "490 North Terrace, Adelaide",
-    "hint": "490 North Terrace, Adelaide\nArt Gallery of South Australia"
+    "lat": -34.920556,
+    "lon": 138.603889,
+    "display_name": "Художественная галерея Южной Австралии, Аделаида",
+    "source": "override",
+    "precision": "exact"
   },
   "Художественный музей колледжа Смит, Нортхемптон": {
     "lat": 42.318633,
@@ -407,14 +377,11 @@
     "hint": "Schaumainkai 63, Frankfurt am Main\nStädel Museum"
   },
   "Государственный Русский музей, Санкт-Петербург": {
-    "lat": 59.9379422,
-    "lon": 30.3337948,
-    "display_name": "Российский этнографический музей, 4/1 литЕ, Инженерная улица, Дворцовый округ, Санкт-Петербург, Северо-Западный федеральный округ, 191186, Россия",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "tourism=museum",
-    "query": "Инженерная улица, 4, Санкт-Петербург",
-    "hint": "Инженерная улица, 4, Санкт-Петербург\n"
+    "lat": 59.938611,
+    "lon": 30.332222,
+    "display_name": "Государственный Русский музей, Санкт-Петербург",
+    "source": "override",
+    "precision": "exact"
   },
   "Государственный музей истории религии, Санкт-Петербург": {
     "lat": 59.9318443,
@@ -447,14 +414,11 @@
     "hint": "1200 Getty Center Dr, Los Angeles\nGetty Center"
   },
   "Национальный музей искусства Каталонии, Барселона": {
-    "lat": 41.3686024,
-    "lon": 2.1534616,
-    "display_name": "Национальный музей искусства Каталонии, Carrer Mirador del Palau Nacional, França Xica, el Poble-sec, Sants-Montjuïc, Барселона, Барселонес, Барселона, Каталония, 08015, Испания",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "tourism=museum",
-    "query": "Национальный музей искусства Каталонии, Барселона",
-    "hint": "\n"
+    "lat": 41.368333,
+    "lon": 2.153306,
+    "display_name": "Национальный музей искусства Каталонии, Барселона",
+    "source": "override",
+    "precision": "exact"
   },
   "Национальный музей Швеции, Стокгольм": {
     "lat": 59.3283044,
@@ -484,14 +448,11 @@
     "hint": "Tzschirnerplatz 2, Dresden\n"
   },
   "Музей Виктории и Альберта, Лондон": {
-    "lat": 51.4968838,
-    "lon": -0.1716372,
-    "display_name": "Музей Виктории и Альберта, Cromwell Road, Brompton, Кенсингтон и Челси, Большой Лондон, Англия, SW7 2RL, Соединённое Королевство",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "tourism=museum",
-    "query": "Музей Виктории и Альберта, Лондон",
-    "hint": "\n"
+    "lat": 51.496667,
+    "lon": -0.171944,
+    "display_name": "Музей Виктории и Альберта, Лондон",
+    "source": "override",
+    "precision": "exact"
   },
   "Волго-Вятский филиал ГМИИ им. А. С. Пушкина (Арсенал)": {
     "lat": 56.3275,
@@ -511,8 +472,8 @@
     "hint": "Дворцовая набережная, 34, Санкт-Петербург\n"
   },
   "Картинная галерея Псковского музея-заповедника": {
-    "lat": 57.811581,
-    "lon": 28.337549,
+    "lat": 57.81208,
+    "lon": 28.338258,
     "display_name": "Картинная галерея Псковского музея-заповедника",
     "source": "override",
     "precision": "exact"
@@ -528,23 +489,18 @@
     "hint": "Кадашёвская набережная, 12, Москва\n"
   },
   "Музей русского импрессионизма": {
-    "lat": 55.78076,
-    "lon": 37.5715,
+    "lat": 55.780365,
+    "lon": 37.570299,
     "display_name": "Музей русского импрессионизма",
-    "source": "wikidata:Q28666943",
-    "precision": "exact",
-    "query": "Музей русского импрессионизма",
-    "hint": "Ленинградский проспект, 15 стр. 11, Москва\n"
+    "source": "override",
+    "precision": "exact"
   },
   "Нижегородский государственный художественный музей": {
-    "lat": 56.3295482,
-    "lon": 44.0064045,
-    "display_name": "Нижегородский государственный художественный музей, 3, Кремль, Нижегородский район, Нижний Новгород, городской округ Нижний Новгород, Нижегородская область, Приволжский федеральный округ, 603082, Россия",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "tourism=museum",
-    "query": "Нижегородский государственный художественный музей",
-    "hint": "Кремль, корпус 3, Нижний Новгород\n"
+    "lat": 56.329384,
+    "lon": 44.01286,
+    "display_name": "Нижегородский государственный художественный музей",
+    "source": "override",
+    "precision": "exact"
   },
   "Новая Третьяковка": {
     "lat": 55.7350619,
@@ -584,14 +540,11 @@
     "hint": "улица Радищева, 39, Саратов\n"
   },
   "Центр \"Эрмитаж-Казань\"": {
-    "lat": 55.7926611,
-    "lon": 49.1178177,
-    "display_name": "А. Г. Тазетдинову, 12, Кремлёвская улица, Старо-Татарская слобода, Вахитовский район, Казань, городской округ Казань, Татарстан, Приволжский федеральный округ, 420008, Россия",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "historic=memorial",
-    "query": "Кремль, 12, Казань",
-    "hint": "Кремль, 12, Казань\n"
+    "lat": 55.798497,
+    "lon": 49.106135,
+    "display_name": "Центр \"Эрмитаж-Казань\"",
+    "source": "override",
+    "precision": "exact"
   },
   "Ассоциация \"Живопись в Нормандии\", Довиль": {
     "lat": 49.3595018,

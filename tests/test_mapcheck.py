@@ -31,6 +31,8 @@ Hortons», а сам поиск брал первую находку и был �
 
 import io
 import json
+import socket
+import ssl
 import logging
 import os
 import sys
@@ -184,9 +186,15 @@ gm.wikidata_search, gm.nominatim_search = old_wiki, old_nomi
 
 
 # ------------------------------------------------------------- ссылки
+#
+# Проверка ссылок делит ответы на три кучи, и это главное в ней. Сайты
+# музеев сплошь за Cloudflare: на робота они отвечают 403 и 429, а в
+# браузере открываются. Если считать такое поломкой, в отчёте будет
+# тринадцать «битых» ссылок, из которых не работает одна, и читать его
+# перестанут.
 class FakeResponse(io.BytesIO):
     def __init__(self, url):
-        super().__init__(b"")
+        super().__init__(b"<html></html>")
         self._url = url
 
     def geturl(self):
@@ -199,37 +207,86 @@ class FakeResponse(io.BytesIO):
         return False
 
 
-def fake_urlopen(answer):
-    def opener(req, timeout=15):
-        url = req.full_url if hasattr(req, "full_url") else req
-        if isinstance(answer, Exception):
-            raise answer
-        return FakeResponse(answer or url)
-    gm.urllib.request.urlopen = opener
+def answer(what, insecure_ok=False):
+    """Подставляет ответ сети: адрес, исключение или пару «сначала-потом»."""
+    tries = []
+
+    def opener(url, timeout, insecure=False):
+        tries.append(insecure)
+        if insecure and insecure_ok:
+            return url
+        if isinstance(what, Exception):
+            raise what
+        return what or url
+
+    gm.open_site = opener
+    return tries
 
 
-real_urlopen = gm.urllib.request.urlopen
+real_open_site = gm.open_site
 
-fake_urlopen(None)
-ok("живая ссылка — в порядке", gm.check_site("https://www.museefabre.fr")[0])
+answer(None)
+ok("живая ссылка — в порядке", gm.check_site("https://www.museefabre.fr") == ("ok", ""))
 
-fake_urlopen("https://www.museefabre.fr/informations-pratiques")
+answer("https://www.museefabre.fr/informations-pratiques")
 ok("перенаправление внутри сайта — в порядке",
-   gm.check_site("https://www.museefabre.fr")[0])
+   gm.check_site("https://www.museefabre.fr")[0] == "ok")
 
-fake_urlopen("https://montpellier3m.fr/actualites")
-good, why = gm.check_site("https://www.museefabre.fr")
-ok("уход на чужой домен — неверная ссылка", not good and "другой адрес" in why, why)
+answer("https://www.museefabre.fr/ru")
+ok("www и без www — один и тот же сайт",
+   gm.check_site("https://museefabre.fr")[0] == "ok")
 
-fake_urlopen(urllib.error.HTTPError("u", 404, "Not Found", {}, None))
-good, why = gm.check_site("https://example.org/нет")
-ok("ответ 404 — неверная ссылка", not good and "404" in why, why)
+answer("https://montpellier3m.fr/actualites")
+state, why = gm.check_site("https://www.museefabre.fr")
+ok("уход на чужой домен — ссылку надо поправить",
+   state == "bad" and "другой адрес" in why, why)
 
-fake_urlopen(urllib.error.URLError("нет такого хоста"))
-good, why = gm.check_site("https://нет-такого.example")
-ok("сайт не отвечает — неверная ссылка", not good and "не открывается" in why, why)
+answer(urllib.error.HTTPError("u", 404, "Not Found", {}, None))
+state, why = gm.check_site("https://example.org/нет")
+ok("404 — ссылку надо поправить", state == "bad" and "404" in why, why)
 
-gm.urllib.request.urlopen = real_urlopen
+for code in (403, 429, 503):
+    answer(urllib.error.HTTPError("u", code, "no robots", {}, None))
+    state, why = gm.check_site("https://www.nga.gov")
+    ok(f"ответ {code} — не поломка, а «не пускают проверку»",
+       state == "unknown" and str(code) in why, why)
+
+answer(urllib.error.URLError(socket.gaierror("не нашёлся")))
+state, why = gm.check_site("https://нет-такого.example")
+ok("несуществующий домен — ссылку надо поправить",
+   state == "bad" and "домена нет" in why, why)
+
+answer(urllib.error.URLError(socket.timeout()))
+ok("не ответил вовремя — не поломка",
+   gm.check_site("https://www.museunacional.cat")[0] == "unknown")
+
+
+def cert_error(message):
+    e = ssl.SSLCertVerificationError(message)
+    e.verify_message = message
+    return e
+
+
+tries = answer(cert_error("self-signed certificate in certificate chain"), insecure_ok=True)
+state, why = gm.check_site("https://pushkinmuseum.art")
+ok("свой корень сертификата (Минцифры) — не поломка, сайт живой",
+   state == "unknown" and "браузере" in why, why)
+ok("ради этого сайт переспрашивается без проверки сертификата", tries == [False, True],
+   str(tries))
+
+answer(cert_error("unable to get local issuer certificate"), insecure_ok=False)
+state, why = gm.check_site("https://мёртвый.example")
+ok("сертификат не проверился и сайт молчит — это поломка", state == "bad", why)
+
+answer(cert_error("Hostname mismatch, certificate is not valid for 'x.dk'"))
+state, why = gm.check_site("https://skagenskunstmuseer.dk")
+ok("сертификат на чужое имя — ссылку надо поправить",
+   state == "bad" and "другое имя" in why, why)
+
+ok("проверка ходит браузерными заголовками",
+   "Mozilla" in gm.BROWSER_HEADERS.get("User-Agent", ""))
+
+gm.open_site = real_open_site
 
 
 # --------------------------------------------------------- настоящая база
