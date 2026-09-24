@@ -57,10 +57,13 @@ def ok(name, cond, extra=""):
 ok("музей узнаётся по роду", gm.kind_score("tourism=museum") > gm.kind_score("building=yes"))
 ok("кофейня — не музей", gm.odd_kind("amenity=fast_food"))
 ok("магазин — не музей", gm.odd_kind("shop=bakery"))
+ok("улица — не музей", gm.odd_kind("highway=residential"))
+ok("дом по адресу — сойдёт", not gm.odd_kind("place=house"))
 ok("галерея — музей", not gm.odd_kind("tourism=gallery"))
 ok("замок — сойдёт", not gm.odd_kind("historic=castle"))
 ok("пустой род не судим", not gm.odd_kind("") and not gm.odd_kind(None))
-ok("неизвестный род не судим", not gm.odd_kind("boundary=administrative"))
+ok("незнакомый род не судим", not gm.odd_kind("leisure=park"))
+ok("граница района — не здание", gm.odd_kind("boundary=administrative"))
 
 
 # ------------------------------------------------------- выбор из находок
@@ -120,6 +123,13 @@ OVERRIDES = {"Частная коллекция": {"skip": True}}
 warns = gm.map_warnings(MUSEUMS, CACHE, OVERRIDES)
 text = {m: w for m, w in warns}
 ok("кофейня вместо музея замечена", "не музей" in text.get("Музей Б, Тверь", ""))
+street = gm.map_warnings(
+    ["Музей У, Лондон"],
+    {"Музей У, Лондон": {"lat": 51.4965, "lon": -0.1255, "display_name": "Millbank, Вестминстер",
+                         "source": "nominatim", "precision": "exact", "kind": "highway=residential"}},
+    {})
+ok("улица вместо здания замечена и названа по-человечески",
+   street and "улица" in street[0][1], str(street))
 ok("приблизительная метка замечена", "приблизительная" in text.get("Музей В, Тверь", ""))
 ok("чужой город замечен", "нет в найденном адресе" in text.get("Музей Д, Псков", ""))
 ok("двойник в одной точке замечен",

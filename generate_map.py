@@ -126,6 +126,11 @@ NOT_MUSEUM = {'fast_food', 'cafe', 'restaurant', 'bar', 'pub', 'fuel', 'bank',
               'pharmacy', 'parking', 'supermarket', 'convenience', 'hotel',
               'hostel', 'bus_stop', 'bicycle_parking', 'atm', 'toilets',
               'car_wash', 'hairdresser', 'bakery', 'clothes', 'kiosk'}
+# Целые роды объектов, которыми музей быть не может. highway — это улица:
+# по запросу «Millbank, London» геокодер честно отдаёт улицу, и метка
+# встаёт посреди проезжей части, а не на здании музея.
+ODD_CLASSES = {'highway', 'shop', 'railway', 'waterway', 'aeroway',
+               'boundary', 'landuse', 'natural'}
 
 
 def kind_of(item):
@@ -147,7 +152,7 @@ def odd_kind(kind):
     cls, _, typ = (kind or '').partition('=')
     if not cls or kind_score(kind):
         return False
-    return cls == 'shop' or typ in NOT_MUSEUM
+    return cls in ODD_CLASSES or typ in NOT_MUSEUM
 
 
 def nominatim_search(query, limit=5):
@@ -1483,7 +1488,10 @@ def map_warnings(museums, cache, overrides):
         kind = loc.get('kind', '')
         name = (loc.get('display_name') or '').strip()
         if odd_kind(kind):
-            out.append((museum, f"нашлось «{name[:60]}» ({kind}) — это не музей"))
+            what = ("нашлась улица, а не здание — метка стоит посреди неё"
+                    if kind.startswith('highway=')
+                    else f"нашлось «{name[:60]}» ({kind}) — это не музей")
+            out.append((museum, what))
         elif (not (manual.get('address') or '').strip()
               and not (loc.get('source') or '').startswith('wikidata')
               and not city_named(museum_city(museum, manual), name)):
