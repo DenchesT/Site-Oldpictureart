@@ -4045,5 +4045,49 @@
       "images/views/deberuete-reka-izol-kemperle-1901-1.jpg"
     ],
     "card": "images/cards/deberuete-reka-izol-kemperle-1901.jpg"
+  },
+  {
+    "id": 512,
+    "date": "2026-09-28",
+    "filename": "bazille-bastiony-eg-morta-1867.html",
+    "images": [
+      "images/bazille-bastiony-eg-morta-1867-1.jpg"
+    ],
+    "hires": [
+      "images/bazille-bastiony-eg-morta-1867-hires-1.jpeg"
+    ],
+    "thumbs": [
+      "images/thumbs/bazille-bastiony-eg-morta-1867.jpg"
+    ],
+    "artist": "Жан Фредерик Базиль",
+    "title": "Les Remparts d'Aigues-Mortes (Бастионы Эг-Морта), 1867",
+    "medium": "Холст, масло, 46 x 75,5 см",
+    "material": "Холст",
+    "techniques": [
+      "масло"
+    ],
+    "size": "46 x 75,5 см",
+    "museum": "Музей Фабра, Монпелье",
+    "history": [
+      "1) Joseph Fioupiou, Париж-Тулон",
+      "2) Léon Deshons, Монпелье",
+      "3) Покупка музеем Фабра, 1956 г."
+    ],
+    "description": "Хотя Базиль никогда не писал береговую линию, его завораживала игра света и воды, которой он посвятил большинство своих работ. Город Эг-Морт, основанный Людовиком Святым в 1248 году, вдохновил его на создание серии пейзажей, написанных на пленэре летом 1867 года.",
+    "urls": [
+      "https://www.museefabre.fr/recherche/musee%253AMUS_BIEN%253A1934",
+      "https://www.bazille-catalogue.com/the-ramparts-at-aigues-mortes-from-south-34.html"
+    ],
+    "tags": [
+      "bazille",
+      "muséefabre",
+      "картина"
+    ],
+    "raw": "Жан Фредерик Базиль\n⸻\nLes Remparts d'Aigues-Mortes (Бастионы Эг-Морта), 1867\n⸻\nХолст, масло, 46 x 75,5 см\n⸻\nМузей Фабра, Монпелье\n⸻\n1) Joseph Fioupiou, Париж-Тулон\n2) Léon Deshons, Монпелье\n3) Покупка музеем Фабра, 1956 г.\n⸻\nХотя Базиль никогда не писал береговую линию, его завораживала игра света и воды, которой он посвятил большинство своих работ. Город Эг-Морт, основанный Людовиком Святым в 1248 году, вдохновил его на создание серии пейзажей, написанных на пленэре летом 1867 года.\n⸻\nhttps://www.museefabre.fr/recherche/musee%253AMUS_BIEN%253A1934\nhttps://www.bazille-catalogue.com/the-ramparts-at-aigues-mortes-from-south-34.html\n⸻\n#bazille@oldpictureart \n#muséefabre@oldpictureart \n#картина@oldpictureart\n",
+    "creation_year": 1867,
+    "views": [
+      ""
+    ],
+    "card": "images/cards/bazille-bastiony-eg-morta-1867.jpg"
   }
 ]
