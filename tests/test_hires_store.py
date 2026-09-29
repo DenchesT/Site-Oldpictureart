@@ -149,6 +149,30 @@ if HAVE_MOTO:
         ok("уже лежащий в хранилище файл не заливается снова",
            st3["already"] == 1 and st3["uploaded"] == 0 and st3["moved"] == 1, str(st3))
 
+        # --stats: сверка бакета с базой
+        s3.put_object(Bucket="opa", Key="images/old-hires-1.jpg", Body=b"x" * 10)   # лишний
+        objs = hs.bucket_objects(s3, "opa")
+        recs_st = records + [{"filename": "d.html", "hires": ["images/lost-hires-1.jpg"]}]
+        st = hs.compare_bucket(recs_st, objs, output_dir=docs)
+        ok("сводка: сколько файлов и сколько места в бакете",
+           st["files"] == 3 and st["bytes"] == 3000 + 5000 + 10, str({k: st[k] for k in ("files", "bytes")}))
+        ok("сводка: оригинал, которого нет ни в бакете, ни в docs, назван",
+           st["missing"] == ["images/lost-hires-1.jpg", "images/missing-hires-2.jpg"], str(st["missing"]))
+        ok("сводка: лишний файл в бакете назван", st["extra"] == ["images/old-hires-1.jpg"], str(st["extra"]))
+        out = []
+        hs.print_stats(st, "opa", out=out.append)
+        text = "\n".join(out)
+        ok("сводка печатает объём и долю бесплатного гигабайта",
+           "3 файлов" in text and "Бесплатный гигабайт занят" in text, out[0] if out else "")
+        shutil.copy(os.path.join(archive, "b-hires-1.png"), os.path.join(docs, "images/b-hires-1.png"))
+        empty_bucket = hs.compare_bucket(records, {}, output_dir=docs)
+        ok("сводка: ещё не выгруженное в docs — «ждут выгрузки», а не «пропали»",
+           "images/b-hires-1.png" in empty_bucket["waiting"]
+           and "images/b-hires-1.png" not in empty_bucket["missing"], str(empty_bucket))
+        ok("сводка: оригинал-картинку страницы не ждёт и не ищет",
+           "images/c-hires-1.jpg" not in empty_bucket["waiting"] + empty_bucket["missing"])
+        os.remove(os.path.join(docs, "images/b-hires-1.png"))
+
         # оборванная выгрузка: хранилище говорит «не тот размер»
         tmp2, docs2, recs2 = make_site()
 

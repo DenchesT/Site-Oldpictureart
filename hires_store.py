@@ -27,6 +27,8 @@ site_common.py). Поэтому сбой посреди выгрузки нич�
     python hires_store.py --upload           # выгрузить и перенести
     python hires_store.py --upload --force   # перезалить всё (например,
                                              # чтобы обновить заголовки)
+    python hires_store.py --stats            # сколько файлов и места в хранилище,
+                                             # всё ли на месте
 
 Потом — python rebuild_pages.py и push (удаления из docs/images тоже).
 Новые посты build_site.py выгружает сам, если хранилище настроено.
@@ -170,15 +172,21 @@ def make_client(key_id, secret):
 def settings():
     """Что настроено, а что нет: (base_url, key_id, secret, чего не хватает)."""
     load_env()
+    broken = ""
     try:
         from site_common import HIRES_BASE_URL
-    except Exception:
-        HIRES_BASE_URL = ""
+    except Exception as e:
+        # Ошибку в site_common.py не прячем: иначе она выглядела бы как
+        # «адрес не вписан», и искать пришлось бы не там.
+        HIRES_BASE_URL, broken = "", f"{type(e).__name__}: {e}"
     key_id = os.environ.get("S3_KEY_ID", "").strip()
     secret = os.environ.get("S3_SECRET", "").strip()
     missing = []
-    if not HIRES_BASE_URL:
-        missing.append("HIRES_BASE_URL в site_common.py")
+    if broken:
+        missing.append(f"site_common.py не читается — {broken}")
+    elif not HIRES_BASE_URL:
+        missing.append('HIRES_BASE_URL в site_common.py (строка HIRES_BASE_URL = "" '
+                       "должна быть одна, с адресом бакета)")
     elif not bucket_of(HIRES_BASE_URL)[0]:
         missing.append("HIRES_BASE_URL вида https://storage.yandexcloud.net/<бакет>")
     if not key_id or not secret:
@@ -271,6 +279,72 @@ def sync(records, client, bucket, prefix="", name_for=None, apply=True,
     return stats
 
 
+FREE_BYTES = 1024 ** 3   # первый гигабайт стандартного хранилища бесплатен
+
+
+def bucket_objects(client, bucket, prefix=""):
+    """{ключ: размер} всего, что лежит в бакете (под приставкой)."""
+    out = {}
+    pager = client.get_paginator("list_objects_v2")
+    kw = {"Bucket": bucket}
+    if prefix.strip("/"):
+        kw["Prefix"] = prefix.strip("/") + "/"
+    for page in pager.paginate(**kw):
+        for obj in page.get("Contents") or []:
+            out[obj["Key"]] = obj["Size"]
+    return out
+
+
+def compare_bucket(records, objects, prefix="", output_dir=OUTPUT_DIR):
+    """Сверка бакета с базой: что есть, чего не хватает, что лишнее.
+
+    Возвращает словарь: files, bytes — всего в бакете; missing — оригиналы,
+    на которые ссылаются посты, но которых нет ни в бакете, ни в docs
+    (скачать их нельзя); waiting — ещё лежат в docs и ждут выгрузки;
+    extra — лежат в бакете, но ни один пост на них не ссылается.
+    """
+    # Оригинал, который служит и картинкой страницы, живёт на сайте и в
+    # хранилище не уезжает (см. local_originals) — его не ждём и не ищем.
+    on_page = set()
+    for rec in records:
+        for field in ("images", "thumbs", "views"):
+            on_page.update(x for x in (rec.get(field) or []) if x)
+    wanted = {}
+    for rec in records:
+        for rel in rec.get("hires") or []:
+            if rel and "-hires-" in os.path.basename(rel) and rel not in on_page:
+                wanted[object_key(prefix, rel)] = rel
+    waiting = sorted(rel for key, rel in wanted.items()
+                     if key not in objects and os.path.exists(os.path.join(output_dir, rel)))
+    missing = sorted(rel for key, rel in wanted.items()
+                     if key not in objects and not os.path.exists(os.path.join(output_dir, rel)))
+    extra = sorted(k for k in objects if k not in wanted)
+    return {"files": len(objects), "bytes": sum(objects.values()),
+            "missing": missing, "waiting": waiting, "extra": extra,
+            "extra_bytes": sum(objects[k] for k in extra)}
+
+
+def print_stats(st, bucket, out=print):
+    mb = lambda b: f"{b / 1048576:.0f} МБ"
+    out(f"В хранилище (бакет {bucket}): {st['files']} файлов, {mb(st['bytes'])}")
+    share = st["bytes"] / FREE_BYTES * 100
+    out(f"Бесплатный гигабайт занят на {share:.0f}%"
+        + ("" if share < 100 else " — дальше хранение платное, но это копейки за гигабайт"))
+    if st["missing"]:
+        out(f"\n✗ Нет ни в хранилище, ни на сайте ({len(st['missing'])}) — эти картины не скачать:")
+        for rel in st["missing"][:10]:
+            out(f"    {rel}")
+        out("  Если копии есть в hires/, верните их в docs/images и запустите --upload.")
+    if st["waiting"]:
+        out(f"\nЕщё в docs/images, ждут выгрузки: {len(st['waiting'])} — python hires_store.py --upload")
+    if st["extra"]:
+        out(f"\nЛишние в хранилище (ни один пост не ссылается): {len(st['extra'])}, {mb(st['extra_bytes'])}")
+        for key in st["extra"][:10]:
+            out(f"    {key}")
+    if not (st["missing"] or st["waiting"] or st["extra"]):
+        out("Все оригиналы, на которые ссылаются посты, лежат в хранилище, лишнего нет.")
+
+
 def main():
     upload = "--upload" in sys.argv
     force = "--force" in sys.argv
@@ -293,6 +367,13 @@ def main():
             print(f"  • {m}")
         print("Как настроить — STORAGE_SETUP.md")
         return 1
+    if "--stats" in sys.argv:
+        bucket, prefix = bucket_of(base)
+        client = make_client(key_id, secret)
+        print()
+        st = compare_bucket(records, bucket_objects(client, bucket, prefix), prefix)
+        print_stats(st, bucket)
+        return 1 if st["missing"] else 0
     if not todo:
         print("\nВыгружать нечего: все оригиналы уже в хранилище.")
         return 0

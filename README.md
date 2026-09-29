@@ -568,6 +568,7 @@ GitHub Pages не публикует сайты больше 1 ГБ, а `docs/im
 ```bash
 python hires_store.py            # отчёт, ничего не меняет
 python hires_store.py --upload   # выгрузить и перенести копии в hires/
+python hires_store.py --stats    # сколько файлов и места в хранилище, всё ли на месте
 ```
 
 Каждый оригинал уезжает по тому же пути, что и на сайте, с заголовком
