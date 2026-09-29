@@ -906,5 +906,54 @@
     "old_filenames": [
       "visit-2026-08-25-саратовский-государственный-художественный-музей-имени-ан-ра.html"
     ]
+  },
+  {
+    "id": 514,
+    "date": "2026-09-29",
+    "filename": "visit-2026-09-29-shkola-zvantsevoi.html",
+    "images": [
+      "images/visit-2026-09-29-школа-званцевой-1.jpg",
+      "images/visit-2026-09-29-школа-званцевой-2.jpg",
+      "images/visit-2026-09-29-школа-званцевой-3.jpg",
+      "images/visit-2026-09-29-школа-званцевой-4.jpg",
+      "images/visit-2026-09-29-школа-званцевой-5.jpg",
+      "images/visit-2026-09-29-школа-званцевой-6.jpg",
+      "images/visit-2026-09-29-школа-званцевой-7.jpg",
+      "images/visit-2026-09-29-школа-званцевой-8.jpg",
+      "images/visit-2026-09-29-школа-званцевой-9.jpg",
+      "images/visit-2026-09-29-школа-званцевой-10.jpg",
+      "images/visit-2026-09-29-школа-званцевой-11.jpg",
+      "images/visit-2026-09-29-школа-званцевой-12.jpg"
+    ],
+    "hires": [],
+    "thumbs": [
+      "images/thumbs/visit-2026-09-29-школа-званцевой.jpg",
+      "images/thumbs/visit-2026-09-29-школа-званцевой-2.jpg",
+      "images/thumbs/visit-2026-09-29-школа-званцевой-3.jpg",
+      "images/thumbs/visit-2026-09-29-школа-званцевой-4.jpg",
+      "images/thumbs/visit-2026-09-29-школа-званцевой-5.jpg",
+      "images/thumbs/visit-2026-09-29-школа-званцевой-6.jpg",
+      "images/thumbs/visit-2026-09-29-школа-званцевой-7.jpg",
+      "images/thumbs/visit-2026-09-29-школа-званцевой-8.jpg",
+      "images/thumbs/visit-2026-09-29-школа-званцевой-9.jpg",
+      "images/thumbs/visit-2026-09-29-школа-званцевой-10.jpg",
+      "images/thumbs/visit-2026-09-29-школа-званцевой-11.jpg",
+      "images/thumbs/visit-2026-09-29-школа-званцевой-12.jpg"
+    ],
+    "extras_done": true,
+    "kind": "выставка",
+    "title": "Школа Званцевой",
+    "place": "Музей русского импрессионизма",
+    "note": "",
+    "run": "25.06.2026 — 04.10.2026",
+    "visited": "26.09.2026",
+    "urls": [],
+    "tags": [
+      "мри"
+    ],
+    "raw": "Выставка \"Школа Званцевой\"\n(25.06.2026-04.10.2026) \n\nМузей русского импрессионизма, 26.09.2026\n\n#мри@oldpictureart \n#выставка@oldpictureart\n",
+    "old_filenames": [
+      "visit-2026-09-29-школа-званцевой.html"
+    ]
   }
 ]
