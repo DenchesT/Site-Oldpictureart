@@ -2156,6 +2156,32 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
   font-weight: normal;
   color: var(--muted);
 }
+/* Название выставки и музея — ссылки из самого поста, на страницу
+   выставки и сайт музея. Заголовок должен остаться заголовком, поэтому
+   цвет свой, подчёркивание тонкое, а стрелка маленькая: видно, что это
+   ссылка наружу, но на ссылку из текста она не похожа. */
+.post-head .ext-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .18em;
+  text-decoration-color: var(--border);
+  transition: color .15s, text-decoration-color .15s;
+}
+.post-head .ext-link::after {
+  content: "↗";
+  display: inline-block;
+  margin-left: .22em;
+  font-size: .55em;
+  vertical-align: .5em;
+  color: var(--muted);
+  text-decoration: none;
+}
+.post-head .ext-link:hover,
+.post-head .ext-link:focus-visible {
+  color: var(--link);
+  text-decoration-color: currentColor;
+}
 
 @media (max-width: 1000px) {
   .grid.list .visit-card { grid-template-columns: 108px minmax(0, 1fr); }

@@ -1372,13 +1372,9 @@ def render_post_page(post, all_posts=None):
         its = "".join(f"<li>{h(s)}</li>" for s in hist)
         hist_html = f'<section class="history"><h3>Происхождение</h3><ul>{its}</ul></section>'
 
-    src_html = ""
-    src_block = ""
-    if urls:
-        its = "".join(f'<li><a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></li>' for u in urls)
-        word = "Источник" if len(urls) == 1 else "Источники"
-        src_html = f'<div class="source-section"><strong>{word}</strong><ul class="source-list">{its}</ul></div>'
-        src_block = f'<div class="aside-block"><h3>{word}</h3><ul class="source-list">{its}</ul></div>'
+    # Источники: ссылки, спрятанные под словами поста (с их подписью), и
+    # голые адреса из текста. Раньше были видны только вторые.
+    src_block = source_block(source_items(post.get("links"), urls))
 
     # Prev/Next навигация
     prev_link = ""
@@ -3215,6 +3211,80 @@ def render_visits_page(visits, all_posts=None):
 </body></html>"""
 
 
+def _link_key(text):
+    """Название для сравнения со ссылкой: без регистра, кавычек, эмодзи и
+    лишних пробелов. «Выставка "Сокровищница графики"» и «Сокровищница
+    графики 🖼» должны узнавать друг друга."""
+    t = (text or "").lower().replace("ё", "е")
+    t = re.sub(r"[^\w\s]", " ", t)
+    return re.sub(r"\s+", " ", t).strip()
+
+
+def link_for(field, links, used=()):
+    """Номер ссылки из поста, которая стоит на этом названии, или None.
+
+    Ссылку в канале ставят по-разному: на всю строку «Выставка "…"», на
+    одно название или на его часть. Поэтому узнаём и так, и так, но
+    совсем короткие подписи (меньше четырёх букв) не берём — «им.» или
+    «ГМ» совпали бы с чем угодно. Из нескольких подходящих берётся самая
+    точная, а уже занятая другим названием второй раз не используется.
+    """
+    f = _link_key(field)
+    if not f:
+        return None
+    best, score = None, None
+    for i, ln in enumerate(links or []):
+        if i in used:
+            continue
+        k = _link_key(ln.get("text"))
+        if not k or (len(k) < 4 and k != f):
+            continue
+        if k == f:
+            s = 3
+        elif f in k:
+            s = 2
+        elif k in f:
+            s = 1
+        else:
+            continue
+        if score is None or (s, len(k)) > score:
+            best, score = i, (s, len(k))
+    return best
+
+
+def ext_link(text, url):
+    """Название, под которым лежит внешняя ссылка из поста."""
+    return (f'<a href="{h(url)}" class="ext-link" target="_blank" rel="noopener" '
+            f'title="{h(url)}">{h(text)}</a>')
+
+
+def source_items(links, urls, used=()):
+    """Строки блока ссылок: сперва подписанные из поста, потом голые
+    адреса. Один и тот же адрес — один раз."""
+    seen, items = set(), []
+    for i, ln in enumerate(links or []):
+        u = ln.get("url")
+        if i in used or not u or u in seen:
+            continue
+        seen.add(u)
+        items.append((ln.get("text") or u, u))
+    for u in urls or []:
+        if u and u not in seen:
+            seen.add(u)
+            items.append((u, u))
+    return items
+
+
+def source_block(items, words=("Источник", "Источники")):
+    """Блок ссылок в правой колонке: заголовок в числе по количеству."""
+    if not items:
+        return ""
+    its = "".join(f'<li><a href="{h(u)}" target="_blank" rel="noopener">{h(t)}</a></li>'
+                  for t, u in items)
+    word = words[0] if len(items) == 1 else words[1]
+    return f'<div class="aside-block"><h3>{word}</h3><ul class="source-list">{its}</ul></div>'
+
+
 @tidy
 def render_visit_page(visit, visits, all_posts=None, map_names=None):
     """Страница одного посещения: все снимки, сведения, ссылка на карту.
@@ -3278,12 +3348,26 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
         its = " ".join(f'<a href="tag-{h(tag_slug(t))}.html" class="tag">#{h(t)}</a>' for t in tags)
         tags_block = f'<div class="aside-block"><h3>Собрание</h3><div class="tags">{its}</div></div>'
 
-    src_block = ""
-    if visit.get("urls"):
-        its = "".join(f'<li><a href="{h(u)}" target="_blank" rel="noopener">{h(u)}</a></li>'
-                      for u in visit["urls"])
-        word = "Источник" if len(visit["urls"]) == 1 else "Источники"
-        src_block = f'<div class="aside-block"><h3>{word}</h3><ul class="source-list">{its}</ul></div>'
+    # Название выставки и музея в посте — ссылки на их страницы. Здесь они
+    # тоже ссылки: заголовок ведёт туда же, куда и в канале. Ссылки, не
+    # пришедшиеся ни на одно название, уходят в блок справа — не теряются.
+    links = visit.get("links") or []
+    used = set()
+
+    def linked(text):
+        i = link_for(text, links, used)
+        if i is None:
+            return h(text)
+        used.add(i)
+        return ext_link(text, links[i]["url"])
+
+    h1_html = linked(heading)
+    sub_head = f'<h2>{linked(place)}</h2>' if place and place != heading else ''
+    items = source_items(links, visit.get("urls"), used)
+    # Подписанные ссылки у похода — это страницы выставок и музеев, а не
+    # источники сведений, поэтому и блок называется по-другому.
+    src_block = source_block(items, ("Ссылка", "Ссылки") if any(t != u for t, u in items)
+                             else ("Источник", "Источники"))
 
     download_btn = ""
     if photos:
@@ -3317,7 +3401,6 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
         canonical=f"{BASE_URL}/{visit['filename']}",
         og_type="article",
     )
-    sub_head = f'<h2>{h(place)}</h2>' if place and place != heading else ''
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 {head}
 </head><body class="post-page visit-page">
@@ -3335,7 +3418,7 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
   <div class="post-main">
     <header class="post-head">
       <p class="eyebrow">{h(visit["kind"].capitalize())}</p>
-      <h1>{h(heading)}</h1>
+      <h1>{h1_html}</h1>
       {sub_head}
     </header>
     {img_html}
@@ -3934,7 +4017,8 @@ def match_posts(all_posts, needle):
     if hit:
         return hit
     return [p for p in all_posts if low in
-            f"{p.get('artist', '')} {p.get('title', '')} {p.get('filename', '')}".lower()]
+            f"{p.get('artist', '')} {p.get('title', '')} {p.get('place', '')} "
+            f"{p.get('filename', '')}".lower()]
 
 
 def refresh_targets(all_posts, argv=None):
@@ -3960,64 +4044,163 @@ def refresh_targets(all_posts, argv=None):
     return out
 
 
-async def refetch_texts(client, posts):
-    """Притягивает из канала нынешний текст постов.
+# ======================================================================
+#                   ССЫЛКИ В ТЕКСТЕ ПОСТА
+# ======================================================================
+#
+# В постах о походах название выставки или музея — ссылка: «Сокровищница
+# графики» ведёт на страницу выставки, «ГМИИ им. А.С. Пушкина» — на сайт
+# музея. В тексте поста (raw_text) их не видно: Телеграм хранит ссылки не
+# в тексте, а разметкой поверх него, и сайт их до сих пор просто терял.
+# Теперь разметка читается, и у записи появляется поле links:
+#     [{"text": "Сокровищница графики", "url": "https://…"}, …]
+# У прежних записей его нет — сборка дочитывает его один раз сама.
 
-    Пост в канале мог поменяться, а снимки — нет, поэтому качаем только
-    текст: разбор, имя страницы, карточка ссылки и сами страницы
-    обновятся дальше обычным ходом сборки.
+
+def message_links(msgs):
+    """Ссылки, спрятанные под словами поста: [{text, url}].
+
+    Берутся только ссылки-подписи (слово, под которым лежит адрес).
+    Голые адреса в тексте и так попадают в urls, а хештеги и упоминания
+    ссылками на сайт не являются. Адреса — только http(s): javascript:
+    и прочее в страницу сайта не пускаем.
     """
-    if not posts:
-        return 0
-    logger.info(f"Перечитываю текст постов: {len(posts)}")
+    out, seen = [], set()
+    for m in sorted(msgs or [], key=lambda x: getattr(x, "id", 0)):
+        try:
+            pairs = m.get_entities_text() or []
+        except Exception:
+            continue
+        for ent, text in pairs:
+            url = (getattr(ent, "url", None) or "").strip()
+            text = re.sub(r"\s+", " ", text or "").strip()
+            if not text or not url.lower().startswith(("http://", "https://")):
+                continue
+            if (text, url) in seen:
+                continue
+            seen.add((text, url))
+            out.append({"text": text, "url": url})
+    return out
+
+
+async def fetch_groups(client, records):
+    """Забирает из канала посты записей вместе с их альбомами.
+
+    Возвращает ({номер: [записи альбома по порядку]}, {номера, про которые
+    канал ответил}). Второе нужно, чтобы отличить удалённый пост (канал
+    ответил, а поста нет) от сбоя связи (не ответил вовсе): удалённый
+    незачем спрашивать снова, а после сбоя — надо.
+    """
     # Подпись в посте из нескольких снимков лежит на одном из них,
     # поэтому вокруг каждого номера берём небольшое окно: в альбоме
     # Телеграма не больше десяти записей.
     wanted = set()
-    for post in posts:
-        pid = post.get("id")
+    for rec in records:
+        pid = rec.get("id")
         if pid:
             wanted.update(x for x in range(pid - 9, pid + 10) if x > 0)
-    got = {}
+    got, asked = {}, set()
     wanted = sorted(wanted)
     for i in range(0, len(wanted), 100):
+        chunk = wanted[i:i + 100]
         try:
-            for m in await client.get_messages(CHANNEL_URL, ids=wanted[i:i + 100]):
+            for m in await client.get_messages(CHANNEL_URL, ids=chunk):
                 if m:
                     got[m.id] = m
+            asked.update(chunk)
         except Exception as e:
-            logger.error(f"Не прочитались посты {wanted[i]}…: {e}")
+            logger.error(f"Не прочитались посты {chunk[0]}…: {e}")
 
-    changed = 0
-    for i, post in enumerate(posts, 1):
-        who = post.get("filename", "?")
-        main = got.get(post.get("id"))
+    groups = {}
+    for rec in records:
+        main = got.get(rec.get("id"))
         if main is None:
-            logger.warning(f"[{i}/{len(posts)}] {who}: поста {post.get('id')} "
-                           "в канале нет — пропускаю")
             continue
         gid = getattr(main, "grouped_id", None)
         group = ([m for m in got.values() if getattr(m, "grouped_id", None) == gid]
                  if gid else [main])
+        groups[rec["id"]] = sorted(group, key=lambda m: m.id)
+    return groups, asked
+
+
+async def refetch_texts(client, posts):
+    """Притягивает из канала нынешний текст постов и ссылки в нём.
+
+    Пост в канале мог поменяться, а снимки — нет, поэтому качаем только
+    текст: разбор, имя страницы, карточка ссылки и сами страницы
+    обновятся дальше обычным ходом сборки. Ссылки сверяются отдельно:
+    поправить адрес под словом можно, не тронув ни буквы текста.
+    """
+    if not posts:
+        return 0
+    logger.info(f"Перечитываю текст постов: {len(posts)}")
+    groups, _ = await fetch_groups(client, posts)
+
+    changed = 0
+    for i, post in enumerate(posts, 1):
+        who = post.get("filename", "?")
+        group = groups.get(post.get("id"))
+        if not group:
+            logger.warning(f"[{i}/{len(posts)}] {who}: поста {post.get('id')} "
+                           "в канале нет — пропускаю")
+            continue
         text = ""
-        for m in sorted(group, key=lambda m: m.id):
+        for m in group:
             t = m.raw_text or ""
             if t:
                 text += t + "\n"
         if not text.strip():
             logger.warning(f"[{i}/{len(posts)}] {who}: текста в посте нет — пропускаю")
             continue
-        if text == post.get("raw"):
-            continue
-        if not parse_post(text):
-            logger.error(f"[{i}/{len(posts)}] {who}: новый текст не разбирается "
-                         "(не хватает разделителей ⸻?) — оставляю прежний")
-            continue
-        post["raw"] = text
-        changed += 1
-        logger.info(f"[{i}/{len(posts)}] {who}: текст обновлён")
-    logger.info("Текст изменился у постов: " + (str(changed) if changed else "нет"))
+        links = message_links(group)
+        what = []
+        old_links = post.get("links")
+        if old_links is None or links != old_links:
+            post["links"] = links
+            # Первое прочтение ссылок у поста без них правкой не считается:
+            # правка — это когда ссылка была одна, а стала другая.
+            if links != (old_links or []):
+                what.append("ссылки")
+        if text != post.get("raw"):
+            # У похода свой разбор: проверять его разбором картины значило
+            # бы отвергнуть любую правку — разделителей ⸻ там нет.
+            parse = parse_visit if post.get("kind") else parse_post
+            if parse(text):
+                post["raw"] = text
+                what.append("текст")
+            else:
+                logger.error(f"[{i}/{len(posts)}] {who}: новый текст не разбирается "
+                             "(не хватает разделителей ⸻?) — оставляю прежний")
+        if what:
+            changed += 1
+            logger.info(f"[{i}/{len(posts)}] {who}: обновлено — {', '.join(what)}")
+    logger.info("Изменились посты: " + (str(changed) if changed else "нет"))
     return changed
+
+
+async def backfill_links(client, records):
+    """Дочитывает ссылки у записей, скачанных до того, как сборка их
+    замечала. Делается один раз: поле links, даже пустое, значит «уже
+    читали». Удалённому из канала посту ставится пустой список — иначе
+    его спрашивали бы на каждой сборке."""
+    todo = [r for r in records if r.get("id") and "links" not in r]
+    if not todo:
+        return 0
+    logger.info(f"Ссылки в тексте постов: дочитываю у {len(todo)} записей (один раз)")
+    groups, asked = await fetch_groups(client, todo)
+    done = found = 0
+    for rec in todo:
+        group = groups.get(rec["id"])
+        if group is not None:
+            rec["links"] = message_links(group)
+        elif rec["id"] in asked:
+            rec["links"] = []           # пост удалён из канала
+        else:
+            continue                    # сбой связи — спросим в следующий раз
+        done += 1
+        found += len(rec["links"])
+    logger.info(f"   дочитано записей: {done}, ссылок нашлось: {found}")
+    return done
 
 
 def rebuild_reset():
@@ -4041,7 +4224,8 @@ async def main():
     all_visits = load_json(VISITS_FILE, [])
     # Ключ --refresh разбираем до Телеграма: если ни один пост не подошёл,
     # незачем и подключаться.
-    to_refresh = refresh_targets(all_posts)
+    # Искать правленый пост — и среди картин, и среди походов.
+    to_refresh = refresh_targets(all_posts + all_visits)
     if to_refresh is not None and not to_refresh:
         logger.error("--refresh: ни один пост не подошёл, сборка не начата")
         return
@@ -4050,6 +4234,7 @@ async def main():
     client = await connect_with_proxy(api_id, api_hash, phone, PROXY_LIST)
     if to_refresh:
         await refetch_texts(client, to_refresh)
+    await backfill_links(client, all_posts + all_visits)
     # Полный проход нужен дважды: когда файла посещений ещё нет (сборка
     # первая, которая умеет #выставка и #галерея) и когда у прежних походов
     # ещё не собраны безымянные посты со снимками. Картинам это не мешает —
@@ -4081,7 +4266,8 @@ async def main():
                     if getattr(reply, "document", None) and reply.document.mime_type.startswith("image/"): comments.append(reply)
             except Exception as e: logger.warning(f"Комментарии: {e}")
         im, hi, th = await download_images(client, group, comments, fn[:-5])
-        post = {"id":mm.id,"date":date,"filename":fn,"images":im,"hires":hi,"thumbs":th,**parsed}
+        post = {"id":mm.id,"date":date,"filename":fn,"images":im,"hires":hi,"thumbs":th,
+                "links":message_links(group),**parsed}
         all_posts.append(post)
         processed_ids.update(m.id for m in group)
         with open(os.path.join(OUTPUT_DIR, fn), "w", encoding="utf-8", newline="\n") as f:
@@ -4118,7 +4304,7 @@ async def main():
                     + (f" (+{len(extra)} без подписи)" if extra else ""))
         im, hi, th = await download_images(client, group, await visit_comments(vm), fn[:-5])
         visit = {"id":vm.id,"date":date,"filename":fn,"images":im,"hires":hi,"thumbs":th,
-                 "extras_done":True, **parsed}
+                 "extras_done":True, "links":message_links(group), **parsed}
         processed_ids.update(m.id for m in group)
         await add_photos(visit, extra, fn[:-5])
         all_visits.append(visit)

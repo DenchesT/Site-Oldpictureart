@@ -25,6 +25,7 @@ SCHOOLS в generate_quiz.py, иначе варианты к нему в квиз
 import datetime
 import json
 import os
+import shutil
 import sys
 import tempfile
 import urllib.error
@@ -236,10 +237,19 @@ ok("десятилетие для вопроса «когда» — только
 # ------------------------------------------------------------ настоящая база
 if os.path.exists("posts_meta.json"):
     real = json.load(open("posts_meta.json", encoding="utf-8"))
-    gq.SCHOOLS_CACHE = os.path.join(tmp, "empty.json")
+    # Новые художники узнаются по Wikidata и запоминаются в
+    # artist_schools.json — список SCHOOLS руками больше не дописывают.
+    # Поэтому и проверяем по нему вместе с готовым кэшем, а не по пустому:
+    # иначе проверка краснела бы после каждого нового художника. Кэш
+    # копируется, чтобы проверка не могла его испортить.
+    cache_copy = os.path.join(tmp, "artist_schools.json")
+    if os.path.exists("artist_schools.json"):
+        shutil.copy("artist_schools.json", cache_copy)
+    gq.SCHOOLS_CACHE = cache_copy
     calls.clear()
     items, artists, unknown = gq.quiz_data(real, log=lambda *_: None)
-    ok("у всех художников сайта школа известна без сети", not unknown and not calls, ", ".join(unknown))
+    ok("у всех художников сайта школа известна без сети (список + artist_schools.json)",
+       not unknown and not calls, ", ".join(unknown))
 
 print("\n====== ШКОЛЫ ХУДОЖНИКОВ И ГОДЫ ======")
 for name, passed, extra in results:
