@@ -161,17 +161,26 @@ function readVisits() {
   ok('снимок открывается лупой', one.lupa);
   ok('снимки сеткой, а не колонкой', one.gridded && one.cols >= 2, one.cols + ' в ряд');
 
-  // Ссылка на карту появляется, только когда место совпало с музеем
-  // из собрания, — проверяем, что она хотя бы никуда не врёт.
-  const mapLink = await page.evaluate(() => {
-    const a = document.querySelector('.spec-table a[href^="museums.html#museum-"]');
+  // Место похода — ссылка на страницу места, а с неё — на карточку на
+  // карте собраний. Проверяем, что цепочка никуда не врёт.
+  function mapAnchor(href) {
+    if (!href) return '';
+    if (href.startsWith('museums.html#')) return href.split('#')[1];
+    const file = path.join(DOCS, decodeURIComponent(href));
+    if (!fs.existsSync(file)) return '';
+    const m = fs.readFileSync(file, 'utf8').match(/museums\.html#(museum-[^"]+)/);
+    return m ? m[1] : '';
+  }
+  const placeLink = await page.evaluate(() => {
+    const a = document.querySelector('.spec-table a[href^="museum-"], .spec-table a[href^="museums.html#museum-"]');
     return a ? a.getAttribute('href') : '';
   });
-  ok('со страницы похода можно перейти на карту', !!mapLink || !ONE.place, mapLink);
-  if (mapLink) {
+  ok('со страницы похода можно перейти к месту', !!placeLink || !ONE.place, placeLink);
+  if (placeLink) {
     const museums = fs.readFileSync(path.join(DOCS, 'museums.html'), 'utf8');
-    ok('ссылка на карту ведёт к настоящей карточке',
-      museums.includes('id="' + mapLink.split('#')[1] + '"'), mapLink);
+    const anchor = mapAnchor(placeLink);
+    ok('а оттуда — к настоящей карточке на карте', anchor && museums.includes('id="' + anchor + '"'),
+      placeLink + ' → ' + anchor);
   }
 
   // Каждое место похода обязано иметь карточку на карте — иначе половина
@@ -181,8 +190,9 @@ function readVisits() {
   let missing = 0;
   for (const v of withPlace) {
     const page2 = fs.readFileSync(path.join(DOCS, v.filename), 'utf8');
-    const m = page2.match(/museums\.html#museum-([^"]+)/);
-    if (!m || !museumsHtml.includes('id="museum-' + m[1] + '"')) missing++;
+    const m = page2.match(/<span>Место<\/span><b><a href="([^"]+)"/);
+    const anchor = m ? mapAnchor(m[1]) : '';
+    if (!anchor || !museumsHtml.includes('id="' + anchor + '"')) missing++;
   }
   ok('все места похода есть на карте', missing === 0,
     missing ? missing + ' без карточки' : withPlace.length + ' мест');

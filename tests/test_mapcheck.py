@@ -64,6 +64,7 @@ ok("замок — сойдёт", not gm.odd_kind("historic=castle"))
 ok("пустой род не судим", not gm.odd_kind("") and not gm.odd_kind(None))
 ok("незнакомый род не судим", not gm.odd_kind("leisure=park"))
 ok("граница района — не здание", gm.odd_kind("boundary=administrative"))
+ok("дефибриллятор у входа — не музей (так нашёлся MuMa в Гавре)", gm.odd_kind("emergency=defibrillator"))
 
 
 # ------------------------------------------------------- выбор из находок
@@ -130,6 +131,13 @@ street = gm.map_warnings(
     {})
 ok("улица вместо здания замечена и названа по-человечески",
    street and "улица" in street[0][1], str(street))
+town = gm.map_warnings(
+    ["Ассоциация, Довиль"],
+    {"Ассоциация, Довиль": {"lat": 49.36, "lon": 0.07, "display_name": "Довиль, Лизьё, Кальвадос",
+                            "source": "nominatim", "precision": "exact", "kind": "boundary=administrative"}},
+    {})
+ok("нашёлся только город — так и сказано, а не «это не музей»",
+   town and "только город" in town[0][1], str(town))
 ok("приблизительная метка замечена", "приблизительная" in text.get("Музей В, Тверь", ""))
 ok("чужой город замечен", "нет в найденном адресе" in text.get("Музей Д, Псков", ""))
 ok("двойник в одной точке замечен",

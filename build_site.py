@@ -35,9 +35,18 @@ REQUIRED_PACKAGES = ["telethon", "Pillow", "TelethonFakeTLS"]
 
 def auto_update_modules():
     logger.info("Проверка модулей...")
+    packages = list(REQUIRED_PACKAGES)
+    # boto3 нужен только для выгрузки оригиналов в хранилище — ставим его,
+    # когда хранилище указано, а не всем подряд.
+    try:
+        from site_common import HIRES_BASE_URL
+        if HIRES_BASE_URL:
+            packages.append("boto3")
+    except Exception:
+        pass
     try:
         subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "pip", "--quiet"])
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade"] + REQUIRED_PACKAGES + ["--quiet"])
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade"] + packages + ["--quiet"])
         logger.info("Модули актуальны!")
     except Exception as e:
         logger.warning(f"Ошибка: {e}")
@@ -82,7 +91,9 @@ from site_common import (head_common, scroll_top_button, theme_button, site_foot
                          COMMON_JS, SCROLL_TOP_JS, LUPA_JS, TOAST_JS, SHARE_JS, AUTH_JS, CLOUD_JS, BASE_URL,
                          VISITS_FILE, has_visits, visit_places,
                          METRIKA_ID, SITE_OWNER, PRIVACY_CONTACT, PRIVACY_CONTACT_TEXT, PRIVACY_DATE,
-                         work_year, AUTH_API_URL, YANDEX_CLIENT_ID, VK_CLIENT_ID)
+                         work_year, AUTH_API_URL, YANDEX_CLIENT_ID, VK_CLIENT_ID,
+                         TRANSLIT, translit, latin_slug, museum_page)
+import hires_store
 
 def load_dotenv(path=".env"):
     if not os.path.exists(path): return
@@ -344,36 +355,6 @@ def slugify(text):
 # как её пишут в мире. Обратная транслитерация с русской транскрипции
 # дала бы «renuar» и «pussen», по которым художника не узнать.
 
-TRANSLIT = {
-    "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e",
-    "ж": "zh", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m",
-    "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u",
-    "ф": "f", "х": "h", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "sch",
-    "ъ": "", "ы": "y", "ь": "", "э": "e", "ю": "yu", "я": "ya",
-}
-
-
-def translit(text):
-    """Кириллица и буквы с надстрочными знаками — в простую латиницу.
-
-    Надстрочные знаки снимаются разложением: é → e, ä → a. Иначе
-    французские и немецкие названия снова уехали бы в проценты.
-    """
-    out = []
-    for ch in unicodedata.normalize("NFKD", text or "").lower():
-        if unicodedata.combining(ch):
-            continue
-        if ch in TRANSLIT:
-            out.append(TRANSLIT[ch])
-        elif ch.isascii() and ch.isalnum():
-            out.append(ch)
-        elif ch.isalnum():
-            out.append(unicodedata.normalize("NFKD", ch).encode("ascii", "ignore").decode())
-        else:
-            out.append("-")
-    return re.sub(r"-+", "-", "".join(out)).strip("-")
-
-
 def looks_latin(text):
     """Записано ли слово латиницей — с поправкой на надстрочные знаки.
 
@@ -386,11 +367,6 @@ def looks_latin(text):
     bare = "".join(c for c in unicodedata.normalize("NFKD", text or "")
                    if not unicodedata.combining(c))
     return bool(bare) and bare.isascii()
-
-
-def latin_slug(text, limit=60):
-    """Кусок адреса: только латиница, цифры и дефис."""
-    return translit(text)[:limit].strip("-")
 
 
 def surname_of(artist):
@@ -999,7 +975,9 @@ def build_views(records):
         slug = rec["filename"][:-5]
         views = []
         for i, hr in enumerate(hires, 1):
-            v = make_view(os.path.join(OUTPUT_DIR, hr), slug, i)
+            # Оригинал мог уже уехать в хранилище — тогда его копия лежит
+            # в архиве hires/, копию для лупы делаем из неё.
+            v = make_view(hires_store.local_path(hr) or os.path.join(OUTPUT_DIR, hr), slug, i)
             views.append(v)
             if v:
                 made += 1
@@ -1350,9 +1328,10 @@ def render_post_page(post, all_posts=None):
     spec_html = '<div class="spec-table">' + "".join(
         f'<div><span>{h(k)}</span><b>{h(v)}</b></div>' for k, v in spec_rows if v)
     if post.get("museum"):
-        # Собрание — ссылка на карту музеев с якорем на нужную карточку
-        spec_html += (f'<div><span>Собрание</span><b><a href="museums.html#museum-'
-                      f'{h(slugify(post["museum"]))}">{h(post["museum"])}</a></b></div>')
+        # Собрание — ссылка на страницу музея (там и карта), а у частных
+        # собраний, у которых своей страницы нет, — на карточку на карте
+        spec_html += (f'<div><span>Собрание</span><b><a href="{h(museum_href(post["museum"]))}">'
+                      f'{h(post["museum"])}</a></b></div>')
     spec_html += '</div>'
 
     tags_html = ""
@@ -1374,7 +1353,7 @@ def render_post_page(post, all_posts=None):
 
     # Источники: ссылки, спрятанные под словами поста (с их подписью), и
     # голые адреса из текста. Раньше были видны только вторые.
-    src_block = source_block(source_items(post.get("links"), urls))
+    src_block = source_block(source_items(clean_links(post.get("links")), urls))
 
     # Prev/Next навигация
     prev_link = ""
@@ -1579,13 +1558,14 @@ def surname_key(n):
     w = f.split()
     return w[-1].lower() if w else n.lower()
 
-def card_html(p, cat_no=None, cat_width=3, show_artist=True):
+def card_html(p, cat_no=None, cat_width=3, show_artist=True, show_museum=True):
     """Карточка работы в описи. Одна на все списки — главную, теги,
     страницы художников: раньше разметка была скопирована и разъезжалась.
 
     show_artist=False — для страницы художника: там его имя стоит в
     заголовке и повторять его в каждой строке незачем, поэтому главной
-    строкой карточки становится название работы."""
+    строкой карточки становится название работы. show_museum=False — для
+    страницы музея: там собрание в заголовке, и в каждой строке оно лишнее."""
     cat_no = cat_no or {}
     cv = ""
     if p.get("thumbs"): cv = p["thumbs"][0]
@@ -1596,8 +1576,8 @@ def card_html(p, cat_no=None, cat_width=3, show_artist=True):
     title_name = h(p["title"])
     # Экранированные кавычки внутри f-строки требуют Python 3.12+,
     # на 3.11 это была синтаксическая ошибка. Собираем строку заранее.
-    museum_html = (f'<div class="card-museum"><a href="museums.html#museum-{h(slugify(p.get("museum","")))}"'
-                   f' title="Показать музей на карте">{museum_name}</a></div>') if museum_name else ''
+    museum_html = (f'<div class="card-museum"><a href="{h(museum_href(p.get("museum", "")))}"'
+                   f' title="Все картины этого собрания">{museum_name}</a></div>') if museum_name and show_museum else ''
     no = cat_no.get(p.get("filename"))
     no_html = f'<span class="card-no">{no:0{cat_width}d}</span>' if no else '<span class="card-no"></span>'
     facts = [("Год", str(p.get("creation_year")) if p.get("creation_year") else ""),
@@ -1730,8 +1710,8 @@ def render_index(all_posts):
         # на музей, а ссылку в ссылку вкладывать нельзя. Вся карточка всё
         # равно кликабельна — за счёт растянутой на неё .card-link.
         museum_slug = slugify(p.get('museum', ''))
-        museum_html = (f'<div class="card-museum"><a href="museums.html#museum-{h(museum_slug)}"'
-                       f' title="Показать музей на карте">{museum_name}</a></div>') if museum_name else ''
+        museum_html = (f'<div class="card-museum"><a href="{h(museum_href(p.get("museum", "")))}"'
+                       f' title="Все картины этого собрания">{museum_name}</a></div>') if museum_name else ''
 
         cards.append(f"""<article class="card" data-artist="{h(p['artist'].lower())}" data-title="{h(p['title'].lower())}" data-year="{y}" data-month="{m}" data-cyear="{creation_year or ''}" data-museum="{h(museum_slug)}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}" data-search="{h(search_blob)}" data-no="{cat_no[id(p)]}" {decade_attr}>
     <span class="card-no">{cat_no[id(p)]:0{cat_width}d}</span>
@@ -2541,7 +2521,7 @@ def render_artist_page(artist, posts, all_posts, cat_no, cat_width):
     museum_html = ""
     if museums:
         items = "".join(
-            f'<li><a href="museums.html#museum-{h(slugify(m))}">{h(m)}</a></li>' for m in museums)
+            f'<li><a href="{h(museum_href(m))}">{h(m)}</a></li>' for m in museums)
         museum_html = (f'<div class="aside-block"><h3>Собрания</h3>'
                        f'<ul class="plain-list">{items}</ul></div>')
 
@@ -2643,7 +2623,7 @@ def render_ukazatel(all_posts):
 
     body = "".join([
         column("Художники", artists, artist_slug, key=surname_key, anchor="hudozhniki"),
-        column("Собрания", museums, lambda m: f"museums.html#museum-{slugify(m)}", anchor="sobraniya"),
+        column("Собрания", museums, museum_href, anchor="sobraniya"),
         column("Материал", mats, lambda m: f"./#mat-{slugify(m)}", anchor="material"),
         column("Техника", techs, lambda t: f"./#tech-{slugify(t)}", anchor="tehnika"),
     ])
@@ -2784,7 +2764,7 @@ def render_stats(all_posts):
                    href=artist_slug, anchor="hudozhniki"),
         _bar_block("Собрания", many(museums), total,
                    tail(museums, 2, ("собрание", "собрания", "собраний")),
-                   href=lambda m: f"museums.html#museum-{slugify(m)}", anchor="sobraniya"),
+                   href=museum_href, anchor="sobraniya"),
         _bar_block("Города", many(cities), total,
                    tail(cities, 2, ("город", "города", "городов")), anchor="goroda"),
         _bar_block("Материал", mats.most_common(), total, anchor="material"),
@@ -3085,6 +3065,102 @@ def visit_stats(visits):
     return shows, len(visits) - shows
 
 
+RUN_RE = re.compile(r"(\d{1,2})\.(\d{1,2})\.(\d{4})\s*[—–-]\s*(\d{1,2})\.(\d{1,2})\.(\d{4})")
+
+
+def run_dates(run):
+    """«18.03.2025 — 15.06.2025» → ("2025-03-18", "2025-06-15"), иначе None."""
+    m = RUN_RE.search(run or "")
+    if not m:
+        return None
+    d1, m1, y1, d2, m2, y2 = m.groups()
+    return f"{y1}-{int(m1):02d}-{int(d1):02d}", f"{y2}-{int(m2):02d}-{int(d2):02d}"
+
+
+def run_status(visit, tag="p", full=False):
+    """Место под плашку «Идёт до 4 октября» — её пишет скрипт в браузере.
+
+    Считать на сборке нельзя: сайт статический, собранная сегодня страница
+    через месяц соврёт. Поэтому в разметке только даты, а что сегодня —
+    решает браузер посетителя. full — на странице похода пишем и
+    «Закрылась», в списке закрытые молчат: их там большинство.
+    """
+    dates = run_dates(visit.get("run"))
+    if not dates:
+        return ""
+    return (f'<{tag} class="run-status" data-start="{dates[0]}" data-end="{dates[1]}"'
+            f'{" data-full" if full else ""} hidden></{tag}>')
+
+
+RUN_STATUS_JS = """<script>
+(function () {
+  var MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля',
+                'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+  function day(s) {
+    var p = (s || '').split('-');
+    return p.length === 3 ? new Date(+p[0], +p[1] - 1, +p[2]) : null;
+  }
+  var now = new Date();
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  function human(d) {
+    return d.getDate() + ' ' + MONTHS[d.getMonth()] +
+      (d.getFullYear() !== today.getFullYear() ? ' ' + d.getFullYear() : '');
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.run-status[data-end]'), function (el) {
+    var start = day(el.getAttribute('data-start')), end = day(el.getAttribute('data-end'));
+    if (!end) return;
+    var text = '', state = '';
+    if (start && today < start) {
+      text = 'Откроется ' + human(start); state = 'soon';
+    } else if (today <= end) {
+      var left = Math.round((end - today) / 864e5);
+      if (left === 0) { text = 'Последний день'; state = 'last'; }
+      else if (left <= 7) { text = 'Последние дни — до ' + human(end); state = 'last'; }
+      else { text = 'Идёт до ' + human(end); state = 'on'; }
+    } else if (el.hasAttribute('data-full')) {
+      text = 'Закрылась ' + human(end); state = 'off';
+    }
+    if (!text) return;
+    el.textContent = text;
+    el.setAttribute('data-state', state);
+    el.hidden = false;
+  });
+})();
+</script>"""
+
+
+def visit_card(v, show_place=True):
+    """Карточка похода — одна для списка походов и для страницы музея.
+    show_place=False — на странице места: оно и так в заголовке."""
+    cover = (v.get("thumbs") or v.get("images") or [""])[0]
+    heading = visit_heading(v)
+    shots = len(v.get("images") or [])
+    # Классы у строк сведений нужны плиткам: там подписи прячутся,
+    # и без них «17.01.2026 · 12.12.2025 — 21.06.2026 · 7» не прочесть.
+    facts = [("f-when", "Побывал", v.get("visited", "")),
+             ("f-run", "Работала", v.get("run", "")),
+             ("f-shots", "Снимков", str(shots) if shots else "")]
+    facts_html = "".join(f'<div class="{cls}"><span>{h(k)}</span><b>{h(val)}</b></div>'
+                         for cls, k, val in facts if val)
+    img = (f'<div class="card-img"><img src="{h(cover)}" alt="{h(heading)}"{size_attrs(cover)}'
+           f' loading="lazy" decoding="async"></div>') if cover else '<div class="card-img"></div>'
+    sub = (v.get("place") if show_place else "") if v.get("title") else v.get("note", "")
+    sub_html = f'<div class="card-title">{h(sub)}</div>' if sub else ''
+    # Вид похода стоит там же, где у картины собрание, — строкой под
+    # названием. В колонке номера ему не место: на телефоне она шириной
+    # в два знака, и слово «выставка» наезжало на снимок.
+    return (
+        f'<article class="card visit-card" data-kind="{h(v["kind"])}">'
+        f'{img}'
+        f'<div class="card-body">'
+        f'<div class="card-artist"><a class="card-link" href="{h(v["filename"])}">{h(heading)}</a></div>'
+        f'{sub_html}'
+        f'<div class="card-museum visit-kind">{h(v["kind"])}</div>'
+        f'{run_status(v, "div")}</div>'
+        f'<div class="card-facts">{facts_html}</div></article>'
+    )
+
+
 @tidy
 def render_visits_page(visits, all_posts=None):
     """Список посещений с переключателем «все / выставки / музеи».
@@ -3096,34 +3172,7 @@ def render_visits_page(visits, all_posts=None):
     items = sorted(visits, key=visit_sort_key, reverse=True)
     shows, museums = visit_stats(items)
 
-    cards = []
-    for v in items:
-        cover = (v.get("thumbs") or v.get("images") or [""])[0]
-        heading = visit_heading(v)
-        shots = len(v.get("images") or [])
-        # Классы у строк сведений нужны плиткам: там подписи прячутся,
-        # и без них «17.01.2026 · 12.12.2025 — 21.06.2026 · 7» не прочесть.
-        facts = [("f-when", "Побывал", v.get("visited", "")),
-                 ("f-run", "Работала", v.get("run", "")),
-                 ("f-shots", "Снимков", str(shots) if shots else "")]
-        facts_html = "".join(f'<div class="{cls}"><span>{h(k)}</span><b>{h(val)}</b></div>'
-                             for cls, k, val in facts if val)
-        img = (f'<div class="card-img"><img src="{h(cover)}" alt="{h(heading)}"{size_attrs(cover)}'
-               f' loading="lazy" decoding="async"></div>') if cover else '<div class="card-img"></div>'
-        sub = v.get("place") if v.get("title") else v.get("note", "")
-        sub_html = f'<div class="card-title">{h(sub)}</div>' if sub else ''
-        # Вид похода стоит там же, где у картины собрание, — строкой под
-        # названием. В колонке номера ему не место: на телефоне она шириной
-        # в два знака, и слово «выставка» наезжало на снимок.
-        cards.append(
-            f'<article class="card visit-card" data-kind="{h(v["kind"])}">'
-            f'{img}'
-            f'<div class="card-body">'
-            f'<div class="card-artist"><a class="card-link" href="{h(v["filename"])}">{h(heading)}</a></div>'
-            f'{sub_html}'
-            f'<div class="card-museum visit-kind">{h(v["kind"])}</div></div>'
-            f'<div class="card-facts">{facts_html}</div></article>'
-        )
+    cards = [visit_card(v) for v in items]
 
     head = head_common(
         title="Посещения — Old Picture Art",
@@ -3163,6 +3212,7 @@ def render_visits_page(visits, all_posts=None):
 {site_footer()}
 {SCROLL_TOP_JS}
 {COMMON_JS}
+{RUN_STATUS_JS}
 <script>
 (function () {{
   var buttons = Array.prototype.slice.call(document.querySelectorAll('.visit-switch button'));
@@ -3285,6 +3335,50 @@ def source_block(items, words=("Источник", "Источники")):
     return f'<div class="aside-block"><h3>{word}</h3><ul class="source-list">{its}</ul></div>'
 
 
+def visit_jsonld(visit, info=None):
+    """Разметка Schema.org для похода на выставку — ExhibitionEvent.
+
+    Яндекс и Google умеют показывать события прямо в выдаче: название,
+    даты, где. Для этого им нужны даты работы, место с адресом и, если
+    есть, страница самой выставки — всё это у похода теперь есть. У похода
+    в музей (без срока работы) события нет, разметки тоже.
+    """
+    if visit.get("kind") != "выставка" or not visit.get("title"):
+        return ""
+    dates = run_dates(visit.get("run"))
+    if not dates:
+        return ""
+    page = f"{BASE_URL}/{visit['filename']}"
+    place_name = (info or {}).get("name") or (visit.get("place") or "").strip()
+    location = place_jsonld(info, "Museum") if info else {"@type": "Place", "name": place_name}
+    data = {
+        "@context": "https://schema.org",
+        "@type": "ExhibitionEvent",
+        "name": visit["title"],
+        "startDate": dates[0],
+        "endDate": dates[1],
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "location": location,
+        "description": (f"Выставка «{visit['title']}»" + (f", {place_name}" if place_name else "")
+                        + f", {visit['run']}."),
+        "mainEntityOfPage": page,
+    }
+    # Официальная страница выставки — ссылка из поста, стоящая на названии.
+    links = clean_links(visit.get("links"))
+    i = link_for(visit["title"], links)
+    data["url"] = links[i]["url"] if i is not None else page
+    if info and info.get("name"):
+        org = {"@type": "Organization", "name": info["name"]}
+        if info.get("site"):
+            org["url"] = info["site"]
+        data["organizer"] = org
+    photos = [f"{BASE_URL}/{quote(x, safe='/')}" for x in (visit.get("images") or [])[:3]]
+    if photos:
+        data["image"] = photos
+    return "\n" + jsonld_script(data)
+
+
 @tidy
 def render_visit_page(visit, visits, all_posts=None, map_names=None):
     """Страница одного посещения: все снимки, сведения, ссылка на карту.
@@ -3323,20 +3417,21 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
         )
     img_html = ('<div class="shots">' + "\n".join(shots) + '</div>') if shots else ""
 
-    spec_rows = [("Что", visit["kind"].capitalize()),
-                 ("Место", place if place != heading else ""),
-                 ("Раздел", visit.get("note", "")),
-                 ("Работала", visit.get("run", "")),
-                 ("Побывал", visit.get("visited", "")),
-                 ("Снимков", str(len(photos)) if photos else "")]
-    spec_html = '<div class="spec-table">' + "".join(
-        f'<div><span>{h(k)}</span><b>{h(v)}</b></div>' for k, v in spec_rows if v)
-    # Место всегда есть на карте: карта собирает и музеи из собрания,
-    # и залы, где были только походы.
+    # Место — ссылкой на страницу места, если она есть (там карта, все
+    # походы туда и картины собрания); иначе просто текстом.
     museum = (map_names or {}).get(place, "")
     if museum:
-        spec_html += (f'<div><span>На карте</span><b><a href="museums.html#museum-'
-                      f'{h(slugify(museum))}">{h(museum)}</a></b></div>')
+        place_cell = f'<a href="{h(museum_href(museum))}">{h(place)}</a>'
+    else:
+        place_cell = h(place) if place != heading else ""
+    spec_rows = [("Что", h(visit["kind"].capitalize())),
+                 ("Место", place_cell),
+                 ("Раздел", h(visit.get("note", ""))),
+                 ("Работала", h(visit.get("run", ""))),
+                 ("Побывал", h(visit.get("visited", ""))),
+                 ("Снимков", str(len(photos)) if photos else "")]
+    spec_html = '<div class="spec-table">' + "".join(
+        f'<div><span>{h(k)}</span><b>{v}</b></div>' for k, v in spec_rows if v)
     spec_html += '</div>'
 
     # Теги музеев из поста (#гмии, #гтг) ведут в подборки картин — если
@@ -3351,7 +3446,7 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
     # Название выставки и музея в посте — ссылки на их страницы. Здесь они
     # тоже ссылки: заголовок ведёт туда же, куда и в канале. Ссылки, не
     # пришедшиеся ни на одно название, уходят в блок справа — не теряются.
-    links = visit.get("links") or []
+    links = clean_links(visit.get("links"))
     used = set()
 
     def linked(text):
@@ -3400,6 +3495,7 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
         og_image=f"{BASE_URL}/{photos[0]}" if photos else "",
         canonical=f"{BASE_URL}/{visit['filename']}",
         og_type="article",
+        extra=visit_jsonld(visit, museum_info(museum) if museum else None),
     )
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 {head}
@@ -3420,6 +3516,7 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
       <p class="eyebrow">{h(visit["kind"].capitalize())}</p>
       <h1>{h1_html}</h1>
       {sub_head}
+      {run_status(visit, full=True)}
     </header>
     {img_html}
   </div>
@@ -3440,6 +3537,7 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
 {LUPA_JS}
 {TOAST_JS}
 {SHARE_JS}
+{RUN_STATUS_JS}
 </body></html>"""
 
 
@@ -3499,6 +3597,316 @@ def generate_tag_pages(all_posts):
 
     logger.info(f"Сгенерировано {c} страниц тегов")
     return tp
+
+
+# ======================================================================
+#                        СТРАНИЦЫ МУЗЕЕВ
+# ======================================================================
+#
+# Раньше музей был только карточкой на общей карте. Отдельная страница —
+# это адрес, который можно отправить («все картины из Прадо»), и страница,
+# которую находит поиск. На ней картины этого собрания, походы туда,
+# адрес, сайт и кусок карты.
+
+# Заполняется в prepare_museums(): у кого из музеев есть своя страница.
+# Названия нужны в полудюжине мест — карточки, страница картины, опись,
+# статистика, — и таскать множество через все вызовы было бы хуже.
+_MUSEUM_PAGES = set()
+
+LEAFLET_CSS = ('<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" '
+               'integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin>')
+LEAFLET_JS = ('<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" '
+              'integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin></script>')
+
+
+def museum_directory():
+    """Справочник музеев и найденные картой координаты."""
+    ov = {k: v for k, v in load_json("museum_overrides.json", {}).items()
+          if not k.startswith("_") and isinstance(v, dict)}
+    return ov, load_json("museum_coordinates.json", {})
+
+
+def museum_info(name, directory=None):
+    """Всё, что известно о месте: адрес, сайт, город, страна, координаты.
+
+    Координаты — из справочника (если вписаны руками) или из кэша карты.
+    Город и страна считаются тем же правилом, что и подпись на карте.
+    """
+    import generate_map as gm
+    ov, co = directory or museum_directory()
+    manual = ov.get(name) or {}
+    loc = co.get(name) or {}
+    lat = manual.get("lat", loc.get("lat"))
+    lon = manual.get("lon", loc.get("lon"))
+    city, country = gm.museum_place(name, manual, loc if loc else None)
+    return {
+        "name": name,
+        "address": (manual.get("address") or "").strip(),
+        "site": (manual.get("site") or "").strip(),
+        "lat": float(lat) if lat is not None else None,
+        "lon": float(lon) if lon is not None else None,
+        "city": city, "country": country,
+        "approx": "lat" not in manual and loc.get("precision") == "approx",
+        "skip": bool(manual.get("skip")),
+    }
+
+
+def museum_names(all_posts, visits):
+    """Места, у которых будет страница: собрания картин и места походов.
+
+    Частные собрания («Частная коллекция, США») страницы не получают —
+    это не место, туда не сходишь; для них остаётся карточка на карте.
+    """
+    ov, _ = museum_directory()
+    names = {p["museum"].strip() for p in all_posts if p.get("museum")}
+    names |= set(visit_map_names(visits, all_posts).values())
+    return sorted(n for n in names if n and not (ov.get(n) or {}).get("skip"))
+
+
+def prepare_museums(all_posts, visits):
+    """Запоминает, у кого есть страница. Вызывать до записи страниц."""
+    _MUSEUM_PAGES.clear()
+    _MUSEUM_PAGES.update(museum_names(all_posts, visits))
+    return _MUSEUM_PAGES
+
+
+def museum_href(name):
+    """Куда ведёт название музея: на его страницу, а если её нет — на карту."""
+    name = (name or "").strip()
+    if name in _MUSEUM_PAGES:
+        return museum_page(name)
+    return f"museums.html#museum-{slugify(name)}"
+
+
+def postal_address(info):
+    """Адрес для разметки Schema.org: улица отдельно, город и страна отдельно."""
+    street = info.get("address", "")
+    city = info.get("city", "")
+    parts = [p.strip() for p in street.split(",") if p.strip()]
+    if city and parts and parts[-1].lower() == city.lower():
+        parts = parts[:-1]
+    out = {"@type": "PostalAddress"}
+    if parts:
+        out["streetAddress"] = ", ".join(parts)
+    if city:
+        out["addressLocality"] = city
+    if info.get("country"):
+        out["addressCountry"] = info["country"]
+    return out if len(out) > 1 else None
+
+
+def place_jsonld(info, kind="Museum"):
+    """Место для разметки: название, адрес, координаты, сайт."""
+    place = {"@type": kind, "name": info["name"]}
+    addr = postal_address(info)
+    if addr:
+        place["address"] = addr
+    if info.get("lat") is not None and not info.get("approx"):
+        place["geo"] = {"@type": "GeoCoordinates", "latitude": round(info["lat"], 6),
+                        "longitude": round(info["lon"], 6)}
+    if info.get("site"):
+        place["url"] = info["site"]
+    return place
+
+
+def jsonld_script(data):
+    return ('<script type="application/ld+json">'
+            + json.dumps(data, ensure_ascii=False, separators=(",", ":"))
+            + "</script>")
+
+
+@tidy
+def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, neighbours=(None, None)):
+    """Страница одного собрания: картины, походы, адрес, сайт, карта."""
+    works = sorted(works, key=lambda x: (x.get("creation_year") or 9999, x.get("date", "")))
+    been = sorted(been, key=visit_sort_key, reverse=True)
+    cards = [card_html(p, cat_no, cat_width, show_museum=False) for p in works]
+    artists = sorted({p["artist"].strip() for p in works if p.get("artist")}, key=surname_key)
+    span = year_span(works)
+    where = ", ".join(x for x in (info.get("city"), info.get("country")) if x)
+
+    facts = []
+    if where:
+        facts.append(("Где", h(where)))
+    if works:
+        facts.append(("Работ", str(len(works))))
+    if len(artists) > 1:
+        facts.append(("Художников", str(len(artists))))
+    if span:
+        facts.append(("Годы", h(span)))
+    if been:
+        facts.append(("Побывал", "однажды" if len(been) == 1
+                      else f"{len(been)} {plural_ru(len(been), 'раз', 'раза', 'раз')}"))
+    if info.get("address"):
+        facts.append(("Адрес", h(info["address"])))
+    if info.get("site"):
+        host = re.sub(r"^www\.", "", urllib.parse.urlsplit(info["site"]).netloc)
+        facts.append(("Сайт", f'<a href="{h(info["site"])}" target="_blank" rel="noopener">{h(host)} ↗</a>'))
+    facts_html = "".join(f'<div><span>{h(k)}</span><b>{v}</b></div>' for k, v in facts)
+
+    aside = []
+    has_map = info.get("lat") is not None and info.get("lon") is not None
+    if has_map:
+        lat, lon = info["lat"], info["lon"]
+        ya = f"https://yandex.ru/maps/?pt={lon:.6f},{lat:.6f}&z=16&l=map"
+        aside.append(
+            '<div class="aside-block"><h3>На карте</h3>'
+            f'<div class="mini-map" id="mini-map" data-lat="{lat:.6f}" data-lon="{lon:.6f}"'
+            f'{" data-approx" if info.get("approx") else ""} role="img" '
+            f'aria-label="{h(name)} на карте"></div>'
+            '<p class="mini-map-links">'
+            f'<a href="museums.html#museum-{h(slugify(name))}">Карта собраний</a> · '
+            f'<a href="{h(ya)}" target="_blank" rel="noopener">Яндекс Карты ↗</a></p>'
+            + ('<p class="mini-map-note">Расположение приблизительное — по городу.</p>'
+               if info.get("approx") else "")
+            + '</div>')
+    else:
+        # Координат нет — карточка на карте собраний всё равно есть,
+        # в списке под картой, с адресом и сайтом.
+        aside.append('<div class="aside-block"><h3>На карте</h3>'
+                     f'<p class="mini-map-links"><a href="museums.html#museum-{h(slugify(name))}">'
+                     'Карточка на карте собраний</a></p></div>')
+    if len(artists) > 1:
+        items = "".join(f'<li><a href="{h(artist_slug(a))}">{h(a)}</a></li>' for a in artists)
+        aside.append(f'<div class="aside-block"><h3>Художники</h3><ul class="plain-list">{items}</ul></div>')
+
+    prev_name, next_name = neighbours
+    nav = []
+    if prev_name:
+        nav.append(f'<a class="prev-post" href="{h(museum_page(prev_name))}">'
+                   f'<span class="icon-prev" aria-hidden="true"></span> {h(prev_name)}</a>')
+    if next_name:
+        nav.append(f'<a class="next-post" href="{h(museum_page(next_name))}">'
+                   f'{h(next_name)} <span class="icon-next" aria-hidden="true"></span></a>')
+    nav_html = f'<nav class="post-nav">{"".join(nav)}</nav>' if nav else ""
+
+    title = f"{name} — Old Picture Art"
+    if len(title) > 70:
+        title = name if len(name) <= 70 else name[:67].rsplit(" ", 1)[0] + "…"
+    bits = []
+    if works:
+        bits.append(f"{len(works)} {plural_ru(len(works), 'работа', 'работы', 'работ')} в собрании Old Picture Art")
+    if been:
+        bits.append(been_phrase_ru(len(been)).lower())
+    desc = f"{name}: " + (", ".join(bits) if bits else "место на карте Old Picture Art") + "."
+    if info.get("address"):
+        desc += f" Адрес: {info['address']}."
+    cover = (works[0].get("images") or [""])[0] if works else (been[0].get("images") or [""])[0] if been else ""
+
+    ld = place_jsonld(info, "Museum")
+    ld["@context"] = "https://schema.org"
+    if cover:
+        ld["image"] = f"{BASE_URL}/{quote(cover, safe='/')}"
+    if info.get("site"):
+        ld["sameAs"] = [info["site"]]
+    ld["mainEntityOfPage"] = f"{BASE_URL}/{museum_page(name)}"
+
+    head = head_common(
+        title=h(title),
+        description=desc,
+        canonical=f"{BASE_URL}/{museum_page(name)}",
+        og_image=f"{BASE_URL}/{cover}" if cover else "",
+        extra="\n" + jsonld_script(ld) + ("\n" + LEAFLET_CSS if has_map else ""),
+    )
+    # Картины собрания, под ними — походы сюда теми же карточками, что в
+    # разделе «Посещения». У места, где картин нет, главное — походы.
+    main = []
+    if cards:
+        main.append(f'<div class="grid list">{"".join(cards)}</div>')
+    if been:
+        heading = "Походы" if cards else ""
+        main.append((f'<h2 class="museum-section">{heading}</h2>' if heading else "")
+                    + f'<div class="grid list museum-visit-grid">'
+                    f'{"".join(visit_card(v, show_place=False) for v in been)}</div>')
+    grid = '<div class="museum-main">' + "".join(main) + '</div>' if main else ""
+    map_js = ""
+    if has_map:
+        map_js = LEAFLET_JS + """
+<script>
+(function () {
+  var el = document.getElementById('mini-map');
+  if (!el || !window.L) { if (el) el.hidden = true; return; }
+  var lat = +el.getAttribute('data-lat'), lon = +el.getAttribute('data-lon');
+  var approx = el.hasAttribute('data-approx');
+  // Карта-подсказка, а не рабочая: колесо и перетаскивание пальцем
+  // выключены, иначе страница застревала бы на ней при прокрутке.
+  var map = L.map(el, {scrollWheelZoom: false, dragging: !L.Browser.mobile, tap: false})
+    .setView([lat, lon], approx ? 11 : 15);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
+  L.circleMarker([lat, lon], {radius: 9, weight: 3, className: 'mini-map-dot'}).addTo(map);
+  el.miniMap = map;   // для проверок
+})();
+</script>"""
+    return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
+{head}
+</head><body class="tag-page artist-page museum-page">
+<div class="tag-topbar">
+  <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
+  <a href="museums.html" class="back">Карта собраний</a>
+  {theme_button('theme-toggle-inline')}
+</div>
+{scroll_top_button()}
+<header class="artist-head">
+  <p class="eyebrow">{"Собрание" if works else "Место"}</p>
+  <h1>{h(name)}</h1>
+  <div class="spec-table artist-facts">{facts_html}</div>
+</header>
+<div class="artist-layout">
+  {grid}
+  <aside class="post-aside">{"".join(aside)}</aside>
+</div>
+{nav_html}
+{site_footer()}
+{SCROLL_TOP_JS}
+{COMMON_JS}
+{RUN_STATUS_JS if been else ""}
+{map_js}
+</body></html>"""
+
+
+def been_phrase_ru(n):
+    """«Побывал однажды / 2 раза / 5 раз» — как на карте (been_phrase)."""
+    if n == 1:
+        return "Побывал однажды"
+    return f"Побывал {n} {plural_ru(n, 'раз', 'раза', 'раз')}"
+
+
+def generate_museum_pages(all_posts, visits):
+    """Страницы всех мест. Вызывать после карты: координаты берутся из её кэша."""
+    names = prepare_museums(all_posts, visits)
+    directory = museum_directory()
+    cat_no, cat_width = catalogue_numbers(all_posts)
+    by_museum = defaultdict(list)
+    for p in all_posts:
+        if p.get("museum"):
+            by_museum[p["museum"].strip()].append(p)
+    map_names = visit_map_names(visits, all_posts)
+    by_place = defaultdict(list)
+    for v in visits or []:
+        key = map_names.get((v.get("place") or "").strip())
+        if key:
+            by_place[key].append(v)
+
+    ordered = sorted(names, key=lambda n: n.lower())
+    seen = {}
+    for i, name in enumerate(ordered):
+        fn = museum_page(name)
+        if fn in seen:
+            logger.warning(f"Страница музея {fn}: одинаковый адрес у «{seen[fn]}» и «{name}»")
+        seen[fn] = name
+        neighbours = (ordered[i - 1] if i > 0 else None,
+                      ordered[i + 1] if i < len(ordered) - 1 else None)
+        html = render_museum_page(name, by_museum.get(name, []), by_place.get(name, []),
+                                  museum_info(name, directory), all_posts, cat_no, cat_width,
+                                  neighbours)
+        with open(os.path.join(OUTPUT_DIR, fn), "w", encoding="utf-8", newline="\n") as f:
+            f.write(html)
+    moved, removed = retire_pages("museum-", set(seen), {})
+    logger.info(f"Страниц музеев: {len(seen)}" + (f", убрано прежних: {removed}" if removed else ""))
+    return seen
 
 
 def generate_extra_pages(all_posts):
@@ -3831,6 +4239,9 @@ def generate_sitemap(all_posts, visits=None):
     for p in all_posts:
         for t in p.get("tags",[]): at.add(t)
     for t in sorted(at): urls.append(f"  <url><loc>{bu}/{u('tag-' + tag_slug(t) + '.html')}</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>")
+    # Страницы музеев: «картины из Прадо» ищут не реже, чем художника.
+    for name in museum_names(all_posts, visits):
+        urls.append(f"  <url><loc>{bu}/{u(museum_page(name))}</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>")
     with open(os.path.join(OUTPUT_DIR, "sitemap.xml"), "w", encoding="utf-8", newline="\n") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + '\n</urlset>')
     logger.info(f"Sitemap ({len(urls)} URL)")
@@ -4057,6 +4468,35 @@ def refresh_targets(all_posts, argv=None):
 # У прежних записей его нет — сборка дочитывает его один раз сама.
 
 
+# Метки, которые браузер дописывает к ссылке сам: ysclid — Яндекс,
+# utm_* — рекламные, fbclid/gclid/yclid — счётчики переходов. К адресу
+# выставки они отношения не имеют, а в ссылке с сайта выглядят мусором.
+TRACKING_PARAMS = re.compile(r"^(ysclid|yclid|fbclid|gclid|_openstat|utm_[a-z]+)$", re.I)
+
+
+def clean_url(url):
+    """Адрес без меток слежения; всё остальное — как было."""
+    try:
+        parts = urllib.parse.urlsplit(url or "")
+    except ValueError:
+        return url
+    if not parts.query:
+        return url
+    # Режем по сырым кускам «ключ=значение», не раскодируя: остальной
+    # адрес должен остаться буква в букву, как его поставили в посте.
+    pieces = parts.query.split("&")
+    kept = [x for x in pieces if not TRACKING_PARAMS.match(x.split("=", 1)[0])]
+    if len(kept) == len(pieces):
+        return url
+    return urllib.parse.urlunsplit(parts._replace(query="&".join(kept)))
+
+
+def clean_links(links):
+    """Ссылки записи с вычищенными метками — для старых записей, где они
+    остались с тех времён, когда их никто не чистил."""
+    return [dict(ln, url=clean_url(ln.get("url", ""))) for ln in (links or []) if ln.get("url")]
+
+
 def message_links(msgs):
     """Ссылки, спрятанные под словами поста: [{text, url}].
 
@@ -4076,6 +4516,7 @@ def message_links(msgs):
             text = re.sub(r"\s+", " ", text or "").strip()
             if not text or not url.lower().startswith(("http://", "https://")):
                 continue
+            url = clean_url(url)
             if (text, url) in seen:
                 continue
             seen.add((text, url))
@@ -4201,6 +4642,38 @@ async def backfill_links(client, records):
         found += len(rec["links"])
     logger.info(f"   дочитано записей: {done}, ссылок нашлось: {found}")
     return done
+
+
+def sync_hires(records):
+    """Выгружает оригиналы в хранилище, если оно настроено.
+
+    Ничего не настроено — молчим: хранилище необязательно. Указан адрес,
+    но нет ключей или boto3 — говорим, чего не хватает: иначе оригиналы
+    новых постов тихо копились бы в docs/images, и сайт снова пополз бы
+    к пределу в 1 ГБ.
+    """
+    base, key_id, secret, missing = hires_store.settings()
+    if not base:
+        return None
+    todo = hires_store.local_originals(records)
+    if not todo:
+        return None
+    if missing:
+        logger.warning(f"Оригиналов в docs/images: {len(todo)}, а выгрузить их нельзя — "
+                       f"не хватает: {', '.join(missing)} (см. STORAGE_SETUP.md)")
+        return None
+    logger.info(f"Оригиналы в хранилище: {len(todo)}")
+    bucket, prefix = hires_store.bucket_of(base)
+    try:
+        client = hires_store.make_client(key_id, secret)
+    except Exception as e:
+        logger.warning(f"Хранилище недоступно: {e} — оригиналы остаются в docs/images")
+        return None
+    stats = hires_store.sync(records, client, bucket, prefix, name_for=download_name,
+                             log=logger.info)
+    logger.info(f"   выгружено: {stats['uploaded']}, уже были: {stats['already']}, "
+                f"ошибок: {stats['failed']}")
+    return stats
 
 
 def rebuild_reset():
@@ -4340,6 +4813,10 @@ async def main():
             logger.info("Миниатюры готовы")
         build_views(all_posts + all_visits)
         build_cards(all_posts)
+    # Оригиналы новых постов — в хранилище, если оно настроено. До записи
+    # страниц: ссылка на оригинал ведёт туда, где файл лежит на самом деле,
+    # и уехавший оригинал должен получить ссылку на хранилище сразу.
+    sync_hires(all_posts + all_visits)
     # Файл посещений пишем до страниц: по нему подвал и сайдбар решают,
     # показывать ли раздел, а страницы картин собираются следом.
     refresh_visits(all_visits)
@@ -4352,6 +4829,9 @@ async def main():
     fix_work_years(all_posts)
     prepare_slugs(all_posts)
     rename_pages(all_posts, all_visits)
+    # У кого из музеев есть своя страница — до записи страниц: на неё
+    # ведут «Собрание» у картины, карточки, опись и страницы походов.
+    prepare_museums(all_posts, all_visits)
     save_json(VISITS_FILE, all_visits)
     for post in all_posts:
         with open(os.path.join(OUTPUT_DIR, post["filename"]), "w", encoding="utf-8", newline="\n") as f:
@@ -4368,6 +4848,8 @@ async def main():
     generate_manifest()
     generate_rss(all_posts)
     generate_museums_page(all_posts)
+    # Страницы музеев — после карты: координаты берутся из её свежего кэша.
+    generate_museum_pages(all_posts, all_visits)
     # Генерация квиза и таймлайна
     try:
         subprocess.run([sys.executable, "generate_quiz.py"], check=True)

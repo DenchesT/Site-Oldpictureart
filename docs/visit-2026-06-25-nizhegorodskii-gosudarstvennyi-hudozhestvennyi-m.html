@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=16172b57">
+<link rel="stylesheet" href="style.css?v=2b199dd6">
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page visit-page">
 <a href="#main" class="skip-link">К содержанию</a>
@@ -44,6 +44,7 @@
       <p class="eyebrow">Музей</p>
       <h1><a href="https://artmuseumnn.ru/postoyannye-expozitzii/zarubezhnoe-isskustvo/" class="ext-link" target="_blank" rel="noopener" title="https://artmuseumnn.ru/postoyannye-expozitzii/zarubezhnoe-isskustvo/">Нижегородский государственный художественный музей, Зарубежное искусство</a></h1>
 
+
     </header>
     <div class="shots"><a href="images/visit-2026-06-25-нижегородский-государственный-художественный-музей-зарубежно-1.jpg" class="painting-link shot" target="_blank" rel="noopener" title="Рассмотреть" data-title="Нижегородский государственный художественный музей, Зарубежное искусство" data-meta="19.06.2026" data-download="нижегородский-государственный-художественный-музей-зарубежно-1.jpg"><img src="images/thumbs/visit-2026-06-25-нижегородский-государственный-художественный-музей-зарубежно.jpg" alt="Нижегородский государственный художественный музей, Зарубежное искусство, снимок 1" class="painting" width="1200" height="900" fetchpriority="high" decoding="async"><span class="painting-hint" aria-hidden="true"><span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a>
 <a href="images/visit-2026-06-25-нижегородский-государственный-художественный-музей-зарубежно-2.jpg" class="painting-link shot" target="_blank" rel="noopener" title="Рассмотреть" data-title="Нижегородский государственный художественный музей, Зарубежное искусство" data-meta="19.06.2026" data-download="нижегородский-государственный-художественный-музей-зарубежно-2.jpg"><img src="images/thumbs/visit-2026-06-25-нижегородский-государственный-художественный-музей-зарубежно-2.jpg" alt="Нижегородский государственный художественный музей, Зарубежное искусство, снимок 2" class="painting" width="1200" height="1200" loading="lazy" decoding="async"><span class="painting-hint" aria-hidden="true"><span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a>
@@ -51,7 +52,7 @@
 <a href="images/visit-2026-06-25-нижегородский-государственный-художественный-музей-зарубежно-4.jpg" class="painting-link shot" target="_blank" rel="noopener" title="Рассмотреть" data-title="Нижегородский государственный художественный музей, Зарубежное искусство" data-meta="19.06.2026" data-download="нижегородский-государственный-художественный-музей-зарубежно-4.jpg"><img src="images/thumbs/visit-2026-06-25-нижегородский-государственный-художественный-музей-зарубежно-4.jpg" alt="Нижегородский государственный художественный музей, Зарубежное искусство, снимок 4" class="painting" width="1200" height="1200" loading="lazy" decoding="async"><span class="painting-hint" aria-hidden="true"><span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a></div>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Что</span><b>Музей</b></div><div><span>Побывал</span><b>19.06.2026</b></div><div><span>Снимков</span><b>4</b></div><div><span>На карте</span><b><a href="museums.html#museum-нижегородский-государственный-художественный-музей">Нижегородский государственный художественный музей</a></b></div></div>
+    <div class="spec-table"><div><span>Что</span><b>Музей</b></div><div><span>Место</span><b><a href="museum-nizhegorodskii-gosudarstvennyi-hudozhestvennyi-muzei.html">Нижегородский государственный художественный музей, Зарубежное искусство</a></b></div><div><span>Побывал</span><b>19.06.2026</b></div><div><span>Снимков</span><b>4</b></div></div>
 
 
     <div class="aside-block">
@@ -690,6 +691,41 @@ function toast(text) {
   };
 
   window.addEventListener('resize', function () { close(false); });
+})();
+</script>
+<script>
+(function () {
+  var MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля',
+                'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+  function day(s) {
+    var p = (s || '').split('-');
+    return p.length === 3 ? new Date(+p[0], +p[1] - 1, +p[2]) : null;
+  }
+  var now = new Date();
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  function human(d) {
+    return d.getDate() + ' ' + MONTHS[d.getMonth()] +
+      (d.getFullYear() !== today.getFullYear() ? ' ' + d.getFullYear() : '');
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.run-status[data-end]'), function (el) {
+    var start = day(el.getAttribute('data-start')), end = day(el.getAttribute('data-end'));
+    if (!end) return;
+    var text = '', state = '';
+    if (start && today < start) {
+      text = 'Откроется ' + human(start); state = 'soon';
+    } else if (today <= end) {
+      var left = Math.round((end - today) / 864e5);
+      if (left === 0) { text = 'Последний день'; state = 'last'; }
+      else if (left <= 7) { text = 'Последние дни — до ' + human(end); state = 'last'; }
+      else { text = 'Идёт до ' + human(end); state = 'on'; }
+    } else if (el.hasAttribute('data-full')) {
+      text = 'Закрылась ' + human(end); state = 'off';
+    }
+    if (!text) return;
+    el.textContent = text;
+    el.setAttribute('data-state', state);
+    el.hidden = false;
+  });
 })();
 </script>
 </body></html>

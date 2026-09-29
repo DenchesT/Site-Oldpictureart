@@ -235,14 +235,11 @@
     "precision": "exact"
   },
   "Музей современного искусства Андре Мальро, Гавр": {
-    "lat": 49.4848072,
-    "lon": 0.1028992,
-    "display_name": "2, Boulevard Clemenceau, Perrey, Le Havre, Гавр, Приморская-Сена, Нормандия, Метрополия Франции, 76600, Франция",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "emergency=defibrillator",
-    "query": "2 boulevard Clemenceau, Le Havre",
-    "hint": "2 boulevard Clemenceau, Le Havre\nMusée d'art moderne André Malraux"
+    "lat": 49.485043,
+    "lon": 0.102616,
+    "display_name": "Музей современного искусства Андре Мальро, Гавр",
+    "source": "override",
+    "precision": "exact"
   },
   "Национальная галерея Шотландии, Эдинбург": {
     "lat": 55.950833,
@@ -564,12 +561,10 @@
     "precision": "exact"
   },
   "Музей изящных искусств Бильбао, Бильбао": {
-    "lat": 43.26305555555555,
-    "lon": -2.935,
-    "display_name": "Бильбао",
-    "source": "wikidata:Q8692",
-    "precision": "approx",
-    "query": "Музей изящных искусств Бильбао, Бильбао",
-    "hint": "\n"
+    "lat": 43.266,
+    "lon": -2.937806,
+    "display_name": "Музей изящных искусств Бильбао, Бильбао",
+    "source": "override",
+    "precision": "exact"
   }
 }

@@ -60,6 +60,10 @@ def main():
             bs.save_json(bs.VISITS_FILE, visits)
         print("✓ Адреса страниц переведены на латиницу")
 
+    # У кого из музеев своя страница — до записи страниц: на неё ведут
+    # «Собрание» у картины, карточки, опись и страницы походов.
+    bs.prepare_museums(meta, visits)
+
     os.makedirs(bs.OUTPUT_DIR, exist_ok=True)
     os.makedirs(bs.IMAGES_DIR, exist_ok=True)
     with open(os.path.join(bs.OUTPUT_DIR, ".nojekyll"), "w"):
@@ -135,6 +139,10 @@ def main():
             print(f"✓ {script}")
         except Exception as e:
             print(f"✕ {script}: {e}")
+
+    # Страницы музеев — после карты: координаты берутся из её кэша.
+    bs.generate_museum_pages(meta, visits)
+    print("✓ Страницы музеев")
 
     bs.save_image_sizes()
 

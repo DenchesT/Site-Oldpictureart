@@ -2156,6 +2156,65 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
   font-weight: normal;
   color: var(--muted);
 }
+/* Страница музея: та же раскладка, что у художника, плюс кусок карты
+   справа. Карта-подсказка: колесо и перетаскивание пальцем выключены,
+   чтобы страница не застревала на ней при прокрутке. */
+.mini-map {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  z-index: 0;
+}
+.mini-map-dot { stroke: var(--card-bg); fill: var(--active); fill-opacity: 1; }
+[data-theme="dark"] .mini-map .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(.92) contrast(.9) saturate(.85);
+}
+.mini-map .leaflet-control-attribution { font-size: 10px; }
+.mini-map-links { margin: var(--s2) 0 0; font-size: var(--fs-sm); }
+.mini-map-links a { color: var(--link); }
+.mini-map-note { margin: var(--s1) 0 0; font-size: var(--fs-xs); color: var(--muted); }
+.museum-main { min-width: 0; }
+.museum-section {
+  margin: var(--s6) 0 var(--s3);
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  font-weight: normal;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.museum-page .artist-facts a { color: var(--link); }
+
+/* «Идёт до 4 октября». Что сегодня, решает браузер (см. RUN_STATUS_JS):
+   собранная страница не знает, когда её откроют. Точка перед словами —
+   чтобы плашка читалась с одного взгляда и в списке, и в шапке. */
+.run-status {
+  display: block;
+  margin: var(--s3) 0 0;
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.run-status[hidden] { display: none; }
+.run-status::before {
+  content: "";
+  display: inline-block;
+  width: .55em;
+  height: .55em;
+  margin-right: .45em;
+  vertical-align: .05em;
+  border-radius: 50%;
+  background: currentColor;
+}
+.run-status[data-state="on"] { color: var(--success); }
+.run-status[data-state="last"] { color: var(--warning); }
+.run-status[data-state="soon"] { color: var(--link); }
+.run-status[data-state="off"]::before { background: transparent; box-shadow: inset 0 0 0 1px currentColor; }
+.visit-card .run-status { margin-top: var(--s2); }
+
 /* Название выставки и музея — ссылки из самого поста, на страницу
    выставки и сайт музея. Заголовок должен остаться заголовком, поэтому
    цвет свой, подчёркивание тонкое, а стрелка маленькая: видно, что это

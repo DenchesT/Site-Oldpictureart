@@ -128,6 +128,9 @@
     "country": "Япония"
   },
   "Музей современного искусства Андре Мальро, Гавр": {
+    "lat": 49.485043,
+    "lon": 0.102616,
+    "country": "Франция",
     "query": "Musée d'art moderne André Malraux",
     "site": "https://www.muma-lehavre.fr",
     "address": "2 boulevard Clemenceau, Le Havre"
@@ -371,5 +374,13 @@
     "country": "Испания",
     "site": "https://www.museunacional.cat",
     "address": "Palau Nacional, Parc de Montjuïc, Barcelona"
+  },
+  "Музей изящных искусств Бильбао, Бильбао": {
+    "lat": 43.266,
+    "lon": -2.937806,
+    "country": "Испания",
+    "query": "Museo de Bellas Artes de Bilbao",
+    "site": "https://bilbaomuseoa.eus",
+    "address": "Museo Plaza 2, Bilbao"
   }
 }

@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=16172b57">
+<link rel="stylesheet" href="style.css?v=2b199dd6">
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page visit-page">
 <a href="#main" class="skip-link">К содержанию</a>
@@ -42,7 +42,8 @@
   <div class="post-main">
     <header class="post-head">
       <p class="eyebrow">Музей</p>
-      <h1><a href="https://museumpskov.ru/locations?slug=pskovskaya_hudozhestvenno_promyshlennaya_shkola&amp;ysclid=med2xa77zm334380071" class="ext-link" target="_blank" rel="noopener" title="https://museumpskov.ru/locations?slug=pskovskaya_hudozhestvenno_promyshlennaya_shkola&amp;ysclid=med2xa77zm334380071">Картинная галерея Псковского музея-заповедника</a></h1>
+      <h1><a href="https://museumpskov.ru/locations?slug=pskovskaya_hudozhestvenno_promyshlennaya_shkola" class="ext-link" target="_blank" rel="noopener" title="https://museumpskov.ru/locations?slug=pskovskaya_hudozhestvenno_promyshlennaya_shkola">Картинная галерея Псковского музея-заповедника</a></h1>
+
 
     </header>
     <div class="shots"><a href="images/visit-2025-03-02-картинная-галерея-псковского-музея-заповедника-1.jpg" class="painting-link shot" target="_blank" rel="noopener" title="Рассмотреть" data-title="Картинная галерея Псковского музея-заповедника" data-meta="02.03.2025" data-download="картинная-галерея-псковского-музея-заповедника-1.jpg"><img src="images/thumbs/visit-2025-03-02-картинная-галерея-псковского-музея-заповедника.jpg" alt="Картинная галерея Псковского музея-заповедника, снимок 1" class="painting" width="900" height="1200" fetchpriority="high" decoding="async"><span class="painting-hint" aria-hidden="true"><span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a>
@@ -57,7 +58,7 @@
 <a href="images/visit-2025-03-02-картинная-галерея-псковского-музея-заповедника-10.jpg" class="painting-link shot" target="_blank" rel="noopener" title="Рассмотреть" data-title="Картинная галерея Псковского музея-заповедника" data-meta="02.03.2025" data-download="картинная-галерея-псковского-музея-заповедника-10.jpg"><img src="images/thumbs/visit-2025-03-02-картинная-галерея-псковского-музея-заповедника-10.jpg" alt="Картинная галерея Псковского музея-заповедника, снимок 10" class="painting" width="900" height="1200" loading="lazy" decoding="async"><span class="painting-hint" aria-hidden="true"><span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a></div>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Что</span><b>Музей</b></div><div><span>Побывал</span><b>02.03.2025</b></div><div><span>Снимков</span><b>10</b></div><div><span>На карте</span><b><a href="museums.html#museum-картинная-галерея-псковского-музея-заповедника">Картинная галерея Псковского музея-заповедника</a></b></div></div>
+    <div class="spec-table"><div><span>Что</span><b>Музей</b></div><div><span>Место</span><b><a href="museum-kartinnaya-galereya-pskovskogo-muzeya-zapovednika.html">Картинная галерея Псковского музея-заповедника</a></b></div><div><span>Побывал</span><b>02.03.2025</b></div><div><span>Снимков</span><b>10</b></div></div>
 
 
     <div class="aside-block">
@@ -696,6 +697,41 @@ function toast(text) {
   };
 
   window.addEventListener('resize', function () { close(false); });
+})();
+</script>
+<script>
+(function () {
+  var MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля',
+                'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+  function day(s) {
+    var p = (s || '').split('-');
+    return p.length === 3 ? new Date(+p[0], +p[1] - 1, +p[2]) : null;
+  }
+  var now = new Date();
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  function human(d) {
+    return d.getDate() + ' ' + MONTHS[d.getMonth()] +
+      (d.getFullYear() !== today.getFullYear() ? ' ' + d.getFullYear() : '');
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.run-status[data-end]'), function (el) {
+    var start = day(el.getAttribute('data-start')), end = day(el.getAttribute('data-end'));
+    if (!end) return;
+    var text = '', state = '';
+    if (start && today < start) {
+      text = 'Откроется ' + human(start); state = 'soon';
+    } else if (today <= end) {
+      var left = Math.round((end - today) / 864e5);
+      if (left === 0) { text = 'Последний день'; state = 'last'; }
+      else if (left <= 7) { text = 'Последние дни — до ' + human(end); state = 'last'; }
+      else { text = 'Идёт до ' + human(end); state = 'on'; }
+    } else if (el.hasAttribute('data-full')) {
+      text = 'Закрылась ' + human(end); state = 'off';
+    }
+    if (!text) return;
+    el.textContent = text;
+    el.setAttribute('data-state', state);
+    el.hidden = false;
+  });
 })();
 </script>
 </body></html>

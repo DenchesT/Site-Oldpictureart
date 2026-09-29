@@ -15,6 +15,7 @@ generate_timeline.py, generate_map.py).
 import json
 import os
 import re
+import unicodedata
 
 SITE_NAME = "Old Picture Art"
 
@@ -199,6 +200,60 @@ BASE_URL = (f"https://{SITE_DOMAIN}" if SITE_DOMAIN
             else "https://denchest.github.io/Site-Oldpictureart")
 
 
+# ------------------------------------------------ латиница в адресах
+# Жило в build_site.py, но адрес страницы музея нужен и карте
+# (generate_map.py), а тянуть туда весь сборщик ради одной функции —
+# значит заодно перенастроить его журнал. Поэтому здесь, в общем модуле.
+
+TRANSLIT = {
+    "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e",
+    "ж": "zh", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m",
+    "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u",
+    "ф": "f", "х": "h", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "sch",
+    "ъ": "", "ы": "y", "ь": "", "э": "e", "ю": "yu", "я": "ya",
+}
+
+
+def translit(text):
+    """Кириллица и буквы с надстрочными знаками — в простую латиницу.
+
+    Надстрочные знаки снимаются разложением: é → e, ä → a. Иначе
+    французские и немецкие названия снова уехали бы в проценты.
+    """
+    out = []
+    for ch in unicodedata.normalize("NFKD", text or "").lower():
+        if unicodedata.combining(ch):
+            continue
+        if ch in TRANSLIT:
+            out.append(TRANSLIT[ch])
+        elif ch.isascii() and ch.isalnum():
+            out.append(ch)
+        elif ch.isalnum():
+            out.append(unicodedata.normalize("NFKD", ch).encode("ascii", "ignore").decode())
+        else:
+            out.append("-")
+    return re.sub(r"-+", "-", "".join(out)).strip("-")
+
+
+def latin_slug(text, limit=60):
+    """Кусок адреса: только латиница, цифры и дефис."""
+    return translit(text)[:limit].strip("-")
+
+
+
+def museum_page(name):
+    """Адрес страницы музея: museum-<латиница>.html.
+
+    Считается из названия так же, как на карте, в списке собраний и в
+    карточках картин — поэтому функция одна на всех, здесь.
+    """
+    slug = translit(name)
+    if len(slug) > 70:
+        # Режем по слову: «…-galereya-rokuella-ke» в адресе выглядит как опечатка.
+        slug = slug[:71].rsplit("-", 1)[0] if "-" in slug[:71] else slug[:70]
+    return f"museum-{slug.strip('-') or 'place'}.html"
+
+
 # Где лежат оригиналы для скачивания.
 #
 # Пусто — рядом с сайтом, в docs/images, как сейчас. Оригиналы занимают
@@ -211,23 +266,34 @@ BASE_URL = (f"https://{SITE_DOMAIN}" if SITE_DOMAIN
 #     HIRES_BASE_URL = "https://storage.yandexcloud.net/oldpictureart"
 #
 # После этого кнопка «Скачать картину» и лупа берут файл оттуда, а сам
-# сайт остаётся маленьким и бесплатным. Имена файлов не меняются —
-# достаточно скопировать папку images в хранилище как есть.
+# сайт остаётся маленьким и бесплатным. Выгружает оригиналы
+# hires_store.py (ключи — в .env, как завести — STORAGE_SETUP.md); имена
+# файлов не меняются.
 #
-# Одна тонкость: атрибут download браузеры соблюдают только для файлов
-# с того же домена. Как только оригиналы уедут в хранилище, кнопка станет
-# открывать картинку вместо сохранения, и красивое имя файла потеряется.
-# Лечится на стороне хранилища — заголовком Content-Disposition:
-# attachment у объектов; у Yandex Object Storage это делается в свойствах
-# объекта или параметром response-content-disposition в ссылке.
-HIRES_BASE_URL = ""
+# Атрибут download браузеры соблюдают только для файлов с того же домена,
+# поэтому hires_store.py ставит каждому оригиналу заголовок
+# Content-Disposition: attachment с человеческим именем — иначе кнопка
+# «Скачать» открывала бы картинку вместо сохранения.
+HIRES_BASE_URL = "https://storage.yandexcloud.net/oldpictureart"
 
 
 def hires_url(path):
-    """Адрес оригинала: локальный путь или ссылка в хранилище."""
-    if not path:
+    """Адрес оригинала: локальный путь или ссылка в хранилище.
+
+    В хранилище ведём, только когда файл и правда там: это оригинал
+    («-hires-» в имени) и в docs его уже нет — hires_store.py переносит
+    локальную копию лишь после того, как выгрузка сверена. Пока оригинал
+    лежит рядом с сайтом (новый пост, выгрузка не удалась, ключей нет),
+    ссылка остаётся локальной, и скачивание работает.
+
+    Картинка страницы, подставленная вместо оригинала у поста без него,
+    в хранилище не уезжает никогда — её не трогаем.
+    """
+    if not path or not HIRES_BASE_URL or path.startswith(("http://", "https://")):
         return path
-    if not HIRES_BASE_URL or path.startswith(("http://", "https://")):
+    if "-hires-" not in os.path.basename(path):
+        return path
+    if os.path.exists(os.path.join("docs", path)):
         return path
     return f"{HIRES_BASE_URL.rstrip('/')}/{path.lstrip('/')}"
 TELEGRAM_URL = "https://t.me/oldpictureart"

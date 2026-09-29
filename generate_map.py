@@ -19,7 +19,8 @@ from html import escape as h
 import logging
 
 from site_common import (head_common, theme_button, scroll_top_button, site_footer,
-                         COMMON_JS, SCROLL_TOP_JS, BASE_URL, VISITS_FILE, visit_places)
+                         COMMON_JS, SCROLL_TOP_JS, BASE_URL, VISITS_FILE, visit_places,
+                         museum_page)
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -130,7 +131,9 @@ NOT_MUSEUM = {'fast_food', 'cafe', 'restaurant', 'bar', 'pub', 'fuel', 'bank',
 # по запросу «Millbank, London» геокодер честно отдаёт улицу, и метка
 # встаёт посреди проезжей части, а не на здании музея.
 ODD_CLASSES = {'highway', 'shop', 'railway', 'waterway', 'aeroway',
-               'boundary', 'landuse', 'natural'}
+               'boundary', 'landuse', 'natural', 'emergency'}
+# Роды, которые значат «нашёлся город или район, а не здание».
+CITY_CLASSES = {'boundary', 'place', 'landuse'}
 
 
 def kind_of(item):
@@ -851,6 +854,11 @@ MUSEUMS_CSS = """
 /* название — отдельной строкой и не под крестиком закрытия */
 .leaflet-popup-content b { display: block; font-size: .95rem; line-height: 1.25; margin: 0 14px 2px 0; }
 .popup-link { color: var(--active); }
+.popup-page { display: block; margin: .35rem 0 .1rem; font-weight: 600; }
+.museum-page-more { margin: var(--s2) 0 0; font-size: var(--fs-sm); }
+.museum-page-more + .museum-site { margin-top: var(--s1); }
+.museum-page-link { color: var(--link); text-decoration: none; border-bottom: 1px solid transparent; }
+.museum-page-link:hover, .museum-page-link:focus-visible { border-bottom-color: currentColor; }
 .popup-place { color: #555; font-size: .85rem; }
 
 /* Тёмная карта. Инверсия с поворотом оттенка — вода остаётся синеватой,
@@ -1168,6 +1176,13 @@ function addMarkers() {
       var vs = document.createElement('div');
       vs.textContent = beenPhrase(m.visits);
       html.appendChild(vs);
+    }
+    if (m.page) {
+      var pg = document.createElement('a');
+      pg.href = m.page;
+      pg.className = 'popup-link popup-page';
+      pg.textContent = 'Страница музея';
+      html.appendChild(pg);
     }
     var link = document.createElement('a');
     link.href = '#museum-' + m.id;
@@ -1488,9 +1503,13 @@ def map_warnings(museums, cache, overrides):
         kind = loc.get('kind', '')
         name = (loc.get('display_name') or '').strip()
         if odd_kind(kind):
-            what = ("нашлась улица, а не здание — метка стоит посреди неё"
-                    if kind.startswith('highway=')
-                    else f"нашлось «{name[:60]}» ({kind}) — это не музей")
+            cls = kind.partition('=')[0]
+            if cls == 'highway':
+                what = "нашлась улица, а не здание — метка стоит посреди неё"
+            elif cls in CITY_CLASSES:
+                what = f"нашёлся только город или район («{name[:40]}») — метка не на здании"
+            else:
+                what = f"нашлось «{name[:60]}» ({kind}) — это не музей"
             out.append((museum, what))
         elif (not (manual.get('address') or '').strip()
               and not (loc.get('source') or '').startswith('wikidata')
@@ -1664,6 +1683,7 @@ def check_map(sites=True):
         if no_site:
             print(f"\nБез ссылки на сайт: {len(no_site)} "
                   f'(необязательно; добавляется полем "site" в {OVERRIDES_FILE})')
+        print("Ссылки из постов (источники картин, страницы выставок): python check_links.py")
 
     total = len(missing) + len(warnings) + bad_links
     print(f"\nИтого поводов посмотреть: {total}\n")
@@ -1892,6 +1912,13 @@ def generate_museums_page(retry_failed=False, offline=False):
                 f' onclick="toggleMuseumPosts(this, \'{museum_id}\')">Список картин ▾</button>\n'
                 f'  <ul class="museum-posts-list" id="posts-{museum_id}" hidden>{posts_html}</ul>')
 
+        # У места есть своя страница (у всех, кроме частных собраний):
+        # там картины, походы, адрес и кусок карты. Отдельной строкой, а не
+        # ссылкой в названии: клик по карточке ведёт к метке на карте, и
+        # название-ссылка уводило бы со страницы вместо этого.
+        page = "" if (overrides.get(museum) or {}).get('skip') else museum_page(museum)
+        page_html = (f'<p class="museum-page-more"><a class="museum-page-link" href="{h(page)}">'
+                     f'Страница музея →</a></p>') if page else ""
         card_lines = [
             f'<article class="museum-card" id="museum-{museum_id}" data-id="{museum_id}"',
             f'         data-search="{h(search_blob)}" data-count="{len(posts)}"',
@@ -1902,6 +1929,7 @@ def generate_museums_page(retry_failed=False, offline=False):
             f'<span class="{badge_class}" title="{badge_title}">{badge}</span></header>',
             f'  {location_html}',
             f'  {address_html}' if address_html else "",
+            f'  {page_html}' if page_html else "",
             f'  {site_html}' if site_html else "",
             f'  {thumbs_block}' if thumbs_block.strip() else "",
             f'  {visits_html}' if visits_html else "",
@@ -1914,7 +1942,7 @@ def generate_museums_page(retry_failed=False, offline=False):
             map_data.append({
                 'id': museum_id, 'name': museum, 'place': loc_line,
                 'lat': lat, 'lon': lon, 'count': len(posts),
-                'visits': len(been), 'approx': approx,
+                'visits': len(been), 'approx': approx, 'page': page,
             })
 
     total_paintings = sum(len(v) for v in museums_dict.values())

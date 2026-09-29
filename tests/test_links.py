@@ -174,13 +174,15 @@ if posts:
     p["urls"] = ["https://collection.example/1"]
     p["links"] = [{"text": p.get("museum") or "Музей", "url": "https://museum.example"},
                   {"text": "карточка в собрании", "url": "https://collection.example/1"}]
+    bs.prepare_museums(posts, visits)
     pp = bs.render_post_page(p, posts)
     ok("на странице картины подписанная ссылка — в «Источниках» с подписью",
        '>карточка в собрании</a>' in pp and 'href="https://museum.example"' in pp)
     ok("адрес, который есть и подписанным, и голым, — один раз",
        pp.count('href="https://collection.example/1"') == 1)
-    ok("«Собрание» по-прежнему ведёт на карту",
-       'href="museums.html#museum-' in pp)
+    ok("«Собрание» ведёт на страницу музея (а с неё — на карту)",
+       f'<span>Собрание</span><b><a href="{bs.museum_page(p["museum"].strip())}"' in pp
+       or 'href="museums.html#museum-' in pp)
 
 
 # ------------------------------------------------------------ дочитать у прежних

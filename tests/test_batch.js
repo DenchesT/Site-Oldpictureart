@@ -213,8 +213,12 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
     ok('карточка — это <article>', (await page.locator('.card').first().evaluate(el => el.tagName)) === 'ARTICLE');
     ok('вложенных ссылок в ссылку нет', (await page.locator('a a').count()) === 0);
 
+    // Музей ведёт на свою страницу (там и карта), а частное собрание,
+    // у которого страницы нет, — прямо на карту с якорем.
     const href = await page.locator('.card-museum a').first().getAttribute('href');
-    ok('музей ведёт на карту с якорем', /^museums\.html#museum-/.test(href || ''), href);
+    ok('музей ведёт на свою страницу или на карту с якорем',
+      /^museum-[a-z0-9-]+\.html$/.test(href || '') && fs.existsSync(path.join(DOCS, href))
+      || /^museums\.html#museum-/.test(href || ''), href);
 
     // карточка всё ещё открывает картину
     const cardHref = await page.locator('.card .card-link').first().getAttribute('href');
@@ -230,7 +234,8 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
       const a = d && d.querySelector('a');
       return a ? a.getAttribute('href') : null;
     });
-    ok('«Собрание» на странице картины — ссылка', /^museums\.html#museum-/.test(collHref || ''), collHref);
+    ok('«Собрание» на странице картины — ссылка на музей',
+      /^museum-[a-z0-9-]+\.html$/.test(collHref || '') || /^museums\.html#museum-/.test(collHref || ''), collHref);
     await ctx.close();
   }
   {
