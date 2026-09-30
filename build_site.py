@@ -3699,6 +3699,32 @@ def museum_names(all_posts, visits):
     return sorted(n for n in names if n and not (ov.get(n) or {}).get("skip"))
 
 
+def map_reminder(all_posts, visits):
+    """Метки, которые стоят не на здании, — в самом конце сборки.
+
+    Карта называет их и сама, но в середине длинного лога строка терялась:
+    так «Коллекция Месдага» простояла в центре Гааги — автопоиск по
+    русскому названию ничего не нашёл и поставил метку по городу.
+    Сеть не нужна: судим по кэшу координат, как generate_map.py.
+    """
+    try:
+        import generate_map as gm
+        doubts = gm.map_warnings(museum_names(all_posts, visits),
+                                 gm.load_cache(), gm.load_overrides(quiet=True))
+    except Exception as e:
+        logger.warning(f"Проверить метки на карте не вышло: {e}")
+        return []
+    if doubts:
+        logger.warning(f"⚠ На карте {len(doubts)} {plural_ru(len(doubts), 'метка', 'метки', 'меток')} "
+                       f"не на своём месте:")
+        for museum, why in doubts:
+            logger.warning(f"   • {museum}: {why}")
+        logger.warning('   Поправить: впишите в museum_overrides.json адрес — '
+                       '"Название": {"address": "улица дом, город"} — или готовые "lat" и "lon", '
+                       'затем python rebuild_pages.py. Подробнее — README, «Если метка стоит не там».')
+    return doubts
+
+
 def prepare_museums(all_posts, visits):
     """Запоминает, у кого есть страница. Вызывать до записи страниц."""
     _MUSEUM_PAGES.clear()
@@ -4941,6 +4967,7 @@ async def main():
     with open(os.path.join(OUTPUT_DIR, "auth.html"), "w", encoding="utf-8", newline="\n") as f: f.write(render_auth_page())
     save_image_sizes()
     logger.info(f"Новых постов: {len(accepted)}. Всего: {len(all_posts)}")
+    map_reminder(all_posts, all_visits)
     push_to_github()
 
 if __name__ == "__main__":

@@ -128,6 +128,19 @@ ok("без координат — ссылка на карточку строк�
    and 'museum-hero no-map' in page and 'id="mini-map"' not in page)
 ok("без координат — Leaflet не грузится", "leaflet" not in page.lower())
 
+# ------------------------------------------------------------ напоминание в конце сборки
+import generate_map as gm
+saved = (gm.load_cache, gm.load_overrides)
+gm.load_cache = lambda: {"Музей Икс, Город": {"lat": 1.0, "lon": 2.0, "display_name": "Город",
+                                              "source": "wikidata:Q1", "precision": "approx"}}
+gm.load_overrides = lambda quiet=False: {}
+try:
+    doubts = bs.map_reminder([{"museum": "Музей Икс, Город"}], [])
+finally:
+    gm.load_cache, gm.load_overrides = saved
+ok("метка по городу попадает в напоминание в конце сборки",
+   len(doubts) == 1 and "по городу" in doubts[0][1], str(doubts))
+
 print("\n====== ДАННЫЕ МУЗЕЕВ И ВЫСТАВОК ======")
 for name, passed, extra in results:
     print(f"{'OK  ' if passed else 'FAIL'}  {name}{('  — ' + extra) if extra else ''}")

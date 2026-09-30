@@ -35,8 +35,10 @@
     "address": "Почтамтская улица, 14, Санкт-Петербург"
   },
   "Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург": {
+    "lat": 44.6935455,
+    "lon": -73.4674568,
     "query": "SUNY Plattsburgh Art Museum",
-    "address": "101 Broad St, Plattsburgh",
+    "address": "2 Draper Avenue, Plattsburgh",
     "site": "https://www.plattsburgh.edu/plattslife/arts/art-museum/index.html"
   },
   "Гётеборгский художественный музей, Гётеборг": {
@@ -94,6 +96,8 @@
     "address": "Obenmarspforten 40, Köln"
   },
   "Музей Гетти, Лос-Анджелес": {
+    "lat": 34.078018,
+    "lon": -118.474205,
     "query": "Getty Center",
     "site": "https://www.getty.edu",
     "address": "1200 Getty Center Dr, Los Angeles"
@@ -333,8 +337,12 @@
     "address": "улица Радищева, 39, Саратов"
   },
   "Ассоциация \"Живопись в Нормандии\", Довиль": {
+    "lat": 49.3543121,
+    "lon": 0.0663727,
     "country": "Франция",
-    "address": "Deauville"
+    "display_name": "Les Franciscaines, Довиль",
+    "site": "https://lesfranciscaines.fr",
+    "address": "145B Avenue de la République, Deauville"
   },
   "Государственные художественные собрания Дрездена, Дрезден": {
     "country": "Германия",
@@ -382,5 +390,12 @@
     "query": "Museo de Bellas Artes de Bilbao",
     "site": "https://bilbaomuseoa.eus",
     "address": "Museo Plaza 2, Bilbao"
+  },
+  "Коллекция Месдага, Гаага": {
+    "lat": 52.0860212,
+    "lon": 4.2955421,
+    "country": "Нидерланды",
+    "site": "https://www.demesdagcollectie.nl",
+    "address": "Laan van Meerdervoort 7F, Den Haag"
   }
 }

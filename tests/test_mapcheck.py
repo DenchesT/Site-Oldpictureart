@@ -318,6 +318,21 @@ if os.path.exists("museum_overrides.json"):
        "museefabre.fr" in (ov.get("Музей Фабра, Монпелье") or {}).get("site", ""),
        str((ov.get("Музей Фабра, Монпелье") or {}).get("site")))
 
+    # Коллекция Месдага стояла в центре Гааги: по русскому названию
+    # автопоиск не нашёл ничего и поставил метку по городу.
+    md = ov.get("Коллекция Месдага, Гаага") or {}
+    ok("Коллекция Месдага — на Laan van Meerdervoort 7F, а не в центре Гааги",
+       "lat" in md and gm.distance_km(md, {"lat": 52.0860, "lon": 4.2955}) < 0.3, str(md))
+
+    # Вся настоящая карта: ни одной метки по городу, на улице, на кофейне
+    # или двойника. Новый музей встал не туда — проверка скажет какой.
+    if os.path.exists("museum_coordinates.json") and os.path.exists("posts_meta.json"):
+        real_names = {p["museum"].strip() for p in json.load(open("posts_meta.json", encoding="utf-8"))
+                      if p.get("museum")}
+        doubts = gm.map_warnings(real_names, gm.load_cache(), gm.load_overrides(quiet=True))
+        ok("на настоящей карте все метки на своих зданиях", not doubts,
+           "; ".join(f"{m}: {w}" for m, w in doubts[:5]))
+
 print("\n====== ПРОВЕРКА КАРТЫ ======")
 for name, passed, extra in results:
     print(f"{'OK  ' if passed else 'FAIL'}  {name}{('  — ' + extra) if extra else ''}")

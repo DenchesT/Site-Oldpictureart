@@ -146,6 +146,9 @@ def main():
 
     bs.save_image_sizes()
 
+    # Метки не на своём месте — последними, чтобы не потерялись в логе.
+    bs.map_reminder(meta, visits)
+
     print("\nГотово. Откройте docs/index.html")
 
 

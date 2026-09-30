@@ -68,14 +68,11 @@
     "hint": "Schlossbezirk 1, Rudolstadt\nSchloss Heidecksburg"
   },
   "Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург": {
-    "lat": 44.6944619,
-    "lon": -73.4660594,
-    "display_name": "Building 3, 101, Broad Street, Платсберг, округ Клинтон, Нью-Йорк, 12901, Соединённые Штаты Америки",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "place=house",
-    "query": "101 Broad St, Plattsburgh",
-    "hint": "101 Broad St, Plattsburgh\nSUNY Plattsburgh Art Museum"
+    "lat": 44.6935455,
+    "lon": -73.4674568,
+    "display_name": "Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург",
+    "source": "override",
+    "precision": "exact"
   },
   "Гётеборгский художественный музей, Гётеборг": {
     "lat": 57.696653,
@@ -401,14 +398,11 @@
     "hint": "1000 5th Ave, New York\nMetropolitan Museum of Art"
   },
   "Музей Гетти, Лос-Анджелес": {
-    "lat": 34.0769513,
-    "lon": -118.475712,
-    "display_name": "Getty Research Institute, 1200, Getty Center Drive, Лос-Анджелес, Los Angeles County, Калифорния, 90049, Соединённые Штаты Америки",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "office=research",
-    "query": "1200 Getty Center Dr, Los Angeles",
-    "hint": "1200 Getty Center Dr, Los Angeles\nGetty Center"
+    "lat": 34.078018,
+    "lon": -118.474205,
+    "display_name": "Музей Гетти, Лос-Анджелес",
+    "source": "override",
+    "precision": "exact"
   },
   "Национальный музей искусства Каталонии, Барселона": {
     "lat": 41.368333,
@@ -544,14 +538,11 @@
     "precision": "exact"
   },
   "Ассоциация \"Живопись в Нормандии\", Довиль": {
-    "lat": 49.3595018,
-    "lon": 0.0746638,
-    "display_name": "Довиль, Лизьё, Кальвадос, Нормандия, Метрополия Франции, 14800, Франция",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "boundary=administrative",
-    "query": "Deauville",
-    "hint": "Deauville\n"
+    "lat": 49.3543121,
+    "lon": 0.0663727,
+    "display_name": "Les Franciscaines, Довиль",
+    "source": "override",
+    "precision": "exact"
   },
   "Тегеранский музей современного искусства, Тегеран": {
     "lat": 35.711217,
@@ -568,12 +559,10 @@
     "precision": "exact"
   },
   "Коллекция Месдага, Гаага": {
-    "lat": 52.08,
-    "lon": 4.31,
-    "display_name": "Гаага",
-    "source": "wikidata:Q36600",
-    "precision": "approx",
-    "query": "Коллекция Месдага, Гаага",
-    "hint": "\n"
+    "lat": 52.0860212,
+    "lon": 4.2955421,
+    "display_name": "Коллекция Месдага, Гаага",
+    "source": "override",
+    "precision": "exact"
   }
 }

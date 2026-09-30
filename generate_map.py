@@ -480,7 +480,9 @@ def geocode(museum_name, cache, overrides=None, retry_failed=False, offline=Fals
     # 6. Хотя бы город
     result = city_fallback(museum_name, manual)
     if result:
-        logger.info(f"  ≈ {museum_name} → приблизительно, по месту «{result['display_name']}»")
+        logger.warning(f"  ≈ {museum_name} → приблизительно, по месту «{result['display_name']}». "
+                       f"Метка не на здании — впишите адрес в {OVERRIDES_FILE}: "
+                       f'"{museum_name}": {{"address": "улица дом, город"}}')
         return remember(result, wanted_query or museum_name)
 
     # Ничего не нашлось. Если прежние координаты были — оставляем их:
