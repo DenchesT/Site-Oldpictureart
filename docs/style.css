@@ -2202,7 +2202,9 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
   z-index: 0;
 }
 .mini-map-dot { stroke: var(--card-bg); fill: var(--active); fill-opacity: 1; }
-[data-theme="dark"] .mini-map .leaflet-tile-pane {
+/* Тёмная тема — инверсия подложки; класс map-dark ставит скрипт карты
+   (OPA_MAP в site_common.py), у спутника его нет. */
+.mini-map.map-dark .leaflet-tile-pane {
   filter: invert(1) hue-rotate(180deg) brightness(.92) contrast(.9) saturate(.85);
 }
 .mini-map .leaflet-control-attribution { font-size: 10px; }

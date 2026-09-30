@@ -1484,6 +1484,133 @@ showAuthButton();
 </script>"""
 
 
+# Подложки карт — одни на карте собраний и на мини-картах страниц музеев.
+#
+# По умолчанию Яндекс (Tiles API, ключ в docs/map-config.js), рядом
+# переключатель: Схема (OpenStreetMap), Минимальная и Спутник (Esri),
+# Рельеф (OpenTopoMap). Выбор посетителя запоминается и действует на всех
+# картах сайта сразу. Ключа нет — по умолчанию Схема, Яндекса в списке нет.
+#
+# Если Яндекс не отвечает (ключ не от того продукта, домен не разрешён в
+# кабинете, кончился лимит), карта сама переходит на Схему и этот выбор
+# не запоминает — при следующем заходе попробует Яндекс снова. Пустой
+# карты не бывает ни при каком раскладе.
+#
+# Тёмная тема — инверсия цветов подложки CSS-фильтром (класс map-dark на
+# окне карты); у спутника фильтра нет — там он выглядел бы дико.
+#
+# Это чистый JS без <script>: вставляется внутрь скрипта страницы.
+MAP_LAYERS_JS = r"""
+var OPA_MAP = (function () {
+  var FREE = [
+    {id: 'osm', name: 'Схема',
+     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+     attr: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+     max: 19, dark: true},
+    {id: 'gray', name: 'Минимальная',
+     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+     labels: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+     attr: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+     max: 19, nativeMax: 16, dark: true},
+    {id: 'topo', name: 'Рельеф',
+     url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+     attr: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, ' +
+           'SRTM | &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
+     max: 17, dark: true},
+    {id: 'sat', name: 'Спутник',
+     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+     attr: 'Tiles &copy; Esri &mdash; Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP',
+     max: 19, dark: false}
+  ];
+  // Ключ хранилища новый: под прежним «mapLayer» у тех, кто когда-то
+  // щёлкал переключатель, лежала Схема, и Яндекс по умолчанию до них бы
+  // не дошёл. Выбор, сделанный с этого дня, запоминается как обычно.
+  var STORE = 'mapBase';
+
+  function yandex() {
+    var key = (window.MAP_KEYS && window.MAP_KEYS.yandex || '').trim();
+    if (!key) return null;
+    // Tiles API отдаёт обычные XYZ-тайлы в web_mercator — такой же слой,
+    // как остальные. scale=2 — чёткие тайлы на экранах телефонов.
+    var scale = (window.devicePixelRatio || 1) >= 1.5 ? 2 : 1;
+    return {id: 'yandex', name: 'Яндекс',
+      url: 'https://tiles.api-maps.yandex.ru/v1/tiles/?apikey=' + encodeURIComponent(key) +
+           '&lang=ru_RU&l=map&projection=web_mercator&scale=' + scale + '&x={x}&y={y}&z={z}',
+      attr: '&copy; <a href="https://yandex.ru/maps/" target="_blank" rel="noopener">Яндекс Карты</a>',
+      max: 20, dark: true};
+  }
+
+  function list() {
+    var y = yandex();
+    return (y ? [y] : []).concat(FREE);
+  }
+
+  function make(cfg) {
+    var opts = {attribution: cfg.attr, maxZoom: cfg.max};
+    if (cfg.nativeMax) opts.maxNativeZoom = cfg.nativeMax;
+    var base = L.tileLayer(cfg.url, opts);
+    // У серой подложки Esri подписи городов лежат отдельным слоем сверху.
+    var layer = cfg.labels
+      ? L.layerGroup([base, L.tileLayer(cfg.labels, {maxZoom: cfg.max, maxNativeZoom: cfg.nativeMax})])
+      : base;
+    layer._opaId = cfg.id;
+    layer._opaDark = cfg.dark !== false;
+    return layer;
+  }
+
+  function saved() { try { return localStorage.getItem(STORE); } catch (e) { return null; } }
+  function remember(id) { try { localStorage.setItem(STORE, id); } catch (e) {} }
+
+  // Подложки и переключатель на карту map; box — её окно (для тёмной темы).
+  function attach(map, box) {
+    var cfgs = list(), layers = {}, byId = {};
+    cfgs.forEach(function (c) { byId[c.id] = layers[c.name] = make(c); });
+    (byId[saved()] || byId[cfgs[0].id]).addTo(map);
+    var control = L.control.layers(layers, null, {position: 'topright'}).addTo(map);
+
+    function update() {
+      var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      var allowed = true;
+      Object.keys(layers).forEach(function (n) {
+        if (map.hasLayer(layers[n]) && layers[n]._opaDark === false) allowed = false;
+      });
+      if (box) box.classList.toggle('map-dark', dark && allowed);
+    }
+    var automatic = false;
+    map.on('baselayerchange', function (e) {
+      if (!automatic && e.layer && e.layer._opaId) remember(e.layer._opaId);
+      update();
+    });
+    new MutationObserver(update)
+      .observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+
+    // Яндекс молчит: три отказа подряд и ни одного тайла — уходим на Схему.
+    var ya = byId.yandex;
+    if (ya) {
+      var loaded = 0, failed = 0, gaveUp = false;
+      ya.on('tileload', function () { loaded++; });
+      ya.on('tileerror', function () {
+        failed++;
+        if (gaveUp || loaded || failed < 3 || !map.hasLayer(ya)) return;
+        gaveUp = true;
+        console.warn('Яндекс Карты не отдают тайлы — показана Схема. Проверьте, что ключ ' +
+                     'в map-config.js от Tiles API и что домен сайта разрешён в кабинете.');
+        automatic = true;
+        map.removeLayer(ya);
+        map.addLayer(byId.osm);
+        automatic = false;
+        update();
+      });
+    }
+    update();
+    return {layers: layers, control: control, update: update};
+  }
+
+  return {attach: attach, list: list, make: make};
+})();
+"""
+
+
 SCROLL_TOP_JS = """<script>
 function scrollToTop(){
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;

@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=a0dcedf6">
+<link rel="stylesheet" href="style.css?v=6755ed68">
 <script type="application/ld+json">{"@type":"Museum","name":"Лувр, Париж (в запаснике)","address":{"@type":"PostalAddress","streetAddress":"Rue de Rivoli, Paris","addressLocality":"Париж","addressCountry":"Франция"},"geo":{"@type":"GeoCoordinates","latitude":48.861,"longitude":2.335861},"url":"https://www.louvre.fr","@context":"https://schema.org","image":"https://oldpictureart.ru/images/brun-vid-na-salon-karre-v-luvre-1880-1.jpg","sameAs":["https://www.louvre.fr"],"mainEntityOfPage":"https://oldpictureart.ru/museum-luvr-parizh-v-zapasnike.html"}</script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
@@ -166,7 +166,116 @@ function toggleTheme(){
 </script>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin></script>
+<script src="map-config.js"></script>
 <script>
+var OPA_MAP = (function () {
+  var FREE = [
+    {id: 'osm', name: 'Схема',
+     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+     attr: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+     max: 19, dark: true},
+    {id: 'gray', name: 'Минимальная',
+     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+     labels: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+     attr: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+     max: 19, nativeMax: 16, dark: true},
+    {id: 'topo', name: 'Рельеф',
+     url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+     attr: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, ' +
+           'SRTM | &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
+     max: 17, dark: true},
+    {id: 'sat', name: 'Спутник',
+     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+     attr: 'Tiles &copy; Esri &mdash; Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP',
+     max: 19, dark: false}
+  ];
+  // Ключ хранилища новый: под прежним «mapLayer» у тех, кто когда-то
+  // щёлкал переключатель, лежала Схема, и Яндекс по умолчанию до них бы
+  // не дошёл. Выбор, сделанный с этого дня, запоминается как обычно.
+  var STORE = 'mapBase';
+
+  function yandex() {
+    var key = (window.MAP_KEYS && window.MAP_KEYS.yandex || '').trim();
+    if (!key) return null;
+    // Tiles API отдаёт обычные XYZ-тайлы в web_mercator — такой же слой,
+    // как остальные. scale=2 — чёткие тайлы на экранах телефонов.
+    var scale = (window.devicePixelRatio || 1) >= 1.5 ? 2 : 1;
+    return {id: 'yandex', name: 'Яндекс',
+      url: 'https://tiles.api-maps.yandex.ru/v1/tiles/?apikey=' + encodeURIComponent(key) +
+           '&lang=ru_RU&l=map&projection=web_mercator&scale=' + scale + '&x={x}&y={y}&z={z}',
+      attr: '&copy; <a href="https://yandex.ru/maps/" target="_blank" rel="noopener">Яндекс Карты</a>',
+      max: 20, dark: true};
+  }
+
+  function list() {
+    var y = yandex();
+    return (y ? [y] : []).concat(FREE);
+  }
+
+  function make(cfg) {
+    var opts = {attribution: cfg.attr, maxZoom: cfg.max};
+    if (cfg.nativeMax) opts.maxNativeZoom = cfg.nativeMax;
+    var base = L.tileLayer(cfg.url, opts);
+    // У серой подложки Esri подписи городов лежат отдельным слоем сверху.
+    var layer = cfg.labels
+      ? L.layerGroup([base, L.tileLayer(cfg.labels, {maxZoom: cfg.max, maxNativeZoom: cfg.nativeMax})])
+      : base;
+    layer._opaId = cfg.id;
+    layer._opaDark = cfg.dark !== false;
+    return layer;
+  }
+
+  function saved() { try { return localStorage.getItem(STORE); } catch (e) { return null; } }
+  function remember(id) { try { localStorage.setItem(STORE, id); } catch (e) {} }
+
+  // Подложки и переключатель на карту map; box — её окно (для тёмной темы).
+  function attach(map, box) {
+    var cfgs = list(), layers = {}, byId = {};
+    cfgs.forEach(function (c) { byId[c.id] = layers[c.name] = make(c); });
+    (byId[saved()] || byId[cfgs[0].id]).addTo(map);
+    var control = L.control.layers(layers, null, {position: 'topright'}).addTo(map);
+
+    function update() {
+      var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      var allowed = true;
+      Object.keys(layers).forEach(function (n) {
+        if (map.hasLayer(layers[n]) && layers[n]._opaDark === false) allowed = false;
+      });
+      if (box) box.classList.toggle('map-dark', dark && allowed);
+    }
+    var automatic = false;
+    map.on('baselayerchange', function (e) {
+      if (!automatic && e.layer && e.layer._opaId) remember(e.layer._opaId);
+      update();
+    });
+    new MutationObserver(update)
+      .observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+
+    // Яндекс молчит: три отказа подряд и ни одного тайла — уходим на Схему.
+    var ya = byId.yandex;
+    if (ya) {
+      var loaded = 0, failed = 0, gaveUp = false;
+      ya.on('tileload', function () { loaded++; });
+      ya.on('tileerror', function () {
+        failed++;
+        if (gaveUp || loaded || failed < 3 || !map.hasLayer(ya)) return;
+        gaveUp = true;
+        console.warn('Яндекс Карты не отдают тайлы — показана Схема. Проверьте, что ключ ' +
+                     'в map-config.js от Tiles API и что домен сайта разрешён в кабинете.');
+        automatic = true;
+        map.removeLayer(ya);
+        map.addLayer(byId.osm);
+        automatic = false;
+        update();
+      });
+    }
+    update();
+    return {layers: layers, control: control, update: update};
+  }
+
+  return {attach: attach, list: list, make: make};
+})();
+
 (function () {
   var el = document.getElementById('mini-map');
   if (!el || !window.L) { if (el) el.hidden = true; return; }
@@ -177,10 +286,7 @@ function toggleTheme(){
   // прокрутить мимо карты.
   var map = L.map(el, {scrollWheelZoom: true, dragging: true})
     .setView([lat, lon], approx ? 11 : 15);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-  }).addTo(map);
+  OPA_MAP.attach(map, el);
   L.circleMarker([lat, lon], {radius: 9, weight: 3, className: 'mini-map-dot'}).addTo(map);
   el.miniMap = map;   // для проверок
 })();

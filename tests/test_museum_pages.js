@@ -118,7 +118,7 @@ function ldOf(html) {
     page.on('pageerror', e => errors.push(e.message));
     await page.route('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', r => r.fulfill({ path: NM('leaflet/dist/leaflet.js') }));
     await page.route('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', r => r.fulfill({ path: NM('leaflet/dist/leaflet.css') }));
-    await page.route(/tile\.openstreetmap\.org/, r => r.abort());
+    await page.route(/tile\.openstreetmap\.org|tiles\.api-maps\.yandex\.ru/, r => r.abort());
     if (theme) await page.addInitScript(t => { try { localStorage.setItem('theme', t); } catch (e) {} }, theme);
     await page.goto(f(n));
     await page.waitForTimeout(500);
@@ -189,6 +189,14 @@ function ldOf(html) {
     ok('место без картин: главное — походы', v.visits >= 1, v.visits + ' походов');
     ok('подпись «Место», а не «Собрание»', /Место/.test(v.eyebrow), v.eyebrow);
     ok('в тёмной теме подложка мини-карты затемнена', v.theme !== 'dark' || /invert/.test(v.filter), v.filter || v.theme);
+    const sat = await page.evaluate(() => {
+      const label = [...document.querySelectorAll('.leaflet-control-layers-base label')]
+        .find(x => /Спутник/.test(x.textContent));
+      if (!label) return null;
+      label.querySelector('input').click();
+      return document.querySelector('#mini-map').classList.contains('map-dark');
+    });
+    ok('на спутнике мини-карта не инвертируется', sat === false, String(sat));
     ok('ошибок в консоли нет (место без картин)', !errors.length, errors.join('; '));
     await page.close();
   }
@@ -198,7 +206,7 @@ function ldOf(html) {
   const pp = await phone.newPage();
   await pp.route('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', r => r.fulfill({ path: NM('leaflet/dist/leaflet.js') }));
   await pp.route('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', r => r.fulfill({ path: NM('leaflet/dist/leaflet.css') }));
-  await pp.route(/tile\.openstreetmap\.org/, r => r.abort());
+  await pp.route(/tile\.openstreetmap\.org|tiles\.api-maps\.yandex\.ru/, r => r.abort());
   await pp.goto(f(workPage));
   await pp.waitForTimeout(400);
   const over = await pp.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);

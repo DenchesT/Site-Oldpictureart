@@ -92,7 +92,8 @@ from site_common import (head_common, scroll_top_button, theme_button, site_foot
                          VISITS_FILE, has_visits, visit_places,
                          METRIKA_ID, SITE_OWNER, PRIVACY_CONTACT, PRIVACY_CONTACT_TEXT, PRIVACY_DATE,
                          work_year, AUTH_API_URL, YANDEX_CLIENT_ID, VK_CLIENT_ID,
-                         TRANSLIT, translit, latin_slug, museum_page, visit_kind_label)
+                         TRANSLIT, translit, latin_slug, museum_page, visit_kind_label,
+                         MAP_LAYERS_JS)
 import hires_store
 
 def load_dotenv(path=".env"):
@@ -3872,8 +3873,9 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
     grid = '<div class="museum-main">' + "".join(main) + '</div>' if main else ""
     map_js = ""
     if has_map:
-        map_js = LEAFLET_JS + """
-<script>
+        # Подложки — те же, что на карте собраний, и так же по умолчанию
+        # Яндекс (ключ в map-config.js), с переключателем в углу.
+        map_js = LEAFLET_JS + '\n<script src="map-config.js"></script>\n<script>' + MAP_LAYERS_JS + """
 (function () {
   var el = document.getElementById('mini-map');
   if (!el || !window.L) { if (el) el.hidden = true; return; }
@@ -3884,10 +3886,7 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
   // прокрутить мимо карты.
   var map = L.map(el, {scrollWheelZoom: true, dragging: true})
     .setView([lat, lon], approx ? 11 : 15);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-  }).addTo(map);
+  OPA_MAP.attach(map, el);
   L.circleMarker([lat, lon], {radius: 9, weight: 3, className: 'mini-map-dot'}).addTo(map);
   el.miniMap = map;   // для проверок
 })();
@@ -4033,6 +4032,12 @@ def render_privacy():
     счётчик выключен (METRIKA_ID пуст), — не описывать того, чего нет.
     """
     auth_on = bool(AUTH_API_URL and (YANDEX_CLIENT_ID or VK_CLIENT_ID))
+    # Оригиналы в облачном хранилище — это ещё один адрес, куда браузер
+    # ходит (кнопка «Скачать» и лупа).
+    import site_common
+    hires_host = urllib.parse.urlsplit(site_common.HIRES_BASE_URL or "").netloc
+    hires_li = (f'    <li>{hires_host} — оригиналы картин для скачивания и лупы;</li>'
+                if hires_host else '')
     head = head_common(
         title="Конфиденциальность — Old Picture Art",
         description="Какие данные собирает сайт Old Picture Art, зачем и как от этого отказаться: "
@@ -4136,8 +4141,8 @@ def render_privacy():
 {account if auth_on else ""}
 <section class="doc-block" id="browser">
   <h2>Что остаётся только в вашем браузере</h2>
-  <p>В хранилище браузера (localStorage) сайт запоминает тему оформления, отмеченные
-  картины, счёт в квизе и ваш ответ насчёт статистики{", а если вы вошли — ещё пропуск для входа и ваше имя" if auth_on else ""}.
+  <p>В хранилище браузера (localStorage) сайт запоминает тему оформления, выбранную
+  подложку карты, отмеченные картины, счёт в квизе и ваш ответ насчёт статистики{", а если вы вошли — ещё пропуск для входа и ваше имя" if auth_on else ""}.
   {"Отметки вошедших дублируются в облако (см. выше), остальное" if auth_on else "Это"} не уходит ни на какой сервер;
   стереть — очистить данные сайта в настройках браузера.</p>
 </section>
@@ -4151,7 +4156,8 @@ def render_privacy():
     <li>Google Fonts — шрифты;</li>
     <li>cdnjs.cloudflare.com — код подбора цвета рамки;</li>
 {'    <li>functions.yandexcloud.net — отметки тех, кто вошёл в аккаунт;</li>' if auth_on else ''}
-    <li>на карте собраний — подложки OpenStreetMap, OpenTopoMap, Esri и Яндекс Карт и библиотека карты с unpkg.com.</li>
+{hires_li}
+    <li>на карте собраний и страницах музеев — подложки Яндекс Карт, OpenStreetMap, OpenTopoMap и Esri и библиотека карты с unpkg.com.</li>
   </ul>
 </section>
 

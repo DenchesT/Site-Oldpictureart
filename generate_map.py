@@ -20,7 +20,7 @@ import logging
 
 from site_common import (head_common, theme_button, scroll_top_button, site_footer,
                          COMMON_JS, SCROLL_TOP_JS, BASE_URL, VISITS_FILE, visit_places,
-                         museum_page, visit_kind_label)
+                         museum_page, visit_kind_label, MAP_LAYERS_JS)
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -557,8 +557,9 @@ def museum_place(museum_name, manual, result):
 
 
 MAP_CONFIG_TEMPLATE = """// Ключи картографических сервисов.
-// Пустая строка — слой просто не появится в переключателе,
-// остальные карты продолжат работать как были.
+// С ключом Яндекс — подложка по умолчанию на всех картах сайта (карта
+// собраний и страницы музеев). Пустая строка — Яндекса просто не будет
+// в переключателе, по умолчанию встанет Схема.
 //
 // ЯНДЕКС.КАРТЫ — нужен ключ от продукта \"Tiles API\" (Подложка карты)
 // 1. Кабинет разработчика: https://yandex.ru/maps-api/ → Ключи → Подключить API
@@ -566,8 +567,9 @@ MAP_CONFIG_TEMPLATE = """// Ключи картографических серв
 //    Не JavaScript API: у него другой формат и другие условия.
 //    Tiles API бесплатен, лимит 30 запросов в секунду.
 // 3. Скопируйте ключ и вставьте между кавычками ниже
-// 4. Ограничьте ключ доменом denchest.github.io — на статическом
-//    сайте ключ виден всем в исходниках страницы
+// 4. Ограничьте ключ доменом сайта (oldpictureart.ru) — на статическом
+//    сайте ключ виден всем в исходниках страницы. Если домен не разрешён,
+//    карта сама перейдёт на Схему, а в консоли браузера будет подсказка.
 //
 // Этот файл сборка не перезаписывает: ключ переживёт пересборку сайта.
 window.MAP_KEYS = {
@@ -902,67 +904,17 @@ MUSEUMS_CSS = """
 # ============================= СКРИПТ СТРАНИЦЫ ================================
 MUSEUMS_JS = """
 // ------------------------------------------------ слои карты
-// Все подложки, кроме Яндекса, работают без ключей и регистрации.
+// Подложки, переключатель, запоминание выбора и тёмная тема — общие со
+// страницами музеев: OPA_MAP в site_common.py (MAP_LAYERS_JS). По
+// умолчанию — Яндекс, если в map-config.js есть ключ.
+//
 // Тёмной подложки в списке нет намеренно: бесплатные тёмные тайлы имеют
 // привычку внезапно требовать ключ — так и случилось с CARTO, чьи схемы
 // стояли здесь раньше и в один день начали отдавать «API key required».
 // Поэтому тёмный режим делается CSS-фильтром поверх любой схематичной
 // карты: зависимостей нет, отвалиться нечему.
-var BASE_LAYERS = [
-  {id: 'osm', name: 'Схема',
-   url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-   attr: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-   max: 19, dark: true},
-
-  {id: 'gray', name: 'Минимальная',
-   url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-   labels: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
-   attr: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
-   max: 19, nativeMax: 16, dark: true},
-
-  {id: 'topo', name: 'Рельеф',
-   url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-   attr: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, ' +
-         'SRTM | &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
-   max: 17, dark: true},
-
-  {id: 'sat', name: 'Спутник',
-   url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-   attr: 'Tiles &copy; Esri &mdash; Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP',
-   max: 19, dark: false}
-];
-
 var map = null, markers = {}, layers = {}, layerControl = null, clusterGroup = null;
-
-function currentTheme() {
-  return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-}
-
-function makeLayer(cfg) {
-  var opts = {attribution: cfg.attr, maxZoom: cfg.max};
-  if (cfg.nativeMax) opts.maxNativeZoom = cfg.nativeMax;
-  var base = L.tileLayer(cfg.url, opts);
-  // У серой подложки Esri подписи городов лежат отдельным слоем сверху.
-  // Если он не загрузится, останется просто карта без надписей.
-  var layer = cfg.labels
-    ? L.layerGroup([base, L.tileLayer(cfg.labels, {maxZoom: cfg.max, maxNativeZoom: cfg.nativeMax})])
-    : base;
-  layer._opaId = cfg.id;
-  layer._opaDark = cfg.dark !== false;
-  return layer;
-}
-
-// Тёмная карта = инверсия цветов подложки. На спутнике это выглядело бы
-// дико, поэтому там фильтр не применяется.
-function updateMapTheme() {
-  var box = document.getElementById('map');
-  if (!box || !map) return;
-  var allowed = true;
-  Object.keys(layers).forEach(function (name) {
-    if (map.hasLayer(layers[name]) && layers[name]._opaDark === false) allowed = false;
-  });
-  box.classList.toggle('map-dark', currentTheme() === 'dark' && allowed);
-}
+var updateMapTheme = function () {};
 
 // Самый мелкий масштаб, при котором мир не ниже окна карты.
 //
@@ -1009,36 +961,26 @@ function initMap() {
   map.on('resize', fitWorldHeight);
   map.on('resize', resizePopups);
 
-  BASE_LAYERS.forEach(function (cfg) { layers[cfg.name] = makeLayer(cfg); });
-
-  var saved = null;
-  try { saved = localStorage.getItem('mapLayer'); } catch (e) {}
-  var startName = null;
-  if (saved) BASE_LAYERS.forEach(function (c) { if (c.id === saved) startName = c.name; });
-  if (!startName && saved !== 'yandex') startName = 'Схема';
-  if (startName) layers[startName].addTo(map);
-
-  layerControl = L.control.layers(layers, null, {position: 'topright'}).addTo(map);
-
-  map.on('baselayerchange', function (e) {
-    try { localStorage.setItem('mapLayer', e.layer._opaId || ''); } catch (err) {}
-    updateMapTheme();
-  });
-
-  // карта темнеет и светлеет вместе с сайтом
-  new MutationObserver(updateMapTheme)
-    .observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
-
-  // Яндекс добавляем ДО меток. Он подключается позже остальных слоёв, и если
-  // сохранён именно он, до этой строки на карте нет ни одной подложки. Любая
-  // ошибка в метках тогда обрывала initMap — и вместо карты оставалось серое
-  // поле. Теперь подложка появляется первой.
-  addYandexLayer();
+  // Подложка — ДО меток: любая ошибка в метках не должна оставить вместо
+  // карты серое поле. Карта темнеет и светлеет вместе с сайтом.
+  try {
+    var base = OPA_MAP.attach(map, document.getElementById('map'));
+    layers = base.layers;
+    layerControl = base.control;
+    updateMapTheme = base.update;
+  } catch (e) {
+    console.error('Подложки не подключились:', e);
+  }
 
   // Подложка обязана быть хоть какая-то: пустая карта выглядит как поломка,
   // а Leaflet.markercluster вдобавок падает с «Map has no maxZoom specified»,
   // если ни один слой не задал максимальное приближение.
-  if (!hasBaseLayer()) layers['Схема'].addTo(map);
+  if (!hasBaseLayer()) {
+    if (layers['Схема']) layers['Схема'].addTo(map);
+    else L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+  }
 
   // Метки — в последнюю очередь и под присмотром: карта со списком музеев
   // полезнее, чем пустой экран из-за одной сломавшейся библиотеки.
@@ -1209,52 +1151,6 @@ function markMarkerActive(id) {
     var el = markers[key].getElement();
     if (el) el.classList.toggle('active', key === id);
   });
-}
-
-// ------------------------------------------------ Яндекс.Карты
-// Tiles API отдаёт обычные XYZ-тайлы в проекции web_mercator, поэтому это
-// такой же слой Leaflet, как остальные: ни отдельного SDK, ни адаптера,
-// ни второго движка карты внутри страницы. Слой появляется только если
-// в map-config.js вписан ключ.
-function addYandexLayer() {
-  var key = (window.MAP_KEYS && window.MAP_KEYS.yandex || '').trim();
-  if (!key || !layerControl) return;
-  try {
-    var url = 'https://tiles.api-maps.yandex.ru/v1/tiles/?apikey=' + encodeURIComponent(key) +
-              '&lang=ru_RU&l=map&projection=web_mercator&x={x}&y={y}&z={z}';
-    var yandex = L.tileLayer(url, {
-      attribution: '&copy; <a href="https://yandex.ru/maps/" target="_blank" rel="noopener">Яндекс Карты</a>',
-      maxZoom: 20
-    });
-    yandex._opaId = 'yandex';
-    yandex._opaDark = true;
-    layers['Яндекс'] = yandex;
-    layerControl.addBaseLayer(yandex, 'Яндекс');
-
-    // Слой добавляется после инициализации карты, поэтому сохранённый
-    // выбор «Яндекс» включаем здесь.
-    var saved = null;
-    try { saved = localStorage.getItem('mapLayer'); } catch (err) {}
-    if (saved === 'yandex') {
-      Object.keys(layers).forEach(function (n) {
-        if (n !== 'Яндекс' && map.hasLayer(layers[n])) map.removeLayer(layers[n]);
-      });
-      map.addLayer(yandex);
-      updateMapTheme();
-    }
-
-    // Ключ мог быть не от того продукта или домен не разрешён — тогда тайлы
-    // не приходят. Пишем в консоль один раз, страница при этом не ломается.
-    var warned = false;
-    yandex.on('tileerror', function () {
-      if (warned) return;
-      warned = true;
-      console.warn('Яндекс.Карты: тайлы не загружаются. Проверьте, что ключ от Tiles API ' +
-                   'и что домен разрешён в кабинете разработчика.');
-    });
-  } catch (e) {
-    console.warn('Слой Яндекса не добавлен:', e.message);
-  }
 }
 
 // ------------------------------------------------ связь списка и карты
@@ -2034,6 +1930,7 @@ def generate_museums_page(retry_failed=False, offline=False):
 {COMMON_JS}
 <script>
 const MUSEUMS = {json.dumps(map_data, ensure_ascii=False)};
+{MAP_LAYERS_JS}
 {MUSEUMS_JS}
 </script>
 </body></html>"""
