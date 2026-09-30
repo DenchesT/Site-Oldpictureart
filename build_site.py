@@ -92,7 +92,7 @@ from site_common import (head_common, scroll_top_button, theme_button, site_foot
                          VISITS_FILE, has_visits, visit_places,
                          METRIKA_ID, SITE_OWNER, PRIVACY_CONTACT, PRIVACY_CONTACT_TEXT, PRIVACY_DATE,
                          work_year, AUTH_API_URL, YANDEX_CLIENT_ID, VK_CLIENT_ID,
-                         TRANSLIT, translit, latin_slug, museum_page)
+                         TRANSLIT, translit, latin_slug, museum_page, visit_kind_label)
 import hires_store
 
 def load_dotenv(path=".env"):
@@ -1804,11 +1804,12 @@ def render_index(all_posts):
     # «Популярное у посетителей» — рядом с «Избранным»: то же по сути,
     # только отметки чужие. Раздел появляется, когда список пришёл из
     # облака; пока отмеченных картин мало, в сайдбаре ничего не висит.
+    # Свёрнут, как и «Избранное»: список длинный и заслонял бы остальное меню.
     popular_html = ('<div class="sidebar-section" id="popular" hidden>'
-                    '<button type="button" class="sidebar-title sidebar-icon icon-popular open" '
-                    'aria-expanded="true" onclick="toggleSection(this)">Популярное '
+                    '<button type="button" class="sidebar-title sidebar-icon icon-popular" '
+                    'aria-expanded="false" onclick="toggleSection(this)">Популярное '
                     '<span id="popular-count" class="count"></span></button>'
-                    '<div class="sidebar-content"><ul id="popular-list"></ul></div></div>')
+                    '<div class="sidebar-content collapsed"><ul id="popular-list"></ul></div></div>')
     theme_html = ('<div class="sidebar-section"><button type="button" class="sidebar-title sidebar-icon icon-theme no-arrow" '
                   'data-theme-toggle aria-pressed="false" onclick="toggleTheme()">Тема</button></div>')
     quiz_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-quiz no-arrow" '
@@ -3092,6 +3093,33 @@ def run_status(visit, tag="p", full=False):
             f'{" data-full" if full else ""} hidden></{tag}>')
 
 
+# Подпись к срокам выставки — во времени, которое сейчас верно:
+# «Работает 12.12.2025 — 21.06.2026», пока выставка идёт, «Работала» —
+# когда закрылась, «Будет работать» — до открытия. На сборке ставится
+# слово на её день, а браузер переписывает его на сегодняшний (тот же
+# RUN_STATUS_JS, что и плашка «Идёт до…»): страницу могут открыть и
+# через полгода после сборки.
+RUN_WORDS = {"soon": "Будет работать", "on": "Работает", "off": "Работала"}
+
+
+def run_phase(dates, today=None):
+    """("2025-12-12", "2026-06-21") → soon / on / off на сегодня."""
+    today = today or datetime.now().date().isoformat()
+    start, end = dates
+    if today < start:
+        return "soon"
+    return "on" if today <= end else "off"
+
+
+def run_label(run, today=None):
+    """<span> с подписью к срокам: «Работает» / «Работала» / «Будет работать»."""
+    dates = run_dates(run)
+    if not dates:
+        return "<span>Сроки</span>"
+    return (f'<span class="run-word" data-start="{dates[0]}" data-end="{dates[1]}">'
+            f'{RUN_WORDS[run_phase(dates, today)]}</span>')
+
+
 RUN_STATUS_JS = """<script>
 (function () {
   var MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля',
@@ -3125,6 +3153,13 @@ RUN_STATUS_JS = """<script>
     el.setAttribute('data-state', state);
     el.hidden = false;
   });
+  // Подпись к срокам: «Работает» / «Работала» / «Будет работать» на сегодня.
+  var WORDS = {soon: 'Будет работать', on: 'Работает', off: 'Работала'};
+  Array.prototype.forEach.call(document.querySelectorAll('.run-word[data-end]'), function (el) {
+    var start = day(el.getAttribute('data-start')), end = day(el.getAttribute('data-end'));
+    if (!end) return;
+    el.textContent = WORDS[start && today < start ? 'soon' : today <= end ? 'on' : 'off'];
+  });
 })();
 </script>"""
 
@@ -3137,11 +3172,11 @@ def visit_card(v, show_place=True):
     shots = len(v.get("images") or [])
     # Классы у строк сведений нужны плиткам: там подписи прячутся,
     # и без них «17.01.2026 · 12.12.2025 — 21.06.2026 · 7» не прочесть.
-    facts = [("f-when", "Побывал", v.get("visited", "")),
-             ("f-run", "Работала", v.get("run", "")),
-             ("f-shots", "Снимков", str(shots) if shots else "")]
-    facts_html = "".join(f'<div class="{cls}"><span>{h(k)}</span><b>{h(val)}</b></div>'
-                         for cls, k, val in facts if val)
+    facts = [("f-when", "<span>Побывал</span>", v.get("visited", "")),
+             ("f-run", run_label(v.get("run")), v.get("run", "")),
+             ("f-shots", "<span>Снимков</span>", str(shots) if shots else "")]
+    facts_html = "".join(f'<div class="{cls}">{label}<b>{h(val)}</b></div>'
+                         for cls, label, val in facts if val)
     img = (f'<div class="card-img"><img src="{h(cover)}" alt="{h(heading)}"{size_attrs(cover)}'
            f' loading="lazy" decoding="async"></div>') if cover else '<div class="card-img"></div>'
     sub = (v.get("place") if show_place else "") if v.get("title") else v.get("note", "")
@@ -3155,7 +3190,7 @@ def visit_card(v, show_place=True):
         f'<div class="card-body">'
         f'<div class="card-artist"><a class="card-link" href="{h(v["filename"])}">{h(heading)}</a></div>'
         f'{sub_html}'
-        f'<div class="card-museum visit-kind">{h(v["kind"])}</div>'
+        f'<div class="card-museum visit-kind">{h(visit_kind_label(v["kind"]))}</div>'
         f'{run_status(v, "div")}</div>'
         f'<div class="card-facts">{facts_html}</div></article>'
     )
@@ -3163,7 +3198,7 @@ def visit_card(v, show_place=True):
 
 @tidy
 def render_visits_page(visits, all_posts=None):
-    """Список посещений с переключателем «все / выставки / музеи».
+    """Список посещений с переключателем «все / выставки / постоянные экспозиции».
 
     Один список вместо двух разделов: походы идут одной хронологией,
     а переключатель устроен так же, как раскладки на главной, — тем же
@@ -3176,9 +3211,9 @@ def render_visits_page(visits, all_posts=None):
 
     head = head_common(
         title="Посещения — Old Picture Art",
-        description=(f"Выставки и музеи, где я побывал: {shows} "
+        description=(f"Выставки и постоянные экспозиции музеев, где я побывал: {shows} "
                      f"{plural_ru(shows, 'выставка', 'выставки', 'выставок')} "
-                     f"и {museums} {plural_ru(museums, 'музей', 'музея', 'музеев')}."),
+                     f"и {museums} {plural_ru(museums, 'постоянная экспозиция', 'постоянные экспозиции', 'постоянных экспозиций')}."),
         canonical=f"{BASE_URL}/visits.html",
         og_image=site_og_image(items),
     )
@@ -3194,12 +3229,12 @@ def render_visits_page(visits, all_posts=None):
 <header class="artist-head">
   <p class="eyebrow">Дневник</p>
   <h1>Посещения</h1>
-  <p class="idx-lede visits-lede">Выставки и музеи, где я побывал, — с датами и своими снимками.</p>
+  <p class="idx-lede visits-lede">Выставки и постоянные экспозиции музеев, где я побывал, — с датами и своими снимками.</p>
   <div class="visit-bar">
     <div class="view-switch visit-switch" role="group" aria-label="Что показывать">
-      <button type="button" data-kind="all" aria-pressed="true">Все <span class="visit-count">{len(items)}</span></button>
-      <button type="button" data-kind="выставка" aria-pressed="false">Выставки <span class="visit-count">{shows}</span></button>
-      <button type="button" data-kind="музей" aria-pressed="false">Музеи <span class="visit-count">{museums}</span></button>
+      <button type="button" data-kind="all" aria-pressed="true">Все<span class="visit-count">{len(items)}</span></button>
+      <button type="button" data-kind="выставка" aria-pressed="false">Выставки<span class="visit-count">{shows}</span></button>
+      <button type="button" data-kind="музей" aria-pressed="false">Постоянные экспозиции<span class="visit-count">{museums}</span></button>
     </div>
     <div class="view-switch visit-view" role="group" aria-label="Как показывать">
       <button type="button" data-view="grid" aria-pressed="true">Плитки</button>
@@ -3424,14 +3459,14 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
         place_cell = f'<a href="{h(museum_href(museum))}">{h(place)}</a>'
     else:
         place_cell = h(place) if place != heading else ""
-    spec_rows = [("Что", h(visit["kind"].capitalize())),
-                 ("Место", place_cell),
-                 ("Раздел", h(visit.get("note", ""))),
-                 ("Работала", h(visit.get("run", ""))),
-                 ("Побывал", h(visit.get("visited", ""))),
-                 ("Снимков", str(len(photos)) if photos else "")]
+    spec_rows = [("<span>Что</span>", h(visit_kind_label(visit["kind"]).capitalize())),
+                 ("<span>Место</span>", place_cell),
+                 ("<span>Раздел</span>", h(visit.get("note", ""))),
+                 (run_label(visit.get("run")), h(visit.get("run", ""))),
+                 ("<span>Побывал</span>", h(visit.get("visited", ""))),
+                 ("<span>Снимков</span>", str(len(photos)) if photos else "")]
     spec_html = '<div class="spec-table">' + "".join(
-        f'<div><span>{h(k)}</span><b>{v}</b></div>' for k, v in spec_rows if v)
+        f'<div>{label}<b>{v}</b></div>' for label, v in spec_rows if v)
     spec_html += '</div>'
 
     # Теги музеев из поста (#гмии, #гтг) ведут в подборки картин — если
@@ -3513,7 +3548,7 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
 <article id="main" class="post-layout">
   <div class="post-main">
     <header class="post-head">
-      <p class="eyebrow">{h(visit["kind"].capitalize())}</p>
+      <p class="eyebrow">{h(visit_kind_label(visit["kind"]).capitalize())}</p>
       <h1>{h1_html}</h1>
       {sub_head}
       {run_status(visit, full=True)}
@@ -3728,8 +3763,15 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
     facts = []
     if where:
         facts.append(("Где", h(where)))
+    if info.get("address"):
+        facts.append(("Адрес", h(info["address"])))
+    if info.get("site"):
+        host = re.sub(r"^www\.", "", urllib.parse.urlsplit(info["site"]).netloc)
+        facts.append(("Сайт", f'<a href="{h(info["site"])}" target="_blank" rel="noopener">{h(host)} ↗</a>'))
+    # Счёт — «на сайте»: в собрании музея работ куда больше, здесь только
+    # те, что выходили в канале.
     if works:
-        facts.append(("Работ", str(len(works))))
+        facts.append(("Работ на сайте", str(len(works))))
     if len(artists) > 1:
         facts.append(("Художников", str(len(artists))))
     if span:
@@ -3737,38 +3779,42 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
     if been:
         facts.append(("Побывал", "однажды" if len(been) == 1
                       else f"{len(been)} {plural_ru(len(been), 'раз', 'раза', 'раз')}"))
-    if info.get("address"):
-        facts.append(("Адрес", h(info["address"])))
-    if info.get("site"):
-        host = re.sub(r"^www\.", "", urllib.parse.urlsplit(info["site"]).netloc)
-        facts.append(("Сайт", f'<a href="{h(info["site"])}" target="_blank" rel="noopener">{h(host)} ↗</a>'))
     facts_html = "".join(f'<div><span>{h(k)}</span><b>{v}</b></div>' for k, v in facts)
 
-    aside = []
+    # Шапка в две колонки: слева сведения, справа карта той же высоты.
+    # Раньше карта стояла узкой колонкой справа от списка картин — на
+    # компьютере сведения висели над пустотой, а на телефоне карта
+    # уезжала в самый низ, под все картины.
+    card_link = f"museums.html#museum-{h(slugify(name))}"
     has_map = info.get("lat") is not None and info.get("lon") is not None
     if has_map:
         lat, lon = info["lat"], info["lon"]
         ya = f"https://yandex.ru/maps/?pt={lon:.6f},{lat:.6f}&z=16&l=map"
-        aside.append(
-            '<div class="aside-block"><h3>На карте</h3>'
+        map_block = (
+            '<div class="museum-map">'
             f'<div class="mini-map" id="mini-map" data-lat="{lat:.6f}" data-lon="{lon:.6f}"'
             f'{" data-approx" if info.get("approx") else ""} role="img" '
             f'aria-label="{h(name)} на карте"></div>'
             '<p class="mini-map-links">'
-            f'<a href="museums.html#museum-{h(slugify(name))}">Карта собраний</a> · '
-            f'<a href="{h(ya)}" target="_blank" rel="noopener">Яндекс Карты ↗</a></p>'
-            + ('<p class="mini-map-note">Расположение приблизительное — по городу.</p>'
+            + ('<span class="mini-map-note">Расположение приблизительное — по городу.</span> '
                if info.get("approx") else "")
-            + '</div>')
+            + f'<a href="{card_link}">Карта собраний</a> · '
+            f'<a href="{h(ya)}" target="_blank" rel="noopener">Яндекс Карты ↗</a></p>'
+            '</div>')
     else:
         # Координат нет — карточка на карте собраний всё равно есть,
         # в списке под картой, с адресом и сайтом.
-        aside.append('<div class="aside-block"><h3>На карте</h3>'
-                     f'<p class="mini-map-links"><a href="museums.html#museum-{h(slugify(name))}">'
-                     'Карточка на карте собраний</a></p></div>')
+        facts_html += (f'<div><span>На карте</span><b><a href="{card_link}">'
+                       'Карточка на карте собраний</a></b></div>')
+        map_block = ""
+    hero = (f'<div class="museum-hero{"" if map_block else " no-map"}">'
+            f'<div class="spec-table artist-facts">{facts_html}</div>{map_block}</div>')
+
+    artists_html = ""
     if len(artists) > 1:
         items = "".join(f'<li><a href="{h(artist_slug(a))}">{h(a)}</a></li>' for a in artists)
-        aside.append(f'<div class="aside-block"><h3>Художники</h3><ul class="plain-list">{items}</ul></div>')
+        artists_html = (f'<h2 class="museum-section">Художники</h2>'
+                        f'<ul class="plain-list museum-artists">{items}</ul>')
 
     prev_name, next_name = neighbours
     nav = []
@@ -3809,15 +3855,20 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
         extra="\n" + jsonld_script(ld) + ("\n" + LEAFLET_CSS if has_map else ""),
     )
     # Картины собрания, под ними — походы сюда теми же карточками, что в
-    # разделе «Посещения». У места, где картин нет, главное — походы.
+    # разделе «Посещения», и указатель художников. Подпись над картинами
+    # говорит прямо: это не всё собрание музея, а то, что есть на сайте.
     main = []
     if cards:
-        main.append(f'<div class="grid list">{"".join(cards)}</div>')
+        main.append('<h2 class="museum-section">Работы на сайте</h2>'
+                    '<p class="museum-scope">Здесь только работы из этого собрания, '
+                    'которые есть на сайте, — не всё собрание музея.</p>'
+                    f'<div class="grid list">{"".join(cards)}</div>')
     if been:
-        heading = "Походы" if cards else ""
-        main.append((f'<h2 class="museum-section">{heading}</h2>' if heading else "")
-                    + f'<div class="grid list museum-visit-grid">'
+        main.append('<h2 class="museum-section">Походы</h2>'
+                    f'<div class="grid list museum-visit-grid">'
                     f'{"".join(visit_card(v, show_place=False) for v in been)}</div>')
+    if artists_html:
+        main.append(artists_html)
     grid = '<div class="museum-main">' + "".join(main) + '</div>' if main else ""
     map_js = ""
     if has_map:
@@ -3828,9 +3879,10 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
   if (!el || !window.L) { if (el) el.hidden = true; return; }
   var lat = +el.getAttribute('data-lat'), lon = +el.getAttribute('data-lon');
   var approx = el.hasAttribute('data-approx');
-  // Карта-подсказка, а не рабочая: колесо и перетаскивание пальцем
-  // выключены, иначе страница застревала бы на ней при прокрутке.
-  var map = L.map(el, {scrollWheelZoom: false, dragging: !L.Browser.mobile, tap: false})
+  // Карта живая: колесо мыши приближает, пальцем двигается, двумя —
+  // приближается. Высота у неё умеренная, так что страницу есть за что
+  // прокрутить мимо карты.
+  var map = L.map(el, {scrollWheelZoom: true, dragging: true})
     .setView([lat, lon], approx ? 11 : 15);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -3849,15 +3901,12 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
   {theme_button('theme-toggle-inline')}
 </div>
 {scroll_top_button()}
-<header class="artist-head">
+<header class="artist-head museum-head">
   <p class="eyebrow">{"Собрание" if works else "Место"}</p>
   <h1>{h(name)}</h1>
-  <div class="spec-table artist-facts">{facts_html}</div>
+  {hero}
 </header>
-<div class="artist-layout">
-  {grid}
-  <aside class="post-aside">{"".join(aside)}</aside>
-</div>
+{grid}
 {nav_html}
 {site_footer()}
 {SCROLL_TOP_JS}

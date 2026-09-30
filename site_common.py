@@ -253,6 +253,22 @@ def museum_page(name):
         slug = slug[:71].rsplit("-", 1)[0] if "-" in slug[:71] else slug[:70]
     return f"museum-{slug.strip('-') or 'place'}.html"
 
+
+# Вид похода. Внутри — короткие слова из тегов канала (#выставка,
+# #галерея → «музей»), на сайте — то, что посетитель поймёт с ходу:
+# поход «в музей» — это постоянная экспозиция, в отличие от выставки.
+VISIT_KINDS = {
+    "выставка": ("выставка", "выставки"),
+    "музей": ("постоянная экспозиция", "постоянные экспозиции"),
+}
+
+
+def visit_kind_label(kind, many=False):
+    """«музей» → «постоянная экспозиция» (many=True — «постоянные экспозиции»)."""
+    one, lots = VISIT_KINDS.get(kind, (kind, kind))
+    return lots if many else one
+
+
 HIRES_BASE_URL = "https://storage.yandexcloud.net/oldpictureart"
 
 

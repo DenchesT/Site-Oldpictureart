@@ -20,7 +20,7 @@ import logging
 
 from site_common import (head_common, theme_button, scroll_top_button, site_footer,
                          COMMON_JS, SCROLL_TOP_JS, BASE_URL, VISITS_FILE, visit_places,
-                         museum_page)
+                         museum_page, visit_kind_label)
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -720,11 +720,14 @@ MUSEUMS_CSS = """
   color: var(--muted);
   font-weight: 400;
 }
-.museum-visit-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .2rem; }
+/* Дата слева, справа название и под ним вид похода. Раньше вид стоял
+   третьей колонкой справа — «постоянная экспозиция» туда не влезала. */
+.museum-visit-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; }
 .museum-visit-list a {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: baseline;
-  gap: .5rem;
+  column-gap: .5rem;
   font-size: .88rem;
   text-decoration: none;
   color: var(--link);
@@ -738,13 +741,12 @@ MUSEUMS_CSS = """
   flex-shrink: 0;
 }
 .visit-tag {
-  margin-left: auto;
+  grid-column: 2;
   font-family: var(--ff-data);
   font-size: .68rem;
   letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--muted);
-  flex-shrink: 0;
 }
 
 /* мозаика миниатюр */
@@ -1423,7 +1425,7 @@ def visit_link(v):
     """Строка похода в карточке места: дата и название страницей."""
     name = (v.get("title") or v.get("place") or "Посещение").strip()
     when = v.get("visited") or ""
-    kind = v.get("kind") or ""
+    kind = visit_kind_label(v.get("kind") or "")
     return (f'<li><a href="{h(v.get("filename", ""))}">'
             f'<span class="visit-when">{h(when)}</span> {h(name)}'
             f'<span class="visit-tag">{h(kind)}</span></a></li>')

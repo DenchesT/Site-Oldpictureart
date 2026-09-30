@@ -5,7 +5,9 @@
 // Проверяется то, что может тихо сломаться: страница есть у каждого места
 // и адрес у неё один; все ссылки на музеи ведут на существующие файлы;
 // частные собрания страниц не получают и ведут на карту; разметка для
-// поисковиков разбирается; мини-карта поднимается и не мешает прокрутке.
+// поисковиков разбирается; мини-карта поднимается, приближается колесом
+// и двигается пальцем; шапка — сведения и карта рядом, на телефоне карта
+// сразу за сведениями, а не под всеми картинами.
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
@@ -139,11 +141,39 @@ function ldOf(html) {
   ok('в карточках собрание не повторяется', info.museumOnCards === 0);
   ok('мини-карта поднялась', info.map);
   ok('ошибок в консоли нет', !errors.length, errors.join('; '));
-  const wheel = await page.evaluate(() => {
+  const mm = await page.evaluate(() => {
     const m = document.querySelector('#mini-map').miniMap;
-    return m ? { wheel: m.scrollWheelZoom.enabled(), zoom: m.getZoom() } : null;
+    return m ? { wheel: m.scrollWheelZoom.enabled(), drag: m.dragging.enabled(), zoom: m.getZoom() } : null;
   });
-  ok('колесо мыши листает страницу, а не зумит мини-карту', wheel && wheel.wheel === false, JSON.stringify(wheel));
+  ok('мини-карта: колесо и перетаскивание включены', mm && mm.wheel && mm.drag, JSON.stringify(mm));
+  const box = await page.locator('#mini-map').boundingBox();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.wheel(0, -400);
+  await page.waitForTimeout(700);
+  const zoomed = await page.evaluate(() => document.querySelector('#mini-map').miniMap.getZoom());
+  ok('колесо мыши над мини-картой приближает её', mm && zoomed > mm.zoom, `${mm && mm.zoom} → ${zoomed}`);
+
+  // Шапка: сведения слева, карта справа на той же высоте; справа от
+  // списка картин узкой колонки больше нет.
+  const lay = await page.evaluate(() => {
+    const r = el => el && el.getBoundingClientRect();
+    const facts = r(document.querySelector('.museum-hero .artist-facts'));
+    const map = r(document.querySelector('.museum-hero #mini-map'));
+    return {
+      facts: facts && [Math.round(facts.top), Math.round(facts.right)],
+      map: map && [Math.round(map.top), Math.round(map.left)],
+      aside: !!document.querySelector('.post-aside'),
+      labels: [...document.querySelectorAll('.artist-facts span')].map(s => s.textContent),
+      scope: (document.querySelector('.museum-scope') || {}).textContent || '',
+      heading: (document.querySelector('.museum-section') || {}).textContent || '',
+    };
+  });
+  ok('шапка: карта справа от сведений, вровень с ними',
+    lay.facts && lay.map && Math.abs(lay.facts[0] - lay.map[0]) <= 2 && lay.map[1] > lay.facts[1], JSON.stringify(lay));
+  ok('узкой колонки сбоку нет', !lay.aside);
+  ok('сказано, что работ «на сайте», а не во всём музее',
+    lay.labels.includes('Работ на сайте') && /не всё собрание/.test(lay.scope) && /на сайте/i.test(lay.heading),
+    lay.labels.join(', ') + ' | ' + lay.scope);
   await page.close();
 
   // место, где только походы
@@ -164,7 +194,7 @@ function ldOf(html) {
   }
 
   // телефон: ничего не вылезает за край
-  const phone = await browser.newContext({ viewport: { width: 375, height: 800 } });
+  const phone = await browser.newContext({ viewport: { width: 375, height: 800 }, isMobile: true, hasTouch: true });
   const pp = await phone.newPage();
   await pp.route('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', r => r.fulfill({ path: NM('leaflet/dist/leaflet.js') }));
   await pp.route('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', r => r.fulfill({ path: NM('leaflet/dist/leaflet.css') }));
@@ -173,6 +203,18 @@ function ldOf(html) {
   await pp.waitForTimeout(400);
   const over = await pp.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   ok('375px без горизонтальной прокрутки', over <= 0, 'перелив ' + over + 'px');
+  const ph = await pp.evaluate(() => {
+    const top = s => { const el = document.querySelector(s); return el ? Math.round(el.getBoundingClientRect().top + scrollY) : null; };
+    const m = document.querySelector('#mini-map').miniMap;
+    const nav = [...document.querySelectorAll('.post-nav a')].map(a => a.getBoundingClientRect())
+      .map(b => [Math.round(b.top), Math.round(b.left), Math.round(b.right)]);
+    return { map: top('#mini-map'), card: top('.grid .card'), touch: L.Browser.mobile, drag: m && m.dragging.enabled(), nav };
+  });
+  ok('телефон: карта сразу за сведениями, до картин', ph.map !== null && ph.card !== null && ph.map < ph.card,
+    `карта ${ph.map}, первая картина ${ph.card}`);
+  ok('телефон: карту можно двигать пальцем', ph.touch && ph.drag, JSON.stringify({ touch: ph.touch, drag: ph.drag }));
+  ok('телефон: «назад» слева, «вперёд» справа, в одну строку',
+    ph.nav.length < 2 || (ph.nav[0][0] === ph.nav[1][0] && ph.nav[0][2] <= ph.nav[1][1]), JSON.stringify(ph.nav));
   await browser.close();
 
   console.log('\n====== СТРАНИЦЫ МУЗЕЕВ ======');

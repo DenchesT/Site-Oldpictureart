@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=2b199dd6">
+<link rel="stylesheet" href="style.css?v=a0dcedf6">
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page visit-page">
 <a href="#main" class="skip-link">К содержанию</a>
@@ -41,7 +41,7 @@
 <article id="main" class="post-layout">
   <div class="post-main">
     <header class="post-head">
-      <p class="eyebrow">Музей</p>
+      <p class="eyebrow">Постоянная экспозиция</p>
       <h1><a href="https://radmuseumart.ru/" class="ext-link" target="_blank" rel="noopener" title="https://radmuseumart.ru/">Саратовский государственный художественный музей имени А.Н. Радищева</a></h1>
 
 
@@ -68,7 +68,7 @@
 <a href="images/visit-2026-08-25-саратовский-государственный-художественный-музей-имени-ан-ра-20.jpg" class="painting-link shot" target="_blank" rel="noopener" title="Рассмотреть" data-title="Саратовский государственный художественный музей имени А.Н. Радищева" data-meta="18.08.2026" data-download="саратовский-государственный-художественный-музей-имени-ан-ра-20.jpg"><img src="images/thumbs/visit-2026-08-25-саратовский-государственный-художественный-музей-имени-ан-ра-20.jpg" alt="Саратовский государственный художественный музей имени А.Н. Радищева, снимок 20" class="painting" width="1200" height="750" loading="lazy" decoding="async"><span class="painting-hint" aria-hidden="true"><span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a></div>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Что</span><b>Музей</b></div><div><span>Место</span><b><a href="museum-saratovskii-gosudarstvennyi-hudozhestvennyi-muzei-imeni-a-n-radischeva.html">Саратовский государственный художественный музей имени А.Н. Радищева</a></b></div><div><span>Побывал</span><b>18.08.2026</b></div><div><span>Снимков</span><b>20</b></div></div>
+    <div class="spec-table"><div><span>Что</span><b>Постоянная экспозиция</b></div><div><span>Место</span><b><a href="museum-saratovskii-gosudarstvennyi-hudozhestvennyi-muzei-imeni-a-n-radischeva.html">Саратовский государственный художественный музей имени А.Н. Радищева</a></b></div><div><span>Побывал</span><b>18.08.2026</b></div><div><span>Снимков</span><b>20</b></div></div>
 
 
     <div class="aside-block">
@@ -741,6 +741,13 @@ function toast(text) {
     el.textContent = text;
     el.setAttribute('data-state', state);
     el.hidden = false;
+  });
+  // Подпись к срокам: «Работает» / «Работала» / «Будет работать» на сегодня.
+  var WORDS = {soon: 'Будет работать', on: 'Работает', off: 'Работала'};
+  Array.prototype.forEach.call(document.querySelectorAll('.run-word[data-end]'), function (el) {
+    var start = day(el.getAttribute('data-start')), end = day(el.getAttribute('data-end'));
+    if (!end) return;
+    el.textContent = WORDS[start && today < start ? 'soon' : today <= end ? 'on' : 'off'];
   });
 })();
 </script>

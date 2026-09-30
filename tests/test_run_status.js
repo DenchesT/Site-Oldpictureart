@@ -4,7 +4,8 @@
 // откроют. Поэтому в разметке только даты выставки, а «идёт / последние
 // дни / закрылась» решает скрипт в браузере по сегодняшней дате. Здесь
 // «сегодня» подставляется — проверяется каждая граница: до открытия,
-// середина, последняя неделя, последний день, после закрытия.
+// середина, последняя неделя, последний день, после закрытия. Так же
+// проверяется подпись к срокам: «Будет работать» / «Работает» / «Работала».
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
@@ -88,6 +89,18 @@ async function badge(page, sel = '.run-status') {
     await page.close();
   }
 
+  // Подпись к срокам в сведениях — во времени, верном на тот день.
+  const words = [['до открытия', shift(start, -10), 'Будет работать'],
+                 ['в день открытия', start, 'Работает'],
+                 ['в последний день', end, 'Работает'],
+                 ['на следующий день после закрытия', shift(end, 1), 'Работала']];
+  for (const [name, today, word] of words) {
+    const page = await openAt(ctx, V.filename, iso(today));
+    const got = await page.$eval('.spec-table .run-word', el => el.textContent).catch(() => null);
+    ok(`подпись к срокам ${name} — «${word}»`, got === word, String(got));
+    await page.close();
+  }
+
   // Без скрипта плашки нет вовсе: в разметке она спрятана.
   const html = fs.readFileSync(path.join(DOCS, V.filename), 'utf8');
   ok('без скрипта плашка спрятана', /<p class="run-status"[^>]*\shidden>/.test(html));
@@ -112,6 +125,15 @@ async function badge(page, sel = '.run-status') {
     `${shown.length} из ожидаемых ${expected.length}`);
   const closedTexts = await page.$$eval('.visit-card .run-status:not([hidden])', els => els.map(e => e.textContent));
   ok('список: «Закрылась» не пишется', !closedTexts.some(t => /Закрылась/.test(t)));
+  const listWords = await page.$$eval('.visit-card', cards => cards
+    .map(c => [c.querySelector('a.card-link').getAttribute('href'), (c.querySelector('.run-word') || {}).textContent]));
+  const wrong = listWords.filter(([href, w]) => {
+    const v = withRun.find(x => x.filename === href);
+    if (!v) return false;
+    const d = dates(v.run);
+    return w !== (today < d.start ? 'Будет работать' : today <= d.end ? 'Работает' : 'Работала');
+  });
+  ok('список: у каждой выставки подпись к срокам на тот день', !wrong.length, JSON.stringify(wrong.slice(0, 3)));
   await page.close();
 
   await browser.close();

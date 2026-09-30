@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=2b199dd6">
+<link rel="stylesheet" href="style.css?v=a0dcedf6">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha256-YU3qCpj/P06tdPBJGPax0bm6Q1wltfwjsho5TR4+TYc=" crossorigin>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
@@ -171,11 +171,14 @@
   color: var(--muted);
   font-weight: 400;
 }
-.museum-visit-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .2rem; }
+/* Дата слева, справа название и под ним вид похода. Раньше вид стоял
+   третьей колонкой справа — «постоянная экспозиция» туда не влезала. */
+.museum-visit-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; }
 .museum-visit-list a {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: baseline;
-  gap: .5rem;
+  column-gap: .5rem;
   font-size: .88rem;
   text-decoration: none;
   color: var(--link);
@@ -189,13 +192,12 @@
   flex-shrink: 0;
 }
 .visit-tag {
-  margin-left: auto;
+  grid-column: 2;
   font-family: var(--ff-data);
   font-size: .68rem;
   letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--muted);
-  flex-shrink: 0;
 }
 
 /* мозаика миниатюр */
@@ -1204,7 +1206,7 @@
   <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Санкт-Петербург, Россия</p>
   <p class="museum-address">Дворцовая набережная, 34, Санкт-Петербург</p>
   <p class="museum-page-more"><a class="museum-page-link" href="museum-gosudarstvennyi-ermitazh.html">Страница музея →</a></p>
-  <div class="museum-visits"><h4>Побывал 2 раза</h4><ul class="museum-visit-list"><li><a href="visit-2025-04-06-gosudarstvennyi-ermitazh-glavnyi-shtab.html"><span class="visit-when">05.04.2025</span> Государственный Эрмитаж, Главный штаб<span class="visit-tag">музей</span></a></li><li><a href="visit-2025-04-10-landshaft-dushi-kaspar-david-fridrih-i-rossiya.html"><span class="visit-when">05.04.2025</span> Ландшафт души. Каспар Давид Фридрих и Россия<span class="visit-tag">выставка</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал 2 раза</h4><ul class="museum-visit-list"><li><a href="visit-2025-04-06-gosudarstvennyi-ermitazh-glavnyi-shtab.html"><span class="visit-when">05.04.2025</span> Государственный Эрмитаж, Главный штаб<span class="visit-tag">постоянная экспозиция</span></a></li><li><a href="visit-2025-04-10-landshaft-dushi-kaspar-david-fridrih-i-rossiya.html"><span class="visit-when">05.04.2025</span> Ландшафт души. Каспар Давид Фридрих и Россия<span class="visit-tag">выставка</span></a></li></ul></div>
 </article>
 <article class="museum-card" id="museum-новая-третьяковка" data-id="новая-третьяковка"
          data-search="новая третьяковка москва россия крымский вал, 10, москва карл брюллов. рим - москва - петербург васнецовы. связь поколений. из xix в xxi век" data-count="0"
@@ -1226,7 +1228,7 @@
   <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Новосибирск, Россия</p>
   <p class="museum-address">Красный проспект, 5, Новосибирск</p>
   <p class="museum-page-more"><a class="museum-page-link" href="museum-novosibirskii-gosudarstvennyi-hudozhestvennyi-muzei.html">Страница музея →</a></p>
-  <div class="museum-visits"><h4>Побывал 2 раза</h4><ul class="museum-visit-list"><li><a href="visit-2026-03-02-novosibirskii-gosudarstvennyi-hudozhestvennyi-mu.html"><span class="visit-when">20.02.2026</span> Новосибирский государственный художественный музей<span class="visit-tag">музей</span></a></li><li><a href="visit-2026-02-24-impressionisty-v-sibiri.html"><span class="visit-when">19.02.2026</span> Импрессионисты в Сибири<span class="visit-tag">выставка</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал 2 раза</h4><ul class="museum-visit-list"><li><a href="visit-2026-03-02-novosibirskii-gosudarstvennyi-hudozhestvennyi-mu.html"><span class="visit-when">20.02.2026</span> Новосибирский государственный художественный музей<span class="visit-tag">постоянная экспозиция</span></a></li><li><a href="visit-2026-02-24-impressionisty-v-sibiri.html"><span class="visit-when">19.02.2026</span> Импрессионисты в Сибири<span class="visit-tag">выставка</span></a></li></ul></div>
 </article>
 <article class="museum-card" id="museum-волго-вятский-филиал-гмии-им-а-с-пушкина-арсенал" data-id="волго-вятский-филиал-гмии-им-а-с-пушкина-арсенал"
          data-search="волго-вятский филиал гмии им. а. с. пушкина (арсенал) нижний новгород россия кремль, корпус 6, нижний новгород вокруг импрессионизма" data-count="0"
@@ -1249,7 +1251,7 @@
   <p class="museum-address">улица Некрасова, 7, Псков</p>
   <p class="museum-page-more"><a class="museum-page-link" href="museum-kartinnaya-galereya-pskovskogo-muzeya-zapovednika.html">Страница музея →</a></p>
   <p class="museum-site"><a href="https://museumpskov.ru" target="_blank" rel="noopener">Сайт музея ↗</a></p>
-  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2025-03-02-kartinnaya-galereya-pskovskogo-muzeya-zapovednik.html"><span class="visit-when">02.03.2025</span> Картинная галерея Псковского музея-заповедника<span class="visit-tag">музей</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2025-03-02-kartinnaya-galereya-pskovskogo-muzeya-zapovednik.html"><span class="visit-when">02.03.2025</span> Картинная галерея Псковского музея-заповедника<span class="visit-tag">постоянная экспозиция</span></a></li></ul></div>
 </article>
 <article class="museum-card" id="museum-корпус-на-кадашёвской-набережной" data-id="корпус-на-кадашёвской-набережной"
          data-search="корпус на кадашёвской набережной москва россия кадашёвская набережная, 12, москва арктика. полюс цвета" data-count="0"
@@ -1272,7 +1274,7 @@
   <p class="museum-address">Верхне-Волжская набережная, 3, Нижний Новгород</p>
   <p class="museum-page-more"><a class="museum-page-link" href="museum-nizhegorodskii-gosudarstvennyi-hudozhestvennyi-muzei.html">Страница музея →</a></p>
   <p class="museum-site"><a href="https://artmuseumnn.ru" target="_blank" rel="noopener">Сайт музея ↗</a></p>
-  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2026-06-25-nizhegorodskii-gosudarstvennyi-hudozhestvennyi-m.html"><span class="visit-when">19.06.2026</span> Нижегородский государственный художественный музей, Зарубежное искусство<span class="visit-tag">музей</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2026-06-25-nizhegorodskii-gosudarstvennyi-hudozhestvennyi-m.html"><span class="visit-when">19.06.2026</span> Нижегородский государственный художественный музей, Зарубежное искусство<span class="visit-tag">постоянная экспозиция</span></a></li></ul></div>
 </article>
 <article class="museum-card" id="museum-пензенская-областная-картинная-галерея-имени-ка-савицкого" data-id="пензенская-областная-картинная-галерея-имени-ка-савицкого"
          data-search="пензенская областная картинная галерея имени к.а. савицкого пенза россия улица советская, 3, пенза пензенская областная картинная галерея имени к.а. савицкого" data-count="0"
@@ -1283,7 +1285,7 @@
   <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Пенза, Россия</p>
   <p class="museum-address">улица Советская, 3, Пенза</p>
   <p class="museum-page-more"><a class="museum-page-link" href="museum-penzenskaya-oblastnaya-kartinnaya-galereya-imeni-k-a-savitskogo.html">Страница музея →</a></p>
-  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2025-08-15-penzenskaya-oblastnaya-kartinnaya-galereya-imeni.html"><span class="visit-when">15.08.2025</span> Пензенская областная картинная галерея имени К.А. Савицкого<span class="visit-tag">музей</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2025-08-15-penzenskaya-oblastnaya-kartinnaya-galereya-imeni.html"><span class="visit-when">15.08.2025</span> Пензенская областная картинная галерея имени К.А. Савицкого<span class="visit-tag">постоянная экспозиция</span></a></li></ul></div>
 </article>
 <article class="museum-card" id="museum-саратовский-государственный-художественный-музей-имени-ан-ра" data-id="саратовский-государственный-художественный-музей-имени-ан-ра"
          data-search="саратовский государственный художественный музей имени а.н. радищева саратов россия улица радищева, 39, саратов саратовский государственный художественный музей имени а.н. радищева" data-count="0"
@@ -1294,7 +1296,7 @@
   <p class="museum-location"><span class="icon-location" aria-hidden="true"></span> Саратов, Россия</p>
   <p class="museum-address">улица Радищева, 39, Саратов</p>
   <p class="museum-page-more"><a class="museum-page-link" href="museum-saratovskii-gosudarstvennyi-hudozhestvennyi-muzei-imeni-a-n-radischeva.html">Страница музея →</a></p>
-  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2026-08-25-saratovskii-gosudarstvennyi-hudozhestvennyi-muze.html"><span class="visit-when">18.08.2026</span> Саратовский государственный художественный музей имени А.Н. Радищева<span class="visit-tag">музей</span></a></li></ul></div>
+  <div class="museum-visits"><h4>Побывал однажды</h4><ul class="museum-visit-list"><li><a href="visit-2026-08-25-saratovskii-gosudarstvennyi-hudozhestvennyi-muze.html"><span class="visit-when">18.08.2026</span> Саратовский государственный художественный музей имени А.Н. Радищева<span class="visit-tag">постоянная экспозиция</span></a></li></ul></div>
 </article>
 <article class="museum-card" id="museum-центр-эрмитаж-казань" data-id="центр-эрмитаж-казань"
          data-search="центр &quot;эрмитаж-казань&quot; казань россия территория кремль, 12, казань прекрасная эпоха. европейское искусство рубежа xix–xx вв." data-count="0"

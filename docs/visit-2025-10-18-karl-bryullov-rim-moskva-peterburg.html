@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=2b199dd6">
+<link rel="stylesheet" href="style.css?v=a0dcedf6">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ExhibitionEvent","name":"Карл Брюллов. Рим - Москва - Петербург","startDate":"2025-06-10","endDate":"2026-01-18","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode","eventStatus":"https://schema.org/EventScheduled","location":{"@type":"Museum","name":"Новая Третьяковка","address":{"@type":"PostalAddress","streetAddress":"Крымский Вал, 10","addressLocality":"Москва","addressCountry":"Россия"},"geo":{"@type":"GeoCoordinates","latitude":55.735062,"longitude":37.606619}},"description":"Выставка «Карл Брюллов. Рим - Москва - Петербург», Новая Третьяковка, 10.06.2025 — 18.01.2026.","mainEntityOfPage":"https://oldpictureart.ru/visit-2025-10-18-karl-bryullov-rim-moskva-peterburg.html","url":"https://www.tretyakovgallery.ru/exhibitions/o/karl-bryullov-rim-moskva-peterburg/","organizer":{"@type":"Organization","name":"Новая Третьяковка"},"image":["https://oldpictureart.ru/images/visit-2025-10-18-%D0%BA%D0%B0%D1%80%D0%BB-%D0%B1%D1%80%D1%8E%D0%BB%D0%BB%D0%BE%D0%B2-%D1%80%D0%B8%D0%BC---%D0%BC%D0%BE%D1%81%D0%BA%D0%B2%D0%B0---%D0%BF%D0%B5%D1%82%D0%B5%D1%80%D0%B1%D1%83%D1%80%D0%B3-1.jpg","https://oldpictureart.ru/images/visit-2025-10-18-%D0%BA%D0%B0%D1%80%D0%BB-%D0%B1%D1%80%D1%8E%D0%BB%D0%BB%D0%BE%D0%B2-%D1%80%D0%B8%D0%BC---%D0%BC%D0%BE%D1%81%D0%BA%D0%B2%D0%B0---%D0%BF%D0%B5%D1%82%D0%B5%D1%80%D0%B1%D1%83%D1%80%D0%B3-2.jpg","https://oldpictureart.ru/images/visit-2025-10-18-%D0%BA%D0%B0%D1%80%D0%BB-%D0%B1%D1%80%D1%8E%D0%BB%D0%BB%D0%BE%D0%B2-%D1%80%D0%B8%D0%BC---%D0%BC%D0%BE%D1%81%D0%BA%D0%B2%D0%B0---%D0%BF%D0%B5%D1%82%D0%B5%D1%80%D0%B1%D1%83%D1%80%D0%B3-3.jpg"]}</script>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page visit-page">
@@ -63,7 +63,7 @@
 <a href="images/visit-2025-10-18-карл-брюллов-рим---москва---петербург-14.jpg" class="painting-link shot" target="_blank" rel="noopener" title="Рассмотреть" data-title="Карл Брюллов. Рим - Москва - Петербург" data-meta="Новая Третьяковка, 17.10.2025" data-download="карл-брюллов-рим---москва---петербург-14.jpg"><img src="images/thumbs/visit-2025-10-18-карл-брюллов-рим---москва---петербург-14.jpg" alt="Карл Брюллов. Рим - Москва - Петербург, снимок 14" class="painting" width="900" height="1200" loading="lazy" decoding="async"><span class="painting-hint" aria-hidden="true"><span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a></div>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Что</span><b>Выставка</b></div><div><span>Место</span><b><a href="museum-novaya-tretyakovka.html">Новая Третьяковка</a></b></div><div><span>Работала</span><b>10.06.2025 — 18.01.2026</b></div><div><span>Побывал</span><b>17.10.2025</b></div><div><span>Снимков</span><b>14</b></div></div>
+    <div class="spec-table"><div><span>Что</span><b>Выставка</b></div><div><span>Место</span><b><a href="museum-novaya-tretyakovka.html">Новая Третьяковка</a></b></div><div><span class="run-word" data-start="2025-06-10" data-end="2026-01-18">Работала</span><b>10.06.2025 — 18.01.2026</b></div><div><span>Побывал</span><b>17.10.2025</b></div><div><span>Снимков</span><b>14</b></div></div>
     <div class="aside-block"><h3>Собрание</h3><div class="tags"><a href="tag-gtg.html" class="tag">#гтг</a></div></div>
 
     <div class="aside-block">
@@ -736,6 +736,13 @@ function toast(text) {
     el.textContent = text;
     el.setAttribute('data-state', state);
     el.hidden = false;
+  });
+  // Подпись к срокам: «Работает» / «Работала» / «Будет работать» на сегодня.
+  var WORDS = {soon: 'Будет работать', on: 'Работает', off: 'Работала'};
+  Array.prototype.forEach.call(document.querySelectorAll('.run-word[data-end]'), function (el) {
+    var start = day(el.getAttribute('data-start')), end = day(el.getAttribute('data-end'));
+    if (!end) return;
+    el.textContent = WORDS[start && today < start ? 'soon' : today <= end ? 'on' : 'off'];
   });
 })();
 </script>

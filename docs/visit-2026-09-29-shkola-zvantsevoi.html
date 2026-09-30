@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=2b199dd6">
+<link rel="stylesheet" href="style.css?v=a0dcedf6">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ExhibitionEvent","name":"Школа Званцевой","startDate":"2026-06-25","endDate":"2026-10-04","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode","eventStatus":"https://schema.org/EventScheduled","location":{"@type":"Museum","name":"Музей русского импрессионизма","address":{"@type":"PostalAddress","streetAddress":"Ленинградский проспект, 15, строение 11","addressLocality":"Москва","addressCountry":"Россия"},"geo":{"@type":"GeoCoordinates","latitude":55.780365,"longitude":37.570299},"url":"https://www.rusimp.su"},"description":"Выставка «Школа Званцевой», Музей русского импрессионизма, 25.06.2026 — 04.10.2026.","mainEntityOfPage":"https://oldpictureart.ru/visit-2026-09-29-shkola-zvantsevoi.html","url":"https://zvantseva.rusimp.su/","organizer":{"@type":"Organization","name":"Музей русского импрессионизма","url":"https://www.rusimp.su"},"image":["https://oldpictureart.ru/images/visit-2026-09-29-%D1%88%D0%BA%D0%BE%D0%BB%D0%B0-%D0%B7%D0%B2%D0%B0%D0%BD%D1%86%D0%B5%D0%B2%D0%BE%D0%B9-1.jpg","https://oldpictureart.ru/images/visit-2026-09-29-%D1%88%D0%BA%D0%BE%D0%BB%D0%B0-%D0%B7%D0%B2%D0%B0%D0%BD%D1%86%D0%B5%D0%B2%D0%BE%D0%B9-2.jpg","https://oldpictureart.ru/images/visit-2026-09-29-%D1%88%D0%BA%D0%BE%D0%BB%D0%B0-%D0%B7%D0%B2%D0%B0%D0%BD%D1%86%D0%B5%D0%B2%D0%BE%D0%B9-3.jpg"]}</script>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page visit-page">
@@ -61,7 +61,7 @@
 <a href="images/visit-2026-09-29-школа-званцевой-12.jpg" class="painting-link shot" target="_blank" rel="noopener" title="Рассмотреть" data-title="Школа Званцевой" data-meta="Музей русского импрессионизма, 26.09.2026" data-download="школа-званцевой-12.jpg"><img src="images/thumbs/visit-2026-09-29-школа-званцевой-12.jpg" alt="Школа Званцевой, снимок 12" class="painting" width="800" height="1200" loading="lazy" decoding="async"><span class="painting-hint" aria-hidden="true"><span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a></div>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Что</span><b>Выставка</b></div><div><span>Место</span><b><a href="museum-muzei-russkogo-impressionizma.html">Музей русского импрессионизма</a></b></div><div><span>Работала</span><b>25.06.2026 — 04.10.2026</b></div><div><span>Побывал</span><b>26.09.2026</b></div><div><span>Снимков</span><b>12</b></div></div>
+    <div class="spec-table"><div><span>Что</span><b>Выставка</b></div><div><span>Место</span><b><a href="museum-muzei-russkogo-impressionizma.html">Музей русского импрессионизма</a></b></div><div><span class="run-word" data-start="2026-06-25" data-end="2026-10-04">Работает</span><b>25.06.2026 — 04.10.2026</b></div><div><span>Побывал</span><b>26.09.2026</b></div><div><span>Снимков</span><b>12</b></div></div>
 
 
     <div class="aside-block">
@@ -734,6 +734,13 @@ function toast(text) {
     el.textContent = text;
     el.setAttribute('data-state', state);
     el.hidden = false;
+  });
+  // Подпись к срокам: «Работает» / «Работала» / «Будет работать» на сегодня.
+  var WORDS = {soon: 'Будет работать', on: 'Работает', off: 'Работала'};
+  Array.prototype.forEach.call(document.querySelectorAll('.run-word[data-end]'), function (el) {
+    var start = day(el.getAttribute('data-start')), end = day(el.getAttribute('data-end'));
+    if (!end) return;
+    el.textContent = WORDS[start && today < start ? 'soon' : today <= end ? 'on' : 'off'];
   });
 })();
 </script>

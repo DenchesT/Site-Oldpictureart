@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=2b199dd6">
+<link rel="stylesheet" href="style.css?v=a0dcedf6">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ExhibitionEvent","name":"Русские дикие","startDate":"2025-06-18","endDate":"2025-09-28","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode","eventStatus":"https://schema.org/EventScheduled","location":{"@type":"Museum","name":"Музей русского импрессионизма","address":{"@type":"PostalAddress","streetAddress":"Ленинградский проспект, 15, строение 11","addressLocality":"Москва","addressCountry":"Россия"},"geo":{"@type":"GeoCoordinates","latitude":55.780365,"longitude":37.570299},"url":"https://www.rusimp.su"},"description":"Выставка «Русские дикие», Музей русского импрессионизма, 18.06.2025 — 28.09.2025.","mainEntityOfPage":"https://oldpictureart.ru/visit-2025-09-25-russkie-dikie.html","url":"https://dikie.rusimp.su/","organizer":{"@type":"Organization","name":"Музей русского импрессионизма","url":"https://www.rusimp.su"},"image":["https://oldpictureart.ru/images/visit-2025-09-25-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B5-%D0%B4%D0%B8%D0%BA%D0%B8%D0%B5-1.jpg","https://oldpictureart.ru/images/visit-2025-09-25-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B5-%D0%B4%D0%B8%D0%BA%D0%B8%D0%B5-2.jpg","https://oldpictureart.ru/images/visit-2025-09-25-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B5-%D0%B4%D0%B8%D0%BA%D0%B8%D0%B5-3.jpg"]}</script>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page visit-page">
@@ -56,7 +56,7 @@
 <a href="images/visit-2025-09-25-русские-дикие-7.jpg" class="painting-link shot" target="_blank" rel="noopener" title="Рассмотреть" data-title="Русские дикие" data-meta="Музей русского импрессионизма, 25.09.2025" data-download="русские-дикие-7.jpg"><img src="images/thumbs/visit-2025-09-25-русские-дикие-7.jpg" alt="Русские дикие, снимок 7" class="painting" width="900" height="1200" loading="lazy" decoding="async"><span class="painting-hint" aria-hidden="true"><span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a></div>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Что</span><b>Выставка</b></div><div><span>Место</span><b><a href="museum-muzei-russkogo-impressionizma.html">Музей русского импрессионизма</a></b></div><div><span>Работала</span><b>18.06.2025 — 28.09.2025</b></div><div><span>Побывал</span><b>25.09.2025</b></div><div><span>Снимков</span><b>7</b></div></div>
+    <div class="spec-table"><div><span>Что</span><b>Выставка</b></div><div><span>Место</span><b><a href="museum-muzei-russkogo-impressionizma.html">Музей русского импрессионизма</a></b></div><div><span class="run-word" data-start="2025-06-18" data-end="2025-09-28">Работала</span><b>18.06.2025 — 28.09.2025</b></div><div><span>Побывал</span><b>25.09.2025</b></div><div><span>Снимков</span><b>7</b></div></div>
 
 
     <div class="aside-block">
@@ -729,6 +729,13 @@ function toast(text) {
     el.textContent = text;
     el.setAttribute('data-state', state);
     el.hidden = false;
+  });
+  // Подпись к срокам: «Работает» / «Работала» / «Будет работать» на сегодня.
+  var WORDS = {soon: 'Будет работать', on: 'Работает', off: 'Работала'};
+  Array.prototype.forEach.call(document.querySelectorAll('.run-word[data-end]'), function (el) {
+    var start = day(el.getAttribute('data-start')), end = day(el.getAttribute('data-end'));
+    if (!end) return;
+    el.textContent = WORDS[start && today < start ? 'soon' : today <= end ? 'on' : 'off'];
   });
 })();
 </script>

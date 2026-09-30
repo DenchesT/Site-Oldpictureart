@@ -159,8 +159,16 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
       name: a.querySelector('.popular-name').textContent,
     })),
   }));
-  ok('«Популярное» — раздел сайдбара, рядом с «Избранным»', pop.shown && pop.inSidebar && pop.open,
+  ok('«Популярное» — раздел сайдбара, рядом с «Избранным», и свёрнут, как оно',
+     pop.shown && pop.inSidebar && !pop.open,
      JSON.stringify({ shown: pop.shown, inSidebar: pop.inSidebar, open: pop.open }));
+  const opened = await page.evaluate(() => {
+    const btn = document.querySelector('#popular .sidebar-title');
+    btn.click();
+    return btn.getAttribute('aria-expanded') === 'true' &&
+      !btn.nextElementSibling.classList.contains('collapsed');
+  });
+  ok('«Популярное» разворачивается по нажатию', opened);
   ok('у раздела число картин в заголовке', pop.label === '(3)', pop.label);
   const seededFiles = SEEDED.map(id => META.find(p => String(p.id) === id).filename);
   ok('в «Популярном» — отмеченные картины со ссылками, миниатюрами и числами',

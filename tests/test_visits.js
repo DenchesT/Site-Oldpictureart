@@ -69,6 +69,15 @@ function readVisits() {
     list.counts[0] === visits.length && list.counts[1] === shows && list.counts[2] === museums,
     list.counts.join('/'));
   ok('у каждой карточки есть вид', list.kinds.every(k => k === 'выставка' || k === 'музей'));
+  // Внутри вид называется «музей» (из тега канала), на сайте — понятнее.
+  const words = await page.evaluate(() => ({
+    chip: document.querySelector('.visit-switch button[data-kind="музей"]').textContent.replace(/\d+/g, '').trim(),
+    cards: [...new Set([...document.querySelectorAll('#visits .visit-card[data-kind="музей"] .visit-kind')]
+      .map(e => e.textContent.trim()))],
+  }));
+  ok('кнопка — «Постоянные экспозиции», а не «Музеи»', words.chip === 'Постоянные экспозиции', words.chip);
+  ok('в карточке — «постоянная экспозиция»', !museums || words.cards.join() === 'постоянная экспозиция',
+    words.cards.join(', '));
   ok('ссылки ведут на страницы посещений', list.links.every(h => /^visit-/.test(h)));
   ok('свежие сверху', list.dates.length < 2 || list.dates.every((d, i, a) => {
     if (!i) return true;

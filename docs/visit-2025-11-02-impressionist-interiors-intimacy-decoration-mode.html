@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=2b199dd6">
+<link rel="stylesheet" href="style.css?v=a0dcedf6">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ExhibitionEvent","name":"Impressionist Interiors: Intimacy, Decoration, Modernity","startDate":"2025-10-25","endDate":"2026-02-15","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode","eventStatus":"https://schema.org/EventScheduled","location":{"@type":"Museum","name":"Национальный музей западного искусства, Токио","address":{"@type":"PostalAddress","streetAddress":"Ueno Park 7-7, Taito-ku, Tokyo","addressLocality":"Токио","addressCountry":"Япония"},"geo":{"@type":"GeoCoordinates","latitude":35.715556,"longitude":139.775833},"url":"https://www.nmwa.go.jp"},"description":"Выставка «Impressionist Interiors: Intimacy, Decoration, Modernity», Национальный музей западного искусства, Токио, 25.10.2025 — 15.02.2026.","mainEntityOfPage":"https://oldpictureart.ru/visit-2025-11-02-impressionist-interiors-intimacy-decoration-mode.html","url":"https://www.orsay2025.jp/en/","organizer":{"@type":"Organization","name":"Национальный музей западного искусства, Токио","url":"https://www.nmwa.go.jp"},"image":["https://oldpictureart.ru/images/visit-2025-11-02-impressionist-interiors-intimacy-decoration-modernity-1.jpg","https://oldpictureart.ru/images/visit-2025-11-02-impressionist-interiors-intimacy-decoration-modernity-2.jpg","https://oldpictureart.ru/images/visit-2025-11-02-impressionist-interiors-intimacy-decoration-modernity-3.jpg"]}</script>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page visit-page">
@@ -66,7 +66,7 @@
 <a href="images/visit-2025-11-02-impressionist-interiors-intimacy-decoration-modernity-17.jpg" class="painting-link shot" target="_blank" rel="noopener" title="Рассмотреть" data-title="Impressionist Interiors: Intimacy, Decoration, Modernity" data-meta="The National Museum of Western Art, 26.10.2025" data-download="impressionist-interiors-intimacy-decoration-modernity-17.jpg"><img src="images/thumbs/visit-2025-11-02-impressionist-interiors-intimacy-decoration-modernity-17.jpg" alt="Impressionist Interiors: Intimacy, Decoration, Modernity, снимок 17" class="painting" width="900" height="1200" loading="lazy" decoding="async"><span class="painting-hint" aria-hidden="true"><span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a></div>
   </div>
   <aside class="post-aside">
-    <div class="spec-table"><div><span>Что</span><b>Выставка</b></div><div><span>Место</span><b><a href="museum-natsionalnyi-muzei-zapadnogo-iskusstva-tokio.html">The National Museum of Western Art</a></b></div><div><span>Работала</span><b>25.10.2025 — 15.02.2026</b></div><div><span>Побывал</span><b>26.10.2025</b></div><div><span>Снимков</span><b>17</b></div></div>
+    <div class="spec-table"><div><span>Что</span><b>Выставка</b></div><div><span>Место</span><b><a href="museum-natsionalnyi-muzei-zapadnogo-iskusstva-tokio.html">The National Museum of Western Art</a></b></div><div><span class="run-word" data-start="2025-10-25" data-end="2026-02-15">Работала</span><b>25.10.2025 — 15.02.2026</b></div><div><span>Побывал</span><b>26.10.2025</b></div><div><span>Снимков</span><b>17</b></div></div>
     <div class="aside-block"><h3>Собрание</h3><div class="tags"><a href="tag-nmwa.html" class="tag">#nmwa</a></div></div>
 
     <div class="aside-block">
@@ -739,6 +739,13 @@ function toast(text) {
     el.textContent = text;
     el.setAttribute('data-state', state);
     el.hidden = false;
+  });
+  // Подпись к срокам: «Работает» / «Работала» / «Будет работать» на сегодня.
+  var WORDS = {soon: 'Будет работать', on: 'Работает', off: 'Работала'};
+  Array.prototype.forEach.call(document.querySelectorAll('.run-word[data-end]'), function (el) {
+    var start = day(el.getAttribute('data-start')), end = day(el.getAttribute('data-end'));
+    if (!end) return;
+    el.textContent = WORDS[start && today < start ? 'soon' : today <= end ? 'on' : 'off'];
   });
 })();
 </script>

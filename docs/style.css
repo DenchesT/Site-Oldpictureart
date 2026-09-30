@@ -1052,15 +1052,21 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 }
 .tag:hover { background: var(--active); color: var(--on-active); }
 
+/* «Назад» всегда слева, «вперёд» всегда справа — и на телефоне тоже:
+   две колонки поровну, длинное имя соседа переносится внутри кнопки,
+   а не сталкивает кнопки друг под друга. Одна кнопка стоит на своей
+   стороне: «вперёд» у первой страницы — справа. */
 .post-nav {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--s4);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--s3);
+  align-items: stretch;
   margin-top: var(--s7);
   padding-top: var(--s4);
   border-top: 1px solid var(--border);
-  flex-wrap: wrap;
 }
+.post-nav .prev-post { grid-column: 1; justify-self: start; }
+.post-nav .next-post { grid-column: 2; justify-self: end; text-align: right; }
 .post-nav a {
   color: var(--link);
   text-decoration: none;
@@ -1185,8 +1191,10 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
   .grid.list .card-img img { max-height: 84px; }
   .grid:not(.list) { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--s3); }
   .grid:not(.list) .card-img { aspect-ratio: 1 / 1; }
-  .post-nav { flex-direction: column; }
-  .post-nav a { justify-content: center; }
+  /* Узко: обе кнопки на всю свою колонку — ровная пара, а не две
+     разной ширины. */
+  .post-nav .prev-post, .post-nav .next-post { justify-self: stretch; letter-spacing: .03em; }
+  .post-nav .next-post { justify-content: flex-end; }
   .history { padding: var(--s3) var(--s4); }
 }
 
@@ -1510,8 +1518,6 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 }
 .auth-danger { color: var(--error); margin-top: .4rem; }
 
-/* Переходы к соседним работам */
-.prev-post, .next-post { max-width: 48%; }
 
 /* Шапка страницы карты */
 .map-topbar {
@@ -2121,7 +2127,10 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 .visit-switch, .visit-view { display: inline-flex; }
 /* Подпись раздела в одну строку: 46 знаков хватало указателю, а здесь
    строка короче ширины колонки и слово «снимками» уезжало вниз. */
-.visits-lede { max-width: 70ch; }
+.visits-lede { max-width: 92ch; }
+/* Число стоит в разметке вплотную к слову, отступ — здесь: так на
+   телефоне «экспозиции 6» не разрывается и цифра не уезжает на
+   отдельную строку. */
 .visit-count {
   font-variant-numeric: tabular-nums;
   opacity: .6;
@@ -2156,9 +2165,35 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
   font-weight: normal;
   color: var(--muted);
 }
-/* Страница музея: та же раскладка, что у художника, плюс кусок карты
-   справа. Карта-подсказка: колесо и перетаскивание пальцем выключены,
-   чтобы страница не застревала на ней при прокрутке. */
+/* Страница музея. Шапка в две колонки: слева сведения, справа карта
+   той же высоты; ниже на всю ширину — работы, походы, художники. На
+   телефоне всё встаёт столбиком, и карта идёт сразу за сведениями, а не
+   под всеми картинами. Карта живая: колесо мыши приближает, палец
+   двигает, — поэтому по высоте она умеренная, чтобы страницу было за
+   что прокрутить мимо неё. */
+.museum-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: var(--s5);
+  align-items: stretch;
+  margin-top: var(--s4);
+}
+.museum-hero.no-map { grid-template-columns: minmax(0, 34rem); }
+.museum-hero .artist-facts { max-width: none; align-self: start; }
+.museum-map { display: flex; flex-direction: column; min-width: 0; }
+.museum-map .mini-map { flex: 1 1 auto; aspect-ratio: auto; min-height: 12rem; }
+@media (max-width: 900px) {
+  .museum-hero { grid-template-columns: minmax(0, 1fr); gap: var(--s4); }
+  .museum-map .mini-map { flex: none; aspect-ratio: 16 / 10; min-height: 0; }
+}
+.museum-scope {
+  margin: calc(-1 * var(--s2)) 0 var(--s3);
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+/* Художники — строкой по алфавиту, как читается; на телефоне столбиком. */
+.museum-artists { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5); }
+@media (max-width: 620px) { .museum-artists { display: grid; } }
 .mini-map {
   aspect-ratio: 4 / 3;
   width: 100%;
@@ -2180,6 +2215,7 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
   font-family: var(--ff-data);
   font-size: var(--fs-xs);
   font-weight: normal;
+  font-style: normal;
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--muted);
@@ -2275,7 +2311,10 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 
 @media (max-width: 640px) {
   .visit-switch, .visit-view { width: 100%; }
-  .visit-switch button, .visit-view button { flex: 1; }
+  .visit-view button { flex: 1; }
+  /* Кнопки вида — по длине подписи: «Постоянные экспозиции» вдвое длиннее
+     «Всех», и в равных долях она ломалась бы в три строки. */
+  .visit-switch button { flex: 1 1 auto; }
   .shots { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--s2); }
 }
 @media (max-width: 620px) {
