@@ -86,7 +86,9 @@ async function state(browser, { blockCluster, savedLayer, noKey, yaOk, legacy, p
   // ---- подложка по умолчанию и выбор
   const def = await state(b, { yaOk: true });
   ok('карта собраний: по умолчанию Яндекс', def.base === 'yandex', def.base);
-  ok('карта собраний: переключатель подложек на месте', def.radios === 5, `${def.radios} подложек`);
+  ok('карта собраний: переключатель — Яндекс, Схема, Минимальная, Спутник', def.radios === 4, `${def.radios} подложек`);
+  const topo = await state(b, { yaOk: true, savedLayer: 'topo' });
+  ok('сохранённый «Рельеф» (его больше нет) — снова Яндекс', topo.base === 'yandex', topo.base);
   const old = await state(b, { yaOk: true, legacy: 'osm' });
   ok('прежний сохранённый выбор («mapLayer») Яндекс не перебивает', old.base === 'yandex', old.base);
   const down = await state(b, {});
@@ -94,15 +96,15 @@ async function state(browser, { blockCluster, savedLayer, noKey, yaOk, legacy, p
   ok('…и этот вынужденный выбор не запоминается', down.stored === null, String(down.stored));
   ok('…а в консоли — подсказка, что проверить', down.warns.some(w => /Яндекс/.test(w) && /ключ/.test(w)), down.warns.join(' | '));
   const noKey = await state(b, { yaOk: true, noKey: true });
-  ok('без ключа — Схема, Яндекса в списке нет', noKey.base === 'osm' && noKey.radios === 4, `${noKey.base}, ${noKey.radios} подложек`);
+  ok('без ключа — Схема, Яндекса в списке нет', noKey.base === 'osm' && noKey.radios === 3, `${noKey.base}, ${noKey.radios} подложек`);
 
   if (MUSEUM_PAGE) {
     const mini = await state(b, { yaOk: true, page: MUSEUM_PAGE });
     ok('страница музея: по умолчанию тоже Яндекс', mini.base === 'yandex', mini.base);
-    ok('страница музея: тот же переключатель подложек', mini.radios === 5, `${mini.radios} подложек`);
+    ok('страница музея: тот же переключатель подложек', mini.radios === 4, `${mini.radios} подложек`);
     ok('страница музея: без ошибок', mini.errs.length === 0, mini.errs.join(' ; '));
-    const shared = await state(b, { yaOk: true, savedLayer: 'topo', page: MUSEUM_PAGE });
-    ok('выбор подложки общий для всех карт сайта', shared.base === 'topo', shared.base);
+    const shared = await state(b, { yaOk: true, savedLayer: 'gray', page: MUSEUM_PAGE });
+    ok('выбор подложки общий для всех карт сайта', shared.base === 'gray', shared.base);
     const miniDown = await state(b, { page: MUSEUM_PAGE });
     ok('страница музея: Яндекс не отвечает — Схема', miniDown.base === 'osm' && miniDown.stored === null,
        `${miniDown.base}, запомнено ${miniDown.stored}`);

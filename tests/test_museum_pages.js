@@ -157,23 +157,46 @@ function ldOf(html) {
   // списка картин узкой колонки больше нет.
   const lay = await page.evaluate(() => {
     const r = el => el && el.getBoundingClientRect();
-    const facts = r(document.querySelector('.museum-hero .artist-facts'));
+    const facts = r(document.querySelector('.museum-about .artist-facts'));
     const map = r(document.querySelector('.museum-hero #mini-map'));
+    const rows = sel => [...document.querySelectorAll(sel + ' .artist-facts > div')]
+      .map(d => [d.querySelector('span').textContent, d.querySelector('b')]);
+    const about = rows('.museum-about'), here = rows('.museum-here');
+    const artistRow = here.find(([k]) => /^Художник/.test(k));
     return {
       facts: facts && [Math.round(facts.top), Math.round(facts.right)],
       map: map && [Math.round(map.top), Math.round(map.left)],
       aside: !!document.querySelector('.post-aside'),
-      labels: [...document.querySelectorAll('.artist-facts span')].map(s => s.textContent),
-      scope: (document.querySelector('.museum-scope') || {}).textContent || '',
-      heading: (document.querySelector('.museum-section') || {}).textContent || '',
+      captions: [...document.querySelectorAll('.museum-caption')].map(c => c.textContent),
+      about: about.map(([k]) => k),
+      here: here.map(([k]) => k),
+      artistLinks: artistRow ? [...artistRow[1].querySelectorAll('a')].map(a => a.getAttribute('href')) : [],
+      cardArtists: [...new Set([...document.querySelectorAll('.grid .card:not(.visit-card) .card-artist')]
+        .map(e => e.textContent.trim()))].length,
+      scope: (document.querySelector('.museum-here .museum-scope') || {}).textContent || '',
+      bottomArtists: !!document.querySelector('.museum-artists'),
     };
   });
   ok('шапка: карта справа от сведений, вровень с ними',
     lay.facts && lay.map && Math.abs(lay.facts[0] - lay.map[0]) <= 2 && lay.map[1] > lay.facts[1], JSON.stringify(lay));
   ok('узкой колонки сбоку нет', !lay.aside);
-  ok('сказано, что работ «на сайте», а не во всём музее',
-    lay.labels.includes('Работ на сайте') && /не всё собрание/.test(lay.scope) && /на сайте/i.test(lay.heading),
-    lay.labels.join(', ') + ' | ' + lay.scope);
+  // Сведения двумя подписанными блоками, чтобы ни одна строка не читалась
+  // двояко: сайт музея — отдельно от того, что есть на этом сайте.
+  ok('блоки подписаны: «Адрес и сайт» / «На этом сайте» / «На карте»',
+    lay.captions.includes('На этом сайте') && lay.captions.includes('На карте') &&
+    lay.captions.some(c => /^(Адрес|Сайт|Где)/.test(c)), lay.captions.join(' | '));
+  ok('сайт музея подписан «Официальный сайт» и стоит в блоке музея',
+    !lay.about.includes('Сайт') && (!lay.about.some(k => /сайт/i.test(k)) || lay.about.includes('Официальный сайт')) &&
+    !lay.here.some(k => /сайт/i.test(k)), lay.about.join(', ') + ' | ' + lay.here.join(', '));
+  ok('город не повторяется отдельной строкой «Где», если есть адрес',
+    !(lay.about.includes('Адрес') && lay.about.includes('Где')), lay.about.join(', '));
+  ok('художники названы по именам и ведут на свои страницы',
+    lay.artistLinks.length === lay.cardArtists && lay.artistLinks.every(h => /^artist-/.test(h) && exists(h)),
+    `${lay.artistLinks.length} ссылок, в карточках ${lay.cardArtists} художников`);
+  ok('понятно, какие это годы', lay.here.some(k => /^Годы? создания$/.test(k)) && !lay.here.includes('Годы'),
+    lay.here.join(', '));
+  ok('сказано, что это не всё собрание музея', /не всё собрание/.test(lay.scope), lay.scope);
+  ok('отдельного списка художников внизу нет (он в шапке)', !lay.bottomArtists);
   await page.close();
 
   // место, где только походы

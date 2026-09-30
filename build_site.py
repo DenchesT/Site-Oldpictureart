@@ -3761,38 +3761,56 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
     span = year_span(works)
     where = ", ".join(x for x in (info.get("city"), info.get("country")) if x)
 
-    facts = []
-    if where:
-        facts.append(("Где", h(where)))
-    if info.get("address"):
-        facts.append(("Адрес", h(info["address"])))
+    # Шапка — два блока, у каждого своя подпись, чтобы ни одна строка не
+    # читалась двояко. Раньше «Сайт — museefabre.fr» стояло прямо над
+    # «Работ на сайте — 3», и выходило «на сайте музея три работы?»;
+    # «Художников — 2» не говорило, каких, а «Годы» — годы чего.
+    #
+    # «Адрес и сайт» — сам музей: адрес одной строкой (город и страна
+    # в нём же, без отдельной строки «Где»), официальный сайт.
+    address = (info.get("address") or "").strip()
+    country = (info.get("country") or "").strip()
+    about = []
+    if address:
+        if country and country.lower() not in address.lower():
+            address += f", {country}"
+        about.append(("Адрес", h(address)))
+    elif where:
+        about.append(("Где", h(where)))
     if info.get("site"):
         host = re.sub(r"^www\.", "", urllib.parse.urlsplit(info["site"]).netloc)
-        facts.append(("Сайт", f'<a href="{h(info["site"])}" target="_blank" rel="noopener">{h(host)} ↗</a>'))
-    # Счёт — «на сайте»: в собрании музея работ куда больше, здесь только
-    # те, что выходили в канале.
-    if works:
-        facts.append(("Работ на сайте", str(len(works))))
-    if len(artists) > 1:
-        facts.append(("Художников", str(len(artists))))
-    if span:
-        facts.append(("Годы", h(span)))
-    if been:
-        facts.append(("Побывал", "однажды" if len(been) == 1
-                      else f"{len(been)} {plural_ru(len(been), 'раз', 'раза', 'раз')}"))
-    facts_html = "".join(f'<div><span>{h(k)}</span><b>{v}</b></div>' for k, v in facts)
+        about.append(("Официальный сайт",
+                      f'<a href="{h(info["site"])}" target="_blank" rel="noopener">{h(host)} ↗</a>'))
 
-    # Шапка в две колонки: слева сведения, справа карта той же высоты.
-    # Раньше карта стояла узкой колонкой справа от списка картин — на
-    # компьютере сведения висели над пустотой, а на телефоне карта
-    # уезжала в самый низ, под все картины.
+    # «На этом сайте» — что из музея есть здесь: работы, чьи, каких лет,
+    # и сколько раз я там был. Имена художников — ссылками, отдельного
+    # списка внизу страницы больше нет.
+    here = []
+    if works:
+        here.append(("Работ", str(len(works))))
+    if artists:
+        # Каждое имя — своей строкой: через запятую длинные имена рвались
+        # посередине («Жан Дезире / Гюстав Курбе»).
+        names = "".join(f'<a class="museum-artist" href="{h(artist_slug(a))}">{h(a)}</a>'
+                        for a in artists)
+        here.append(("Художник" if len(artists) == 1 else "Художники", names))
+    if span:
+        here.append(("Годы создания" if "—" in span else "Год создания", h(span)))
+    if been:
+        here.append(("Побывал", "однажды" if len(been) == 1
+                     else f"{len(been)} {plural_ru(len(been), 'раз', 'раза', 'раз')}"))
+
+    def table(rows):
+        return ('<div class="spec-table artist-facts">'
+                + "".join(f'<div><span>{h(k)}</span><b>{v}</b></div>' for k, v in rows) + '</div>')
+
     card_link = f"museums.html#museum-{h(slugify(name))}"
     has_map = info.get("lat") is not None and info.get("lon") is not None
     if has_map:
         lat, lon = info["lat"], info["lon"]
         ya = f"https://yandex.ru/maps/?pt={lon:.6f},{lat:.6f}&z=16&l=map"
         map_block = (
-            '<div class="museum-map">'
+            '<div class="museum-map"><h2 class="museum-caption">На карте</h2>'
             f'<div class="mini-map" id="mini-map" data-lat="{lat:.6f}" data-lon="{lon:.6f}"'
             f'{" data-approx" if info.get("approx") else ""} role="img" '
             f'aria-label="{h(name)} на карте"></div>'
@@ -3805,17 +3823,22 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
     else:
         # Координат нет — карточка на карте собраний всё равно есть,
         # в списке под картой, с адресом и сайтом.
-        facts_html += (f'<div><span>На карте</span><b><a href="{card_link}">'
-                       'Карточка на карте собраний</a></b></div>')
+        about.append(("На карте", f'<a href="{card_link}">Карточка на карте собраний</a>'))
         map_block = ""
-    hero = (f'<div class="museum-hero{"" if map_block else " no-map"}">'
-            f'<div class="spec-table artist-facts">{facts_html}</div>{map_block}</div>')
 
-    artists_html = ""
-    if len(artists) > 1:
-        items = "".join(f'<li><a href="{h(artist_slug(a))}">{h(a)}</a></li>' for a in artists)
-        artists_html = (f'<h2 class="museum-section">Художники</h2>'
-                        f'<ul class="plain-list museum-artists">{items}</ul>')
+    about_caption = ("Адрес и сайт" if address and info.get("site") else
+                     "Адрес" if address else "Сайт" if info.get("site") else "Где")
+    blocks = []
+    if about:
+        blocks.append(f'<div class="museum-about"><h2 class="museum-caption">{about_caption}</h2>'
+                      f'{table(about)}</div>')
+    if here:
+        scope = ('<p class="museum-scope">Это не всё собрание музея — только работы, '
+                 'которые есть на этом сайте.</p>') if works else ""
+        blocks.append(f'<div class="museum-here"><h2 class="museum-caption">На этом сайте</h2>'
+                      f'{table(here)}{scope}</div>')
+    hero = (f'<div class="museum-hero{"" if map_block else " no-map"}">'
+            + "".join(blocks) + map_block + '</div>')
 
     prev_name, next_name = neighbours
     nav = []
@@ -3856,20 +3879,15 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
         extra="\n" + jsonld_script(ld) + ("\n" + LEAFLET_CSS if has_map else ""),
     )
     # Картины собрания, под ними — походы сюда теми же карточками, что в
-    # разделе «Посещения», и указатель художников. Подпись над картинами
-    # говорит прямо: это не всё собрание музея, а то, что есть на сайте.
+    # разделе «Посещения». Что это не всё собрание музея, сказано в шапке.
     main = []
     if cards:
-        main.append('<h2 class="museum-section">Работы на сайте</h2>'
-                    '<p class="museum-scope">Здесь только работы из этого собрания, '
-                    'которые есть на сайте, — не всё собрание музея.</p>'
+        main.append('<h2 class="museum-section">Работы</h2>'
                     f'<div class="grid list">{"".join(cards)}</div>')
     if been:
         main.append('<h2 class="museum-section">Походы</h2>'
                     f'<div class="grid list museum-visit-grid">'
                     f'{"".join(visit_card(v, show_place=False) for v in been)}</div>')
-    if artists_html:
-        main.append(artists_html)
     grid = '<div class="museum-main">' + "".join(main) + '</div>' if main else ""
     map_js = ""
     if has_map:
@@ -4157,7 +4175,7 @@ def render_privacy():
     <li>cdnjs.cloudflare.com — код подбора цвета рамки;</li>
 {'    <li>functions.yandexcloud.net — отметки тех, кто вошёл в аккаунт;</li>' if auth_on else ''}
 {hires_li}
-    <li>на карте собраний и страницах музеев — подложки Яндекс Карт, OpenStreetMap, OpenTopoMap и Esri и библиотека карты с unpkg.com.</li>
+    <li>на карте собраний и страницах музеев — подложки Яндекс Карт, OpenStreetMap и Esri и библиотека карты с unpkg.com.</li>
   </ul>
 </section>
 

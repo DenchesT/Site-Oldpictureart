@@ -1487,8 +1487,9 @@ showAuthButton();
 # Подложки карт — одни на карте собраний и на мини-картах страниц музеев.
 #
 # По умолчанию Яндекс (Tiles API, ключ в docs/map-config.js), рядом
-# переключатель: Схема (OpenStreetMap), Минимальная и Спутник (Esri),
-# Рельеф (OpenTopoMap). Выбор посетителя запоминается и действует на всех
+# переключатель: Схема (OpenStreetMap), Минимальная и Спутник (Esri).
+# Рельеф (OpenTopoMap) убран: для музеев в городах он не нужен.
+# Выбор посетителя запоминается и действует на всех
 # картах сайта сразу. Ключа нет — по умолчанию Схема, Яндекса в списке нет.
 #
 # Если Яндекс не отвечает (ключ не от того продукта, домен не разрешён в
@@ -1512,11 +1513,6 @@ var OPA_MAP = (function () {
      labels: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
      attr: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
      max: 19, nativeMax: 16, dark: true},
-    {id: 'topo', name: 'Рельеф',
-     url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-     attr: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, ' +
-           'SRTM | &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
-     max: 17, dark: true},
     {id: 'sat', name: 'Спутник',
      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
      attr: 'Tiles &copy; Esri &mdash; Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP',

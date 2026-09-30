@@ -99,6 +99,7 @@
   <url><loc>https://oldpictureart.ru/deberuete-reka-izol-kemperle-1901.html</loc><lastmod>2026-09-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://oldpictureart.ru/bazille-bastiony-eg-morta-1867.html</loc><lastmod>2026-09-28</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://oldpictureart.ru/serov-portret-imperatora-nikolaya-ii-1900.html</loc><lastmod>2026-09-29</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://oldpictureart.ru/daubigny-zagon-dlya-ovets-1861.html</loc><lastmod>2026-09-30</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://oldpictureart.ru/feed.xml</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museums.html</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
   <url><loc>https://oldpictureart.ru/quiz.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
@@ -197,6 +198,7 @@
   <url><loc>https://oldpictureart.ru/artist-dahl.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-osslund.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-angrand.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://oldpictureart.ru/artist-daubigny.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-manet.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-boudin.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-meifren-i-roch.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -221,6 +223,7 @@
   <url><loc>https://oldpictureart.ru/tag-constable.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-courbet.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-dahl.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://oldpictureart.ru/tag-daubigny.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-deberuete.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-degas.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-delacroix.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
@@ -250,6 +253,7 @@
   <url><loc>https://oldpictureart.ru/tag-manet.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-martin.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-maufra.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://oldpictureart.ru/tag-mesdag.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-mia.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-millet.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-morisot.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
@@ -348,6 +352,7 @@
   <url><loc>https://oldpictureart.ru/museum-institut-iskusstv-sterlinga-i-fransin-klark-uilyamstaun.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-kartinnaya-galereya-pskovskogo-muzeya-zapovednika.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-kollektsii-versalskogo-dvortsa-versal.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://oldpictureart.ru/museum-kollektsiya-mesdaga-gaaga.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-korolevskii-muzei-izyaschnyh-iskusstv-bryussel.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-korpus-na-kadashevskoi-naberezhnoi.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-luvr-parizh-v-zapasnike.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>

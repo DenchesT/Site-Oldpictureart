@@ -65,7 +65,8 @@ const CARDS = (html.match(/class="museum-card"/g) || []).length;
     ok('переключатель слоёв есть', await page.locator('.leaflet-control-layers').count() === 1);
     const layerCount = await page.locator('.leaflet-control-layers-base input[type=radio]').count();
     const layerNames = await page.evaluate(() => Object.keys(window.layers));
-    ok('слои в переключателе', layerCount === 5, layerNames.join(', '));
+    ok('слои в переключателе: Яндекс, Схема, Минимальная, Спутник', layerCount === 4, layerNames.join(', '));
+    ok('«Рельефа» больше нет', !layerNames.includes('Рельеф'), layerNames.join(', '));
     ok('CARTO больше не используется', !(await page.content()).includes('cartocdn'));
 
     // карта закреплена (sticky) на широком экране

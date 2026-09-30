@@ -566,5 +566,14 @@
     "display_name": "Музей изящных искусств Бильбао, Бильбао",
     "source": "override",
     "precision": "exact"
+  },
+  "Коллекция Месдага, Гаага": {
+    "lat": 52.08,
+    "lon": 4.31,
+    "display_name": "Гаага",
+    "source": "wikidata:Q36600",
+    "precision": "approx",
+    "query": "Коллекция Месдага, Гаага",
+    "hint": "\n"
   }
 }

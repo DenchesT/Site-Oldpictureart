@@ -4241,5 +4241,54 @@
     ],
     "card": "images/cards/serov-portret-imperatora-nikolaya-ii-1900.jpg",
     "links": []
+  },
+  {
+    "id": 526,
+    "date": "2026-09-30",
+    "filename": "daubigny-zagon-dlya-ovets-1861.html",
+    "images": [
+      "images/daubigny-zagon-dlya-ovets-1861-1.jpg"
+    ],
+    "hires": [
+      "images/daubigny-zagon-dlya-ovets-1861-hires-1.jpg"
+    ],
+    "thumbs": [
+      "images/thumbs/daubigny-zagon-dlya-ovets-1861.jpg"
+    ],
+    "links": [],
+    "artist": "Шарль-Франсуа Добиньи",
+    "title": "Le parc à moutons (Загон для овец), 1861",
+    "medium": "Холст, масло, 96 x 176,5 см",
+    "material": "Холст",
+    "techniques": [
+      "масло"
+    ],
+    "size": "96 x 176,5 см",
+    "museum": "Коллекция Месдага, Гаага",
+    "history": [
+      "1) Аукцион 6-11 мая 1878 г., Париж, Отель Друо",
+      "2) Приобретена в 1890 г. или ранее Hendrik Willem Mesdag, Гаага",
+      "3) 14 мая 1903 г., коллекция музея Месдага, подаренная Hendrik Willem Mesdag и Sientje Mesdag-van Houten государству Нидерланды",
+      "4) С 1 августа 1903 г. в Рейксмюсеуме Х.В. Месдага, Гаага",
+      "5) С 1934 по 1990 г. в музее Маурицхёйс, Гаага",
+      "6) С 1 апреля 1990 г. в Рейксмузеуме Винсента Ван Гога, Амстердам",
+      "7) С 1 июля 1994 г. музей Месдаг находится под управлением Музея Ван Гога в Амстердаме, с 2011 года - под названием Коллекция Месдага"
+    ],
+    "description": "",
+    "urls": [
+      "https://www.demesdagcollectie.nl/nl/collectie/hwm0100#details",
+      "https://research.rkd.nl/nl/detail/https%3A%2F%2Fdata.rkd.nl%2Fimages%2F107602"
+    ],
+    "tags": [
+      "daubigny",
+      "mesdag",
+      "картина"
+    ],
+    "raw": "Шарль-Франсуа Добиньи\n⸻\nLe parc à moutons (Загон для овец), 1861\n⸻\nХолст, масло, 96 x 176,5 см\n⸻\nКоллекция Месдага, Гаага\n⸻\n1) Аукцион 6-11 мая 1878 г., Париж, Отель Друо\n2) Приобретена в 1890 г. или ранее Hendrik Willem Mesdag, Гаага\n3) 14 мая 1903 г., коллекция музея Месдага, подаренная Hendrik Willem Mesdag и Sientje Mesdag-van Houten государству Нидерланды\n4) С 1 августа 1903 г. в Рейксмюсеуме Х.В. Месдага, Гаага\n5) С 1934 по 1990 г. в музее Маурицхёйс, Гаага\n6) С 1 апреля 1990 г. в Рейксмузеуме Винсента Ван Гога, Амстердам\n7) С 1 июля 1994 г. музей Месдаг находится под управлением Музея Ван Гога в Амстердаме, с 2011 года - под названием Коллекция Месдага\n⸻\nhttps://www.demesdagcollectie.nl/nl/collectie/hwm0100#details\nhttps://research.rkd.nl/nl/detail/https%3A%2F%2Fdata.rkd.nl%2Fimages%2F107602\n⸻\n#daubigny@oldpictureart\n#mesdag@oldpictureart \n#картина@oldpictureart\n",
+    "creation_year": 1861,
+    "views": [
+      "images/views/daubigny-zagon-dlya-ovets-1861-1.jpg"
+    ],
+    "card": "images/cards/daubigny-zagon-dlya-ovets-1861.jpg"
   }
 ]
