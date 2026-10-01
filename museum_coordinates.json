@@ -564,5 +564,14 @@
     "display_name": "Коллекция Месдага, Гаага",
     "source": "override",
     "precision": "exact"
+  },
+  "Музей Крёллер-Мюллер, Оттерло": {
+    "lat": 52.095833333333,
+    "lon": 5.8169444444444,
+    "display_name": "Музей Крёллер-Мюллер",
+    "source": "wikidata:Q1051928",
+    "precision": "exact",
+    "query": "Музей Крёллер-Мюллер",
+    "hint": "\n"
   }
 }
