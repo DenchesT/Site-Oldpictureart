@@ -139,8 +139,17 @@ def main():
 
     # Правила проверки и чистки — общие с картой и сборкой, чтобы «не
     # работает» здесь значило ровно то же, что в generate_map.py --check.
-    from generate_map import check_site
+    from generate_map import check_site, load_cache, place_site
     from build_site import clean_url
+
+    # Сайты, которые сборка нашла сама (их нет в справочнике), проверяем
+    # наравне с вписанными руками: чинятся они тем же полем "site".
+    if not posts_only:
+        overrides = dict(overrides)
+        for name, loc in load_cache().items():
+            manual = overrides.get(name) if isinstance(overrides.get(name), dict) else {}
+            if not manual.get("site") and not manual.get("skip") and place_site(manual, loc):
+                overrides[name] = dict(manual, site=place_site(manual, loc))
 
     found = collect(posts, visits, overrides, clean=clean_url)
     from_posts = sum(1 for places in found.values() if any(w != OVERRIDES_FILE for w, _ in places))

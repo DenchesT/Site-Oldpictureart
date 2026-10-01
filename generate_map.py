@@ -54,6 +54,27 @@ def wikidata_search(query):
     («ГМИИ им. А.С. Пушкина», «Метрополитен-музей») и свойство P625 —
     координаты объекта. Поэтому спрашиваем сначала её.
     """
+    for qid, entity in wikidata_entities(query):
+        claims = entity.get('claims') or {}
+        coord = claims.get('P625')          # coordinate location
+        if not coord:
+            continue
+        try:
+            value = coord[0]['mainsnak']['datavalue']['value']
+            labels = entity.get('labels') or {}
+            name = (labels.get('ru') or labels.get('en') or {}).get('value', query)
+            return {'lat': float(value['latitude']), 'lon': float(value['longitude']),
+                    'display_name': name, 'source': f'wikidata:{qid}', 'precision': 'exact'}
+        except (KeyError, IndexError, TypeError, ValueError):
+            continue
+    return None
+
+
+def wikidata_entities(query):
+    """Записи Викиданных по запросу: [(Q-номер, запись)], похожие на музей — первыми.
+
+    Сбой сети здесь не ошибка: возвращается пустой список.
+    """
     params = {
         'action': 'wbsearchentities', 'search': query, 'language': 'ru',
         'uselang': 'ru', 'type': 'item', 'limit': 7, 'format': 'json',
@@ -62,12 +83,12 @@ def wikidata_search(query):
         data = _get_json('https://www.wikidata.org/w/api.php?' + urllib.parse.urlencode(params))
     except Exception as e:
         logger.debug(f"    wikidata search «{query}»: {e}")
-        return None
+        return []
     time.sleep(0.4)
 
     candidates = data.get('search') or []
     if not candidates:
-        return None
+        return []
 
     # Сначала те, чьё описание похоже на музей — иначе «Прадо» может
     # оказаться футбольным клубом или станцией метро.
@@ -87,24 +108,11 @@ def wikidata_search(query):
         data = _get_json('https://www.wikidata.org/w/api.php?' + urllib.parse.urlencode(params))
     except Exception as e:
         logger.debug(f"    wikidata entities: {e}")
-        return None
+        return []
     time.sleep(0.4)
 
     entities = data.get('entities') or {}
-    for qid in ids:
-        claims = (entities.get(qid) or {}).get('claims') or {}
-        coord = claims.get('P625')          # coordinate location
-        if not coord:
-            continue
-        try:
-            value = coord[0]['mainsnak']['datavalue']['value']
-            labels = (entities.get(qid) or {}).get('labels') or {}
-            name = (labels.get('ru') or labels.get('en') or {}).get('value', query)
-            return {'lat': float(value['latitude']), 'lon': float(value['longitude']),
-                    'display_name': name, 'source': f'wikidata:{qid}', 'precision': 'exact'}
-        except (KeyError, IndexError, TypeError, ValueError):
-            continue
-    return None
+    return [(qid, entities[qid]) for qid in ids if isinstance(entities.get(qid), dict)]
 
 
 # --------------------------------------------------------------- Nominatim
@@ -186,6 +194,217 @@ def nominatim_search(query, limit=5):
         'precision': 'exact',
         'kind': kind_of(item),
     }
+
+
+# ------------------------------------------------- адрес, сайт и страна
+#
+# Координаты музея находятся сами, а адрес, сайт и страну раньше нужно
+# было вписывать в справочник руками — и у каждого нового музея страница
+# выходила с одной строкой «Где: Оттерло». Теперь, если в справочнике
+# чего-то нет, сборка один раз спрашивает сеть и запоминает ответ в кэше
+# координат (поле "details"):
+#   • Викиданные — официальный сайт (P856) и адрес (P6375), если музей
+#     нашёлся там;
+#   • OpenStreetMap — что стоит в этой точке: улица, дом, город, страна,
+#     сайт. Берём, только если там музей или дом, а не кафе по соседству.
+# Справочник по-прежнему главнее: вписанное руками ничем не перебивается.
+
+# В каком порядке пишут дом и улицу. По умолчанию «Houtkampweg 6».
+NUMBER_FIRST = {'us', 'gb', 'fr', 'ca', 'au', 'ie', 'nz', 'lu'}   # «39 Boulevard Bonne Nouvelle»
+COMMA_NUMBER = {'ru', 'by', 'kz', 'ua'}                           # «улица Волхонка, 12»
+
+
+def osm_address(addr):
+    """«Houtkampweg 6, Оттерло» из разобранного адреса Nominatim.
+
+    Без улицы адреса нет: один город в строке «Адрес» — не адрес.
+    """
+    addr = addr or {}
+    road = next((addr[k] for k in ('road', 'pedestrian', 'square', 'footway') if addr.get(k)), '')
+    if not road:
+        return ''
+    number = (addr.get('house_number') or '').strip()
+    code = (addr.get('country_code') or '').lower()
+    if not number:
+        street = road
+    elif code in NUMBER_FIRST:
+        street = f"{number} {road}"
+    elif code in COMMA_NUMBER:
+        street = f"{road}, {number}"
+    else:
+        street = f"{road} {number}"
+    city = next((addr[k] for k in ('city', 'town', 'village', 'municipality', 'hamlet') if addr.get(k)), '')
+    return ", ".join(x for x in (street, city) if x)
+
+
+def clean_site(url):
+    """Сайт из чужих данных: только настоящий адрес http(s), иначе пусто."""
+    url = (url or '').strip()
+    return url if re.match(r'https?://[^\s/]+\.[^\s]+$', url, re.I) else ''
+
+
+def nominatim_reverse(lat, lon):
+    """Что стоит в этой точке: адрес, страна и сайт — или {} при неудаче."""
+    params = {'lat': f"{lat:.7f}", 'lon': f"{lon:.7f}", 'format': 'jsonv2', 'zoom': 18,
+              'addressdetails': 1, 'extratags': 1, 'accept-language': 'ru'}
+    data = _get_json('https://nominatim.openstreetmap.org/reverse?' + urllib.parse.urlencode(params), timeout=8)
+    time.sleep(1.1)  # правила Nominatim: не чаще одного запроса в секунду
+    if not isinstance(data, dict) or data.get('error'):
+        return {}
+    addr = data.get('address') or {}
+    out = {'country': (addr.get('country') or '').strip()}
+    # Адрес и сайт — только если в точке сам музей или просто дом. Кафе,
+    # магазин или остановка рядом дали бы чужой адрес и чужой сайт.
+    kind = f"{data.get('category') or data.get('class') or ''}={data.get('type') or ''}"
+    cls = kind.partition('=')[0]
+    if kind_score(kind) >= 3:
+        out['address'] = osm_address(addr)
+        extra = data.get('extratags') or {}
+        out['site'] = clean_site(extra.get('website') or extra.get('contact:website') or extra.get('url'))
+    elif cls == 'building' or kind == 'place=house':
+        out['address'] = osm_address(addr)
+    return {k: v for k, v in out.items() if v}
+
+
+def _wd_value(claims, prop):
+    """Значение свойства Викиданных: предпочтительное, иначе первое обычное."""
+    first = None
+    for statement in claims.get(prop) or []:
+        if statement.get('rank') == 'deprecated':
+            continue
+        try:
+            value = statement['mainsnak']['datavalue']['value']
+        except (KeyError, TypeError):
+            continue
+        if statement.get('rank') == 'preferred':
+            return value
+        if first is None:
+            first = value
+    return first
+
+
+def claims_details(claims):
+    """Официальный сайт (P856) и адрес (P6375) из свойств записи Викиданных."""
+    out = {}
+    site = _wd_value(claims or {}, 'P856')
+    if isinstance(site, str):
+        out['site'] = clean_site(site)
+    address = _wd_value(claims or {}, 'P6375')
+    if isinstance(address, dict):
+        out['address'] = (address.get('text') or '').strip()
+    return {k: v for k, v in out.items() if v}
+
+
+def wikidata_details(qid):
+    """Сайт и адрес музея из Викиданных — по номеру записи."""
+    params = {'action': 'wbgetentities', 'ids': qid, 'props': 'claims', 'format': 'json'}
+    data = _get_json('https://www.wikidata.org/w/api.php?' + urllib.parse.urlencode(params), timeout=8)
+    time.sleep(0.4)
+    return claims_details(((data.get('entities') or {}).get(qid) or {}).get('claims'))
+
+
+def wikidata_near(museum_name, lat, lon, within_km=2.0):
+    """Сайт и адрес музея из Викиданных — по названию.
+
+    Для музеев, найденных не в Викиданных (по адресу из справочника или в
+    OpenStreetMap): у них нет номера записи, а сайт в точке на карте стоит
+    не всегда. Запись берётся, только если её координаты — в той же точке,
+    что и метка: одноимённый музей в другом городе не подойдёт.
+    """
+    here = {'lat': lat, 'lon': lon}
+    for query in build_queries(museum_name)[:3]:
+        for qid, entity in wikidata_entities(query):
+            claims = entity.get('claims') or {}
+            coord = _wd_value(claims, 'P625')
+            try:
+                there = {'lat': float(coord['latitude']), 'lon': float(coord['longitude'])}
+            except (KeyError, TypeError, ValueError):
+                continue
+            if distance_km(here, there) > within_km:
+                continue
+            details = claims_details(claims)
+            if details:
+                return details
+    return {}
+
+
+def auto_details(loc):
+    """Найденные сами адрес, сайт и страна — из записи кэша координат."""
+    details = (loc or {}).get('details')
+    return details if isinstance(details, dict) else {}
+
+
+def enrich(museum_name, loc, manual=None, offline=False):
+    """Дописывает в запись кэша адрес, сайт и страну, которых нет в справочнике.
+
+    Спрашивает сеть один раз на точку: ответ (пусть и пустой) запоминается
+    вместе с координатами, для которых он получен. Метку передвинули —
+    спросим заново. Возвращает True, если ходили в сеть.
+    """
+    manual = manual or {}
+    if not loc or loc.get('lat') is None or loc.get('precision') == 'approx':
+        return False        # у метки «по городу» адреса быть не может
+    want = {k for k in ('address', 'site', 'country') if not (manual.get(k) or '').strip()}
+    if 'country' in want:
+        parts = [p for p in (loc.get('display_name') or '').split(',') if p.strip()]
+        if len(parts) >= 3:             # страна уже есть в полном адресе геокодера
+            want.discard('country')
+    if not want:
+        return False
+    known = auto_details(loc)
+    if known and abs(known.get('lat', 999) - loc['lat']) < 1e-4 and abs(known.get('lon', 999) - loc['lon']) < 1e-4:
+        return False        # для этой точки уже спрашивали
+    if offline:
+        return False
+
+    found = {}
+    source = loc.get('source') or ''
+    try:
+        if source.startswith('wikidata:'):
+            found.update(wikidata_details(source.partition(':')[2]))
+        if want - set(found):
+            for key, value in nominatim_reverse(loc['lat'], loc['lon']).items():
+                found.setdefault(key, value)
+        # Сайта (или адреса) в точке не оказалось — спрашиваем Викиданные
+        # по названию: так находятся сайты Эрмитажа или Третьяковки,
+        # у которых на карте стоит просто «дом».
+        if ({'address', 'site'} & want) - set(found) and not source.startswith('wikidata:'):
+            for key, value in wikidata_near(museum_name, loc['lat'], loc['lon']).items():
+                found.setdefault(key, value)
+    except Exception as e:
+        # Сеть подвела — ничего не запоминаем, спросим при следующей сборке.
+        logger.debug(f"    сведения о «{museum_name}»: {e}")
+        return True
+    loc['details'] = {'lat': loc['lat'], 'lon': loc['lon'],
+                      **{k: found[k] for k in ('address', 'site', 'country') if found.get(k)}}
+    got = [found[k] for k in ('address', 'site', 'country') if k in want and found.get(k)]
+    if got:
+        logger.info(f"  ＋ {museum_name}: " + " · ".join(got))
+    # Что не нашлось — говорим один раз и ровно про то, чего нет. Без
+    # адреса страница музея остаётся с одним городом — это предупреждение.
+    # Сайт необязателен — о нём просто строка в логе.
+    missing = [k for k in ('address', 'site') if k in want and not found.get(k)]
+    if missing:
+        words = {'address': 'адрес', 'site': 'сайт'}
+        template = {'address': '"address": "улица дом, город"', 'site': '"site": "https://…"'}
+        text = (f"  ? {museum_name}: сам не нашёлся " + " и ".join(words[k] for k in missing)
+                + f' — можно вписать в {OVERRIDES_FILE}: "{museum_name}": {{'
+                + ", ".join(template[k] for k in missing) + '}')
+        if 'address' in missing:
+            logger.warning(text)
+        else:
+            logger.info(text + " (необязательно)")
+    return True
+
+
+def place_address(manual, loc):
+    """Адрес места: из справочника, иначе найденный сам."""
+    return ((manual or {}).get('address') or '').strip() or auto_details(loc).get('address', '')
+
+
+def place_site(manual, loc):
+    """Сайт места: из справочника, иначе найденный сам."""
+    return ((manual or {}).get('site') or '').strip() or auto_details(loc).get('site', '')
 
 
 # ------------------------------------------------------------ формулировки
@@ -347,6 +566,11 @@ def geocode(museum_name, cache, overrides=None, retry_failed=False, offline=Fals
         result = {'lat': float(manual['lat']), 'lon': float(manual['lon']),
                   'display_name': manual.get('display_name', museum_name),
                   'source': 'override', 'precision': manual.get('precision', 'exact')}
+        # Запись переписывается при каждой сборке — найденные раньше адрес
+        # и сайт переносим, иначе их пришлось бы спрашивать заново.
+        earlier = auto_details(cache.get(museum_name))
+        if earlier:
+            result['details'] = earlier
         cache[museum_name] = result
         bump('override')
         return result
@@ -552,6 +776,8 @@ def museum_place(museum_name, manual, result):
         parts = [p.strip() for p in ((result or {}).get('display_name') or '').split(',') if p.strip()]
         if len(parts) >= 3:          # полный адрес, а не просто название
             country = parts[-1]
+    if not country:
+        country = auto_details(result).get('country', '')
     country = COUNTRY_SHORT.get(country, country)
     if country == city:
         country = ''
@@ -1555,7 +1781,7 @@ def check_map(sites=True):
 
     bad_links = 0
     if sites:
-        linked = [(m, (overrides.get(m) or {}).get('site')) for m in museums]
+        linked = [(m, place_site(overrides.get(m), cache.get(m))) for m in museums]
         linked = [(m, s) for m, s in linked if s]
         print(f"\nСсылки «Сайт музея»: проверяю {len(linked)}…")
         broken, unclear = [], []
@@ -1578,7 +1804,7 @@ def check_map(sites=True):
         if not broken:
             print("  Нерабочих ссылок нет")
         no_site = [m for m in museums
-                   if not (overrides.get(m) or {}).get('site')
+                   if not place_site(overrides.get(m), cache.get(m))
                    and not (overrides.get(m) or {}).get('skip')]
         if no_site:
             print(f"\nБез ссылки на сайт: {len(no_site)} "
@@ -1680,6 +1906,8 @@ def generate_museums_page(retry_failed=False, offline=False):
         result = geocode(museum, cache, overrides=overrides,
                          retry_failed=retry_failed, offline=offline, stats=geo_stats)
         if result:
+            if enrich(museum, result, overrides.get(museum), offline=offline):
+                geo_stats['details'] = geo_stats.get('details', 0) + 1
             city, country = museum_place(museum, overrides.get(museum), result)
             locations[museum] = {
                 'lat': result['lat'],
@@ -1705,7 +1933,7 @@ def generate_museums_page(retry_failed=False, offline=False):
     with open(CACHE_FILE, "w", encoding="utf-8", newline="\n") as f:
         json.dump(cache, f, ensure_ascii=False, indent=2)
 
-    lookups = geo_stats.get('lookup', 0)
+    lookups = geo_stats.get('lookup', 0) + geo_stats.get('details', 0)
     from_cache = geo_stats.get('cache', 0) + geo_stats.get('cache_empty', 0) + geo_stats.get('override', 0)
     logger.info(f"   Готово за {time.time() - t0:.1f} с: из кэша и справочника {from_cache}, "
                 f"запросов в сеть {lookups}")
@@ -1776,14 +2004,14 @@ def generate_museums_page(retry_failed=False, offline=False):
             location_html = '<p class="museum-location museum-nomap">Нет на карте</p>'
 
         search_blob = " ".join([museum, city, country,
-                                (overrides.get(museum) or {}).get("address", "")]
+                                place_address(overrides.get(museum), cache.get(museum))]
                                + [(v.get("title") or v.get("place") or "") for v in been]).lower()
 
-        # Официальный сайт берём из ручного справочника: в данных постов его
-        # нет, а угадывать адрес по названию — верный способ ошибиться.
-        address = (overrides.get(museum) or {}).get("address", "")
+        # Адрес и сайт — из ручного справочника, а чего там нет — найденное
+        # сборкой само (см. enrich). По названию адрес сайта не угадываем.
+        address = place_address(overrides.get(museum), cache.get(museum))
         address_html = (f'<p class="museum-address">{h(address)}</p>') if address else ""
-        site = (overrides.get(museum) or {}).get("site", "")
+        site = place_site(overrides.get(museum), cache.get(museum))
         site_html = (f'<p class="museum-site"><a href="{h(site)}" target="_blank" rel="noopener">'
                      f'Сайт музея ↗</a></p>') if site else ""
         mapped = "1" if (lat and lon) else "0"

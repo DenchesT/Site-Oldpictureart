@@ -307,6 +307,184 @@ ok("проверка ходит браузерными заголовками",
 gm.open_site = real_open_site
 
 
+# ------------------------------------------- адрес, сайт и страна сами
+# У нового музея в справочнике пусто, и страница выходила с одной строкой
+# «Где: Оттерло». Теперь сборка сама спрашивает Викиданные (сайт, адрес)
+# и OpenStreetMap (что стоит в точке) и запоминает ответ в кэше.
+ok("адрес: «улица дом, город»",
+   gm.osm_address({"road": "Houtkampweg", "house_number": "6", "village": "Оттерло", "country_code": "nl"})
+   == "Houtkampweg 6, Оттерло")
+ok("адрес во Франции: дом перед улицей",
+   gm.osm_address({"road": "Boulevard Bonne Nouvelle", "house_number": "39", "city": "Монпелье", "country_code": "fr"})
+   == "39 Boulevard Bonne Nouvelle, Монпелье")
+ok("адрес в России: дом через запятую",
+   gm.osm_address({"road": "улица Волхонка", "house_number": "12", "city": "Москва", "country_code": "ru"})
+   == "улица Волхонка, 12, Москва")
+ok("без улицы адреса нет — один город не адрес", gm.osm_address({"city": "Гаага", "country_code": "nl"}) == "")
+ok("сайт — только настоящий адрес", gm.clean_site("https://krollermuller.nl") == "https://krollermuller.nl"
+   and gm.clean_site("krollermuller.nl") == "" and gm.clean_site("javascript:alert(1)") == "")
+
+calls = []
+REVERSE = {"category": "tourism", "type": "museum",
+           "address": {"road": "Houtkampweg", "house_number": "6", "village": "Оттерло",
+                       "country": "Нидерланды", "country_code": "nl"},
+           "extratags": {"website": "https://osm.example/museum"}}
+ENTITY = {"entities": {"Q1051928": {"claims": {
+    "P856": [{"rank": "deprecated", "mainsnak": {"datavalue": {"value": "http://old.example"}}},
+             {"rank": "normal", "mainsnak": {"datavalue": {"value": "https://krollermuller.nl"}}}],
+    "P6375": [{"rank": "normal", "mainsnak": {"datavalue": {"value": {"text": "Houtkampweg 6, Otterlo", "language": "nl"}}}}],
+}}}}
+
+
+def fake_net(reverse=REVERSE, entity=ENTITY, fail=False):
+    def get(url, timeout=15):
+        calls.append(url)
+        if fail:
+            raise OSError("нет сети")
+        return entity if "wikidata.org" in url else reverse
+    gm._get_json = get
+    gm.time.sleep = lambda *_: None
+
+
+real_get = gm._get_json
+fake_net()
+rev = gm.nominatim_reverse(52.0958, 5.8169)
+ok("в точке музей — берём адрес, сайт и страну",
+   rev == {"country": "Нидерланды", "address": "Houtkampweg 6, Оттерло", "site": "https://osm.example/museum"}, str(rev))
+fake_net(reverse=dict(REVERSE, category="amenity", type="cafe"))
+rev = gm.nominatim_reverse(52.0958, 5.8169)
+ok("в точке кафе — чужие адрес и сайт не берём, только страну", rev == {"country": "Нидерланды"}, str(rev))
+fake_net(reverse=dict(REVERSE, category="building", type="yes"))
+rev = gm.nominatim_reverse(52.0958, 5.8169)
+ok("в точке просто дом — адрес берём, сайт нет", "address" in rev and "site" not in rev, str(rev))
+
+fake_net()
+wd = gm.wikidata_details("Q1051928")
+ok("Викиданные: сайт и адрес, отменённое значение пропущено",
+   wd == {"site": "https://krollermuller.nl", "address": "Houtkampweg 6, Otterlo"}, str(wd))
+
+# Новый музей, найденный в Викиданных: в справочнике о нём ничего.
+loc = {"lat": 52.0958, "lon": 5.8169, "display_name": "Музей Крёллер-Мюллер",
+       "source": "wikidata:Q1051928", "precision": "exact"}
+del calls[:]
+went = gm.enrich("Музей Крёллер-Мюллер, Оттерло", loc, {})
+det = loc.get("details") or {}
+ok("новый музей: адрес и сайт из Викиданных, страна из карты",
+   went and det.get("address") == "Houtkampweg 6, Otterlo" and det.get("site") == "https://krollermuller.nl"
+   and det.get("country") == "Нидерланды", str(det))
+ok("подпись места теперь со страной",
+   gm.museum_place("Музей Крёллер-Мюллер, Оттерло", {}, loc) == ("Оттерло", "Нидерланды"),
+   str(gm.museum_place("Музей Крёллер-Мюллер, Оттерло", {}, loc)))
+ok("адрес и сайт идут на страницу и в карточку",
+   gm.place_address({}, loc) == "Houtkampweg 6, Otterlo" and gm.place_site({}, loc) == "https://krollermuller.nl")
+ok("справочник главнее найденного",
+   gm.place_address({"address": "Свой адрес"}, loc) == "Свой адрес"
+   and gm.place_site({"site": "https://свой.example"}, loc) == "https://свой.example"
+   and gm.museum_place("Музей Икс, Город", {"country": "Своя"}, loc)[1] == "Своя")
+del calls[:]
+ok("второй раз для той же точки в сеть не ходим",
+   gm.enrich("Музей Крёллер-Мюллер, Оттерло", loc, {}) is False and not calls, str(calls))
+moved = dict(loc, lat=52.2)
+ok("метку передвинули — спрашиваем заново", gm.enrich("Музей Крёллер-Мюллер, Оттерло", moved, {}) and calls)
+
+del calls[:]
+full = {"address": "а", "site": "https://b.example", "country": "в"}
+ok("в справочнике всё есть — сеть не нужна",
+   gm.enrich("Музей", {"lat": 1.0, "lon": 2.0, "source": "override"}, full) is False and not calls)
+ok("метка по городу — адрес не ищем",
+   gm.enrich("Музей", {"lat": 1.0, "lon": 2.0, "source": "wikidata:Q1", "precision": "approx"}, {}) is False and not calls)
+ok("без сети (--no-geocode) — не ищем",
+   gm.enrich("Музей", {"lat": 1.0, "lon": 2.0, "source": "nominatim"}, {}, offline=True) is False and not calls)
+
+fake_net(fail=True)
+broken = {"lat": 1.0, "lon": 2.0, "source": "wikidata:Q1", "display_name": "Музей"}
+gm.enrich("Музей, Город", broken, {})
+ok("сеть подвела — ничего не запомнили, спросим в следующий раз", "details" not in broken, str(broken))
+
+fake_net(reverse={"error": "Unable to geocode"}, entity={"entities": {}})
+empty = {"lat": 1.0, "lon": 2.0, "source": "wikidata:Q1", "display_name": "Музей"}
+gm.enrich("Музей, Город", empty, {})
+del calls[:]
+ok("ничего не нашлось — запомнили, повторно не спрашиваем",
+   empty.get("details") == {"lat": 1.0, "lon": 2.0} and gm.enrich("Музей, Город", empty, {}) is False and not calls,
+   str(empty.get("details")))
+
+# Музей найден не в Викиданных (по адресу из справочника): в точке на карте
+# стоит просто дом без сайта. Сайт берём из Викиданных по названию — но
+# только у записи, которая стоит в той же точке, что и метка.
+def wd_net(lat, lon, site="https://www.hermitagemuseum.org"):
+    def get(url, timeout=15):
+        calls.append(url)
+        if "nominatim" in url:
+            return {"category": "building", "type": "yes",
+                    "address": {"road": "Дворцовая набережная", "house_number": "34",
+                                "city": "Санкт-Петербург", "country": "Россия", "country_code": "ru"}}
+        if "wbsearchentities" in url:
+            return {"search": [{"id": "Q132783", "label": "Эрмитаж", "description": "музей в Санкт-Петербурге"}]}
+        return {"entities": {"Q132783": {"labels": {"ru": {"value": "Эрмитаж"}}, "claims": {
+            "P625": [{"rank": "normal", "mainsnak": {"datavalue": {"value": {"latitude": lat, "longitude": lon}}}}],
+            "P856": [{"rank": "normal", "mainsnak": {"datavalue": {"value": site}}}]}}}}
+    gm._get_json = get
+    gm.time.sleep = lambda *_: None
+
+
+class Catch(logging.Handler):
+    def __init__(self):
+        super().__init__()
+        self.records = []
+
+    def emit(self, record):
+        self.records.append((record.levelno, record.getMessage()))
+
+
+catch = Catch()
+catch.setLevel(logging.INFO)
+gm.logger.addHandler(catch)
+old_level, old_propagate = gm.logger.level, gm.logger.propagate
+gm.logger.setLevel(logging.INFO)
+gm.logger.propagate = False        # в вывод проверки лог не нужен
+logging.disable(logging.NOTSET)
+
+wd_net(59.9404, 30.3138)
+herm = {"lat": 59.9414, "lon": 30.3161, "source": "nominatim", "kind": "tourism=artwork",
+        "display_name": "34, Дворцовая набережная, Санкт-Петербург, Россия"}
+gm.enrich("Государственный Эрмитаж", herm, {"address": "Дворцовая набережная, 34, Санкт-Петербург"})
+ok("сайт музея, найденного по адресу, берётся из Викиданных по названию",
+   (herm.get("details") or {}).get("site") == "https://www.hermitagemuseum.org", str(herm.get("details")))
+
+wd_net(55.75, 37.61)            # одноимённая запись в другом городе
+del catch.records[:]
+other = {"lat": 59.9414, "lon": 30.3161, "source": "nominatim",
+         "display_name": "34, Дворцовая набережная, Санкт-Петербург, Россия"}
+gm.enrich("Государственный Эрмитаж", other, {"address": "Дворцовая набережная, 34, Санкт-Петербург"})
+ok("запись Викиданных в другом городе не подходит — чужой сайт не берём",
+   "site" not in (other.get("details") or {}), str(other.get("details")))
+notes = [(lvl, msg) for lvl, msg in catch.records if "не нашёлся" in msg]
+ok("не нашёлся только сайт — одна строка в логе, не предупреждение, и просит только сайт",
+   len(notes) == 1 and notes[0][0] == logging.INFO and '"site"' in notes[0][1] and '"address"' not in notes[0][1],
+   str(notes))
+
+fake_net(reverse={"error": "Unable to geocode"}, entity={"entities": {}})
+del catch.records[:]
+gm.enrich("Музей, Город", {"lat": 1.0, "lon": 2.0, "source": "wikidata:Q1", "display_name": "Музей"}, {})
+notes = [(lvl, msg) for lvl, msg in catch.records if "не нашёлся" in msg]
+ok("не нашёлся адрес — это уже предупреждение",
+   len(notes) == 1 and notes[0][0] == logging.WARNING and '"address"' in notes[0][1], str(notes))
+gm.logger.removeHandler(catch)
+gm.logger.setLevel(old_level)
+gm.logger.propagate = old_propagate
+logging.disable(logging.CRITICAL)
+
+# Музей с координатами из справочника: запись кэша переписывается при
+# каждой сборке — найденные раньше сведения не должны теряться.
+cache = {"Музей Икс, Город": {"lat": 1.0, "lon": 2.0, "source": "override",
+                              "details": {"lat": 1.0, "lon": 2.0, "country": "Страна"}}}
+got = gm.geocode("Музей Икс, Город", cache, overrides={"Музей Икс, Город": {"lat": 1.0, "lon": 2.0}})
+ok("у музея из справочника найденные сведения переживают сборку",
+   (got.get("details") or {}).get("country") == "Страна", str(got))
+gm._get_json = real_get
+
+
 # --------------------------------------------------------- настоящая база
 if os.path.exists("museum_overrides.json"):
     ov = {k: v for k, v in json.load(open("museum_overrides.json", encoding="utf-8")).items()
@@ -332,6 +510,14 @@ if os.path.exists("museum_overrides.json"):
         doubts = gm.map_warnings(real_names, gm.load_cache(), gm.load_overrides(quiet=True))
         ok("на настоящей карте все метки на своих зданиях", not doubts,
            "; ".join(f"{m}: {w}" for m, w in doubts[:5]))
+
+    no_site = [k for k, v in ov.items()
+               if isinstance(v, dict) and not v.get("skip") and not v.get("same_as") and not v.get("site")]
+    ok("у каждого музея в справочнике есть сайт", not no_site, ", ".join(no_site))
+
+    km = ov.get("Музей Крёллер-Мюллер, Оттерло") or {}
+    ok("у Музея Крёллер-Мюллер есть адрес, сайт и страна",
+       km.get("address") and km.get("site") and km.get("country"), str(km))
 
 print("\n====== ПРОВЕРКА КАРТЫ ======")
 for name, passed, extra in results:

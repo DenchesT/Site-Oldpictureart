@@ -3677,8 +3677,9 @@ def museum_info(name, directory=None):
     city, country = gm.museum_place(name, manual, loc if loc else None)
     return {
         "name": name,
-        "address": (manual.get("address") or "").strip(),
-        "site": (manual.get("site") or "").strip(),
+        # Чего нет в справочнике, сборка находит сама (generate_map.enrich).
+        "address": gm.place_address(manual, loc),
+        "site": gm.place_site(manual, loc),
         "lat": float(lat) if lat is not None else None,
         "lon": float(lon) if lon is not None else None,
         "city": city, "country": country,
@@ -3700,7 +3701,8 @@ def museum_names(all_posts, visits):
 
 
 def map_reminder(all_posts, visits):
-    """Метки, которые стоят не на здании, — в самом конце сборки.
+    """Метки, которые стоят не на здании, и страницы музеев без адреса —
+    в самом конце сборки.
 
     Карта называет их и сама, но в середине длинного лога строка терялась:
     так «Коллекция Месдага» простояла в центре Гааги — автопоиск по
@@ -3722,6 +3724,17 @@ def map_reminder(all_posts, visits):
         logger.warning('   Поправить: впишите в museum_overrides.json адрес — '
                        '"Название": {"address": "улица дом, город"} — или готовые "lat" и "lon", '
                        'затем python rebuild_pages.py. Подробнее — README, «Если метка стоит не там».')
+    # Страницы без адреса. Адрес, сайт и страну сборка ищет сама, но
+    # находит не всегда — тогда на странице музея остаётся один город.
+    try:
+        directory = museum_directory()
+        bare = [n for n in museum_names(all_posts, visits) if not museum_info(n, directory)["address"]]
+    except Exception:
+        bare = []
+    if bare:
+        logger.warning(f"⚠ Без адреса на странице ({len(bare)}): " + "; ".join(bare))
+        logger.warning('   Сам адрес не нашёлся — впишите в museum_overrides.json: '
+                       '"Название": {"address": "улица дом, город", "site": "https://…"}')
     return doubts
 
 

@@ -39,7 +39,8 @@
     "lon": -73.4674568,
     "query": "SUNY Plattsburgh Art Museum",
     "address": "2 Draper Avenue, Plattsburgh",
-    "site": "https://www.plattsburgh.edu/plattslife/arts/art-museum/index.html"
+    "site": "https://www.plattsburgh.edu/plattslife/arts/art-museum/index.html",
+    "country": "США"
   },
   "Гётеборгский художественный музей, Гётеборг": {
     "query": "Göteborgs konstmuseum",
@@ -100,7 +101,8 @@
     "lon": -118.474205,
     "query": "Getty Center",
     "site": "https://www.getty.edu",
-    "address": "1200 Getty Center Dr, Los Angeles"
+    "address": "1200 Getty Center Dr, Los Angeles",
+    "country": "США"
   },
   "Музей Скагена, Скаген": {
     "query": "Skagens Museum",
@@ -284,13 +286,16 @@
     "address": "Ленинградский проспект, 15, строение 11, Москва"
   },
   "Новая Третьяковка": {
-    "address": "Крымский Вал, 10, Москва"
+    "address": "Крымский Вал, 10, Москва",
+    "site": "https://www.tretyakovgallery.ru"
   },
   "Корпус на Кадашёвской набережной": {
-    "address": "Кадашёвская набережная, 12, Москва"
+    "address": "Кадашёвская набережная, 12, Москва",
+    "site": "https://www.tretyakovgallery.ru"
   },
   "Государственный Эрмитаж": {
-    "address": "Дворцовая набережная, 34, Санкт-Петербург"
+    "address": "Дворцовая набережная, 34, Санкт-Петербург",
+    "site": "https://www.hermitagemuseum.org"
   },
   "Центр \"Эрмитаж-Казань\"": {
     "lat": 55.798497,
@@ -310,7 +315,8 @@
     "address": "улица Советская, 3, Пенза",
     "lat": 53.184754,
     "lon": 45.010072,
-    "country": "Россия"
+    "country": "Россия",
+    "site": "http://penza.gallery"
   },
   "The National Museum of Western Art": {
     "same_as": "Национальный музей западного искусства, Токио",
@@ -318,13 +324,16 @@
     "address": "7-7 Ueno Imperial Grant Park, Taitō, Tokyo"
   },
   "Новосибирский государственный художественный музей": {
-    "address": "Красный проспект, 5, Новосибирск"
+    "address": "Красный проспект, 5, Новосибирск",
+    "site": "https://nsartmuseum.ru"
   },
   "Волго-Вятский филиал ГМИИ им. А. С. Пушкина (Арсенал)": {
     "lat": 56.3275,
     "lon": 44.0058,
     "address": "Кремль, корпус 6, Нижний Новгород",
-    "display_name": "Арсенал, Нижегородский кремль"
+    "display_name": "Арсенал, Нижегородский кремль",
+    "country": "Россия",
+    "site": "https://arsenal-museum.art"
   },
   "Нижегородский государственный художественный музей": {
     "lat": 56.329384,
@@ -334,7 +343,8 @@
     "address": "Верхне-Волжская набережная, 3, Нижний Новгород"
   },
   "Саратовский государственный художественный музей имени А.Н. Радищева": {
-    "address": "улица Радищева, 39, Саратов"
+    "address": "улица Радищева, 39, Саратов",
+    "site": "https://radmuseumart.ru"
   },
   "Ассоциация \"Живопись в Нормандии\", Довиль": {
     "lat": 49.3543121,
@@ -397,5 +407,12 @@
     "country": "Нидерланды",
     "site": "https://www.demesdagcollectie.nl",
     "address": "Laan van Meerdervoort 7F, Den Haag"
+  },
+  "Музей Крёллер-Мюллер, Оттерло": {
+    "lat": 52.095833,
+    "lon": 5.816944,
+    "country": "Нидерланды",
+    "site": "https://krollermuller.nl",
+    "address": "Houtkampweg 6, Otterlo"
   }
 }
