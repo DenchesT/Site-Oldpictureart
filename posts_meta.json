@@ -4412,5 +4412,49 @@
       "images/views/astruc-peizazh-s-povozkoi-i-stogami-sena-1869-1.jpg"
     ],
     "card": "images/cards/astruc-peizazh-s-povozkoi-i-stogami-sena-1869.jpg"
+  },
+  {
+    "id": 530,
+    "date": "2026-10-06",
+    "filename": "zhukovskii-doroga-v-zimnem-lesu-1928.html",
+    "images": [
+      "images/zhukovskii-doroga-v-zimnem-lesu-1928-1.jpg"
+    ],
+    "hires": [
+      "images/zhukovskii-doroga-v-zimnem-lesu-1928-hires-1.jpg"
+    ],
+    "thumbs": [
+      "images/thumbs/zhukovskii-doroga-v-zimnem-lesu-1928.jpg"
+    ],
+    "links": [],
+    "artist": "Станислав Юлианович Жуковский",
+    "title": "Дорога в зимнем лесу, 1928",
+    "medium": "Холст, масло, 62 x 74 см",
+    "material": "Холст",
+    "techniques": [
+      "масло"
+    ],
+    "size": "62 x 74 см",
+    "museum": "Частная коллекция",
+    "history": [
+      "1) В 1929 г. приобретена в частная коллекцию в Дании",
+      "2) Аукцион Desa Unicum, Варшава, 12 декабря 1919 г.",
+      "3) Частная коллекция, Великобритания"
+    ],
+    "description": "",
+    "urls": [
+      "https://www.dorotheum.com/en/l/7201861/"
+    ],
+    "tags": [
+      "pc",
+      "жуковский",
+      "картина"
+    ],
+    "raw": "Станислав Юлианович Жуковский\n⸻\nДорога в зимнем лесу, 1928\n⸻\nХолст, масло, 62 x 74 см\n⸻\nЧастная коллекция\n⸻\n1) В 1929 г. приобретена в частная коллекцию в Дании\n2) Аукцион Desa Unicum, Варшава, 12 декабря 1919 г.\n3) Частная коллекция, Великобритания\n⸻\nhttps://www.dorotheum.com/en/l/7201861/\n⸻\n#жуковский@oldpictureart\n#pc@oldpictureart\n#картина@oldpictureart\n",
+    "creation_year": 1928,
+    "views": [
+      "images/views/zhukovskii-doroga-v-zimnem-lesu-1928-1.jpg"
+    ],
+    "card": "images/cards/zhukovskii-doroga-v-zimnem-lesu-1928.jpg"
   }
 ]
