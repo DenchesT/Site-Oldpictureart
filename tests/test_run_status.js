@@ -136,6 +136,37 @@ async function badge(page, sel = '.run-status') {
   ok('список: у каждой выставки подпись к срокам на тот день', !wrong.length, JSON.stringify(wrong.slice(0, 3)));
   await page.close();
 
+  // «Идёт сейчас» на главной: в разметке — выставки, не закрытые к сборке,
+  // а что идёт в тот день, решает браузер.
+  const idx = fs.readFileSync(path.join(DOCS, 'index.html'), 'utf8');
+  const item = /<li class="now-item" data-start="([\d-]+)" data-end="([\d-]+)"[^>]*><a href="([^"]+)"/.exec(idx);
+  if (item) {
+    const [, s0, e0, href] = item;
+    const at = (d) => new Date(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10));
+    const box = async (today) => {
+      const page = await openAt(ctx, 'index.html', iso(today));
+      const st = await page.$eval('#now-on', el => ({
+        hidden: el.hidden,
+        title: el.querySelector('.now-title').textContent,
+        items: [...el.querySelectorAll('.now-item:not([hidden])')].map(li => [li.querySelector('a').getAttribute('href'),
+                                                                             li.querySelector('.now-when').textContent]),
+      }));
+      await page.close();
+      return st;
+    };
+    const mid = await box(shift(at(s0), 1));
+    ok('главная: идущая выставка — в «Идёт сейчас»',
+       !mid.hidden && mid.title === 'Идёт сейчас' && mid.items.some(([h, w]) => h === href && /^до /.test(w)),
+       JSON.stringify(mid));
+    const soon = await box(shift(at(s0), -10));
+    ok('главная: за десять дней до открытия — «Скоро откроются»',
+       !soon.hidden && soon.items.some(([h, w]) => h === href && /^откроется /.test(w)), JSON.stringify(soon));
+    const after = await box(shift(at(e0), 400));
+    ok('главная: когда всё закрылось — блока нет', after.hidden, JSON.stringify(after));
+  } else {
+    ok('главная: идущих выставок на день сборки нет — блока нет', !/id="now-on"/.test(idx));
+  }
+
   await browser.close();
   console.log('\n====== ВЫСТАВКА ЕЩЁ ИДЁТ ======');
   for (const r of results) console.log(`${r.pass ? 'OK  ' : 'FAIL'}  ${r.name}${r.extra ? '  — ' + r.extra : ''}`);

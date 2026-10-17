@@ -111,13 +111,10 @@ function ldOf(html) {
   // ---------- в браузере ----------
   const browser = await chromium.launch(LAUNCH);
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
-  const NM = p => require.resolve(p);
   async function open(n, theme) {
     const page = await ctx.newPage();
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
-    await page.route('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', r => r.fulfill({ path: NM('leaflet/dist/leaflet.js') }));
-    await page.route('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', r => r.fulfill({ path: NM('leaflet/dist/leaflet.css') }));
     await page.route(/tile\.openstreetmap\.org|tiles\.api-maps\.yandex\.ru/, r => r.abort());
     if (theme) await page.addInitScript(t => { try { localStorage.setItem('theme', t); } catch (e) {} }, theme);
     await page.goto(f(n));
@@ -227,8 +224,6 @@ function ldOf(html) {
   // телефон: ничего не вылезает за край
   const phone = await browser.newContext({ viewport: { width: 375, height: 800 }, isMobile: true, hasTouch: true });
   const pp = await phone.newPage();
-  await pp.route('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', r => r.fulfill({ path: NM('leaflet/dist/leaflet.js') }));
-  await pp.route('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', r => r.fulfill({ path: NM('leaflet/dist/leaflet.css') }));
   await pp.route(/tile\.openstreetmap\.org|tiles\.api-maps\.yandex\.ru/, r => r.abort());
   await pp.goto(f(workPage));
   await pp.waitForTimeout(400);

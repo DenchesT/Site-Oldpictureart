@@ -80,7 +80,7 @@ HIRES_BASE_URL = "https://storage.yandexcloud.net/oldpictureart"
 (своё имя бакета, без косой черты в конце).
 
 Модуль `boto3` сборка поставит сама при следующем запуске
-`build_site.py`. Если хочется начать раньше — `pip install boto3`.
+`build_site.py` (он записан в `requirements.txt`). Если хочется начать раньше — `python -m pip install -r requirements.txt`.
 
 ## 4. Выгрузка (15–30 минут)
 

@@ -3,26 +3,13 @@ const fs = require('fs');
 const path = require('path');
 
 const DOCS = require('path').join(__dirname, '..', 'docs');
-const TMP = require('path').join(require('os').tmpdir(), 'museums-mk');
+const TMP = DOCS;
+// Leaflet и группировка меток лежат в docs/vendor — страницу можно
+// открывать прямо из docs, сеть не нужна.
 
 // Свой браузер можно указать переменной CHROME_PATH — пригодится,
 // если Playwright не скачивал Chromium, а системный уже есть.
 const LAUNCH = process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {};
-
-fs.mkdirSync(TMP, { recursive: true });
-fs.writeFileSync(path.join(TMP, 'museums.html'), fs.readFileSync(path.join(DOCS, 'museums.html'), 'utf8')
-  .replace(/<link rel="stylesheet" href="https:\/\/unpkg\.com\/leaflet@[^>]*>/, '<link rel="stylesheet" href="leaflet.css">')
-  .replace(/<script src="https:\/\/unpkg\.com\/leaflet@[^>]*><\/script>/, '<script src="leaflet.js"></script>')
-  .replace(/<link rel="stylesheet" href="https:\/\/unpkg\.com\/leaflet\.markercluster[^>]*>/, '<link rel="stylesheet" href="MarkerCluster.css">')
-  .replace(/<script src="https:\/\/unpkg\.com\/leaflet\.markercluster[^>]*><\/script>/, '<script src="markercluster.js"></script>'));
-for (const [src, dst] of [
-  [require.resolve('leaflet/dist/leaflet.js'), 'leaflet.js'],
-  [require.resolve('leaflet/dist/leaflet.css'), 'leaflet.css'],
-  [require.resolve('leaflet.markercluster/dist/leaflet.markercluster.js'), 'markercluster.js'],
-  [require.resolve('leaflet.markercluster/dist/MarkerCluster.css'), 'MarkerCluster.css'],
-  [path.join(DOCS, 'style.css'), 'style.css'],
-  [path.join(DOCS, 'map-config.js'), 'map-config.js'],
-]) fs.copyFileSync(src, path.join(TMP, dst));
 
 const URL = 'file://' + TMP + '/museums.html';
 const results = [];
@@ -34,7 +21,9 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
   const page = await ctx.newPage();
   const errs = [];
   page.on('pageerror', e => errs.push(e.message.slice(0, 140)));
-  page.on('console', m => { if (m.type() === 'error' && !/net::ERR|Failed to load/i.test(m.text())) errs.push('CONSOLE: ' + m.text().slice(0, 140)); });
+  // «origin 'null'» — это предзагрузка шрифта со страницы, открытой как файл:
+  // с диска браузер её не пускает, на сайте (https) такого нет.
+  page.on('console', m => { if (m.type() === 'error' && !/net::ERR|Failed to load|origin 'null'/i.test(m.text())) errs.push('CONSOLE: ' + m.text().slice(0, 140)); });
 
   await page.goto(URL);
   await page.waitForTimeout(1500);

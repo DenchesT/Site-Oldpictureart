@@ -3,29 +3,15 @@ const fs = require('fs');
 const path = require('path');
 
 const DOCS = require('path').join(__dirname, '..', 'docs');
-const TMP = require('path').join(require('os').tmpdir(), 'museums-test');
+const TMP = DOCS;   // копия страницы больше не нужна
 
-// Готовим копию страницы с локальным Leaflet: в песочнице нет сети,
-// с CDN он бы не загрузился и проверить карту было бы нечем.
+// Leaflet и группировка меток лежат в docs/vendor — страницу можно
+// открывать прямо из docs, сеть не нужна.
 
 // Свой браузер можно указать переменной CHROME_PATH — пригодится,
 // если Playwright не скачивал Chromium, а системный уже есть.
 const LAUNCH = process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {};
-fs.mkdirSync(TMP, { recursive: true });
-let html = fs.readFileSync(path.join(DOCS, 'museums.html'), 'utf8');
-html = html
-  .replace(/<link rel="stylesheet" href="https:\/\/unpkg\.com\/leaflet[^>]*>/, '<link rel="stylesheet" href="leaflet.css">')
-  .replace(/<script src="https:\/\/unpkg\.com\/leaflet@[^>]*><\/script>/, '<script src="leaflet.js"></script>')
-  .replace(/<link rel="stylesheet" href="https:\/\/unpkg\.com\/leaflet\.markercluster[^>]*>/, '<link rel="stylesheet" href="MarkerCluster.css">')
-  .replace(/<script src="https:\/\/unpkg\.com\/leaflet\.markercluster[^>]*><\/script>/, '<script src="markercluster.js"></script>')
-  .replace(/href="style\.css"/, 'href="style.css"');
-fs.writeFileSync(path.join(TMP, 'museums.html'), html);
-fs.copyFileSync(require.resolve('leaflet/dist/leaflet.js'), path.join(TMP, 'leaflet.js'));
-fs.copyFileSync(require.resolve('leaflet/dist/leaflet.css'), path.join(TMP, 'leaflet.css'));
-fs.copyFileSync(require.resolve('leaflet.markercluster/dist/leaflet.markercluster.js'), path.join(TMP, 'markercluster.js'));
-fs.copyFileSync(require.resolve('leaflet.markercluster/dist/MarkerCluster.css'), path.join(TMP, 'MarkerCluster.css'));
-fs.copyFileSync(path.join(DOCS, 'style.css'), path.join(TMP, 'style.css'));
-fs.copyFileSync(path.join(DOCS, 'map-config.js'), path.join(TMP, 'map-config.js'));
+const html = fs.readFileSync(path.join(DOCS, 'museums.html'), 'utf8');
 
 const results = [];
 const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extra || '' });
@@ -44,7 +30,9 @@ const CARDS = (html.match(/class="museum-card"/g) || []).length;
     const page = await ctx.newPage();
     const errs = [];
     page.on('pageerror', e => errs.push(e.message.slice(0, 140)));
-    page.on('console', m => { if (m.type() === 'error' && !/net::ERR|Failed to load/i.test(m.text())) errs.push('CONSOLE: ' + m.text().slice(0, 140)); });
+    // «origin 'null'» — это предзагрузка шрифта со страницы, открытой как файл:
+    // с диска браузер её не пускает, на сайте (https) такого нет.
+    page.on('console', m => { if (m.type() === 'error' && !/net::ERR|Failed to load|origin 'null'/i.test(m.text())) errs.push('CONSOLE: ' + m.text().slice(0, 140)); });
 
     await page.goto('file://' + TMP + '/museums.html');
     await page.waitForTimeout(1500);
@@ -152,6 +140,13 @@ const CARDS = (html.match(/class="museum-card"/g) || []).length;
     await page.waitForTimeout(300);
     ok('на спутнике фильтр не применяется',
        !(await page.locator('#map').evaluate(el => el.classList.contains('map-dark'))));
+
+    // Выставки, которые музей делал вместе с другими и которые шли в
+    // другом городе: метка — там, где шли, а в карточке музея-участника
+    // строка с городом («выставка, Ростов Великий»).
+    const away = await page.evaluate(() => [...document.querySelectorAll('.museum-away .visit-tag')]
+      .map(t => t.textContent));
+    ok('выставки в других городах — с городом в строке', away.every(t => /, \S/.test(t)), away.join(' | ') || 'таких нет');
 
     ok('нет ошибок за весь сценарий', errs.length === 0, errs.join(' | '));
     await ctx.close();

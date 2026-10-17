@@ -1,0 +1,4 @@
+# Для проверок (node tests/run.js) и проверок на GitHub — сверх requirements.txt.
+-r requirements.txt
+moto[s3]==5.2.4        # поддельное хранилище S3 для test_hires_store.py
+pyflakes==4.0.3        # поиск неиспользуемых и неопределённых имён в коде

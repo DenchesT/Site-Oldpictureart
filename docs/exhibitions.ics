@@ -1,0 +1,263 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Old Picture Art//Выставки//RU
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Выставки — Old Picture Art
+X-WR-CALDESC:Выставки\, где я побывал: сроки раб
+ оты и снимки на oldpictureart.ru
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+BEGIN:VEVENT
+UID:visit-2026-10-12-skazka-ryadom@oldpictureart.ru
+DTSTAMP:20261012T000000Z
+DTSTART;VALUE=DATE:20260815
+DTEND;VALUE=DATE:20261109
+SUMMARY:Выставка «Сказка рядом»
+LOCATION:Новгородский музей-заповедник\, Яро
+ славово дворище\, Великий Новгород
+DESCRIPTION:Срок работы: 15.08.2026 — 08.11.2026\nПобыва
+ л: 09.10.2026\nСнимки: https://oldpictureart.ru/visit-2026-10-12-sk
+ azka-ryadom.html
+URL:https://oldpictureart.ru/visit-2026-10-12-skazka-ryadom.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:visit-2026-09-29-shkola-zvantsevoi@oldpictureart.ru
+DTSTAMP:20260929T000000Z
+DTSTART;VALUE=DATE:20260625
+DTEND;VALUE=DATE:20261005
+SUMMARY:Выставка «Школа Званцевой»
+LOCATION:Музей русского импрессионизма\, Лен
+ инградский проспект\, 15\, строение 11\, Мос
+ ква
+DESCRIPTION:Срок работы: 25.06.2026 — 04.10.2026\nПобыва
+ л: 26.09.2026\nСнимки: https://oldpictureart.ru/visit-2026-09-29-sh
+ kola-zvantsevoi.html
+URL:https://oldpictureart.ru/visit-2026-09-29-shkola-zvantsevoi.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:visit-2026-07-18-mitropoliche-varene@oldpictureart.ru
+DTSTAMP:20260718T000000Z
+DTSTART;VALUE=DATE:20260613
+DTEND;VALUE=DATE:20260921
+SUMMARY:Выставка «Митрополичье варенье»
+LOCATION:Музей-заповедник «Ростовский кремл
+ ь»\, Кремль\, Ростов\, Ярославская область
+DESCRIPTION:Срок работы: 13.06.2026 — 20.09.2026\nПобыва
+ л: 14.07.2026\nСнимки: https://oldpictureart.ru/visit-2026-07-18-mi
+ tropoliche-varene.html
+URL:https://oldpictureart.ru/visit-2026-07-18-mitropoliche-varene.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:visit-2026-06-21-vokrug-impressionizma@oldpictureart.ru
+DTSTAMP:20260621T000000Z
+DTSTART;VALUE=DATE:20260428
+DTEND;VALUE=DATE:20260727
+SUMMARY:Выставка «Вокруг импрессионизма»
+LOCATION:Волго-Вятский филиал ГМИИ им. А. С. Пу
+ шкина (Арсенал)\, Кремль\, корпус 6\, Нижний
+  Новгород
+DESCRIPTION:Срок работы: 28.04.2026 — 26.07.2026\nПобыва
+ л: 19.06.2026\nСнимки: https://oldpictureart.ru/visit-2026-06-21-vo
+ krug-impressionizma.html
+URL:https://oldpictureart.ru/visit-2026-06-21-vokrug-impressionizma.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:visit-2026-02-24-impressionisty-v-sibiri@oldpictureart.ru
+DTSTAMP:20260224T000000Z
+DTSTART;VALUE=DATE:20260219
+DTEND;VALUE=DATE:20260413
+SUMMARY:Выставка «Импрессионисты в Сибири»
+LOCATION:Новосибирский государственный худо
+ жественный музей\, Красный проспект\, 5\, Н
+ овосибирск
+DESCRIPTION:Срок работы: 19.02.2026 — 12.04.2026\nПобыва
+ л: 19.02.2026\nСнимки: https://oldpictureart.ru/visit-2026-02-24-im
+ pressionisty-v-sibiri.html
+URL:https://oldpictureart.ru/visit-2026-02-24-impressionisty-v-sibiri.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:visit-2026-01-19-arktika-polyus-tsveta@oldpictureart.ru
+DTSTAMP:20260119T000000Z
+DTSTART;VALUE=DATE:20251212
+DTEND;VALUE=DATE:20260622
+SUMMARY:Выставка «Арктика. Полюс цвета»
+LOCATION:Корпус на Кадашёвской набережной\, К
+ адашёвская набережная\, 12\, Москва
+DESCRIPTION:Срок работы: 12.12.2025 — 21.06.2026\nПобыва
+ л: 17.01.2026\nСнимки: https://oldpictureart.ru/visit-2026-01-19-ar
+ ktika-polyus-tsveta.html
+URL:https://oldpictureart.ru/visit-2026-01-19-arktika-polyus-tsveta.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:visit-2025-11-02-impressionist-interiors-intimacy-decoration-mode@oldpi
+ ctureart.ru
+DTSTAMP:20251102T000000Z
+DTSTART;VALUE=DATE:20251025
+DTEND;VALUE=DATE:20260216
+SUMMARY:Выставка «Impressionist Interiors: Intimacy\, Decoration\,
+  Modernity»
+LOCATION:Национальный музей западного искус
+ ства\, Ueno Park 7-7\, Taito-ku\, Tokyo
+DESCRIPTION:Срок работы: 25.10.2025 — 15.02.2026\nПобыва
+ л: 26.10.2025\nСнимки: https://oldpictureart.ru/visit-2025-11-02-im
+ pressionist-interiors-intimacy-decoration-mode.html
+URL:https://oldpictureart.ru/visit-2025-11-02-impressionist-interiors-intim
+ acy-decoration-mode.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:visit-2025-11-24-svoi-chelovek-vladimir-gilyarovskii@oldpictureart.ru
+DTSTAMP:20251124T000000Z
+DTSTART;VALUE=DATE:20251016
+DTEND;VALUE=DATE:20260126
+SUMMARY:Выставка «Свой человек. Владимир Гил
+ яровский»
+LOCATION:Музей русского импрессионизма\, Лен
+ инградский проспект\, 15\, строение 11\, Мос
+ ква
+DESCRIPTION:Срок работы: 16.10.2025 — 25.01.2026\nПобыва
+ л: 24.11.2025\nСнимки: https://oldpictureart.ru/visit-2025-11-24-sv
+ oi-chelovek-vladimir-gilyarovskii.html
+URL:https://oldpictureart.ru/visit-2025-11-24-svoi-chelovek-vladimir-gilyar
+ ovskii.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:visit-2025-09-25-russkie-dikie@oldpictureart.ru
+DTSTAMP:20250925T000000Z
+DTSTART;VALUE=DATE:20250618
+DTEND;VALUE=DATE:20250929
+SUMMARY:Выставка «Русские дикие»
+LOCATION:Музей русского импрессионизма\, Лен
+ инградский проспект\, 15\, строение 11\, Мос
+ ква
+DESCRIPTION:Срок работы: 18.06.2025 — 28.09.2025\nПобыва
+ л: 25.09.2025\nСнимки: https://oldpictureart.ru/visit-2025-09-25-ru
+ sskie-dikie.html
+URL:https://oldpictureart.ru/visit-2025-09-25-russkie-dikie.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:visit-2025-10-18-karl-bryullov-rim-moskva-peterburg@oldpictureart.ru
+DTSTAMP:20251018T000000Z
+DTSTART;VALUE=DATE:20250610
+DTEND;VALUE=DATE:20260119
+SUMMARY:Выставка «Карл Брюллов. Рим - Москва -
+  Петербург»
+LOCATION:Новая Третьяковка\, Крымский Вал\, 10\,
+  Москва
+DESCRIPTION:Срок работы: 10.06.2025 — 18.01.2026\nПобыва
+ л: 17.10.2025\nСнимки: https://oldpictureart.ru/visit-2025-10-18-ka
+ rl-bryullov-rim-moskva-peterburg.html
+URL:https://oldpictureart.ru/visit-2025-10-18-karl-bryullov-rim-moskva-pete
+ rburg.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:visit-2025-03-19-sokrovischnitsa-grafiki@oldpictureart.ru
+DTSTAMP:20250319T000000Z
+DTSTART;VALUE=DATE:20250318
+DTEND;VALUE=DATE:20250616
+SUMMARY:Выставка «Сокровищница графики»
+LOCATION:ГМИИ им. А.С. Пушкина\, улица Волхонка
+ \, 12\, Москва
+DESCRIPTION:Срок работы: 18.03.2025 — 15.06.2025\nПобыва
+ л: 19.03.2025\nСнимки: https://oldpictureart.ru/visit-2025-03-19-so
+ krovischnitsa-grafiki.html
+URL:https://oldpictureart.ru/visit-2025-03-19-sokrovischnitsa-grafiki.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:visit-2025-05-20-izobrazhaya-vozduh-russkii-impressionizm@oldpictureart
+ .ru
+DTSTAMP:20250520T000000Z
+DTSTART;VALUE=DATE:20250214
+DTEND;VALUE=DATE:20250602
+SUMMARY:Выставка «Изображая воздух. Русский 
+ импрессионизм»
+LOCATION:Музей русского импрессионизма\, Лен
+ инградский проспект\, 15\, строение 11\, Мос
+ ква
+DESCRIPTION:Срок работы: 14.02.2025 — 01.06.2025\nПобыва
+ л: 17.05.2025\nСнимки: https://oldpictureart.ru/visit-2025-05-20-iz
+ obrazhaya-vozduh-russkii-impressionizm.html
+URL:https://oldpictureart.ru/visit-2025-05-20-izobrazhaya-vozduh-russkii-im
+ pressionizm.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:visit-2025-04-10-landshaft-dushi-kaspar-david-fridrih-i-rossiya@oldpict
+ ureart.ru
+DTSTAMP:20250410T000000Z
+DTSTART;VALUE=DATE:20241208
+DTEND;VALUE=DATE:20250414
+SUMMARY:Выставка «Ландшафт души. Каспар Дави
+ д Фридрих и Россия»
+LOCATION:Государственный Эрмитаж\, Дворцовая
+  набережная\, 34\, Санкт-Петербург
+DESCRIPTION:Срок работы: 08.12.2024 — 13.04.2025\nПобыва
+ л: 05.04.2025\nСнимки: https://oldpictureart.ru/visit-2025-04-10-la
+ ndshaft-dushi-kaspar-david-fridrih-i-rossiya.html
+URL:https://oldpictureart.ru/visit-2025-04-10-landshaft-dushi-kaspar-david-
+ fridrih-i-rossiya.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:visit-2025-07-17-prekrasnaya-epoha-evropeiskoe-iskusstvo-rubezha@oldpic
+ tureart.ru
+DTSTAMP:20250717T000000Z
+DTSTART;VALUE=DATE:20241129
+DTEND;VALUE=DATE:20250915
+SUMMARY:Выставка «Прекрасная эпоха. Европей
+ ское искусство рубежа XIX–XX вв.»
+LOCATION:Центр "Эрмитаж-Казань"\, территория К
+ ремль\, 12\, Казань
+DESCRIPTION:Срок работы: 29.11.2024 — 14.09.2025\nПобыва
+ л: 17.07.2025\nСнимки: https://oldpictureart.ru/visit-2025-07-17-pr
+ ekrasnaya-epoha-evropeiskoe-iskusstvo-rubezha.html
+URL:https://oldpictureart.ru/visit-2025-07-17-prekrasnaya-epoha-evropeiskoe
+ -iskusstvo-rubezha.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:visit-2025-02-13-vasnetsovy-svyaz-pokolenii-iz-xix-v-xxi-vek@oldpicture
+ art.ru
+DTSTAMP:20250213T000000Z
+DTSTART;VALUE=DATE:20240523
+DTEND;VALUE=DATE:20241105
+SUMMARY:Выставка «Васнецовы. Связь поколени
+ й. Из XIX в XXI век»
+LOCATION:Новая Третьяковка\, Крымский Вал\, 10\,
+  Москва
+DESCRIPTION:Срок работы: 23.05.2024 — 04.11.2024\nПобыва
+ л: 06.10.2024\nСнимки: https://oldpictureart.ru/visit-2025-02-13-va
+ snetsovy-svyaz-pokolenii-iz-xix-v-xxi-vek.html
+URL:https://oldpictureart.ru/visit-2025-02-13-vasnetsovy-svyaz-pokolenii-iz
+ -xix-v-xxi-vek.html
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:visit-2025-02-13-avtor-neizvesten-kosnutsya-glavnogo@oldpictureart.ru
+DTSTAMP:20250213T000000Z
+DTSTART;VALUE=DATE:20231012
+DTEND;VALUE=DATE:20240122
+SUMMARY:Выставка «Автор неизвестен. Коснуть
+ ся главного»
+LOCATION:Музей русского импрессионизма\, Лен
+ инградский проспект\, 15\, строение 11\, Мос
+ ква
+DESCRIPTION:Срок работы: 12.10.2023 — 21.01.2024\nПобыва
+ л: 04.11.2023\nСнимки: https://oldpictureart.ru/visit-2025-02-13-av
+ tor-neizvesten-kosnutsya-glavnogo.html
+URL:https://oldpictureart.ru/visit-2025-02-13-avtor-neizvesten-kosnutsya-gl
+ avnogo.html
+TRANSP:TRANSPARENT
+END:VEVENT
+END:VCALENDAR

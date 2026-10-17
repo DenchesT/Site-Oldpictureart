@@ -1828,6 +1828,8 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
   .artist-layout { grid-template-columns: 1fr; }
   .artist-layout .post-aside { position: static; }
 }
+/* Годы жизни в указателе — рядом с именем, мельче и тише. */
+.idx-years { color: var(--muted); font-family: var(--ff-data); font-size: var(--fs-xs); white-space: nowrap; }
 .plain-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s2); }
 .plain-list a { text-decoration: none; }
 .plain-list a:hover { text-decoration: underline; }
@@ -2067,6 +2069,11 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21.9 4.3 18.8 19c-.2 1-.9 1.3-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-.9.5l.3-4.7 8.6-7.8c.4-.3-.1-.5-.6-.2L6.9 13.1 2.3 11.6c-1-.3-1-1 .2-1.5l18.1-7c.8-.3 1.5.2 1.3 1.2z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
+/* «Пост в Telegram» — под датой записи на странице картины и похода. */
+.tg-post { margin: var(--s2) 0 0; font-size: var(--fs-sm); }
+.tg-post a { color: var(--link); text-decoration: none; }
+.tg-post a:hover { text-decoration: underline; }
+
 /* Подвал — единственное место на сайте, где сказано, откуда собрание.
    Держим его тихим: это подпись, а не призыв подписаться. */
 .site-footer {
@@ -2231,6 +2238,17 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
   filter: invert(1) hue-rotate(180deg) brightness(.92) contrast(.9) saturate(.85);
 }
 .mini-map .leaflet-control-attribution { font-size: 10px; }
+
+/* Логотип Яндекса в углу карты (условие Tiles API). У самого файла
+   нужные отступы уже внутри, поэтому у угла их нет. */
+.leaflet-bottom.leaflet-left .opa-ya-logo { margin: 0; display: block; line-height: 0; }
+.opa-ya-logo img { display: block; height: 28px; width: auto; }
+.leaflet-bottom.leaflet-left .opa-ya-text {
+  margin: 0 0 6px 8px; line-height: 1.2; padding: 2px 6px; border-radius: 3px;
+  background: rgba(255, 255, 255, .85); color: #000; font: 600 12px/1.3 Arial, sans-serif;
+  text-decoration: none;
+}
+.opa-ya-text:hover, .opa-ya-text:focus-visible { text-decoration: underline; }
 .mini-map-links { margin: var(--s2) 0 0; font-size: var(--fs-sm); }
 .mini-map-links a { color: var(--link); }
 .mini-map-note { margin: var(--s1) 0 0; font-size: var(--fs-xs); color: var(--muted); }
@@ -2275,6 +2293,56 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 .run-status[data-state="soon"] { color: var(--link); }
 .run-status[data-state="off"]::before { background: transparent; box-shadow: inset 0 0 0 1px currentColor; }
 .visit-card .run-status { margin-top: var(--s2); }
+
+/* «Идёт сейчас» — на главной под шапкой и в посещениях. Что идёт сегодня,
+   решает браузер (NOW_ON_JS); пока он не решил, блок спрятан. Строка —
+   название, где, срок; точка перед сроком — тех же цветов, что у плашки
+   «Идёт до…». */
+.now-on {
+  margin: 0 0 var(--s5);
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--success);
+  background: var(--card-bg);
+}
+.now-on[hidden], .now-item[hidden] { display: none; }
+.now-title {
+  margin: 0 0 var(--s2);
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.now-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s2); }
+.now-item { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: var(--s3); row-gap: 2px; }
+.now-item a { font-size: var(--fs-md); color: var(--link); text-decoration: none; }
+.now-item a:hover { text-decoration: underline; }
+.now-where { color: var(--text-2); font-style: italic; font-size: var(--fs-sm); }
+.now-when {
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--success);
+  white-space: nowrap;
+}
+.now-when::before {
+  content: "";
+  display: inline-block;
+  width: .55em; height: .55em;
+  margin-right: .45em;
+  vertical-align: .05em;
+  border-radius: 50%;
+  background: currentColor;
+}
+.now-last .now-when { color: var(--warning); }
+.now-soon .now-when { color: var(--link); }
+.now-cal { margin: var(--s3) 0 0; font-size: var(--fs-xs); color: var(--muted); }
+.now-cal a { color: var(--link); }
+.visits-page .now-on { margin: var(--s4) 0 var(--s3); }
 
 /* Название выставки и музея — ссылки из самого поста, на страницу
    выставки и сайт музея. Заголовок должен остаться заголовком, поэтому

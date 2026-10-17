@@ -14,7 +14,6 @@
 Запуск:  python tests/test_geocache.py
 """
 
-import json
 import logging
 import os
 import sys

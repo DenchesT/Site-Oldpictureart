@@ -7,7 +7,6 @@
 import json
 import os
 from collections import defaultdict
-from html import escape as h
 
 from site_common import head_common, theme_button, site_footer, COMMON_JS, BASE_URL
 

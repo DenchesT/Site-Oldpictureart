@@ -21,11 +21,9 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
 <link rel="alternate" type="application/rss+xml" title="Old Picture Art" href="feed.xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=26481424">
+<link rel="preload" as="font" type="font/woff2" href="fonts/old-standard-tt-cyrillic-400-normal.woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="style.css?v=2aa0b31a">
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="tag-page visits-page">
 <div class="tag-topbar">
@@ -38,6 +36,7 @@
   <p class="eyebrow">Дневник</p>
   <h1>Посещения</h1>
   <p class="idx-lede visits-lede">Выставки и постоянные экспозиции музеев, где я побывал, — с датами и своими снимками.</p>
+  <section class="now-on" id="now-on" aria-labelledby="now-on-title" hidden><h2 id="now-on-title" class="now-title">Идёт сейчас</h2><ul class="now-list"><li class="now-item" data-start="2026-08-15" data-end="2026-11-08" hidden><a href="visit-2026-10-12-skazka-ryadom.html">Сказка рядом</a><span class="now-where">Новгородский музей-заповедник, Великий Новгород</span><span class="now-when"></span></li></ul><p class="now-cal"><a href="webcal://oldpictureart.ru/exhibitions.ics">Подписаться на календарь</a> · <a href="https://calendar.google.com/calendar/render?cid=webcal%3A%2F%2Foldpictureart.ru%2Fexhibitions.ics" target="_blank" rel="noopener">Google Календарь</a> · <a href="exhibitions.ics" download>файл .ics</a></p></section>
   <div class="visit-bar">
     <div class="view-switch visit-switch" role="group" aria-label="Что показывать">
       <button type="button" data-kind="all" aria-pressed="true">Все<span class="visit-count">22</span></button>
@@ -213,6 +212,39 @@ function toggleTheme(){
     if (!end) return;
     el.textContent = WORDS[start && today < start ? 'soon' : today <= end ? 'on' : 'off'];
   });
+})();
+</script>
+<script>
+(function () {
+  var box = document.getElementById('now-on');
+  if (!box) return;
+  var MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля',
+                'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+  function day(s) { var p = (s || '').split('-'); return p.length === 3 ? new Date(+p[0], +p[1] - 1, +p[2]) : null; }
+  var now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  function human(d) {
+    return d.getDate() + ' ' + MONTHS[d.getMonth()] + (d.getFullYear() !== today.getFullYear() ? ' ' + d.getFullYear() : '');
+  }
+  var running = 0, soon = 0;
+  Array.prototype.forEach.call(box.querySelectorAll('.now-item'), function (li) {
+    var start = day(li.getAttribute('data-start')), end = day(li.getAttribute('data-end'));
+    if (!end || today > end) { li.remove(); return; }
+    var when = li.querySelector('.now-when');
+    if (start && today < start) {
+      // Скоро — только то, что откроется в ближайший месяц.
+      if ((start - today) / 864e5 > 31) { li.remove(); return; }
+      when.textContent = 'откроется ' + human(start); li.classList.add('now-soon'); soon++;
+    } else {
+      var left = Math.round((end - today) / 864e5);
+      when.textContent = left === 0 ? 'последний день' : 'до ' + human(end);
+      if (left <= 7) li.classList.add('now-last');
+      running++;
+    }
+    li.hidden = false;
+  });
+  if (!running && !soon) return;
+  if (!running) box.querySelector('.now-title').textContent = 'Скоро откроются';
+  box.hidden = false;
 })();
 </script>
 <script>

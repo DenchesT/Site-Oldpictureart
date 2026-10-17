@@ -72,8 +72,10 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
   ok('каталожные номера проставлены', art.nos.every(n => /^\d+$/.test(n)), art.nos.join(' '));
   ok('в карточке заголовок — название работы, а не имя',
     art.firstHead !== 'Альфред Сислей' && !art.hasTitleLine, art.firstHead);
+  // «Годы жизни» и «Википедия» появляются, когда сборка нашла художника в
+  // Wikidata (artist_info.json); годы работ и число работ есть всегда.
   ok('сведения о художнике заполнены',
-    art.facts.includes('Годы') && art.facts.includes('Работ'), art.facts.join(', '));
+    art.facts.includes('Годы работ') && art.facts.includes('Работ на сайте'), art.facts.join(', '));
   ok('собрания перечислены', art.museums >= 1, `${art.museums}`);
 
   // номер тот же, что на главной

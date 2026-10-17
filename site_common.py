@@ -72,13 +72,73 @@ def match_place(place, names):
     return ""
 
 
+# Слова, по которым часть строки места — это учреждение, а не зал или
+# корпус: «Государственный музей-заповедник "Ростовский Кремль"»,
+# «Новгородский музей заповедник». «Галерея» сюда намеренно не входит:
+# «ГМИИ, Галерея искусства стран Европы» — это раздел того же музея.
+INSTITUTION_RE = re.compile(
+    r"\b(?:музе[йяюе]|музеи|заповедник\w*|кремл[ья]|кремле|museum|museo|musée|museu)\b", re.I)
+
+
+def split_place(place):
+    """Части строки места по запятым — кроме запятых внутри кавычек."""
+    parts, buf, quote = [], "", None
+    for ch in (place or ""):
+        if quote:
+            buf += ch
+            if ch == quote or (quote == "«" and ch == "»"):
+                quote = None
+        elif ch in "\"«":
+            buf += ch
+            quote = ch
+        elif ch == ",":
+            parts.append(buf)
+            buf = ""
+        else:
+            buf += ch
+    parts.append(buf)
+    return [re.sub(r"\s+", " ", p).strip() for p in parts if p.strip()]
+
+
+def place_parts(place, known=()):
+    """Где идёт выставка и кто её делает — из строки места в посте.
+
+    У выставки бывает несколько музеев: «Музей русского импрессионизма,
+    Государственный музей-заповедник "Ростовский Кремль", Конюшенный двор»
+    — выставка МРИ, которая идёт в Ростове. Правило канала: первым идёт
+    музей, за ним — другие музеи-участники, за последним музеем — его зал
+    или корпус. Значит, место проведения — последний музей в строке:
+
+        venue      — «Государственный музей-заповедник "Ростовский Кремль"»
+        section    — «Конюшенный двор»
+        organizers — [«Музей русского импрессионизма», «…Ростовский Кремль»]
+
+    Музеем часть считается по слову («музей», «заповедник», «кремль») или
+    если так называется известное место (known). «Эрмитаж, Главный штаб»
+    и «Нижегородский музей, Зарубежное искусство» — один музей и его раздел.
+    """
+    parts = split_place(place)
+    if not parts:
+        return {"venue": "", "section": "", "organizers": []}
+    museums = [0] + [i for i, part in enumerate(parts) if i
+                     and (INSTITUTION_RE.search(part) or match_place(part, known))]
+    last = museums[-1]
+    return {"venue": parts[last], "section": ", ".join(parts[last + 1:]),
+            "organizers": [parts[i] for i in museums]}
+
+
 def visit_places(visits, museum_names):
     """Сводит места из постов о походах к названиям карточек на карте.
 
-    Возвращает {место, как написано в посте: название на карте}. Если место
-    совпало с музеем из собрания — берётся его полное название с городом,
-    чтобы карточка на карте была одна. Если нет — место становится своей
-    карточкой, и следующие походы туда же к ней и приписываются.
+    Возвращает {место, как написано в посте: название на карте}. Карточка —
+    место проведения (см. place_parts): выставка МРИ в Ростовском кремле
+    стоит на карте в Ростове, а не в Москве. Если место совпало с музеем из
+    собрания — берётся его полное название с городом, чтобы карточка на
+    карте была одна. Если нет — место становится своей карточкой, и
+    следующие походы туда же к ней и приписываются.
+
+    Поправить вручную — "same_as" в museum_overrides.json: и для всей
+    строки места, и для одного места проведения.
     """
     overrides = load_overrides()
     known = list(museum_names)
@@ -91,11 +151,35 @@ def visit_places(visits, museum_names):
         if alias:
             out[place] = alias
             continue
-        hit = match_place(place, known)
+        venue = place_parts(place, known)["venue"] or place
+        alias = (overrides.get(venue) or {}).get("same_as")
+        if alias:
+            out[place] = alias
+            continue
+        hit = match_place(venue, known)
         if not hit:
-            hit = name_head(place)
+            hit = name_head(venue)
             known.append(hit)
         out[place] = hit
+    return out
+
+
+def visit_organizers(place, museum_names, place_map=None):
+    """Музеи-участники выставки: [(как написано в посте, карточка или "")].
+
+    Пусто, если музей один, — тогда и писать «организаторы» незачем.
+    Карточка ищется среди известных мест: тогда название на странице
+    похода — ссылка на страницу этого музея.
+    """
+    overrides = load_overrides()
+    known = list(museum_names) + list((place_map or {}).values())
+    organizers = place_parts(place, known)["organizers"]
+    if len(organizers) < 2:
+        return []
+    out = []
+    for name in organizers:
+        card = (overrides.get(name) or {}).get("same_as") or match_place(name, known)
+        out.append((name, card or ""))
     return out
 
 
@@ -307,7 +391,7 @@ PRIVACY_CONTACT = TELEGRAM_URL
 PRIVACY_CONTACT_TEXT = "через телеграм-канал " + TELEGRAM_NAME
 # Дата текста. Меняйте, когда меняете сам текст, а не при каждой сборке:
 # дата редакции говорит, с какого дня действуют эти условия.
-PRIVACY_DATE = "21 сентября 2026 г."
+PRIVACY_DATE = "17 октября 2026 г."
 
 # ---------------------------------------------------------------- знак сайта
 #
@@ -571,10 +655,8 @@ def head_common(title, description="", og_image="", canonical="", og_type="websi
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
 <link rel="alternate" type="application/rss+xml" title="{SITE_NAME}" href="feed.xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="preload" as="font" type="font/woff2" href="fonts/old-standard-tt-cyrillic-400-normal.woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="style.css?v={style_version()}">{extra}
 {THEME_BOOT}"""
 
@@ -1500,7 +1582,24 @@ showAuthButton();
 # Тёмная тема — инверсия цветов подложки CSS-фильтром (класс map-dark на
 # окне карты); у спутника фильтра нет — там он выглядел бы дико.
 #
+# Логотип Яндекса. Условия Tiles API требуют логотип в углу карты, ссылкой
+# на Яндекс Карты. Сам логотип — файл Яндекса: архив по ссылке со страницы
+# https://yandex.ru/maps-api/docs/tiles-api/index.html, из него русский
+# вариант положить как docs/vendor/yandex/logo.svg (или logo.png). Пока
+# файла нет, в том же углу та же ссылка текстом — «Яндекс Карты».
+# Виден, только пока выбрана подложка Яндекса.
+#
 # Это чистый JS без <script>: вставляется внутрь скрипта страницы.
+def _yandex_logo():
+    here = os.path.dirname(os.path.abspath(__file__))
+    for name in ("logo.svg", "logo.png"):
+        if os.path.isfile(os.path.join(here, "docs", "vendor", "yandex", name)):
+            return "vendor/yandex/" + name
+    return ""
+
+
+YANDEX_LOGO = _yandex_logo()
+
 MAP_LAYERS_JS = r"""
 var OPA_MAP = (function () {
   var FREE = [
@@ -1554,6 +1653,31 @@ var OPA_MAP = (function () {
     return layer;
   }
 
+  // Логотип Яндекса в левом нижнем углу — ссылка на Яндекс Карты.
+  var LOGO = '__YANDEX_LOGO__';
+  var YaLogo = L.Control.extend({
+    options: {position: 'bottomleft'},
+    onAdd: function () {
+      var a = L.DomUtil.create('a', 'opa-ya-logo');
+      a.href = 'https://yandex.ru/maps/';
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.title = 'Яндекс Карты';
+      function asText() { a.innerHTML = ''; a.className += ' opa-ya-text'; a.textContent = 'Яндекс Карты'; }
+      if (LOGO) {
+        var img = document.createElement('img');
+        img.alt = 'Яндекс Карты';
+        img.onerror = asText;
+        img.src = LOGO;
+        a.appendChild(img);
+      } else {
+        asText();
+      }
+      L.DomEvent.disableClickPropagation(a);
+      return a;
+    }
+  });
+
   function saved() { try { return localStorage.getItem(STORE); } catch (e) { return null; } }
   function remember(id) { try { localStorage.setItem(STORE, id); } catch (e) {} }
 
@@ -1564,6 +1688,7 @@ var OPA_MAP = (function () {
     (byId[saved()] || byId[cfgs[0].id]).addTo(map);
     var control = L.control.layers(layers, null, {position: 'topright'}).addTo(map);
 
+    var logo = byId.yandex ? new YaLogo() : null;
     function update() {
       var dark = document.documentElement.getAttribute('data-theme') === 'dark';
       var allowed = true;
@@ -1571,6 +1696,12 @@ var OPA_MAP = (function () {
         if (map.hasLayer(layers[n]) && layers[n]._opaDark === false) allowed = false;
       });
       if (box) box.classList.toggle('map-dark', dark && allowed);
+      // Логотип — только при подложке Яндекса.
+      if (logo) {
+        var on = map.hasLayer(byId.yandex);
+        if (on && !logo._map) logo.addTo(map);
+        if (!on && logo._map) logo.remove();
+      }
     }
     var automatic = false;
     map.on('baselayerchange', function (e) {
@@ -1604,7 +1735,7 @@ var OPA_MAP = (function () {
 
   return {attach: attach, list: list, make: make};
 })();
-"""
+""".replace("__YANDEX_LOGO__", YANDEX_LOGO)
 
 
 SCROLL_TOP_JS = """<script>

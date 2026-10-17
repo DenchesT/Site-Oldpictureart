@@ -17,7 +17,6 @@
 
 import os
 import sys
-import json
 import subprocess
 
 os.environ.setdefault("OPA_OFFLINE_RENDER", "1")
@@ -91,12 +90,14 @@ def main():
         print(f"✓ Посещения: {len(visits)} + visits.html")
 
     bs.generate_tag_pages(meta)
-    bs.generate_extra_pages(meta)
+    # Годы жизни новых художников — из Wikidata; --offline / --no-geocode — без сети.
+    bs.generate_extra_pages(meta, offline="--offline" in sys.argv or "--no-geocode" in sys.argv)
     # Страницы-перенаправления с прежних адресов. После них старая
     # ссылка из переписки или из выдачи не превращается в «не найдено».
     bs.generate_redirects(meta, visits)
     bs.generate_robots()
     bs.generate_cname()
+    bs.generate_key_file()
     bs.generate_sitemap(meta, visits)
     bs.generate_manifest()
     bs.generate_rss(meta)

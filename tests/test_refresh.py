@@ -204,8 +204,10 @@ ok("запись без текста не трогается", bs.refresh_posts(
 # ------------------------------------------------------------ карточка ссылки
 tmp = tempfile.mkdtemp()
 os.makedirs(os.path.join(tmp, "images", "cards"), exist_ok=True)
-old_out = bs.OUTPUT_DIR
-bs.OUTPUT_DIR = tmp
+# Карточку стирает sitebuild.refresh — папку подменяем там, где её читают.
+import sitebuild.refresh as bs_refresh
+old_out = bs_refresh.OUTPUT_DIR
+bs_refresh.OUTPUT_DIR = tmp
 
 
 def with_card(p):
@@ -238,7 +240,7 @@ ok("правка описания карточку не трогает",
 ok("новое описание попало в запись",
    posts[0]["description"] == "Новое описание картины.", posts[0]["description"])
 
-bs.OUTPUT_DIR = old_out
+bs_refresh.OUTPUT_DIR = old_out
 
 
 # ------------------------------------------------------------ переезд страницы

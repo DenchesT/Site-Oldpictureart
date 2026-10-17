@@ -19,23 +19,9 @@ const POST = PICKED.filename;
 const LAUNCH = process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {};
 const SURNAME = PICKED.artist.split(' ').pop();
 
-// Копия карты с локальным Leaflet — в песочнице нет сети
-const TMP = require('path').join(require('os').tmpdir(), 'museums-test');
-fs.mkdirSync(TMP, { recursive: true });
-let mh = fs.readFileSync(path.join(DOCS, 'museums.html'), 'utf8')
-  .replace(/<link rel="stylesheet" href="https:\/\/unpkg\.com\/leaflet[^>]*>/, '<link rel="stylesheet" href="leaflet.css">')
-  .replace(/<script src="https:\/\/unpkg\.com\/leaflet@[^>]*><\/script>/, '<script src="leaflet.js"></script>')
-  .replace(/<link rel="stylesheet" href="https:\/\/unpkg\.com\/leaflet\.markercluster[^>]*>/, '<link rel="stylesheet" href="MarkerCluster.css">')
-  .replace(/<script src="https:\/\/unpkg\.com\/leaflet\.markercluster[^>]*><\/script>/, '<script src="markercluster.js"></script>');
-fs.writeFileSync(path.join(TMP, 'museums.html'), mh);
-for (const [src, dst] of [
-  [require.resolve('leaflet/dist/leaflet.js'), 'leaflet.js'],
-  [require.resolve('leaflet/dist/leaflet.css'), 'leaflet.css'],
-  [require.resolve('leaflet.markercluster/dist/leaflet.markercluster.js'), 'markercluster.js'],
-  [require.resolve('leaflet.markercluster/dist/MarkerCluster.css'), 'MarkerCluster.css'],
-  [path.join(DOCS, 'style.css'), 'style.css'],
-  [path.join(DOCS, 'map-config.js'), 'map-config.js'],
-]) fs.copyFileSync(src, path.join(TMP, dst));
+// Leaflet и группировка меток лежат в docs/vendor — страницу можно
+// открывать прямо из docs, сеть не нужна.
+const TMP = DOCS;
 
 const results = [];
 const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extra || '' });

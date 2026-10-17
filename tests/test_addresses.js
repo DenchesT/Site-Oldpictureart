@@ -3,27 +3,13 @@ const fs = require('fs');
 const path = require('path');
 
 const DOCS = require('path').join(__dirname, '..', 'docs');
-const TMP = require('path').join(require('os').tmpdir(), 'museums-addr');
-
-// В песочнице нет сети, поэтому подменяем Leaflet с CDN на локальную копию:
-// иначе карта не построится и метки нечем будет считать.
+const TMP = DOCS;
+// Leaflet и группировка меток лежат в docs/vendor — страницу можно
+// открывать прямо из docs, сеть не нужна.
 
 // Свой браузер можно указать переменной CHROME_PATH — пригодится,
 // если Playwright не скачивал Chromium, а системный уже есть.
 const LAUNCH = process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {};
-fs.mkdirSync(TMP, { recursive: true });
-fs.writeFileSync(path.join(TMP, 'museums.html'), fs.readFileSync(path.join(DOCS, 'museums.html'), 'utf8')
-  .replace(/<link rel="stylesheet" href="https:\/\/unpkg\.com\/leaflet[^>]*>/, '<link rel="stylesheet" href="leaflet.css">')
-  .replace(/<script src="https:\/\/unpkg\.com\/leaflet@[^>]*><\/script>/, '<script src="leaflet.js"></script>')
-  .replace(/<link rel="stylesheet" href="https:\/\/unpkg\.com\/leaflet\.markercluster[^>]*>/, '<link rel="stylesheet" href="MarkerCluster.css">')
-  .replace(/<script src="https:\/\/unpkg\.com\/leaflet\.markercluster[^>]*><\/script>/, '<script src="markercluster.js"></script>'));
-fs.copyFileSync(require.resolve('leaflet/dist/leaflet.js'), path.join(TMP, 'leaflet.js'));
-fs.copyFileSync(require.resolve('leaflet/dist/leaflet.css'), path.join(TMP, 'leaflet.css'));
-fs.copyFileSync(require.resolve('leaflet.markercluster/dist/leaflet.markercluster.js'), path.join(TMP, 'markercluster.js'));
-fs.copyFileSync(require.resolve('leaflet.markercluster/dist/MarkerCluster.css'), path.join(TMP, 'MarkerCluster.css'));
-fs.copyFileSync(path.join(DOCS, 'style.css'), path.join(TMP, 'style.css'));
-fs.copyFileSync(path.join(DOCS, 'map-config.js'), path.join(TMP, 'map-config.js'));
-
 const f = () => 'file://' + TMP + '/museums.html';
 
 const results = [];

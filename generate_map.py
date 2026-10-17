@@ -19,7 +19,7 @@ from html import escape as h
 import logging
 
 from site_common import (head_common, theme_button, scroll_top_button, site_footer,
-                         COMMON_JS, SCROLL_TOP_JS, BASE_URL, VISITS_FILE, visit_places,
+                         COMMON_JS, SCROLL_TOP_JS, BASE_URL, VISITS_FILE, visit_places, visit_organizers,
                          museum_page, visit_kind_label, MAP_LAYERS_JS)
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -1545,14 +1545,15 @@ def visit_order(v):
     return f"{d[2]}-{int(d[1]):02d}-{int(d[0]):02d}" if len(d) == 3 else (v.get("date") or "")
 
 
-def visit_link(v):
-    """Строка похода в карточке места: дата и название страницей."""
+def visit_link(v, where=""):
+    """Строка похода в карточке места: дата и название страницей.
+    where — город, если выставка шла не здесь (в карточке музея-участника)."""
     name = (v.get("title") or v.get("place") or "Посещение").strip()
     when = v.get("visited") or ""
-    kind = visit_kind_label(v.get("kind") or "")
+    tag = f"{visit_kind_label(v.get('kind') or '')}, {where}" if where else visit_kind_label(v.get("kind") or "")
     return (f'<li><a href="{h(v.get("filename", ""))}">'
             f'<span class="visit-when">{h(when)}</span> {h(name)}'
-            f'<span class="visit-tag">{h(kind)}</span></a></li>')
+            f'<span class="visit-tag">{h(tag)}</span></a></li>')
 
 
 # ======================================================================
@@ -1940,6 +1941,17 @@ def generate_museums_page(retry_failed=False, offline=False):
     if lookups == 0:
         logger.info("   В сеть не ходили — всё было готово")
     
+    # Выставки, которые музей делал вместе с другими и которые шли не у
+    # него. Метка такой выставки стоит там, где она шла (выставка МРИ
+    # «Митрополичье варенье» — в Ростове), а в карточке музея-участника
+    # она строкой с городом: видно, куда музей возил выставку.
+    away = defaultdict(list)
+    for venue, been_here in visits_dict.items():
+        for v in been_here:
+            for _, card in visit_organizers(v.get("place") or "", list(museums_dict.keys())):
+                if card and card != venue and card in museums_dict:
+                    away[card].append((v, venue))
+
     # ---------------------------------------------------------- карточки
     cards = []
     map_data = []
@@ -2026,6 +2038,16 @@ def generate_museums_page(retry_failed=False, offline=False):
         if been:
             visits_html = (f'<div class="museum-visits"><h4>{been_phrase(len(been))}</h4>'
                            f'<ul class="museum-visit-list">{"".join(visit_link(v) for v in been)}</ul></div>')
+        if away.get(museum):
+            elsewhere = sorted(away[museum], key=lambda pair: visit_order(pair[0]), reverse=True)
+            where = {venue: (locations.get(venue) or {}).get('city') or museum_city(venue, overrides.get(venue))
+                     for _, venue in elsewhere}
+            other_city = city and all(c and c != city for c in where.values())
+            visits_html += (f'<div class="museum-visits museum-away"><h4>'
+                            f'{"Выставки в других городах" if other_city else "Выставки в других музеях"}</h4>'
+                            f'<ul class="museum-visit-list">'
+                            + "".join(visit_link(v, where[venue] or venue) for v, venue in elsewhere)
+                            + '</ul></div>')
 
         # Число на значке — работы собрания; если их нет, а поход был,
         # показываем походы: пустой ноль на карточке ничего не объясняет.
@@ -2088,10 +2110,10 @@ def generate_museums_page(retry_failed=False, offline=False):
         title="Карта собраний — Old Picture Art",
         description=f"{len(museums_dict)} собраний и выставочных залов Old Picture Art на карте мира.",
         canonical=f"{BASE_URL}/museums.html",
-        extra='\n<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" '
-              'integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin>'
-              '\n<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" '
-              'integrity="sha256-YU3qCpj/P06tdPBJGPax0bm6Q1wltfwjsho5TR4+TYc=" crossorigin>',
+        # Leaflet и группировка меток — свои копии в docs/vendor, а не с
+        # unpkg.com: карта не зависит от чужого сервера.
+        extra='\n<link rel="stylesheet" href="vendor/leaflet/leaflet.css">'
+              '\n<link rel="stylesheet" href="vendor/leaflet.markercluster/MarkerCluster.css">',
     )
 
     total_visits = sum(len(v) for v in visits_dict.values())
@@ -2150,10 +2172,8 @@ def generate_museums_page(retry_failed=False, offline=False):
 </div>
 
 {scroll_top_button()}
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin></script>
-<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"
-        integrity="sha256-Hk4dIpcqOSb0hZjgyvFOP+cEmDXUKKNE/tT542ZbNQg=" crossorigin></script>
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="vendor/leaflet.markercluster/leaflet.markercluster.js"></script>
 <script src="map-config.js"></script>
 {site_footer()}
 {SCROLL_TOP_JS}

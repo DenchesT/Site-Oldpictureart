@@ -23,11 +23,9 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
 <link rel="alternate" type="application/rss+xml" title="Old Picture Art" href="feed.xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=26481424">
+<link rel="preload" as="font" type="font/woff2" href="fonts/old-standard-tt-cyrillic-400-normal.woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="style.css?v=2aa0b31a">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"VisualArtwork","name":"La Prairie (Луг), 1875","url":"https://oldpictureart.ru/sisley-lug-1875.html","inLanguage":"ru","creator":{"@type":"Person","name":"Альфред Сислей"},"dateCreated":"1875","artMedium":{"@value":"масло"},"artworkSurface":{"@value":"холст"},"image":"https://oldpictureart.ru/images/sisley-lug-1875-1.jpg","isPartOf":{"@type":"Collection","name":"Национальная галерея искусства, Вашингтон"},"description":"Луг, где растут травы, усеян цветами: маргаритками, маками, черникой. Там собрались две маленькие девочки в синих фартуках и соломенных шляпках с красными и синими лентами. Справа – деревянный забор, за которым несколько групп деревьев поднимают свою светлую листву. А дальше, до самого горизонта, простирается сельская местность, поля которой поднимаются по склонам холмов под голубым небом, окаймленным белыми облаками.","sameAs":["https://www.nga.gov/artworks/52227-meadow"],"height":{"@type":"QuantitativeValue","value":54.9,"unitCode":{"@value":"CMT"},"unitText":{"@value":"см"}},"width":{"@type":"QuantitativeValue","value":73.0,"unitCode":{"@value":"CMT"},"unitText":{"@value":"см"}}}</script>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page">
@@ -62,6 +60,7 @@
     <div class="aside-block">
       <h3>Запись</h3>
       <time>2026-03-26</time><span class="views-count" id="views-count"></span>
+      <p class="tg-post"><a href="https://t.me/oldpictureart/424" target="_blank" rel="noopener"><span class="icon-telegram" aria-hidden="true"></span>Пост в Telegram ↗</a></p>
     </div>
   </aside>
 </article>
@@ -698,7 +697,7 @@ function toast(text) {
   window.addEventListener('resize', function () { close(false); });
 })();
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js" defer></script>
+<script src="vendor/color-thief/color-thief.umd.js" defer></script>
 <script>
 // ---------- Палитра цветов ----------
 // Раньше палитра вешалась только на событие load: если картинка бралась из

@@ -45,7 +45,8 @@ SCHOOLS = {
     # Франция — и те, кто стал французским художником (Сислей, Луар)
     "fr": """Сислей Дега Писсарро Кайботт Базиль Курбе Форен Гийомен Мане
              Ренуар Пуссен Брюн Луар Мартен Делакруа Тройон Лотрек Эллё
-             Латур Дюриваж Буден Руар Милле Детай Моризо Ангран Пьетт""",
+             Латур Дюриваж Буден Руар Милле Детай Моризо Ангран Пьетт
+             Астрюк""",
     "ru": """Репин Тархов Морозов Кузнецов Куинджи Юон Грабарь Серов
              Савицкий Левитан Брюллов Кустодиев Жуковский Сверчков
              Маковский Коровин""",
@@ -234,13 +235,13 @@ def _judge(entity, artist, year):
     return overlap + (0.5 if painter else 0) + (0.1 if born else 0)
 
 
-def wikidata_school(artist, year=None):
-    """Ищет художника в Wikidata. Возвращает запись для artist_schools.json:
-    {"school", "country", "wikidata"}; school и wikidata могут быть None,
-    если не нашёлся или страна не переводится в школу.
+def find_artist(artist, year=None):
+    """Запись художника в Wikidata (labels, aliases, claims) или None.
 
-    Ошибки сети не глотаются — их ловит вызывающий: неудачный запрос не
-    должен запомниться как «такого художника нет».
+    Тем же поиском пользуются квиз (школа по гражданству) и страницы
+    художников (годы жизни, статья в Википедии). Ошибки сети не
+    глотаются — их ловит вызывающий: неудачный запрос не должен
+    запомниться как «такого художника нет».
     """
     seen, best = set(), (0, None)
 
@@ -273,9 +274,18 @@ def wikidata_school(artist, year=None):
                 break
 
     if best[1] is None or best[0] < 0.75:
-        return {"school": None, "country": None, "wikidata": None}
+        return None
+    return best[1]
 
-    ent = best[1]
+
+def wikidata_school(artist, year=None):
+    """Ищет художника в Wikidata. Возвращает запись для artist_schools.json:
+    {"school", "country", "wikidata"}; school и wikidata могут быть None,
+    если не нашёлся или страна не переводится в школу.
+    """
+    ent = find_artist(artist, year)
+    if ent is None:
+        return {"school": None, "country": None, "wikidata": None}
     countries = _ids(ent.get("claims") or {}, "P27")[:5]
     if not countries:
         return {"school": None, "country": None, "wikidata": ent.get("id")}
