@@ -12,6 +12,7 @@ import re
 import statistics
 import sys
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -140,15 +141,42 @@ def school_from_country(label_en):
     return None
 
 
-def _wd(params):
+# Ответы, после которых стоит подождать и спросить ещё раз: «слишком
+# часто» и временные сбои сервера.
+WD_RETRY_CODES = (429, 500, 502, 503, 504)
+
+
+def _wd(params, tries=4, sleep=time.sleep, opener=None):
     """Запрос к API Wikidata. Отдельной функцией — чтобы проверки могли
-    подставить готовые ответы и не ходить в сеть."""
+    подставить готовые ответы и не ходить в сеть.
+
+    Wikidata при частых запросах отвечает «429, слишком часто» или
+    не успевает ответить. Раньше первая же такая заминка обрывала поиск
+    годов жизни до следующей сборки — за сборку находилось по два
+    художника. Теперь запрос повторяется: через 3, 6, 12 секунд (или
+    сколько сервер попросит в Retry-After).
+    """
     query = urllib.parse.urlencode(dict(params, format="json"))
-    req = urllib.request.Request(f"{WD_API}?{query}", headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=15) as r:
-        data = json.loads(r.read().decode("utf-8"))
-    time.sleep(0.3)       # вежливость к чужому серверу
-    return data
+    opener = opener or urllib.request.urlopen
+    for attempt in range(tries):
+        try:
+            req = urllib.request.Request(f"{WD_API}?{query}", headers={"User-Agent": USER_AGENT})
+            with opener(req, timeout=20) as r:
+                data = json.loads(r.read().decode("utf-8"))
+            sleep(0.3)       # вежливость к чужому серверу
+            return data
+        except urllib.error.HTTPError as e:
+            if e.code not in WD_RETRY_CODES or attempt == tries - 1:
+                raise
+            try:
+                wait = int((e.headers or {}).get("Retry-After") or 0)
+            except ValueError:
+                wait = 0
+        except (urllib.error.URLError, TimeoutError, ConnectionError, OSError):
+            if attempt == tries - 1:
+                raise
+            wait = 0
+        sleep(min(wait or 3 * 2 ** attempt, 60))
 
 
 def _ids(claims, prop):

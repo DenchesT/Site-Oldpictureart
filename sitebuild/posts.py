@@ -23,6 +23,7 @@ from .html import artwork_jsonld, download_name, page_title, site_og_image, tele
 from .images import size_attrs
 from .places import museum_href
 from .visits import NOW_ON_JS, now_on_block
+from .afisha import AFISHA_JS, AFISHA_PAGE, afisha_block, load_afisha
 
 logger = logging.getLogger("build_site")
 
@@ -566,6 +567,10 @@ def render_index(all_posts, visits=None):
     # посты #выставка или #галерея — пустой раздел никому не нужен.
     visits_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-visits no-arrow" '
                         'href="visits.html">Посещения</a></div>') if has_visits() else ''
+    # Афиша — крупные выставки в России и в мире (sitebuild/afisha.py).
+    afisha_items = load_afisha()[0]
+    afisha_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-afisha no-arrow" '
+                        f'href="{AFISHA_PAGE}">Афиша</a></div>') if afisha_items else ''
     index_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-artists no-arrow" '
                        'href="ukazatel.html">Указатель</a></div>')
     stats_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-decades no-arrow" '
@@ -603,6 +608,7 @@ def render_index(all_posts, visits=None):
 </div>
 <button type="button" class="random-btn" onclick="goRandom()"><span class="icon-random-white" aria-hidden="true"></span> Случайная картина</button></header>
 {now_on_block(visits if visits is not None else load_json(VISITS_FILE, []), all_posts)}
+{afisha_block(afisha_items)}
 <div class="layout"><aside class="sidebar" id="sidebar" aria-label="Фильтры">
 <div class="sidebar-section sidebar-search">
   <label class="visually-hidden" for="search">Поиск по галерее</label>
@@ -620,6 +626,7 @@ def render_index(all_posts, visits=None):
 {theme_html}
 {map_link_html}
 {visits_link_html}
+{afisha_link_html}
 {index_link_html}
 {stats_link_html}
 {tg_link_html}
@@ -651,6 +658,7 @@ def render_index(all_posts, visits=None):
 {SCROLL_TOP_JS}
 {COMMON_JS}
 {NOW_ON_JS}
+{AFISHA_JS}
 <script>
 const ALL_POSTS = {af};
 const POSTS_DATA = {pm_js};

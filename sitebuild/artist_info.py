@@ -30,6 +30,7 @@ logger = logging.getLogger("build_site")
 INFO_FILE = "artist_info.json"
 SCHOOLS_FILE = "artist_schools.json"
 RETRY_DAYS = 30
+MAX_FAILURES = 3            # столько неудач подряд — и Wikidata оставляем в покое
 
 
 def _load(path, default):
@@ -101,7 +102,7 @@ def resolve(artists_years, offline=False, today=None, quiz=None, log=logger.info
     today = today or datetime.date.today()
     cache = _load(INFO_FILE, {})
     known_ids = {name: (rec or {}).get("wikidata") for name, rec in _load(SCHOOLS_FILE, {}).items()}
-    out, changed, network_down, asked = {}, False, offline, 0
+    out, changed, network_down, asked, failures = {}, False, offline, 0, 0
 
     def pending(artist):
         entry = cache.get(artist) or {}
@@ -134,11 +135,17 @@ def resolve(artists_years, offline=False, today=None, quiz=None, log=logger.info
         try:
             found = lookup(artist, artists_years[artist], entry.get("wikidata") or known_ids.get(artist), quiz)
         except Exception as e:                       # сети нет, сервер не ответил
-            log(f"Художники: Wikidata недоступна ({e.__class__.__name__}) — "
-                f"годы жизни остальных найду в следующий раз")
-            network_down = True
+            # Неудача не запоминается: художника спросим в следующий раз.
+            # Одна заминка не повод бросать остальных — сдаёмся после
+            # MAX_FAILURES неудач подряд.
+            failures += 1
             out[artist] = entry
+            if failures >= MAX_FAILURES:
+                log(f"Художники: Wikidata не отвечает ({e.__class__.__name__}: {str(e)[:80]}) — "
+                    f"годы жизни остальных найду в следующий раз")
+                network_down = True
             continue
+        failures = 0
         asked += 1
         entry = dict(found, checked=today.isoformat())
         cache[artist] = entry
@@ -187,6 +194,6 @@ def artists_years(all_posts):
 
 
 __all__ = [
-    'INFO_FILE', 'SCHOOLS_FILE', 'RETRY_DAYS', 'wikipedia_url', 'year_of', 'info_from_entity',
+    'INFO_FILE', 'SCHOOLS_FILE', 'RETRY_DAYS', 'MAX_FAILURES', 'wikipedia_url', 'year_of', 'info_from_entity',
     'fetch_entity', 'lookup', 'resolve', 'life_years', 'wiki_host', 'artists_years',
 ]

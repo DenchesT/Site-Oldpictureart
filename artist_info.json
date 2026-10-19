@@ -110,5 +110,446 @@
     "died": 1935,
     "wikidata": "Q2259866",
     "wikipedia": "https://ru.wikipedia.org/wiki/%D0%AE%D1%85%D0%B0%D0%BD%D1%81%D0%B5%D0%BD%2C_%D0%92%D0%B8%D0%B3%D0%B3%D0%BE"
+  },
+  "Винсент Виллем ван Гог": {
+    "born": 1853,
+    "checked": "2026-10-20",
+    "died": 1890,
+    "wikidata": "Q5582",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%92%D0%B0%D0%BD_%D0%93%D0%BE%D0%B3%2C_%D0%92%D0%B8%D0%BD%D1%81%D0%B5%D0%BD%D1%82"
+  },
+  "Владимир Егорович Маковский": {
+    "born": 1846,
+    "checked": "2026-10-20",
+    "died": 1920,
+    "wikidata": "Q740592",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9%2C_%D0%92%D0%BB%D0%B0%D0%B4%D0%B8%D0%BC%D0%B8%D1%80_%D0%95%D0%B3%D0%BE%D1%80%D0%BE%D0%B2%D0%B8%D1%87"
+  },
+  "Геркулес Сегерс": {
+    "born": 1589,
+    "checked": "2026-10-20",
+    "died": 1638,
+    "wikidata": "Q931846",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%B3%D0%B5%D1%80%D1%81%2C_%D0%93%D0%B5%D1%80%D0%BA%D1%83%D0%BB%D0%B5%D1%81"
+  },
+  "Гюстав Кайботт": {
+    "born": 1848,
+    "checked": "2026-10-20",
+    "died": 1894,
+    "wikidata": "Q295144",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D0%B9%D0%B1%D0%BE%D1%82%D1%82%2C_%D0%93%D1%8E%D1%81%D1%82%D0%B0%D0%B2"
+  },
+  "Джон Гловер": {
+    "born": 1767,
+    "checked": "2026-10-20",
+    "died": 1849,
+    "wikidata": "Q3181600",
+    "wikipedia": "https://en.wikipedia.org/wiki/John_Glover_%28artist%29"
+  },
+  "Джон Констебл": {
+    "born": 1776,
+    "checked": "2026-10-20",
+    "died": 1837,
+    "wikidata": "Q159297",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BD%D1%81%D1%82%D0%B5%D0%B1%D0%BB%2C_%D0%94%D0%B6%D0%BE%D0%BD"
+  },
+  "Джон Сингер Сарджент": {
+    "born": 1856,
+    "checked": "2026-10-20",
+    "died": 1925,
+    "wikidata": "Q155626",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A1%D0%B0%D1%80%D0%B4%D0%B6%D0%B5%D0%BD%D1%82%2C_%D0%94%D0%B6%D0%BE%D0%BD_%D0%A1%D0%B8%D0%BD%D0%B3%D0%B5%D1%80"
+  },
+  "Джузеппе де Ниттис": {
+    "born": 1846,
+    "checked": "2026-10-20",
+    "died": 1884,
+    "wikidata": "Q607495",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%94%D0%B5_%D0%9D%D0%B8%D1%82%D1%82%D0%B8%D1%81%2C_%D0%94%D0%B6%D1%83%D0%B7%D0%B5%D0%BF%D0%BF%D0%B5"
+  },
+  "Дмитрий Эмильевич Мартен": {
+    "born": 1860,
+    "checked": "2026-10-20",
+    "died": 1918,
+    "wikidata": "Q4282499",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D1%80%D1%82%D0%B5%D0%BD%2C_%D0%94%D0%BC%D0%B8%D1%82%D1%80%D0%B8%D0%B9_%D0%AD%D0%BC%D0%B8%D0%BB%D1%8C%D0%B5%D0%B2%D0%B8%D1%87"
+  },
+  "Жакоб Абраам Камиль Писсарро": {
+    "born": 1830,
+    "checked": "2026-10-20",
+    "died": 1903,
+    "wikidata": "Q134741",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9F%D0%B8%D1%81%D1%81%D0%B0%D1%80%D1%80%D0%BE%2C_%D0%9A%D0%B0%D0%BC%D0%B8%D0%BB%D1%8C"
+  },
+  "Жан Батист Эдуар Детай": {
+    "born": null,
+    "checked": "2026-10-20",
+    "died": null,
+    "wikidata": null,
+    "wikipedia": ""
+  },
+  "Жан Дезире Гюстав Курбе": {
+    "born": 1819,
+    "checked": "2026-10-20",
+    "died": 1877,
+    "wikidata": "Q34618",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9A%D1%83%D1%80%D0%B1%D0%B5%2C_%D0%93%D1%8E%D1%81%D1%82%D0%B0%D0%B2"
+  },
+  "Жан Луи Форен": {
+    "born": 1852,
+    "checked": "2026-10-20",
+    "died": 1931,
+    "wikidata": "Q719614",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A4%D0%BE%D1%80%D0%B5%D0%BD%2C_%D0%96%D0%B0%D0%BD-%D0%9B%D1%83%D0%B8"
+  },
+  "Жан Фредерик Базиль": {
+    "born": 1841,
+    "checked": "2026-10-20",
+    "died": 1870,
+    "wikidata": "Q207298",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%91%D0%B0%D0%B7%D0%B8%D0%BB%D1%8C%2C_%D0%A4%D1%80%D0%B5%D0%B4%D0%B5%D1%80%D0%B8%D0%BA"
+  },
+  "Жан-Батист Арман Гийомен": {
+    "born": 1841,
+    "checked": "2026-10-20",
+    "died": 1927,
+    "wikidata": "Q436844",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%93%D0%B8%D0%B9%D0%BE%D0%BC%D0%B5%D0%BD%2C_%D0%90%D1%80%D0%BC%D0%B0%D0%BD"
+  },
+  "Жан-Франсуа Милле": {
+    "born": 1814,
+    "checked": "2026-10-20",
+    "died": 1875,
+    "wikidata": "Q148458",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B8%D0%BB%D0%BB%D0%B5%2C_%D0%96%D0%B0%D0%BD-%D0%A4%D1%80%D0%B0%D0%BD%D1%81%D1%83%D0%B0"
+  },
+  "Закари Астрюк": {
+    "born": null,
+    "checked": "2026-10-20",
+    "died": null,
+    "wikidata": null,
+    "wikipedia": ""
+  },
+  "Игорь Эммануилович Грабарь": {
+    "born": 1871,
+    "checked": "2026-10-20",
+    "died": 1960,
+    "wikidata": "Q1030307",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%93%D1%80%D0%B0%D0%B1%D0%B0%D1%80%D1%8C%2C_%D0%98%D0%B3%D0%BE%D1%80%D1%8C_%D0%AD%D0%BC%D0%BC%D0%B0%D0%BD%D1%83%D0%B8%D0%BB%D0%BE%D0%B2%D0%B8%D1%87"
+  },
+  "Илер-Жермен-Эдгар де Га (Эдгар Дега)": {
+    "born": 1834,
+    "checked": "2026-10-20",
+    "died": 1917,
+    "wikidata": "Q46373",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%94%D0%B5%D0%B3%D0%B0%2C_%D0%AD%D0%B4%D0%B3%D0%B0%D1%80"
+  },
+  "Илья Ефимович Репин": {
+    "born": 1844,
+    "checked": "2026-10-20",
+    "died": 1930,
+    "wikidata": "Q172911",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D0%BF%D0%B8%D0%BD%2C_%D0%98%D0%BB%D1%8C%D1%8F_%D0%95%D1%84%D0%B8%D0%BC%D0%BE%D0%B2%D0%B8%D1%87"
+  },
+  "Иньяс-Анри-Жан-Теодор Фантен-Латур": {
+    "born": 1836,
+    "checked": "2026-10-20",
+    "died": 1904,
+    "wikidata": "Q310715",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A4%D0%B0%D0%BD%D1%82%D0%B5%D0%BD-%D0%9B%D0%B0%D1%82%D1%83%D1%80%2C_%D0%90%D0%BD%D1%80%D0%B8"
+  },
+  "Исаак Ильич Левитан": {
+    "born": 1860,
+    "checked": "2026-10-20",
+    "died": 1900,
+    "wikidata": "Q211356",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9B%D0%B5%D0%B2%D0%B8%D1%82%D0%B0%D0%BD%2C_%D0%98%D1%81%D0%B0%D0%B0%D0%BA_%D0%98%D0%BB%D1%8C%D0%B8%D1%87"
+  },
+  "Йохан Фредерик Фриц Таулов": {
+    "born": 1847,
+    "checked": "2026-10-20",
+    "died": 1906,
+    "wikidata": "Q445891",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A2%D0%B0%D1%83%D0%BB%D0%BE%D0%B2%2C_%D0%A4%D1%80%D0%B8%D1%86"
+  },
+  "Карл Павлович Брюллов": {
+    "born": 1799,
+    "checked": "2026-10-20",
+    "died": 1852,
+    "wikidata": "Q4768",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%91%D1%80%D1%8E%D0%BB%D0%BB%D0%BE%D0%B2%2C_%D0%9A%D0%B0%D1%80%D0%BB_%D0%9F%D0%B0%D0%B2%D0%BB%D0%BE%D0%B2%D0%B8%D1%87"
+  },
+  "Каспар Давид Фридрих": {
+    "born": 1774,
+    "checked": "2026-10-20",
+    "died": 1840,
+    "wikidata": "Q104884",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A4%D1%80%D0%B8%D0%B4%D1%80%D0%B8%D1%85%2C_%D0%9A%D0%B0%D1%81%D0%BF%D0%B0%D1%80_%D0%94%D0%B0%D0%B2%D0%B8%D0%B4"
+  },
+  "Констан Тройон": {
+    "born": 1810,
+    "checked": "2026-10-20",
+    "died": 1865,
+    "wikidata": "Q219403",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A2%D1%80%D0%BE%D0%B9%D0%BE%D0%BD%2C_%D0%9A%D0%BE%D0%BD%D1%81%D1%82%D0%B0%D0%BD"
+  },
+  "Константин Алексеевич Коровин": {
+    "born": 1861,
+    "checked": "2026-10-20",
+    "died": 1939,
+    "wikidata": "Q437792",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D1%80%D0%BE%D0%B2%D0%B8%D0%BD%2C_%D0%9A%D0%BE%D0%BD%D1%81%D1%82%D0%B0%D0%BD%D1%82%D0%B8%D0%BD_%D0%90%D0%BB%D0%B5%D0%BA%D1%81%D0%B5%D0%B5%D0%B2%D0%B8%D1%87"
+  },
+  "Константин Аполлонович Савицкий": {
+    "born": 1844,
+    "checked": "2026-10-20",
+    "died": 1905,
+    "wikidata": "Q958052",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A1%D0%B0%D0%B2%D0%B8%D1%86%D0%BA%D0%B8%D0%B9%2C_%D0%9A%D0%BE%D0%BD%D1%81%D1%82%D0%B0%D0%BD%D1%82%D0%B8%D0%BD_%D0%90%D0%BF%D0%BE%D0%BB%D0%BB%D0%BE%D0%BD%D0%BE%D0%B2%D0%B8%D1%87"
+  },
+  "Константин Фёдорович Юон": {
+    "born": 1875,
+    "checked": "2026-10-20",
+    "died": 1958,
+    "wikidata": "Q1343751",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%AE%D0%BE%D0%BD%2C_%D0%9A%D0%BE%D0%BD%D1%81%D1%82%D0%B0%D0%BD%D1%82%D0%B8%D0%BD_%D0%A4%D1%91%D0%B4%D0%BE%D1%80%D0%BE%D0%B2%D0%B8%D1%87"
+  },
+  "Луиджи Алоис-Франсуа-Жозеф Луар": {
+    "born": 1845,
+    "checked": "2026-10-20",
+    "died": 1916,
+    "wikidata": "Q974735",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9B%D1%83%D0%B0%D1%80%2C_%D0%9B%D1%83%D0%B8%D0%B4%D0%B6%D0%B8"
+  },
+  "Людовик Пьетт-Монфуко": {
+    "born": null,
+    "checked": "2026-10-20",
+    "died": null,
+    "wikidata": null,
+    "wikipedia": ""
+  },
+  "Макс Либерман": {
+    "born": 1847,
+    "checked": "2026-10-20",
+    "died": 1935,
+    "wikidata": "Q158062",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9B%D0%B8%D0%B1%D0%B5%D1%80%D0%BC%D0%B0%D0%BD%2C_%D0%9C%D0%B0%D0%BA%D1%81"
+  },
+  "Максимилиан Эмиль Луи Мофра": {
+    "born": 1861,
+    "checked": "2026-10-20",
+    "died": 1918,
+    "wikidata": "Q1856520",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9C%D0%BE%D1%84%D1%80%D0%B0%2C_%D0%9C%D0%B0%D0%BA%D1%81%D0%B8%D0%BC"
+  },
+  "Никола Пуссен": {
+    "born": 1594,
+    "checked": "2026-10-20",
+    "died": 1665,
+    "wikidata": "Q41554",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9F%D1%83%D1%81%D1%81%D0%B5%D0%BD%2C_%D0%9D%D0%B8%D0%BA%D0%BE%D0%BB%D0%B0"
+  },
+  "Николай Александрович Тархов": {
+    "born": 1871,
+    "checked": "2026-10-20",
+    "died": 1930,
+    "wikidata": "Q925011",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A2%D0%B0%D1%80%D1%85%D0%BE%D0%B2%2C_%D0%9D%D0%B8%D0%BA%D0%BE%D0%BB%D0%B0%D0%B9_%D0%90%D0%BB%D0%B5%D0%BA%D1%81%D0%B0%D0%BD%D0%B4%D1%80%D0%BE%D0%B2%D0%B8%D1%87"
+  },
+  "Николай Дмитриевич Кузнецов": {
+    "born": 1850,
+    "checked": "2026-10-20",
+    "died": 1929,
+    "wikidata": "Q3341659",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9A%D1%83%D0%B7%D0%BD%D0%B5%D1%86%D0%BE%D0%B2%2C_%D0%9D%D0%B8%D0%BA%D0%BE%D0%BB%D0%B0%D0%B9_%D0%94%D0%BC%D0%B8%D1%82%D1%80%D0%B8%D0%B5%D0%B2%D0%B8%D1%87_%28%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%BD%D0%B8%D0%BA%29"
+  },
+  "Николай Егорович Сверчков": {
+    "born": 1817,
+    "checked": "2026-10-20",
+    "died": 1898,
+    "wikidata": "Q952189",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A1%D0%B2%D0%B5%D1%80%D1%87%D0%BA%D0%BE%D0%B2%2C_%D0%9D%D0%B8%D0%BA%D0%BE%D0%BB%D0%B0%D0%B9_%D0%95%D0%B3%D0%BE%D1%80%D0%BE%D0%B2%D0%B8%D1%87"
+  },
+  "Пол Джозеф Константин Габриэль": {
+    "born": 1843,
+    "checked": "2026-10-20",
+    "died": 1926,
+    "wikidata": "Q833358",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A5%D0%B0%D0%BA%D0%BB%D1%8C%2C_%D0%93%D0%B0%D0%B1%D1%80%D0%B8%D1%8D%D0%BB%D1%8C_%D1%84%D0%BE%D0%BD"
+  },
+  "Поль Сезар Эллё": {
+    "born": 1859,
+    "checked": "2026-10-20",
+    "died": 1927,
+    "wikidata": "Q491039",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%AD%D0%BB%D0%BB%D1%91%2C_%D0%9F%D0%BE%D0%BB%D1%8C_%D0%A1%D0%B5%D0%B7%D0%B0%D1%80"
+  },
+  "Пьер Огюст Ренуар": {
+    "born": 1841,
+    "checked": "2026-10-20",
+    "died": 1919,
+    "wikidata": "Q39931",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D0%BD%D1%83%D0%B0%D1%80%2C_%D0%9F%D1%8C%D0%B5%D1%80_%D0%9E%D0%B3%D1%8E%D1%81%D1%82"
+  },
+  "Роберт Герман Штерль": {
+    "born": 1867,
+    "checked": "2026-10-20",
+    "died": 1932,
+    "wikidata": "Q319032",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A8%D1%82%D0%B5%D1%80%D0%BB%D1%8C%2C_%D0%A0%D0%BE%D0%B1%D0%B5%D1%80%D1%82"
+  },
+  "Рокуэлл Кент": {
+    "born": 1882,
+    "checked": "2026-10-20",
+    "died": 1971,
+    "wikidata": "Q114405",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B5%D0%BD%D1%82%2C_%D0%A0%D0%BE%D0%BA%D1%83%D1%8D%D0%BB%D0%BB"
+  },
+  "Рудольф фон Альт": {
+    "born": 1812,
+    "checked": "2026-10-20",
+    "died": 1905,
+    "wikidata": "Q638183",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%90%D0%BB%D1%8C%D1%82%2C_%D0%A0%D1%83%D0%B4%D0%BE%D0%BB%D1%8C%D1%84_%D1%84%D0%BE%D0%BD"
+  },
+  "Сантьяго Рузиньол-и-Пратс": {
+    "born": null,
+    "checked": "2026-10-20",
+    "died": null,
+    "wikidata": null,
+    "wikipedia": ""
+  },
+  "Станислав Юлианович Жуковский": {
+    "born": 1873,
+    "checked": "2026-10-20",
+    "died": 1944,
+    "wikidata": "Q2498462",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%96%D1%83%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9%2C_%D0%A1%D1%82%D0%B0%D0%BD%D0%B8%D1%81%D0%BB%D0%B0%D0%B2_%D0%AE%D0%BB%D0%B8%D0%B0%D0%BD%D0%BE%D0%B2%D0%B8%D1%87"
+  },
+  "Станислас Анри Руар": {
+    "born": 1833,
+    "checked": "2026-10-20",
+    "died": 1912,
+    "wikidata": "Q1606016",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A0%D1%83%D0%B0%D1%80%2C_%D0%90%D0%BD%D1%80%D0%B8"
+  },
+  "Уолтер Ричард Сикерт": {
+    "born": 1860,
+    "checked": "2026-10-20",
+    "died": 1942,
+    "wikidata": "Q703369",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A1%D0%B8%D0%BA%D0%B5%D1%80%D1%82%2C_%D0%A3%D0%BE%D0%BB%D1%82%D0%B5%D1%80"
+  },
+  "Федерико Дзандоменеги": {
+    "born": 1841,
+    "checked": "2026-10-20",
+    "died": 1917,
+    "wikidata": "Q1355820",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%94%D0%B7%D0%B0%D0%BD%D0%B4%D0%BE%D0%BC%D0%B5%D0%BD%D0%B5%D0%B3%D0%B8%2C_%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B8%D0%BA%D0%BE"
+  },
+  "Фердинан Виктор Эжен Делакруа": {
+    "born": 1798,
+    "checked": "2026-10-20",
+    "died": 1863,
+    "wikidata": "Q33477",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%94%D0%B5%D0%BB%D0%B0%D0%BA%D1%80%D1%83%D0%B0%2C_%D0%AD%D0%B6%D0%B5%D0%BD"
+  },
+  "Фердинанд Ходлер": {
+    "born": 1853,
+    "checked": "2026-10-20",
+    "died": 1918,
+    "wikidata": "Q214564",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A5%D0%BE%D0%B4%D0%BB%D0%B5%D1%80%2C_%D0%A4%D0%B5%D1%80%D0%B4%D0%B8%D0%BD%D0%B0%D0%BD%D0%B4"
+  },
+  "Франц Теодор Макс Слефогт": {
+    "born": 1868,
+    "checked": "2026-10-20",
+    "died": 1932,
+    "wikidata": "Q703356",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A1%D0%BB%D0%B5%D1%84%D0%BE%D0%B3%D1%82%2C_%D0%9C%D0%B0%D0%BA%D1%81"
+  },
+  "Франц фон Штук": {
+    "born": 1863,
+    "checked": "2026-10-20",
+    "died": 1928,
+    "wikidata": "Q45006",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%A8%D1%82%D1%83%D0%BA%2C_%D0%A4%D1%80%D0%B0%D0%BD%D1%86_%D1%84%D0%BE%D0%BD"
+  },
+  "Фредерик Чайльд Гассам": {
+    "born": 1859,
+    "checked": "2026-10-20",
+    "died": 1935,
+    "wikidata": "Q737635",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%93%D0%B0%D1%81%D1%81%D0%B0%D0%BC%2C_%D0%A7%D0%B0%D0%B9%D0%BB%D1%8C%D0%B4"
+  },
+  "Фрэнсис Кэмпбелл Буало Каделл": {
+    "born": 1883,
+    "checked": "2026-10-20",
+    "died": 1937,
+    "wikidata": "Q345864",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D0%B4%D0%B5%D0%BB%D0%BB%2C_%D0%A4%D1%80%D1%8D%D0%BD%D1%81%D0%B8%D1%81"
+  },
+  "Ханс Даль": {
+    "born": 1849,
+    "checked": "2026-10-20",
+    "died": 1937,
+    "wikidata": "Q958258",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%94%D0%B0%D0%BB%D1%8C%2C_%D0%A5%D0%B0%D0%BD%D1%81"
+  },
+  "Хелмер Осслунд": {
+    "born": null,
+    "checked": "2026-10-20",
+    "died": null,
+    "wikidata": null,
+    "wikipedia": ""
+  },
+  "Шарль Теофил Ангран": {
+    "born": 1854,
+    "checked": "2026-10-20",
+    "died": 1926,
+    "wikidata": "Q1063574",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%90%D0%BD%D0%B3%D1%80%D0%B0%D0%BD%2C_%D0%A8%D0%B0%D1%80%D0%BB%D1%8C"
+  },
+  "Шарль-Франсуа Добиньи": {
+    "born": 1817,
+    "checked": "2026-10-20",
+    "died": 1878,
+    "wikidata": "Q252357",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%94%D0%BE%D0%B1%D0%B8%D0%BD%D1%8C%D0%B8%2C_%D0%A8%D0%B0%D1%80%D0%BB%D1%8C-%D0%A4%D1%80%D0%B0%D0%BD%D1%81%D1%83%D0%B0"
+  },
+  "Эдуард Мане": {
+    "born": 1832,
+    "checked": "2026-10-20",
+    "died": 1883,
+    "wikidata": "Q40599",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D0%BD%D0%B5%2C_%D0%AD%D0%B4%D1%83%D0%B0%D1%80%D0%B4"
+  },
+  "Эжен Луи Буден": {
+    "born": 1824,
+    "checked": "2026-10-20",
+    "died": 1898,
+    "wikidata": "Q212600",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%91%D1%83%D0%B4%D0%B5%D0%BD%2C_%D0%AD%D0%B6%D0%B5%D0%BD"
+  },
+  "Элисео Мейфрен-и-Роч": {
+    "born": null,
+    "checked": "2026-10-20",
+    "died": null,
+    "wikidata": null,
+    "wikipedia": ""
+  },
+  "Эмильен Мюло-Дюриваж": {
+    "born": null,
+    "checked": "2026-10-20",
+    "died": null,
+    "wikidata": null,
+    "wikipedia": ""
+  },
+  "Ялмар Эйлиф Эммануэл Петерссен": {
+    "born": 1852,
+    "checked": "2026-10-20",
+    "died": 1928,
+    "wikidata": "Q739176",
+    "wikipedia": "https://ru.wikipedia.org/wiki/%D0%9F%D0%B5%D1%82%D0%B5%D1%80%D1%81%D1%81%D0%B5%D0%BD%2C_%D0%AD%D0%B9%D0%BB%D0%B8%D1%84"
   }
 }

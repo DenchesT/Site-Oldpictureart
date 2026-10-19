@@ -28,6 +28,7 @@
     artist_info  годы жизни художников и статьи в Википедии (Wikidata)
     deps       модули питона версий из requirements.txt
     indexnow   новые и изменённые страницы — сразу поисковикам
+    afisha     афиша: крупные выставки в России и в мире (afisha.json)
 
 Здесь остались запуск и порядок шагов (main). Все имена модулей видны и
 отсюда — build_site.clean_url, build_site.render_post_page и т. д., — так
@@ -84,6 +85,7 @@ from sitebuild.refresh import *  # noqa: F401,F403
 from sitebuild.artist_info import *  # noqa: F401,F403
 from sitebuild.deps import *  # noqa: F401,F403
 from sitebuild.indexnow import *  # noqa: F401,F403
+from sitebuild.afisha import *  # noqa: F401,F403
 from sitebuild.indexnow import notify as notify_indexnow  # noqa: F401
 
 def auto_update_modules():
@@ -283,6 +285,8 @@ async def main():
     generate_museums_page(all_posts)
     # Страницы музеев — после карты: координаты берутся из её свежего кэша.
     generate_museum_pages(all_posts, all_visits)
+    # Афиша: крупные выставки в России и в мире (afisha.json).
+    generate_afisha(museum_names(all_posts, all_visits))
     # Генерация квиза и таймлайна
     try:
         subprocess.run([sys.executable, "generate_quiz.py"], check=True)

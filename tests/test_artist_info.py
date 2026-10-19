@@ -106,9 +106,81 @@ try:
     quiz6 = FakeQuiz()
     ai.resolve({"Другой Художник": 1900}, offline=True, today=today, quiz=quiz6, log=lambda *_: None)
     ok("без сети (--offline) не спрашиваем", not quiz6.calls)
+
+    # Одна заминка Wikidata не обрывает поиск остальных: раньше за сборку
+    # находилось по два художника, дальше «Wikidata недоступна».
+    class Flaky(FakeQuiz):
+        def __init__(self, bad):
+            super().__init__()
+            self.bad = bad
+
+        def find_artist(self, artist, year=None):
+            self.calls.append(("find", artist))
+            if artist in self.bad:
+                raise OSError("429 Too Many Requests")
+            return {"id": "Q296"}
+    flaky = Flaky({"Б Заминка"})
+    logs = []
+    got = ai.resolve({"А Первый": 1880, "Б Заминка": 1880, "В Третий": 1880}, today=today, quiz=flaky, log=logs.append)
+    saved = json.load(open(ai.INFO_FILE, encoding="utf-8"))
+    ok("одна неудача — остальные художники всё равно найдены", "А Первый" in saved and "В Третий" in saved, str(sorted(saved)))
+    ok("…а неудачный не запомнен — спросим в следующий раз", "Б Заминка" not in saved)
+    down = Flaky({"Г1", "Г2", "Г3", "Г4", "Г5"})
+    logs = []
+    ai.resolve({n: 1880 for n in ("Г1", "Г2", "Г3", "Г4", "Г5")}, today=today, quiz=down, log=logs.append)
+    asked = [c for c in down.calls if c[0] == "find"]
+    ok(f"{ai.MAX_FAILURES} неудачи подряд — Wikidata оставляем в покое", len(asked) == ai.MAX_FAILURES, str(asked))
+    ok("…и в журнале — что ответил сервер", any("429" in m for m in logs), str(logs))
 finally:
     os.chdir(old_cwd)
     shutil.rmtree(tmp, ignore_errors=True)
+
+# ---------- повтор запроса к Wikidata ----------
+import io  # noqa: E402
+import urllib.error  # noqa: E402
+import generate_quiz  # noqa: E402
+
+
+class Resp(io.BytesIO):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a):
+        return False
+
+
+def opener_with(answers):
+    seq = list(answers)
+
+    def opener(req, timeout=None):
+        a = seq.pop(0)
+        if isinstance(a, Exception):
+            raise a
+        return Resp(json.dumps(a).encode("utf-8"))
+    return opener
+
+
+def http_error(code, retry_after=None):
+    return urllib.error.HTTPError("https://www.wikidata.org/w/api.php", code, "x",
+                                  {"Retry-After": retry_after} if retry_after else {}, None)
+
+
+naps = []
+data = generate_quiz._wd({"action": "x"}, sleep=naps.append,
+                         opener=opener_with([http_error(429, "7"), urllib.error.URLError("timeout"), {"ok": 1}]))
+ok("429 и обрыв — запрос повторяется и доходит", data == {"ok": 1}, str(naps))
+ok("…ждёт, сколько попросил сервер (Retry-After), потом дольше", naps[:2] == [7, 6], str(naps))
+try:
+    generate_quiz._wd({"action": "x"}, sleep=lambda s: None, opener=opener_with([http_error(404)]))
+    ok("404 — без повторов, сразу ошибка", False)
+except urllib.error.HTTPError:
+    ok("404 — без повторов, сразу ошибка", True)
+try:
+    generate_quiz._wd({"action": "x"}, tries=3, sleep=lambda s: None,
+                      opener=opener_with([urllib.error.URLError("x")] * 3))
+    ok("сети нет совсем — после повторов ошибка доходит до сборки", False)
+except urllib.error.URLError:
+    ok("сети нет совсем — после повторов ошибка доходит до сборки", True)
 
 info = {"born": 1840, "died": 1926, "wikipedia": "https://ru.wikipedia.org/wiki/Моне", "wikidata": "Q296"}
 post = {"artist": "Клод Моне", "title": "Кувшинки, 1906", "creation_year": 1906, "filename": "monet-a.html",

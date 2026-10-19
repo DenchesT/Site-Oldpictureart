@@ -235,6 +235,22 @@ def work_year(title):
     return int(m.group()) if m else None
 
 
+# Афиша — крупные выставки в России и в мире (sitebuild/afisha.py).
+AFISHA_FILE = "afisha.json"
+
+
+def has_afisha(path=AFISHA_FILE):
+    """Есть ли афиша: в afisha.json есть хоть одна запись. Тогда в меню,
+    подвале и карте сайта появляется ссылка на afisha.html."""
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:
+        return False
+    items = data.get("exhibitions") if isinstance(data, dict) else data
+    return bool(items)
+
+
 def has_visits():
     """Есть ли в собрании посещения. Читается на каждой странице, но файл
     крошечный, а держать флаг в памяти нельзя: генераторы карты, квиза и
@@ -1764,6 +1780,7 @@ def site_footer(rss="feed.xml"):
         '<a href="stats.html">Статистика</a> · '
         '<a href="museums.html">Карта собраний</a> · '
         + ('<a href="visits.html">Посещения</a> · ' if has_visits() else '')
+        + ('<a href="afisha.html">Афиша</a> · ' if has_afisha() else '')
         + f'<a href="{rss}">RSS</a> · '
         '<a href="privacy.html">Конфиденциальность</a>'
         '</p>'

@@ -1275,6 +1275,7 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 .icon-timeline::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cpolyline points='8 5 3 12 8 19'/%3E%3Cpolyline points='16 5 21 12 16 19'/%3E%3C/svg%3E"); }
 /* Посещения — билет: раздел про то, куда ходил, а не про то, что висит. */
 .icon-visits::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M4 9V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4z'/%3E%3Cpath d='M14 4v16' stroke-dasharray='3 2'/%3E%3C/svg%3E"); }
+.icon-afisha::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M3 10h18M8 3v4M16 3v4'/%3E%3C/svg%3E"); }
 
 /* Тёмная тема для иконок сайдбара */
 [data-theme="dark"] .icon-search::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E"); }
@@ -1291,6 +1292,7 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 [data-theme="dark"] .icon-tg::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23aaa'%3E%3Cpath d='M21.9 4.3 18.8 19c-.2 1-.9 1.3-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-.9.5l.3-4.7 8.6-7.8c.4-.3-.1-.5-.6-.2L6.9 13.1 2.3 11.6c-1-.3-1-1 .2-1.5l18.1-7c.8-.3 1.5.2 1.3 1.2z'/%3E%3C/svg%3E"); }
 [data-theme="dark"] .icon-timeline::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cpolyline points='8 5 3 12 8 19'/%3E%3Cpolyline points='16 5 21 12 16 19'/%3E%3C/svg%3E"); }
 [data-theme="dark"] .icon-visits::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpath d='M4 9V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4z'/%3E%3Cpath d='M14 4v16' stroke-dasharray='3 2'/%3E%3C/svg%3E"); }
+[data-theme="dark"] .icon-afisha::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M3 10h18M8 3v4M16 3v4'/%3E%3C/svg%3E"); }
 
 /* ========== SVG ИКОНКИ (светлая тема) ========== */
 .icon-back, .icon-prev { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230366d6' stroke-width='2'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E"); }
@@ -2340,9 +2342,49 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 }
 .now-last .now-when { color: var(--warning); }
 .now-soon .now-when { color: var(--link); }
-.now-cal { margin: var(--s3) 0 0; font-size: var(--fs-xs); color: var(--muted); }
-.now-cal a { color: var(--link); }
 .visits-page .now-on { margin: var(--s4) 0 var(--s3); }
+
+/* Афиша — крупные выставки в России и в мире (sitebuild/afisha.py).
+   На главной — блок того же вида, что «Идёт сейчас», только с синей
+   полосой и в две колонки; на странице — вкладки и список записей. */
+.afisha-block { border-left-color: var(--link); }
+.afisha-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--s3) var(--s5); }
+.afisha-col[hidden] { display: none; }
+.afisha-col-title {
+  margin: 0 0 var(--s2);
+  font-size: var(--fs-sm);
+  font-style: normal;
+  font-weight: 600;
+  color: var(--text);
+}
+.afisha-more { margin: var(--s3) 0 0; font-size: var(--fs-sm); }
+.afisha-more a { color: var(--link); }
+.now-on:not([hidden]) + .afisha-block { margin-top: calc(-1 * var(--s3)); }
+
+.afisha { max-width: 860px; }
+.afisha-section[hidden] { display: none; }
+.afisha-list { list-style: none; margin: 0 0 var(--s5); padding: 0; }
+.afisha-item {
+  padding: var(--s3) 0 var(--s3) var(--s3);
+  border-top: 1px solid var(--border);
+  border-left: 3px solid transparent;
+  scroll-margin-top: var(--s5);
+}
+.afisha-item[hidden] { display: none; }
+.afisha-item.afisha-target { border-left-color: var(--link); background: var(--card-bg); }
+.afisha-title { margin: 0; font-size: var(--fs-lg); font-style: normal; line-height: 1.3; }
+.afisha-title a { color: var(--link); text-decoration: none; }
+.afisha-title a:hover { text-decoration: underline; }
+.afisha-title a::after { content: " ↗"; font-size: .7em; color: var(--muted); }
+.afisha-orig { margin: 2px 0 0; color: var(--muted); font-style: italic; font-size: var(--fs-sm); }
+.afisha-where { margin: var(--s1) 0 0; color: var(--text-2); }
+.afisha-dates { margin: var(--s1) 0 0; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: var(--s3); row-gap: 2px; }
+.afisha-range { font-family: var(--ff-data); font-size: var(--fs-sm); color: var(--text); }
+.afisha-when:empty { display: none; }
+.afisha-note { margin: var(--s2) 0 0; max-width: 70ch; }
+.afisha-links { margin: var(--s2) 0 0; font-size: var(--fs-sm); }
+.afisha-links a { color: var(--link); }
+.afisha-foot { color: var(--muted); font-size: var(--fs-sm); max-width: 70ch; margin: var(--s4) 0 0; }
 
 /* Название выставки и музея — ссылки из самого поста, на страницу
    выставки и сайт музея. Заголовок должен остаться заголовком, поэтому

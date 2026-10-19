@@ -14,7 +14,7 @@ from html import escape as h
 from site_common import (
     head_common, theme_button, site_footer, mark_svg, TELEGRAM_NAME, SITE_DOMAIN, COMMON_JS,
     CLOUD_JS, BASE_URL, METRIKA_ID, SITE_OWNER, PRIVACY_CONTACT, PRIVACY_CONTACT_TEXT,
-    PRIVACY_DATE, AUTH_API_URL, YANDEX_CLIENT_ID, VK_CLIENT_ID, museum_page,
+    PRIVACY_DATE, AUTH_API_URL, YANDEX_CLIENT_ID, VK_CLIENT_ID, museum_page, has_afisha,
 )
 import logging
 from .config import IMAGES_DIR, OUTPUT_DIR
@@ -345,6 +345,8 @@ def generate_sitemap(all_posts, visits=None):
     urls.append(f"  <url><loc>{bu}/privacy.html</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>")
     # Посещения — только если они есть: ссылка на несуществующую
     # страницу в карте сайта портит её целиком.
+    if has_afisha():
+        urls.append(f"  <url><loc>{bu}/afisha.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>")
     visits = visits or []
     if visits:
         urls.append(f"  <url><loc>{bu}/visits.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>")

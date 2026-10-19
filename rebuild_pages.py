@@ -145,6 +145,10 @@ def main():
     bs.generate_museum_pages(meta, visits)
     print("✓ Страницы музеев")
 
+    # Афиша: крупные выставки в России и в мире (afisha.json).
+    if bs.generate_afisha(bs.museum_names(meta, visits)):
+        print("✓ Афиша")
+
     bs.save_image_sizes()
 
     # Метки не на своём месте — последними, чтобы не потерялись в логе.

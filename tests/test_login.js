@@ -179,7 +179,13 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
      await page.evaluate(() => {
        const cards = document.getElementById('cards').getBoundingClientRect().top;
        const bar = document.querySelector('.results-bar').getBoundingClientRect().top;
-       return cards > 0 && bar < cards && bar < 500;
+       // Над списком — шапка и блоки «Идёт сейчас» и афиши; между ними и
+       // строкой над картинами ничего лишнего быть не должно.
+       const above = Math.max(...['body > header', '#now-on', '#afisha-block'].map(sel => {
+         const el = document.querySelector(sel);
+         return el && !el.hidden ? el.getBoundingClientRect().bottom : 0;
+       }));
+       return cards > 0 && bar < cards && bar - above < 120;
      }));
   ok('на главной «Избранное» знает облачную отметку',
      await page.evaluate(() => /\(1\)/.test((document.getElementById('fav-count') || {}).textContent || '')),

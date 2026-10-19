@@ -12,7 +12,7 @@ from html import escape as h
 from site_common import (
     head_common, scroll_top_button, theme_button, site_footer, hires_url, COMMON_JS,
     SCROLL_TOP_JS, LUPA_JS, TOAST_JS, SHARE_JS, BASE_URL, place_parts, visit_organizers,
-    visit_kind_label, name_head,
+    visit_kind_label,
 )
 import logging
 from .config import OUTPUT_DIR
@@ -640,16 +640,15 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
 
 
 # ======================================================================
-#              «ИДЁТ СЕЙЧАС» И КАЛЕНДАРЬ ВЫСТАВОК
+#                          «ИДЁТ СЕЙЧАС»
 # ======================================================================
 #
 # Сроки у выставок уже есть (run). Из них — блок «Идёт сейчас» на главной
-# и в посещениях и календарь exhibitions.ics, на который можно подписаться
-# в Google, Яндекс или Apple Календаре: новые выставки появятся там сами.
-# Что идёт сегодня, решает браузер (как и плашка «Идёт до…»): собранная
-# страница не знает, в какой день её откроют.
+# и в посещениях: выставки, где я был и которые ещё идут. Что идёт
+# сегодня, решает браузер (как и плашка «Идёт до…»): собранная страница
+# не знает, в какой день её откроют. Крупные выставки в России и в мире,
+# где я не был, — в «Афише» (sitebuild/afisha.py).
 
-CALENDAR_FILE = "exhibitions.ics"
 
 
 def exhibitions(visits):
@@ -666,16 +665,6 @@ def venue_line(visit, map_names):
         return (visit.get("place") or "").strip()
     city = museum_info(card).get("city") or ""
     return card if (not city or city in card) else f"{card}, {city}"
-
-
-def calendar_links():
-    """Ссылки подписки на календарь выставок."""
-    host = BASE_URL.split("://", 1)[-1]
-    webcal = f"webcal://{host}/{CALENDAR_FILE}"
-    google = "https://calendar.google.com/calendar/render?cid=" + quote(webcal, safe="")
-    return (f'<a href="{h(webcal)}">Подписаться на календарь</a> · '
-            f'<a href="{h(google)}" target="_blank" rel="noopener">Google Календарь</a> · '
-            f'<a href="{CALENDAR_FILE}" download>файл .ics</a>')
 
 
 def now_on_block(visits, all_posts=None, today=None):
@@ -698,8 +687,7 @@ def now_on_block(visits, all_posts=None, today=None):
         for v, d in upcoming)
     return (f'<section class="now-on" id="now-on" aria-labelledby="now-on-title" hidden>'
             f'<h2 id="now-on-title" class="now-title">Идёт сейчас</h2>'
-            f'<ul class="now-list">{items}</ul>'
-            f'<p class="now-cal">{calendar_links()}</p></section>')
+            f'<ul class="now-list">{items}</ul></section>')
 
 
 NOW_ON_JS = """<script>
@@ -737,75 +725,15 @@ NOW_ON_JS = """<script>
 </script>"""
 
 
-def ics_escape(text):
-    """Текст для календаря: \\, запятая, точка с запятой и перевод строки."""
-    return (str(text or "").replace("\\", "\\\\").replace(";", "\\;")
-            .replace(",", "\\,").replace("\n", "\\n"))
-
-
-def ics_fold(line):
-    """Строка календаря не длиннее 75 байт: дальше — перенос с пробелом."""
-    out, chunk = [], ""
-    for ch in line:
-        if len((chunk + ch).encode("utf-8")) > (75 if not out else 74):
-            out.append(chunk)
-            chunk = ch
-        else:
-            chunk += ch
-    out.append(chunk)
-    return "\r\n ".join(out)
-
-
-def render_calendar(visits, all_posts=None):
-    """Календарь выставок (RFC 5545): событие на весь срок каждой выставки.
-
-    Даты — целыми днями, без часов и поясов: выставка «идёт» весь день.
-    Конец события в календаре не включается, поэтому к последнему дню
-    прибавляется один. Метка времени — день поста, а не сборки: иначе
-    файл менялся бы при каждой сборке без единой новой выставки.
-    """
-    from datetime import date, timedelta
-    map_names = visit_map_names(visits, all_posts)
-    domain = BASE_URL.split("://", 1)[-1]
-    lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Old Picture Art//Выставки//RU",
-             "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
-             "X-WR-CALNAME:Выставки — Old Picture Art",
-             "X-WR-CALDESC:" + ics_escape("Выставки, где я побывал: сроки работы и снимки на oldpictureart.ru"),
-             "REFRESH-INTERVAL;VALUE=DURATION:P1D", "X-PUBLISHED-TTL:P1D"]
-    for v, (start, end) in exhibitions(visits):
-        last = date.fromisoformat(end) + timedelta(days=1)
-        card = map_names.get((v.get("place") or "").strip(), "")
-        address = museum_info(card).get("address", "") if card else ""
-        # Адрес уже с городом — к нему только название места без города.
-        where = f"{name_head(card)}, {address}" if address else venue_line(v, map_names)
-        stamp = (v.get("date") or start).replace("-", "") + "T000000Z"
-        details = [f"Срок работы: {v.get('run', '')}"]
-        if v.get("visited"):
-            details.append(f"Побывал: {v['visited']}")
-        details.append(f"Снимки: {BASE_URL}/{v['filename']}")
-        lines += ["BEGIN:VEVENT",
-                  f"UID:{v['filename'][:-5]}@{domain}",
-                  f"DTSTAMP:{stamp}",
-                  f"DTSTART;VALUE=DATE:{start.replace('-', '')}",
-                  f"DTEND;VALUE=DATE:{last.strftime('%Y%m%d')}",
-                  "SUMMARY:" + ics_escape(f"Выставка «{visit_heading(v)}»"),
-                  "LOCATION:" + ics_escape(where),
-                  "DESCRIPTION:" + ics_escape("\n".join(details)),
-                  f"URL:{BASE_URL}/{quote(v['filename'])}",
-                  "TRANSP:TRANSPARENT",
-                  "END:VEVENT"]
-    lines.append("END:VCALENDAR")
-    return "\r\n".join(ics_fold(x) for x in lines) + "\r\n"
-
-
-def generate_calendar(visits, all_posts=None):
-    """Пишет docs/exhibitions.ics. Возвращает число выставок в нём."""
-    text = render_calendar(visits, all_posts)
-    with open(os.path.join(OUTPUT_DIR, CALENDAR_FILE), "w", encoding="utf-8", newline="") as f:
-        f.write(text)
-    count = len(exhibitions(visits))
-    logger.info(f"Календарь выставок: {count}")
-    return count
+def drop_calendar(out_dir=None):
+    """Календарь выставок (exhibitions.ics) убран 19.10.2026. У кого он
+    остался от прежней сборки — файл убираем, чтобы не висел без ссылок."""
+    stale = os.path.join(out_dir or OUTPUT_DIR, "exhibitions.ics")
+    if os.path.exists(stale):
+        os.remove(stale)
+        logger.info("Убран прежний календарь выставок exhibitions.ics")
+        return True
+    return False
 
 
 def generate_visit_pages(visits, all_posts=None):
@@ -821,7 +749,7 @@ def generate_visit_pages(visits, all_posts=None):
             f.write(render_visit_page(v, visits, all_posts, map_names))
     with open(os.path.join(OUTPUT_DIR, "visits.html"), "w", encoding="utf-8", newline="\n") as f:
         f.write(render_visits_page(visits, all_posts))
-    generate_calendar(visits, all_posts)
+    drop_calendar()
     # Заголовок поста могли поправить — имя страницы тогда меняется,
     # а прежняя остаётся в docs/ навсегда и попадает в поиск.
     # Прежние адреса посещений оставляем перенаправлениями, а не сносим:
@@ -859,15 +787,10 @@ __all__ = [
     'render_visits_page',
     'visit_jsonld',
     'render_visit_page',
-    'CALENDAR_FILE',
     'exhibitions',
     'venue_line',
-    'calendar_links',
     'now_on_block',
     'NOW_ON_JS',
-    'ics_escape',
-    'ics_fold',
-    'render_calendar',
-    'generate_calendar',
+    'drop_calendar',
     'generate_visit_pages',
 ]
