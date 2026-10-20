@@ -113,6 +113,9 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
   // ============ 4. Фильтр по годам и порядок записей ============
   {
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    // Плашка про Метрику прибита к низу экрана и закрывает сайдбар, когда
+    // над ним блоки «Идёт сейчас» и афиши; здесь проверяется не она.
+    await ctx.addInitScript(() => { try { localStorage.setItem('consent-metrika', 'no'); } catch (e) {} });
     const page = await ctx.newPage();
     await page.goto(f('index.html'));
     await page.waitForTimeout(700);

@@ -45,6 +45,16 @@ SOON_DAYS = 92
 # На главной — столько выставок в каждой колонке.
 INDEX_COUNT = 3
 REQUIRED = ("title", "venue", "city", "country", "start", "end", "url")
+# Во вкладке «Россия» выставок много — её можно сузить до Москвы, Петербурга
+# или остальных городов. Город относится к Москве или Петербургу по этим
+# спискам (пригороды тоже); любой другой — «Другие города». Если город не
+# угадывается, в записи можно указать "area": "moscow" | "spb" | "regions".
+AREAS = (("moscow", "Москва"), ("spb", "Петербург"), ("regions", "Другие города"))
+MOSCOW_AREA = {"Москва", "Абрамцево", "Архангельское", "Серпухов", "Коломна", "Сергиев Посад", "Истра",
+               "Новый Иерусалим", "Мелихово", "Мураново", "Подольск", "Клин", "Звенигород", "Дмитров",
+               "Можайск", "Бородино", "Кусково", "Коломенское", "Царицыно", "Ясенево"}
+SPB_AREA = {"Санкт-Петербург", "Петербург", "Петергоф", "Пушкин", "Царское Село", "Павловск", "Гатчина",
+            "Ломоносов", "Ораниенбаум", "Кронштадт", "Стрельна", "Репино"}
 _MONTHS = ("января", "февраля", "марта", "апреля", "мая", "июня", "июля",
           "августа", "сентября", "октября", "ноября", "декабря")
 
@@ -73,6 +83,8 @@ def problems(item):
         out.append("end раньше start")
     if item.get("url") and not re.match(r"https?://", str(item["url"])):
         out.append("url должен начинаться с https://")
+    if item.get("area") and item["area"] not in dict(AREAS):
+        out.append(f"area бывает только {', '.join(k for k, _ in AREAS)}")
     return out
 
 
@@ -110,6 +122,21 @@ def afisha_id(item):
 
 def region(item):
     return "russia" if (item.get("country") or "").strip() == RUSSIA else "world"
+
+
+def area(item):
+    """Для записей России: 'moscow', 'spb' или 'regions'; для мира — ''."""
+    if region(item) != "russia":
+        return ""
+    explicit = (item.get("area") or "").strip()
+    if explicit in dict(AREAS):
+        return explicit
+    city = (item.get("city") or "").strip()
+    if city in MOSCOW_AREA:
+        return "moscow"
+    if city in SPB_AREA:
+        return "spb"
+    return "regions"
 
 
 def phase(item, today):
@@ -170,8 +197,9 @@ def afisha_item(item, known):
     link = museum_link(item, known)
     return (
         f'<li class="afisha-item" id="{h(item["id"])}" data-start="{h(item["start"])}" '
-        f'data-end="{h(item["end"])}" data-region="{region(item)}">'
-        f'<h3 class="afisha-title"><a href="{h(item["url"])}" target="_blank" rel="noopener">'
+        f'data-end="{h(item["end"])}" data-region="{region(item)}"'
+        + (f' data-area="{area(item)}"' if area(item) else "") + '>'
+        + f'<h3 class="afisha-title"><a href="{h(item["url"])}" target="_blank" rel="noopener">'
         f'{h(item["title"])}</a></h3>'
         + (f'<p class="afisha-orig">{h(orig)}</p>' if orig and orig != item["title"] else "")
         + f'<p class="afisha-where">{h(where_line(item))}</p>'
@@ -195,10 +223,12 @@ def afisha_block(items, today=None):
         rows = parts[key]["running"] + parts[key]["soon"]
         if not rows:
             continue
+        # Строка — в две линии: название (длинное обрезается многоточием,
+        # целиком — во всплывающей подсказке) и «музей, город · срок».
         lis = "".join(
             f'<li class="now-item" data-start="{h(it["start"])}" data-end="{h(it["end"])}" hidden>'
-            f'<a href="{AFISHA_PAGE}#{h(it["id"])}">{h(it["title"])}</a>'
-            f'<span class="now-where">{h(it["venue"])}, {h(it["city"])}</span>'
+            f'<a href="{AFISHA_PAGE}#{h(it["id"])}" title="{h(it["title"])}">{h(it["title"])}</a>'
+            f'<span class="now-where">{h(it["venue"].split(",")[0].strip())}, {h(it["city"])}</span>'
             f'<span class="now-when"></span></li>'
             for it in rows)
         cols.append(f'<div class="afisha-col" data-region="{key}"><h3 class="afisha-col-title">{label}</h3>'
@@ -270,13 +300,15 @@ AFISHA_JS = """<script>
   if (!page) return;
   var lists = {running: document.getElementById('afisha-running'), soon: document.getElementById('afisha-soon')};
   var items = Array.prototype.slice.call(page.querySelectorAll('.afisha-item'));
-  var counts = {russia: 0, world: 0};
+  var counts = {russia: 0, world: 0, all: 0, moscow: 0, spb: 0, regions: 0};
   items.forEach(function (li) {
     var st = mark(li, __SOON__);
     li.setAttribute('data-phase', st);
     if (st === 'ended' || st === 'later') { li.remove(); return; }
     lists[st].appendChild(li);
     counts[li.getAttribute('data-region')]++;
+    var ar = li.getAttribute('data-area');
+    if (ar) { counts[ar]++; counts.all++; }
   });
   function order(list, attr) {
     Array.prototype.slice.call(list.children)
@@ -286,14 +318,22 @@ AFISHA_JS = """<script>
   order(lists.running, 'data-end');
   order(lists.soon, 'data-start');
   var buttons = Array.prototype.slice.call(document.querySelectorAll('.afisha-switch button'));
-  buttons.forEach(function (b) {
+  var areaBox = document.querySelector('.afisha-area');
+  var areaBtns = Array.prototype.slice.call(document.querySelectorAll('.afisha-area button'));
+  function count(b, key) {
     var c = b.querySelector('.visit-count');
-    if (c) c.textContent = counts[b.getAttribute('data-region')];
-  });
-  function show(reg) {
+    if (c) c.textContent = counts[key];
+  }
+  buttons.forEach(function (b) { count(b, b.getAttribute('data-region')); });
+  // Город, где сегодня ничего не идёт, из переключателя убираем.
+  areaBtns.forEach(function (b) { count(b, b.getAttribute('data-area')); b.hidden = !counts[b.getAttribute('data-area')]; });
+  var state = {reg: 'russia', area: 'all'};
+  function show(reg, ar) {
+    state.reg = reg;
+    state.area = ar = (reg === 'russia' && ar && counts[ar]) ? ar : 'all';
     var shown = {running: 0, soon: 0};
     Array.prototype.forEach.call(page.querySelectorAll('.afisha-item'), function (li) {
-      var ok = li.getAttribute('data-region') === reg;
+      var ok = li.getAttribute('data-region') === reg && (ar === 'all' || li.getAttribute('data-area') === ar);
       li.hidden = !ok;
       if (ok) shown[li.getAttribute('data-phase')]++;
     });
@@ -301,15 +341,21 @@ AFISHA_JS = """<script>
     document.getElementById('afisha-soon-box').hidden = !shown.soon;
     document.getElementById('afisha-empty').hidden = !!(shown.running || shown.soon);
     buttons.forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-region') === reg ? 'true' : 'false'); });
-    try { localStorage.setItem('afishaRegion', reg); } catch (e) {}
+    areaBtns.forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-area') === ar ? 'true' : 'false'); });
+    // Переключатель городов нужен только России, и только если городов больше одного.
+    if (areaBox) areaBox.hidden = reg !== 'russia' || areaBtns.filter(function (b) { return !b.hidden; }).length < 3;
+    try { localStorage.setItem('afishaRegion', reg); localStorage.setItem('afishaArea', ar); } catch (e) {}
   }
-  buttons.forEach(function (b) { b.addEventListener('click', function () { show(b.getAttribute('data-region')); }); });
-  // Пришли по ссылке на запись — открываем её вкладку.
+  buttons.forEach(function (b) { b.addEventListener('click', function () { show(b.getAttribute('data-region'), state.area); }); });
+  areaBtns.forEach(function (b) { b.addEventListener('click', function () { show('russia', b.getAttribute('data-area')); }); });
+  // Пришли по ссылке на запись — открываем её вкладку (и все города).
   var target = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
-  var reg = target && target.getAttribute('data-region');
-  if (!reg) { try { reg = localStorage.getItem('afishaRegion'); } catch (e) {} }
+  var reg = target && target.getAttribute('data-region'), ar = 'all';
+  if (!reg) {
+    try { reg = localStorage.getItem('afishaRegion'); ar = localStorage.getItem('afishaArea') || 'all'; } catch (e) {}
+  }
   if (reg !== 'world') reg = 'russia';
-  show(reg);
+  show(reg, ar);
   if (target && !target.hidden) { target.classList.add('afisha-target'); target.scrollIntoView(); }
 })();
 </script>""".replace("__COUNT__", str(INDEX_COUNT)).replace("__SOON__", str(SOON_DAYS))
@@ -325,6 +371,11 @@ def render_afisha_page(items, updated="", known=(), today=None):
     soon = sorted(parts["russia"]["soon"] + parts["world"]["soon"], key=lambda x: x["start"])
     n_ru = len(parts["russia"]["running"]) + len(parts["russia"]["soon"])
     n_world = len(parts["world"]["running"]) + len(parts["world"]["soon"])
+    ru_live = parts["russia"]["running"] + parts["russia"]["soon"]
+    area_btns = "".join(
+        f'<button type="button" data-area="{key}" aria-pressed="false">{label}'
+        f'<span class="visit-count">{sum(1 for it in ru_live if area(it) == key)}</span></button>'
+        for key, label in AREAS)
     upd = _iso(updated)
     upd_text = f"Список обновлён {ru_date(upd)}. " if upd else ""
     head = head_common(
@@ -350,6 +401,10 @@ def render_afisha_page(items, updated="", known=(), today=None):
     <div class="view-switch afisha-switch" role="group" aria-label="Где">
       <button type="button" data-region="russia" aria-pressed="true">Россия<span class="visit-count">{n_ru}</span></button>
       <button type="button" data-region="world" aria-pressed="false">Мир<span class="visit-count">{n_world}</span></button>
+    </div>
+    <div class="view-switch afisha-area" role="group" aria-label="Где в России">
+      <button type="button" data-area="all" aria-pressed="true">Все города<span class="visit-count">{n_ru}</span></button>
+      {area_btns}
     </div>
   </div>
 </header>
@@ -424,7 +479,7 @@ def generate_afisha(known=(), today=None, path=AFISHA_FILE):
 
 __all__ = [
     'AFISHA_FILE', 'AFISHA_PAGE', 'RUSSIA', 'MIN_RUNNING', 'STALE_DAYS', 'SOON_DAYS', 'INDEX_COUNT',
-    'REQUIRED', 'problems', 'load_afisha', 'afisha_id', 'region', 'phase',
+    'REQUIRED', 'AREAS', 'MOSCOW_AREA', 'SPB_AREA', 'area', 'problems', 'load_afisha', 'afisha_id', 'region', 'phase',
     'ru_date', 'date_range', 'split', 'where_line', 'museum_link', 'afisha_item', 'afisha_block',
     'AFISHA_JS', 'render_afisha_page', 'afisha_report', 'generate_afisha',
 ]

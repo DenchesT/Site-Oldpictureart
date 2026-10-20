@@ -89,8 +89,32 @@ const state = page => page.evaluate(() => {
   ok('счётчик на вкладке — сколько записей на ней', st.counts[0] === expectRu && st.running.length + st.soon.length === expectRu,
      `${st.counts[0]} / ${st.running.length + st.soon.length} / ждали ${expectRu}`);
 
+  // Города России.
+  const areaOf = x => x.area || (['Москва', 'Абрамцево', 'Архангельское', 'Серпухов', 'Коломна', 'Сергиев Посад', 'Истра'].includes(x.city) ? 'moscow'
+    : ['Санкт-Петербург', 'Петергоф', 'Пушкин', 'Павловск', 'Гатчина', 'Ломоносов', 'Кронштадт'].includes(x.city) ? 'spb' : 'regions');
+  const live = data.filter(x => x.country === 'Россия' && x.end >= DAY && (x.start <= DAY || (new Date(x.start) - new Date(DAY)) / 864e5 <= 92));
+  const areaHere = await page.evaluate(() => ({
+    shown: !document.querySelector('.afisha-area').hidden,
+    btns: [...document.querySelectorAll('.afisha-area button')].filter(b => !b.hidden)
+      .map(b => [b.dataset.area, +b.querySelector('.visit-count').textContent]),
+  }));
+  ok('во вкладке «Россия» — переключатель городов', areaHere.shown, JSON.stringify(areaHere));
+  const wantAreas = ['moscow', 'spb', 'regions'].filter(a => live.some(x => areaOf(x) === a));
+  ok('…с числом выставок в каждом городе', wantAreas.every(a => (areaHere.btns.find(b => b[0] === a) || [])[1] === live.filter(x => areaOf(x) === a).length),
+     JSON.stringify(areaHere.btns));
+  if (wantAreas.includes('moscow')) {
+    await page.click('.afisha-area [data-area="moscow"]');
+    st = await state(page);
+    const moscowIds = await page.evaluate(() => [...document.querySelectorAll('.afisha-item')].filter(li => !li.hidden).map(li => li.dataset.area));
+    ok('«Москва» — только московские выставки', moscowIds.length && moscowIds.every(a => a === 'moscow'), moscowIds.join(','));
+    await page.reload();
+    await page.waitForTimeout(200);
+    ok('…выбор города запоминается', await page.$eval('.afisha-area [data-area="moscow"]', b => b.getAttribute('aria-pressed')) === 'true');
+    await page.click('.afisha-area [data-area="all"]');
+  }
   await page.click('.afisha-switch [data-region="world"]');
   st = await state(page);
+  ok('во вкладке «Мир» переключателя городов нет', await page.$eval('.afisha-area', e => e.hidden));
   ok('вкладка «Мир» переключает список', st.pressed === 'world' && st.running.length && st.running.every(r => r.region === 'world'));
   const lastDays = st.running.find(r => r.last);
   const inWeek = data.find(x => x.country !== 'Россия' && x.start <= DAY && x.end >= DAY &&

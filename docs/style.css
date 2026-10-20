@@ -2357,12 +2357,28 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
   font-weight: 600;
   color: var(--text);
 }
+/* На главной строка выставки — в две линии, чтобы блок не растягивался:
+   название в одну строку с многоточием, под ним музей, город и срок. */
+.afisha-block .now-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--s3); row-gap: 0; }
+.afisha-block .now-item[hidden] { display: none; }
+.afisha-block .now-item a { grid-column: 1 / -1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.afisha-block .now-where { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.afisha-block .now-when { justify-self: end; }
+@media (max-width: 600px) {
+  .afisha-block .now-item { grid-template-columns: minmax(0, 1fr); }
+  .afisha-block .now-where { white-space: normal; }
+  .afisha-block .now-when { justify-self: start; }
+}
 .afisha-more { margin: var(--s3) 0 0; font-size: var(--fs-sm); }
 .afisha-more a { color: var(--link); }
 .now-on:not([hidden]) + .afisha-block { margin-top: calc(-1 * var(--s3)); }
 
 .afisha { max-width: 860px; }
 .afisha-section[hidden] { display: none; }
+/* Города России — отдельными «фишками»: в одну рамку на телефоне не влезают. */
+.afisha-area { flex-wrap: wrap; gap: 4px; border: 0; overflow: visible; }
+.afisha-area[hidden] { display: none; }
+.afisha-area button, .afisha-area button + button { border: 1px solid var(--border); border-radius: 2px; }
 .afisha-list { list-style: none; margin: 0 0 var(--s5); padding: 0; }
 .afisha-item {
   padding: var(--s3) 0 var(--s3) var(--s3);

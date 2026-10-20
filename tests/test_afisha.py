@@ -54,6 +54,14 @@ ok("хорошая запись — без замечаний", af.problems(item
 ok("нет поля — замечание", any("venue" in p for p in af.problems({k: v for k, v in item("Моне").items() if k != "venue"})))
 ok("дата не ГГГГ-ММ-ДД — замечание", any("start" in p for p in af.problems(item("Моне", start="01.09.2026"))))
 ok("конец раньше начала — замечание", any("раньше" in p for p in af.problems(item("Моне", start="2026-12-01", end="2026-11-01"))))
+ok("area — только moscow, spb или regions", any("area" in p for p in af.problems(item("Моне", area="москва"))))
+ok("город России: Москва и Подмосковье", af.area(item("М", country="Россия", city="Москва")) == "moscow"
+   and af.area(item("А", country="Россия", city="Абрамцево")) == "moscow")
+ok("…Петербург и пригороды", af.area(item("П", country="Россия", city="Санкт-Петербург")) == "spb"
+   and af.area(item("Г", country="Россия", city="Гатчина")) == "spb")
+ok("…остальное — «Другие города»", af.area(item("К", country="Россия", city="Казань")) == "regions")
+ok("…город не угадался — можно указать area", af.area(item("Х", country="Россия", city="Хотьково", area="moscow")) == "moscow")
+ok("у выставок мира города нет", af.area(item("Л", city="Лондон")) == "")
 ok("ссылка не http(s) — замечание", any("url" in p for p in af.problems(item("Моне", url="www.example.org"))))
 
 tmp = tempfile.mkdtemp()
@@ -111,6 +119,12 @@ try:
        'data-region="russia" aria-pressed="true">Россия<span class="visit-count">2</span>' in page
        and 'data-region="world" aria-pressed="false">Мир<span class="visit-count">3</span>' in page)
     ok("дата обновления списка", "Список обновлён 19 октября 2026" in page)
+    ok("переключатель городов России со счётчиками",
+       'data-area="all" aria-pressed="true">Все города<span class="visit-count">2</span>' in page
+       and 'data-area="spb" aria-pressed="false">Петербург<span class="visit-count">1</span>' in page
+       and 'data-area="regions" aria-pressed="false">Другие города<span class="visit-count">1</span>' in page)
+    ok("у записи России — город, у мира — нет", 'data-region="russia" data-area="spb"' in page
+       and 'data-region="world" data-area' not in page)
     ok("адрес страницы — канонический", f'{sc.BASE_URL}/afisha.html' in page)
 
     # ---------- блок на главной ----------
