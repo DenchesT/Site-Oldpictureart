@@ -1,7 +1,9 @@
 // Афиша в браузере: что идёт «сегодня», решает скрипт, и «сегодня» здесь
 // подставляется. Проверяется страница afisha.html (вкладки, порядок,
 // «последние дни», «откроется …», закончившиеся исчезают, переход по
-// ссылке на запись) и блок на главной (по три в колонке, ссылки на записи).
+// ссылке на запись, фильтры города, страны и эпохи, «Успеть на этой
+// неделе», «Рядом со мной», карта и её подсказки, «На сайте: …», «Был»)
+// и раздел в панели главной.
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
@@ -18,11 +20,12 @@ async function openAt(ctx, file, today) {
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
+  // «Сегодня» сдвинуто, но часы идут: анимациям карты нужно время.
   await page.addInitScript(t => {
-    const Real = Date, fixed = new Real(t).getTime();
-    function FakeDate(...a) { return a.length ? new Real(...a) : new Real(fixed); }
+    const Real = Date, shift = new Real(t).getTime() - Real.now();
+    function FakeDate(...a) { return a.length ? new Real(...a) : new Real(Real.now() + shift); }
     FakeDate.prototype = Real.prototype;
-    FakeDate.now = () => fixed;
+    FakeDate.now = () => Real.now() + shift;
     FakeDate.UTC = Real.UTC;
     FakeDate.parse = Real.parse;
     window.Date = FakeDate;
@@ -89,32 +92,61 @@ const state = page => page.evaluate(() => {
   ok('счётчик на вкладке — сколько записей на ней', st.counts[0] === expectRu && st.running.length + st.soon.length === expectRu,
      `${st.counts[0]} / ${st.running.length + st.soon.length} / ждали ${expectRu}`);
 
-  // Города России.
+  // Города России — выпадающий список.
   const areaOf = x => x.area || (['Москва', 'Абрамцево', 'Архангельское', 'Серпухов', 'Коломна', 'Сергиев Посад', 'Истра'].includes(x.city) ? 'moscow'
     : ['Санкт-Петербург', 'Петергоф', 'Пушкин', 'Павловск', 'Гатчина', 'Ломоносов', 'Кронштадт'].includes(x.city) ? 'spb' : 'regions');
-  const live = data.filter(x => x.country === 'Россия' && x.end >= DAY && (x.start <= DAY || (new Date(x.start) - new Date(DAY)) / 864e5 <= 92));
-  const areaHere = await page.evaluate(() => ({
-    shown: !document.querySelector('.afisha-area').hidden,
-    btns: [...document.querySelectorAll('.afisha-area button')].filter(b => !b.hidden)
-      .map(b => [b.dataset.area, +b.querySelector('.visit-count').textContent]),
-  }));
-  ok('во вкладке «Россия» — переключатель городов', areaHere.shown, JSON.stringify(areaHere));
+  const liveOf = ru => data.filter(x => (x.country === 'Россия') === ru && x.end >= DAY && (x.start <= DAY || (new Date(x.start) - new Date(DAY)) / 864e5 <= 92));
+  const live = liveOf(true), liveWorld = liveOf(false);
+  const opts = id => page.evaluate(i => [...document.querySelectorAll('#' + i + ' option')].filter(o => !o.hidden)
+    .map(o => [o.value, +((o.textContent.match(/\((\d+)\)/) || [])[1])]), id);
+  ok('во вкладке «Россия» — выбор города, страны нет',
+     await page.$eval('#afisha-area-box', e => !e.hidden) && await page.$eval('#afisha-country-box', e => e.hidden));
+  const areaOpts = await opts('afisha-area');
   const wantAreas = ['moscow', 'spb', 'regions'].filter(a => live.some(x => areaOf(x) === a));
-  ok('…с числом выставок в каждом городе', wantAreas.every(a => (areaHere.btns.find(b => b[0] === a) || [])[1] === live.filter(x => areaOf(x) === a).length),
-     JSON.stringify(areaHere.btns));
+  ok('…с числом выставок в каждом городе', wantAreas.every(a => (areaOpts.find(o => o[0] === a) || [])[1] === live.filter(x => areaOf(x) === a).length),
+     JSON.stringify(areaOpts));
   if (wantAreas.includes('moscow')) {
-    await page.click('.afisha-area [data-area="moscow"]');
-    st = await state(page);
+    await page.selectOption('#afisha-area', 'moscow');
     const moscowIds = await page.evaluate(() => [...document.querySelectorAll('.afisha-item')].filter(li => !li.hidden).map(li => li.dataset.area));
     ok('«Москва» — только московские выставки', moscowIds.length && moscowIds.every(a => a === 'moscow'), moscowIds.join(','));
     await page.reload();
     await page.waitForTimeout(200);
-    ok('…выбор города запоминается', await page.$eval('.afisha-area [data-area="moscow"]', b => b.getAttribute('aria-pressed')) === 'true');
-    await page.click('.afisha-area [data-area="all"]');
+    ok('…выбор города запоминается', await page.$eval('#afisha-area', s => s.value) === 'moscow');
+    await page.selectOption('#afisha-area', 'all');
   }
+  // Эпоха.
+  const tagged = live.filter(x => (x.tags || []).includes('russian'));
+  if (tagged.length && tagged.length < live.length) {
+    await page.selectOption('#afisha-epoch', 'russian');
+    const n = await page.evaluate(() => [...document.querySelectorAll('.afisha-item')].filter(li => !li.hidden).length);
+    ok('эпоха «Русское искусство» — только помеченные ею', n === tagged.length, `${n} из ${tagged.length}`);
+    const cnt = (await opts('afisha-area')).find(o => o[0] === 'all');
+    ok('…и числа в списке городов — с учётом эпохи', cnt && cnt[1] === tagged.length, JSON.stringify(cnt));
+    await page.selectOption('#afisha-epoch', 'all');
+  }
+  // «Успеть на этой неделе».
+  const weekWant = live.filter(x => x.start <= DAY && (new Date(x.end) - new Date(DAY)) / 864e5 <= 7).length;
+  const weekHave = await page.evaluate(() => { const w = document.getElementById('afisha-week'); return w.hidden ? 0 : w.querySelectorAll('li').length; });
+  ok('«Успеть на этой неделе» — выставки в последние дни', weekHave === weekWant, `${weekHave} из ${weekWant}`);
+  // «На сайте: …» и «Был».
+  const works = await page.$$eval('.afisha-works', ws => ws.map(w => ({
+    names: w.querySelectorAll('.afisha-works-title a').length, thumbs: w.querySelectorAll('.afisha-thumbs img').length,
+    links: [...w.querySelectorAll('a')].every(a => /^(artist-|[a-z0-9-]+\.html$)/.test(a.getAttribute('href'))) })));
+  ok('«На сайте: …» — художники ссылками и миниатюры работ',
+     works.length && works.every(w => w.names && w.thumbs && w.thumbs <= 4 && w.links), JSON.stringify(works.slice(0, 3)));
   await page.click('.afisha-switch [data-region="world"]');
   st = await state(page);
-  ok('во вкладке «Мир» переключателя городов нет', await page.$eval('.afisha-area', e => e.hidden));
+  ok('во вкладке «Мир» — выбор страны, города нет',
+     await page.$eval('#afisha-area-box', e => e.hidden) && await page.$eval('#afisha-country-box', e => !e.hidden));
+  const countries = [...new Set(liveWorld.map(x => x.country))];
+  if (countries.length > 1) {
+    const top = countries.sort((a, b) => liveWorld.filter(x => x.country === b).length - liveWorld.filter(x => x.country === a).length)[0];
+    await page.selectOption('#afisha-country', top);
+    const shownC = await page.evaluate(() => [...document.querySelectorAll('.afisha-item')].filter(li => !li.hidden).map(li => li.dataset.country));
+    ok(`страна «${top}» — только её выставки`, shownC.length === liveWorld.filter(x => x.country === top).length && shownC.every(c => c === top),
+       `${shownC.length}`);
+    await page.selectOption('#afisha-country', 'all');
+  }
   ok('вкладка «Мир» переключает список', st.pressed === 'world' && st.running.length && st.running.every(r => r.region === 'world'));
   const lastDays = st.running.find(r => r.last);
   const inWeek = data.find(x => x.country !== 'Россия' && x.start <= DAY && x.end >= DAY &&
@@ -168,6 +200,69 @@ const state = page => page.evaluate(() => {
     ok('координат нет — карты нет', !ms);
   }
   await page.close();
+
+  // ---------- «Рядом со мной» ----------
+  const located = data.filter(x => x.lat !== undefined && x.country === 'Россия' && x.end >= DAY && x.start <= DAY);
+  if (located.length && hasCoords) {
+    const here = located[0];
+    const geo = await browser.newContext({ viewport: { width: 1280, height: 900 }, permissions: ['geolocation'],
+      geolocation: { latitude: here.lat + 0.001, longitude: here.lon } });
+    page = await openAt(geo, 'afisha.html', DAY + 'T12:00:00');
+    await page.click('.afisha-switch [data-region="world"]');
+    await page.click('#afisha-near-btn');
+    await page.waitForFunction(() => document.getElementById('afisha-near-btn').getAttribute('aria-pressed') === 'true', null, { timeout: 5000 }).catch(() => null);
+    const near = await page.evaluate(() => {
+      const vis = [...document.querySelectorAll('#afisha-running .afisha-item')].filter(li => !li.hidden);
+      return { note: document.getElementById('afisha-near').textContent, tab: document.querySelector('.afisha-switch [aria-pressed="true"]').dataset.region,
+               dists: vis.filter(li => li.dataset.lat).map(li => +li.dataset.dist), label: (vis[0].querySelector('.afisha-dist') || {}).textContent || '' };
+    });
+    ok('«Рядом со мной»: ближайшая названа', /^Ближайшая — \d/.test(near.note), near.note);
+    ok('…вкладка — там, где ближайшая', near.tab === 'russia', near.tab);
+    ok('…список — по расстоянию', near.dists.length > 1 && near.dists.every((d, i, a) => !i || a[i - 1] <= d), near.dists.slice(0, 5).join(' '));
+    ok('…у выставок — расстояние («100 м», «2,1 км»)', /^\d[\d\s,]* (м|км)$/.test(near.label), near.label);
+    await page.click('#afisha-near-btn');
+    const off = await page.evaluate(() => ({ pressed: document.getElementById('afisha-near-btn').getAttribute('aria-pressed'),
+      dist: document.querySelectorAll('.afisha-dist').length }));
+    ok('…повторное нажатие — обычный порядок, расстояния убраны', off.pressed === 'false' && off.dist === 0, JSON.stringify(off));
+    await page.close();
+    await geo.close();
+    const deny = await browser.newContext({ viewport: { width: 1280, height: 900 }, permissions: [] });
+    page = await openAt(deny, 'afisha.html', DAY + 'T12:00:00');
+    await page.click('#afisha-near-btn');
+    await page.waitForFunction(() => /Нет доступа|Не получилось/.test(document.getElementById('afisha-near').textContent), null, { timeout: 8000 }).catch(() => null);
+    ok('нет разрешения — понятное объяснение, порядок прежний',
+       /Нет доступа|Не получилось/.test(await page.$eval('#afisha-near', e => e.textContent)), await page.$eval('#afisha-near', e => e.textContent));
+    await page.close();
+    await deny.close();
+  }
+
+  // ---------- телефон: карта за кнопкой, подсказка не под кнопками ----------
+  if (hasCoords) {
+    const tel = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    page = await openAt(tel, 'afisha.html', DAY + 'T12:00:00');
+    ok('на телефоне карта свёрнута, кнопка «Показать на карте»',
+       await page.evaluate(() => getComputedStyle(document.getElementById('afisha-map')).display === 'none'
+         && getComputedStyle(document.getElementById('afisha-map-toggle')).display !== 'none'));
+    // Одиночная метка (без соседей в том же здании) — у верхнего края карты.
+    const lone = located.find(x => located.filter(y => Math.abs(y.lat - x.lat) < 0.05 && Math.abs(y.lon - x.lon) < 0.05).length === 1);
+    if (lone) {
+      await page.evaluate(t => { const li = [...document.querySelectorAll('.afisha-item[data-lat]')].find(l => !l.hidden && l.querySelector('.afisha-title a').textContent === t);
+        li.querySelector('.afisha-pin').click(); }, lone.title);
+      await page.waitForSelector('#afisha-map .leaflet-popup-content', { timeout: 8000 }).catch(() => null);
+      const geom = await page.evaluate(() => {
+        const r = s => { const e = document.querySelector('#afisha-map ' + s); return e ? e.getBoundingClientRect() : null; };
+        const pop = r('.leaflet-popup-content-wrapper'), zoom = r('.leaflet-control-zoom'), lay = r('.leaflet-control-layers');
+        const m = document.getElementById('afisha-map').getBoundingClientRect();
+        const hit = (a, b) => a && b && !(a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top);
+        return { open: !!pop, shown: getComputedStyle(document.getElementById('afisha-map')).display !== 'none',
+                 zoom: hit(pop, zoom), layers: hit(pop, lay), inside: pop && pop.left >= m.left - 1 && pop.right <= m.right + 1 };
+      });
+      ok('«на карте» на телефоне раскрывает карту и подсказку', geom.open && geom.shown, JSON.stringify(geom));
+      ok('…подсказка не налезает на кнопки карты и не вылезает за край', geom.open && !geom.zoom && !geom.layers && geom.inside, JSON.stringify(geom));
+    }
+    await page.close();
+    await tel.close();
+  }
 
   // Через месяц: закончившееся ушло, открывшееся переехало в «Идут сейчас».
   const LATER = plusDays(DAY, 36);

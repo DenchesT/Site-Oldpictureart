@@ -14,7 +14,7 @@
                    сертификат Минцифры: в браузере такие обычно открываются.
 
 Запуск:
-    python check_links.py            # всё: посты, походы, сайты музеев
+    python check_links.py            # всё: посты, походы, сайты музеев, афиша
     python check_links.py --posts    # только ссылки из постов
 
 Ссылка из поста правится в самом канале, а на сайт притягивается так:
@@ -31,6 +31,7 @@ from concurrent.futures import ThreadPoolExecutor
 META_FILE = "posts_meta.json"
 VISITS_FILE = "visits_meta.json"
 OVERRIDES_FILE = "museum_overrides.json"
+AFISHA_FILE = "afisha.json"
 
 
 def load(path, default):
@@ -40,7 +41,7 @@ def load(path, default):
         return json.load(f)
 
 
-def collect(posts, visits, overrides=None, clean=lambda u: u):
+def collect(posts, visits, overrides=None, clean=lambda u: u, afisha=None):
     """{адрес: [(где стоит, подпись)]}.
 
     Один адрес может стоять на нескольких страницах — проверяется он один
@@ -74,6 +75,8 @@ def collect(posts, visits, overrides=None, clean=lambda u: u):
             continue
         if rec.get("site"):
             add(rec["site"], OVERRIDES_FILE, name)
+    for it in afisha or []:
+        add(it.get("url"), AFISHA_FILE, it.get("title") or "выставка")
     return found
 
 
@@ -115,12 +118,14 @@ def report(found, results, out=print):
             out(f"  ✗ {u}\n      {results[u][1]}")
             for where, label in found.get(u, []):
                 out(f"      на странице: {where}" + (f" ({label})" if label else ""))
-        posts_bad = any(where != OVERRIDES_FILE for u in bad for where, _ in found.get(u, []))
+        posts_bad = any(where not in (OVERRIDES_FILE, AFISHA_FILE) for u in bad for where, _ in found.get(u, []))
         if posts_bad:
             out("\n  Ссылку из поста правят в канале, а на сайт притягивают так:\n"
                 "      python build_site.py --refresh <страница из списка выше>")
         if any(where == OVERRIDES_FILE for u in bad for where, _ in found.get(u, [])):
             out(f'  Сайт музея — поле "site" в {OVERRIDES_FILE}.')
+        if any(where == AFISHA_FILE for u in bad for where, _ in found.get(u, [])):
+            out(f'  Ссылка выставки в афише — поле "url" в {AFISHA_FILE}.')
     if unclear:
         out(f"\nПроверить не вышло ({len(unclear)}) — скорее всего, в порядке, "
             "загляните глазами:")
@@ -151,10 +156,14 @@ def main():
             if not manual.get("site") and not manual.get("skip") and place_site(manual, loc):
                 overrides[name] = dict(manual, site=place_site(manual, loc))
 
-    found = collect(posts, visits, overrides, clean=clean_url)
-    from_posts = sum(1 for places in found.values() if any(w != OVERRIDES_FILE for w, _ in places))
+    afisha = []
+    if not posts_only:
+        from sitebuild.afisha import load_afisha
+        afisha = load_afisha(AFISHA_FILE)[0]
+    found = collect(posts, visits, overrides, clean=clean_url, afisha=afisha)
+    from_posts = sum(1 for places in found.values() if any(w not in (OVERRIDES_FILE, AFISHA_FILE) for w, _ in places))
     print(f"Ссылок из постов и походов: {from_posts}"
-          + ("" if posts_only else f", сайтов музеев: {len(found) - from_posts}"))
+          + ("" if posts_only else f", сайтов музеев и выставок афиши: {len(found) - from_posts}"))
     print("Проверяю…")
     results = check_all(found, check_site)
     return 1 if report(found, results) else 0

@@ -11,6 +11,10 @@
       "end": "2027-05-10",
       "url": "https://rusmuseum.ru/exhibitions/current/ayvazovskiy/",
       "note": "Ретроспектива к 210-летию: 120 картин и 30+ листов графики из РМ, ГТГ, Петергофа, ЦВММ и др.",
+      "tags": [
+        "xix",
+        "russian"
+      ],
       "museum": "Государственный Русский музей, Санкт-Петербург"
     },
     {
@@ -22,6 +26,10 @@
       "end": "2027-01-11",
       "url": "https://rusmuseum.ru/exhibitions/current/velikaya-obraz-zhenshchiny-v-russkom-iskusstve/",
       "note": "300+ работ XVIII — начала XX века: Брюллов, Серов, Петров-Водкин, Маковские",
+      "tags": [
+        "xix",
+        "russian"
+      ],
       "museum": "Государственный Русский музей, Санкт-Петербург"
     },
     {
@@ -33,6 +41,10 @@
       "end": "2026-11-09",
       "url": "https://rusmuseum.ru/exhibitions/current/ivan-shishkin-russkiy-les/",
       "note": "Большая выставка Шишкина: от монументальных лесных пейзажей до этюдов",
+      "tags": [
+        "xix",
+        "russian"
+      ],
       "museum": "Государственный Русский музей, Санкт-Петербург"
     },
     {
@@ -44,6 +56,10 @@
       "end": "2027-03-14",
       "url": "https://portal-kultura.ru/articles/news/379253-pervyy-monparnasets-i-posledniy-rytsar-impressionizma-v-ermitazhe-otkrylas-vystavka-kuznetsova/",
       "note": "21 картина импрессиониста Константина Кузнецова (1863–1936) рядом с французской живописью Эрмитажа",
+      "tags": [
+        "impr",
+        "russian"
+      ],
       "museum": "Государственный Эрмитаж",
       "source": "https://portal-kultura.ru/articles/news/379272-ermitazh-predstavil-vystavku-russkiy-parizhanin-konstantin-kuznetsov/"
     },
@@ -56,6 +72,10 @@
       "end": "2026-11-08",
       "url": "https://www.tretyakovgallery.ru/exhibitions/o/viktor-borisov-musatov-garmoniya-obraza/",
       "note": "Ретроспектива: 140+ живописных и графических работ из 20 музеев и частных собраний",
+      "tags": [
+        "russian",
+        "modern"
+      ],
       "museum": "Корпус на Кадашёвской набережной",
       "source": "https://www.tretyakovgallery.ru/tickets/exhibitions/"
     },
@@ -68,6 +88,11 @@
       "end": "2026-11-01",
       "url": "https://www.tretyakovgallery.ru/exhibitions/o/khrupkoe-iskusstvo-pastel-iz-fondov-grafiki-xviii-nachala-xx-veka/",
       "note": "150+ пастелей: Левитан, Серов, Врубель, Бенуа, Сомов, Серебрякова, Гончарова",
+      "tags": [
+        "xix",
+        "russian",
+        "modern"
+      ],
       "museum": "Государственная Третьяковская галерея, Москва",
       "source": "https://www.tretyakovgallery.ru/tickets/exhibitions/"
     },
@@ -80,6 +105,10 @@
       "end": "2027-01-17",
       "url": "https://www.tretyakovgallery.ru/exhibitions/o/pavel-tretyakov-i-vasiliy-polenov-k-170-letiyu-gosudarstvennoy-tretyakovskoy-galerei/",
       "note": "К 170-летию галереи: «Московский дворик», «Бабушкин сад» и «Христос и грешница» из Русского музея",
+      "tags": [
+        "xix",
+        "russian"
+      ],
       "museum": "Государственная Третьяковская галерея, Москва",
       "source": "https://www.tretyakovgallery.ru/tickets/exhibitions/"
     },
@@ -92,6 +121,10 @@
       "end": "2027-06-06",
       "url": "https://www.tretyakovgallery.ru/exhibitions/o/aleksey-bogolyubov-ot-nevy-do-bosfora/",
       "note": "Марины, виды городов и исторические сюжеты Боголюбова из собраний ГТГ и Русского музея",
+      "tags": [
+        "xix",
+        "russian"
+      ],
       "museum": "Государственная Третьяковская галерея, Москва",
       "source": "https://www.tretyakovgallery.ru/tickets/exhibitions/"
     },
@@ -104,6 +137,10 @@
       "end": "2027-05-16",
       "url": "https://www.tretyakovgallery.ru/exhibitions/o/aleksandr-ivanov-bibleyskie-eskizy-chudesa-i-propovedi-khrista/",
       "note": "Новая часть цикла: библейские эскизы Александра Иванова (1806–1858) из собрания галереи",
+      "tags": [
+        "xix",
+        "russian"
+      ],
       "museum": "Государственная Третьяковская галерея, Москва",
       "source": "https://www.tretyakovgallery.ru/"
     },
@@ -116,6 +153,10 @@
       "end": "2026-11-22",
       "url": "https://pushkinmuseum.art/events/archive/2026/exhibitions/gustave_fayet/index.php",
       "note": "Коллекция Файе рядом со Щукиным и Морозовым: Гоген, Редон, Матисс, Ван Гог из ГМИИ и Эрмитажа",
+      "tags": [
+        "impr",
+        "modern"
+      ],
       "museum": "ГМИИ им. А.С. Пушкина, Москва"
     },
     {
@@ -128,7 +169,11 @@
       "start": "2026-09-18",
       "end": "2027-02-17",
       "url": "https://rusmuseum.ru/exhibitions/traveling-expo/vrubel-rozhdenie-novogo-iskusstva/",
-      "note": "К 170-летию Врубеля: живопись, графика, майолика — 45 работ из Русского музея"
+      "note": "К 170-летию Врубеля: живопись, графика, майолика — 45 работ из Русского музея",
+      "tags": [
+        "russian",
+        "modern"
+      ]
     },
     {
       "title": "Искусство сцены. Академическая живопись",
@@ -140,7 +185,11 @@
       "start": "2026-09-10",
       "end": "2027-01-17",
       "url": "https://rusmuseum.ru/exhibitions/traveling-expo/",
-      "note": "72 работы академической живописи из Русского музея, к 150-летию СТД России"
+      "note": "72 работы академической живописи из Русского музея, к 150-летию СТД России",
+      "tags": [
+        "xix",
+        "russian"
+      ]
     },
     {
       "title": "Михаил Нестеров",
@@ -153,7 +202,11 @@
       "start": "2026-09-26",
       "end": "2026-12-06",
       "url": "https://rusmuseum.ru/exhibitions/traveling-expo/mikhail-nesterov-2026/",
-      "note": "Нестеров из собрания Русского музея — в родном городе художника"
+      "note": "Нестеров из собрания Русского музея — в родном городе художника",
+      "tags": [
+        "xix",
+        "russian"
+      ]
     },
     {
       "title": "Арзамасская академия",
@@ -164,6 +217,10 @@
       "end": "2026-11-15",
       "url": "https://artmuseumnn.ru/vystavki/4746/",
       "note": "Около 100 работ: Александр Ступин и его школа, Брюллов, Егоров, «Охотники на привале» Перова",
+      "tags": [
+        "xix",
+        "russian"
+      ],
       "museum": "Нижегородский государственный художественный музей"
     },
     {
@@ -177,6 +234,10 @@
       "end": "2027-01-24",
       "url": "https://yarartmuseum.ru/exhibitions/ilya-repin/",
       "note": "Выставка Репина из собрания Русского музея",
+      "tags": [
+        "xix",
+        "russian"
+      ],
       "source": "https://yarartmuseum.ru/"
     },
     {
@@ -189,7 +250,11 @@
       "start": "2026-08-26",
       "end": "2027-01-10",
       "url": "https://rusmuseum.ru/exhibitions/traveling-expo/",
-      "note": "Выездная выставка Русского музея: русский импрессионизм из собрания ГРМ"
+      "note": "Выездная выставка Русского музея: русский импрессионизм из собрания ГРМ",
+      "tags": [
+        "impr",
+        "russian"
+      ]
     },
     {
       "title": "Искусство впечатления. Импрессионизм",
@@ -201,7 +266,11 @@
       "start": "2026-09-15",
       "end": "2026-11-12",
       "url": "https://pushkinmuseum.art/events/archive/2025/exhibitions/impressionists_in_siberia/index.php",
-      "note": "Гастроли ГМИИ: французская живопись XIX — начала XX века — Курбе, Писсарро, Раффаэлли, Сезанн"
+      "note": "Гастроли ГМИИ: французская живопись XIX — начала XX века — Курбе, Писсарро, Раффаэлли, Сезанн",
+      "tags": [
+        "xix",
+        "impr"
+      ]
     },
     {
       "title": "Западноевропейское искусство XVII–XIX веков из Тульского музейного объединения",
@@ -213,7 +282,10 @@
       "start": "2026-10-23",
       "end": "2026-12-13",
       "url": "https://artmus.ru/exhibitions/id-1172.html",
-      "note": "52 вещи из Тулы: живопись Бассано, Джордано, Фетти, Снейдерса, Тенирса, Юбера Робера"
+      "note": "52 вещи из Тулы: живопись Бассано, Джордано, Фетти, Снейдерса, Тенирса, Юбера Робера",
+      "tags": [
+        "old"
+      ]
     },
     {
       "title": "Отличники",
@@ -226,6 +298,10 @@
       "end": "2027-03-14",
       "url": "https://www.rusimp.su/exhibitions/otlichniki-vystavka-v-tveri",
       "note": "С Музеем русского импрессионизма: пенсионерские поездки выпускников Академии и МУЖВЗ в Европу",
+      "tags": [
+        "xix",
+        "russian"
+      ],
       "source": "https://rusimp.su/ru/exhibitions"
     },
     {
@@ -238,6 +314,9 @@
       "end": "2027-01-31",
       "url": "https://www.musee-orsay.fr/en/whats-on/exhibitions/mary-cassatt-choice-independence",
       "note": "Ретроспектива к 100-летию смерти: около 80 картин, пастелей и гравюр американской импрессионистки",
+      "tags": [
+        "impr"
+      ],
       "museum": "Музей д’Орсе, Париж"
     },
     {
@@ -251,7 +330,10 @@
       "start": "2026-10-07",
       "end": "2027-01-25",
       "url": "https://www.louvre.fr/expositions-et-evenements/expositions/zurbaran",
-      "note": "Большая ретроспектива испанца XVII века — вместе с Лондонской НГ и Чикаго; его след у Мане и Пикассо"
+      "note": "Большая ретроспектива испанца XVII века — вместе с Лондонской НГ и Чикаго; его след у Мане и Пикассо",
+      "tags": [
+        "old"
+      ]
     },
     {
       "title": "Моне. Писать время",
@@ -264,7 +346,10 @@
       "start": "2026-09-30",
       "end": "2027-01-25",
       "url": "https://www.musee-orangerie.fr/en/whats-on/exhibitions/monet-painting-time",
-      "note": "К 100-летию смерти Моне: около 40 картин — от импрессионизма и серий 1890-х до «Кувшинок»"
+      "note": "К 100-летию смерти Моне: около 40 картин — от импрессионизма и серий 1890-х до «Кувшинок»",
+      "tags": [
+        "impr"
+      ]
     },
     {
       "title": "Ева Гонсалес. Путь свободной художницы",
@@ -276,6 +361,10 @@
       "end": "2027-01-24",
       "url": "https://www.petitpalais.paris.fr/en/node/3992",
       "note": "Первая ретроспектива единственной ученицы Мане (1847–1883): почти 100 картин, пастелей и гравюр",
+      "tags": [
+        "xix",
+        "impr"
+      ],
       "museum": "Малый дворец, музей изящных искусств города Парижа, Париж"
     },
     {
@@ -289,7 +378,10 @@
       "start": "2026-09-11",
       "end": "2027-01-24",
       "url": "https://www.musee-jacquemart-andre.com/en/timeless-tintoretto",
-      "note": "Первая во Франции ретроспектива Тинторетто: около 40 картин и рисунков венецианца XVI века"
+      "note": "Первая во Франции ретроспектива Тинторетто: около 40 картин и рисунков венецианца XVI века",
+      "tags": [
+        "old"
+      ]
     },
     {
       "title": "Гюстав Файе. Коллекционер и творец",
@@ -302,7 +394,11 @@
       "start": "2026-10-09",
       "end": "2027-03-08",
       "url": "https://www.fondationlouisvuitton.fr/en/events/gustave-fayet-collector-designer-icons-of-modern-art",
-      "note": "Собрание Файе снова вместе: Гоген (78 работ), Редон (86), Ван Гог, Сезанн, Дега — свыше 700 вещей"
+      "note": "Собрание Файе снова вместе: Гоген (78 работ), Редон (86), Ван Гог, Сезанн, Дега — свыше 700 вещей",
+      "tags": [
+        "impr",
+        "modern"
+      ]
     },
     {
       "title": "Ренуар и любовь",
@@ -316,6 +412,9 @@
       "end": "2027-01-31",
       "url": "https://www.nationalgallery.org.uk/exhibitions/renoir-and-love",
       "note": "Около 40 картин 1860–1880-х о любви и дружбе; «Бал в Мулен де ла Галетт» впервые в Британии",
+      "tags": [
+        "impr"
+      ],
       "source": "https://www.nationalgallery.org.uk/about-us/press-and-media/press-releases/renoir-and-love"
     },
     {
@@ -329,7 +428,10 @@
       "start": "2026-11-21",
       "end": "2027-04-11",
       "url": "https://www.nationalgallery.org.uk/exhibitions/van-eyck-the-portraits",
-      "note": "Впервые вместе все девять известных портретов Яна ван Эйка — половина его сохранившихся работ"
+      "note": "Впервые вместе все девять известных портретов Яна ван Эйка — половина его сохранившихся работ",
+      "tags": [
+        "old"
+      ]
     },
     {
       "title": "Французская Ривьера в живописи",
@@ -342,7 +444,11 @@
       "start": "2026-10-02",
       "end": "2027-01-31",
       "url": "https://www.royalacademy.org.uk/exhibition/painting-the-french-riviera",
-      "note": "Свыше 160 работ: Моне, Ренуар, Сезанн, Матисс, Пикассо, Брак, Дюфи — Лазурный берег с 1870-х"
+      "note": "Свыше 160 работ: Моне, Ренуар, Сезанн, Матисс, Пикассо, Брак, Дюфи — Лазурный берег с 1870-х",
+      "tags": [
+        "impr",
+        "modern"
+      ]
     },
     {
       "title": "Пегги Гуггенхайм в Лондоне. Рождение коллекционера",
@@ -355,7 +461,10 @@
       "start": "2026-11-21",
       "end": "2027-03-14",
       "url": "https://www.royalacademy.org.uk/exhibition/peggy-guggenheim-in-london",
-      "note": "Лондонская галерея Гуггенхайм 1938–1939 годов: Кандинский, Мондриан, Дали, Танги, Тойбер-Арп"
+      "note": "Лондонская галерея Гуггенхайм 1938–1939 годов: Кандинский, Мондриан, Дали, Танги, Тойбер-Арп",
+      "tags": [
+        "modern"
+      ]
     },
     {
       "title": "Гобелен из Байё",
@@ -368,7 +477,10 @@
       "start": "2026-09-10",
       "end": "2027-07-11",
       "url": "https://www.britishmuseum.org/exhibitions/bayeux-tapestry",
-      "note": "Вышивка XI века длиной около 70 м о нормандском завоевании — впервые почти за 1000 лет в Англии"
+      "note": "Вышивка XI века длиной около 70 м о нормандском завоевании — впервые почти за 1000 лет в Англии",
+      "tags": [
+        "old"
+      ]
     },
     {
       "title": "Уистлер. Денди и бунтарь",
@@ -382,6 +494,9 @@
       "end": "2027-01-10",
       "url": "https://www.vangoghmuseum.nl/en/visit/whats-on/exhibitions/whistler",
       "note": "Крупнейшая в Европе за 30 лет ретроспектива Уистлера: живопись, офорты, рисунки; вместе с Тейт",
+      "tags": [
+        "xix"
+      ],
       "source": "https://tickets.vangoghmuseum.nl/en/whistler/tickets"
     },
     {
@@ -396,6 +511,9 @@
       "end": "2027-01-17",
       "url": "https://www.mauritshuis.nl/en/what-s-on/exhibitions/thyssen-bornemisza",
       "note": "25 картин из музея Тиссен-Борнемиса: ван Эйк, Дюрер, Эль Греко, Бронзино, Пьеро делла Франческа",
+      "tags": [
+        "old"
+      ],
       "source": "https://www.mauritshuis.nl/en/press-releases/the-mauritshuis-and-museo-nacional-thyssen-bornemisza-are-exchanging-25-highlights-from-each-collection"
     },
     {
@@ -408,6 +526,9 @@
       "end": "2027-01-03",
       "url": "https://www.krollermuller.nl/en/what-s-on/exhibitions/van-gogh-all-our-paintings",
       "note": "Впервые с 1984 года все 88 картин Ван Гога из собрания музея, в том числе «Ночная терраса кафе»",
+      "tags": [
+        "impr"
+      ],
       "museum": "Музей Крёллер-Мюллер, Оттерло"
     },
     {
@@ -421,7 +542,10 @@
       "start": "2026-11-06",
       "end": "2027-02-28",
       "url": "https://franshalsmuseum.nl/en/news/hals-rembrandt",
-      "note": "Первая выставка-диалог двух мастеров портрета: 11 картин Халса и 8 Рембрандта"
+      "note": "Первая выставка-диалог двух мастеров портрета: 11 картин Халса и 8 Рембрандта",
+      "tags": [
+        "old"
+      ]
     },
     {
       "title": "Шедевры из Гааги",
@@ -434,7 +558,10 @@
       "start": "2026-10-09",
       "end": "2027-01-10",
       "url": "https://www.museothyssen.org/en/exhibitions/thyssen-bornemisza-mauritshuis",
-      "note": "25 голландских картин 1615–1705 годов из Маурицхёйса: «Вид Делфта» Вермеера, Рембрандт, Халс"
+      "note": "25 голландских картин 1615–1705 годов из Маурицхёйса: «Вид Делфта» Вермеера, Рембрандт, Халс",
+      "tags": [
+        "old"
+      ]
     },
     {
       "title": "Фрейдистская вселенная Дали",
@@ -448,6 +575,9 @@
       "end": "2027-01-24",
       "url": "https://www.museothyssen.org/exposiciones/dali-freud-paisajes-inconsciente",
       "note": "136 работ о Дали и психоанализе, главным образом сюрреализм 1922–1939 годов",
+      "tags": [
+        "modern"
+      ],
       "source": "https://www.museothyssen.org/sites/default/files/document/2026-07/NP_universo_freudiano_Dali.pdf"
     },
     {
@@ -460,6 +590,9 @@
       "end": "2027-03-28",
       "url": "https://www.museodelprado.es/actualidad/exposicion/mariana-de-austria/038ae4ff-a564-6649-63e8-f6dc61740228",
       "note": "Около 100 работ о королеве-регентше Испании XVII века: портреты придворных живописцев, скульптура, ткани",
+      "tags": [
+        "old"
+      ],
       "museum": "Национальный музей Прадо, Мадрид",
       "source": "https://www.museodelprado.es/en/whats-on/new/the-museo-del-prado-is-presenting-its-2026/86430222-cc18-1025-1b64-cdaf29fd92d0"
     },
@@ -474,7 +607,10 @@
       "start": "2026-10-09",
       "end": "2027-02-07",
       "url": "https://scuderiequirinale.it/exhibition/pontormo/",
-      "note": "Первая большая монографическая выставка Понтормо: «Встреча Марии и Елизаветы» и рисунки"
+      "note": "Первая большая монографическая выставка Понтормо: «Встреча Марии и Елизаветы» и рисунки",
+      "tags": [
+        "old"
+      ]
     },
     {
       "title": "Пикабиа. Открыть врата ночи",
@@ -488,6 +624,9 @@
       "end": "2027-01-24",
       "url": "https://www.palazzorealemilano.it/en/-/picabia.-aprire-le-porte-della-notte",
       "note": "Свыше 170 работ Франсиса Пикабиа: импрессионизм, фовизм, кубизм, дада",
+      "tags": [
+        "modern"
+      ],
       "source": "https://www.mentelocale.it/milano/137707-picabia-aprire-le-porte-della-notte-mostra-a-palazzo-reale.htm"
     },
     {
@@ -502,6 +641,9 @@
       "end": "2027-03-14",
       "url": "https://www.smb.museum/museen-einrichtungen/gemaeldegalerie/ausstellungen/detail/portraets/",
       "note": "Портреты шести веков в неожиданных парах: Боттичелли, Дюрер, Тициан, Гольбейн, Рубенс, Гейнсборо",
+      "tags": [
+        "old"
+      ],
       "source": "https://www.smb.museum/presse/pressemitteilungen/detail/gemaeldegalerie-portraets-ueberraschende-begegnungen-von-botticelli-bis-lempicka-16102026-1432027/"
     },
     {
@@ -514,6 +656,9 @@
       "end": "2027-01-17",
       "url": "https://newsroom.staedelmuseum.de/en/topics/mary-magdalene-sin-pray-love",
       "note": "Свыше 100 картин, скульптур и гравюр: Дюрер, Жорж де Латур, Эль Греко, Гверчино, Бёклин",
+      "tags": [
+        "old"
+      ],
       "museum": "Штеделевский художественный институт, Франкфурт-на-Майне"
     },
     {
@@ -526,6 +671,9 @@
       "end": "2027-01-10",
       "url": "https://gemaeldegalerie.skd.museum/en/exhibitions/correggio/",
       "note": "Первая за пределами Италии полная ретроспектива Корреджо: «Святая ночь», «Мадонна св. Себастьяна»",
+      "tags": [
+        "old"
+      ],
       "museum": "Государственные художественные собрания Дрездена, Дрезден"
     },
     {
@@ -539,7 +687,10 @@
       "start": "2026-09-18",
       "end": "2027-01-31",
       "url": "https://www.belvedere.at/en/erika-giovanna-klien",
-      "note": "Большая выставка звезды венского кинетизма 1920-х: тела, птицы и машины в движении"
+      "note": "Большая выставка звезды венского кинетизма 1920-х: тела, птицы и машины в движении",
+      "tags": [
+        "modern"
+      ]
     },
     {
       "title": "Вильгельм Хаммерсхёй. Художник тихого звука",
@@ -553,6 +704,9 @@
       "end": "2026-10-25",
       "url": "https://www.kunsthaus.ch/besuch-planen/ausstellungen/vilhelm-hammershoi/",
       "note": "Первая большая выставка Хаммерсхёя в Швейцарии: интерьеры, портреты, виды города",
+      "tags": [
+        "xix"
+      ],
       "source": "https://www.e-flux.com/announcements/6784702/exhibition-programme-2026"
     },
     {
@@ -565,6 +719,9 @@
       "end": "2027-02-07",
       "url": "https://www.nasjonalmuseet.no/en/exhibitions-and-events/national-museum/exhibitions/2026/-painter/",
       "note": "Около 50 картин художниц XVI–XVII веков: Артемизия Джентилески, Софонисба Ангишола, Лейстер",
+      "tags": [
+        "old"
+      ],
       "museum": "Национальный музей искусства, архитектуры и дизайна, Осло",
       "source": "https://www.nasjonalmuseet.no/en/news/2026/program-2026/"
     },
@@ -578,6 +735,10 @@
       "end": "2027-02-07",
       "url": "https://www.nationalmuseum.se/en/exhibitions/upcoming-exhibitions/to-the-sea",
       "note": "Около 200 работ о морских курортах с 1870-х: Моне, Мане, Моризо, Цорн, Крёйер, Мунк",
+      "tags": [
+        "xix",
+        "impr"
+      ],
       "museum": "Национальный музей Швеции, Стокгольм"
     },
     {
@@ -590,6 +751,9 @@
       "end": "2027-02-28",
       "url": "https://www.metmuseum.org/en/exhibitions/orientalism-between-fact-and-fantasy",
       "note": "Энгр, Делакруа, Жером, Осман Хамди-бей: около 180 работ о «Востоке» в искусстве XIX века",
+      "tags": [
+        "xix"
+      ],
       "museum": "Метрополитен-музей, Нью-Йорк",
       "source": "https://www.metmuseum.org/ja/press-releases/fact-and-fantasy"
     },
@@ -603,6 +767,9 @@
       "end": "2027-01-03",
       "url": "https://www.artic.edu/exhibitions",
       "note": "Более 75 картин, пастелей и цветных гравюр 1888–1905 годов — к 100-летию смерти художницы",
+      "tags": [
+        "impr"
+      ],
       "museum": "Чикагский институт искусств, Чикаго",
       "source": "https://news.artprice.com/en/13178/mary-cassatt-after-impressionism-at-the-art-institute-of-chicago-the-modernity-of-a-modern-woman-revealed"
     },
@@ -617,7 +784,10 @@
       "start": "2026-10-10",
       "end": "2027-01-31",
       "url": "https://www.philamuseum.org/exhibitions/marcel-duchamp",
-      "note": "300+ работ, от «Обнажённой, спускающейся по лестнице» до «Фонтана»; первая ретроспектива в США за 50 лет"
+      "note": "300+ работ, от «Обнажённой, спускающейся по лестнице» до «Фонтана»; первая ретроспектива в США за 50 лет",
+      "tags": [
+        "modern"
+      ]
     },
     {
       "title": "Бранкузи: художник и его мастерская",
@@ -631,6 +801,9 @@
       "end": "2027-02-27",
       "url": "https://www.moma.org/calendar/exhibitions/5910",
       "note": "Скульптуры 1910–1930-х, мебель, фото и фильмы из парижской мастерской Бранкузи",
+      "tags": [
+        "modern"
+      ],
       "source": "https://press.moma.org/exhibition/brancusi-the-artist-and-his-studio/"
     },
     {
@@ -644,7 +817,10 @@
       "start": "2026-10-15",
       "end": "2027-01-18",
       "url": "https://www.frick.org/exhibitions/siena",
-      "note": "Почти 40 бронз Донателло, Веккьетты, Франческо ди Джорджо"
+      "note": "Почти 40 бронз Донателло, Веккьетты, Франческо ди Джорджо",
+      "tags": [
+        "old"
+      ]
     },
     {
       "title": "Юбилейная выставка к 25-летию Новой галереи",
@@ -657,7 +833,10 @@
       "start": "2026-11-12",
       "end": "2027-01-11",
       "url": "https://neuegalerie.org/",
-      "note": "Климт («Адель Блох-Бауэр I»), Шиле и австрийское и немецкое искусство начала XX века во всём здании"
+      "note": "Климт («Адель Блох-Бауэр I»), Шиле и австрийское и немецкое искусство начала XX века во всём здании",
+      "tags": [
+        "modern"
+      ]
     },
     {
       "title": "Свет во тьме: Джозеф Райт из Дерби",
@@ -669,6 +848,9 @@
       "end": "2027-03-14",
       "url": "https://www.getty.edu/exhibitions/wright-of-derby/",
       "note": "«Свечные» картины Райта 1760-х, прославившие его в Лондоне, и недавно найденные «Мальчики с пузырём»",
+      "tags": [
+        "old"
+      ],
       "museum": "Музей Гетти, Лос-Анджелес"
     },
     {
@@ -682,7 +864,10 @@
       "start": "2026-11-01",
       "end": "2027-02-07",
       "url": "https://www.mfah.org/art/exhibitions/of-light-and-air-winslow-homer-from-the-mfa-boston",
-      "note": "Более 45 акварелей Хомера, а также картины, рисунки и гравюры — от ранних работ до последнего холста"
+      "note": "Более 45 акварелей Хомера, а также картины, рисунки и гравюры — от ранних работ до последнего холста",
+      "tags": [
+        "xix"
+      ]
     },
     {
       "title": "Изысканный взгляд: коллекция Асо Тавитяна",
@@ -694,6 +879,9 @@
       "end": "2027-02-21",
       "url": "https://www.clarkart.edu/Microsites/An-Exquisite-Eye/About-the-Exhibition",
       "note": "Около 150 работ 1450–1850 годов: ван Эйк, Рубенс, Ван Дейк, Ватто, Давид, Виже-Лебрен",
+      "tags": [
+        "old"
+      ],
       "museum": "Институт искусств Стерлинга и Франсин Кларк, Уильямстаун",
       "source": "https://www.clarkart.edu/About/Press-Room/Press-Room-Archives/2026-Archives/An-Exquisite-Eye-Exhibition"
     },
@@ -709,6 +897,9 @@
       "end": "2026-12-13",
       "url": "https://www.ntv.co.jp/louvre2026/",
       "note": "Более 50 работ Возрождения из Лувра; впервые в Японии — «Прекрасная Ферроньера» Леонардо",
+      "tags": [
+        "old"
+      ],
       "source": "https://www.nact.jp/english/artcommons/user/detail/80797"
     },
     {
@@ -722,7 +913,11 @@
       "start": "2026-11-14",
       "end": "2027-03-28",
       "url": "https://www.tobikan.jp/en/exhibition/2026_orsay.html",
-      "note": "Около 110 работ: «Сборщицы колосьев» Милле, Ренуар, Моне, Ван Гог"
+      "note": "Около 110 работ: «Сборщицы колосьев» Милле, Ренуар, Моне, Ван Гог",
+      "tags": [
+        "xix",
+        "impr"
+      ]
     },
     {
       "title": "Тёрнер: живопись возвышенного",
@@ -734,6 +929,9 @@
       "end": "2027-02-21",
       "url": "https://www.nmwa.go.jp/jp/exhibitions/2026turner.html",
       "note": "Более 80 картин и акварелей Тёрнера из Тейт, рядом — работы современных художников",
+      "tags": [
+        "xix"
+      ],
       "museum": "Национальный музей западного искусства, Токио"
     },
     {
@@ -747,7 +945,11 @@
       "start": "2026-10-10",
       "end": "2027-01-10",
       "url": "https://www.cincinnati-art2026.jp",
-      "note": "Около 85 работ, почти все впервые в Японии: Курбе, Моне, Дега, Сезанн, Ван Гог, Гоген, Ходлер"
+      "note": "Около 85 работ, почти все впервые в Японии: Курбе, Моне, Дега, Сезанн, Ван Гог, Гоген, Ходлер",
+      "tags": [
+        "xix",
+        "impr"
+      ]
     },
     {
       "title": "Хиросигэ: новый взгляд на Японию эпохи Эдо",
@@ -761,6 +963,9 @@
       "end": "2026-12-20",
       "url": "https://www.tnm.jp/modules/r_free_page/index.php?id=2759",
       "note": "Около 300 гравюр: «53 станции Токайдо», «100 знаменитых видов Эдо»; три смены экспозиции",
+      "tags": [
+        "east"
+      ],
       "source": "https://www.nact.jp/english/artcommons/user/detail/82560"
     },
     {
@@ -775,6 +980,9 @@
       "end": "2027-01-31",
       "url": "https://daiei-ten2026.exhibit.jp/",
       "note": "Около 200 картин и гравюр эпохи Эдо: Хокусай, Утамаро, Маруяма Окё",
+      "tags": [
+        "east"
+      ],
       "source": "https://nact.jp/english/artcommons/user/detail/82788"
     },
     {
@@ -789,6 +997,9 @@
       "end": "2026-12-13",
       "url": "https://www.sompo-museum.org/exhibitions/2025/albertmarquet/",
       "note": "Около 90 работ: виды Сены, юга Франции и Алжира; первая крупная выставка Марке в Японии за 35 лет",
+      "tags": [
+        "modern"
+      ],
       "source": "https://www.nact.jp/artcommons/user/detail/82558"
     },
     {
@@ -802,7 +1013,10 @@
       "start": "2026-03-20",
       "end": "2027-03-17",
       "url": "https://hkpm.org.hk/en/exhibition/heavenly-horses-masterpieces-from-the-palace-museum",
-      "note": "Около 100 картин с конями — от династии Юань до XX века: Цю Ин, Кастильоне, Сюй Бэйхун"
+      "note": "Около 100 картин с конями — от династии Юань до XX века: Цю Ин, Кастильоне, Сюй Бэйхун",
+      "tags": [
+        "east"
+      ]
     },
     {
       "title": "Возрождение шедевра: икона «Страшный суд» из Успенского собора Московского Кремля",
@@ -815,6 +1029,10 @@
       "end": "2027-01-13",
       "url": "https://kreml.ru/exhibitions/vozrozdenie-sedevra-ikona-strasnyi-sud-iz-uspen",
       "note": "Икона «Страшный суд» рубежа XIV–XV веков после почти десяти лет реставрации",
+      "tags": [
+        "old",
+        "russian"
+      ],
       "source": "https://www.kreml.ru/exhibitions/"
     },
     {
@@ -828,6 +1046,10 @@
       "end": "2027-02-28",
       "url": "https://kreml.ru/exhibitions/iakov-brius-sotlandskii-genii-petrovskoi-epoxi",
       "note": "300+ предметов петровского времени: живопись, графика, карты, приборы, костюм — из 24 музеев",
+      "tags": [
+        "old",
+        "russian"
+      ],
       "source": "https://www.kreml.ru/exhibitions/"
     },
     {
@@ -839,6 +1061,9 @@
       "end": "2026-11-22",
       "url": "https://pushkinmuseum.art/events/archive/2026/exhibitions/identified_painting/index.php?lang=ru",
       "note": "«Усекновение главы Иоанна Крестителя» школы Рембрандта после реставрации — с новой атрибуцией",
+      "tags": [
+        "old"
+      ],
       "museum": "ГМИИ им. А.С. Пушкина, Москва"
     },
     {
@@ -850,6 +1075,10 @@
       "end": "2027-03-21",
       "url": "https://www.tretyakovgallery.ru/exhibitions/o/vybor-kollektsionerov-k-170-letiyu-so-dnya-osnovaniya-tretyakovskoy-galerei/",
       "note": "Маршрут по залам: 80+ работ XVIII–XIX веков из собраний Третьякова, Прянишникова, Солдатёнкова",
+      "tags": [
+        "xix",
+        "russian"
+      ],
       "museum": "Государственная Третьяковская галерея, Москва",
       "source": "https://www.tretyakovgallery.ru/"
     },
@@ -863,7 +1092,11 @@
       "start": "2026-09-03",
       "end": "2026-11-15",
       "url": "https://www.rublev-museum.ru/poster/exhibition/5502/",
-      "note": "100+ икон, картин и скульптур конца XV — начала XX века о святых детях; из ГИМ, ГМИИ, частных собраний"
+      "note": "100+ икон, картин и скульптур конца XV — начала XX века о святых детях; из ГИМ, ГМИИ, частных собраний",
+      "tags": [
+        "old",
+        "russian"
+      ]
     },
     {
       "title": "Елизаветинская Библия",
@@ -875,7 +1108,11 @@
       "start": "2026-08-13",
       "end": "2026-11-01",
       "url": "https://www.rublev-museum.ru/poster/exhibition/5466/",
-      "note": "Библии 1756–1784 годов с гравюрами, иконы и западноевропейская графика XVII–XVIII веков"
+      "note": "Библии 1756–1784 годов с гравюрами, иконы и западноевропейская графика XVII–XVIII веков",
+      "tags": [
+        "old",
+        "russian"
+      ]
     },
     {
       "title": "Ковчег будущего",
@@ -888,6 +1125,10 @@
       "end": "2027-03-01",
       "url": "https://www.orientmuseum.ru/kovcheg_buduschego/index.php",
       "note": "250 произведений: живопись Николая Рериха 1900–1940-х (серия «Гималаи»), тханки, буддийская бронза",
+      "tags": [
+        "russian",
+        "modern"
+      ],
       "source": "https://www.orientmuseum.ru/exhibitions/index.php"
     },
     {
@@ -901,6 +1142,10 @@
       "end": "2027-02-07",
       "url": "https://www.domrz.ru/exhibition/70568_russkiy_parizh_1814_1914/",
       "note": "Париж глазами русских художников: Коровин, Боголюбов, Похитонов, Репин, Крамской; из ГТГ и частных собраний",
+      "tags": [
+        "xix",
+        "russian"
+      ],
       "source": "https://www.domrz.ru/"
     },
     {
@@ -912,6 +1157,10 @@
       "end": "2027-01-24",
       "url": "https://www.rusimp.su/exhibitions/peterhof",
       "note": "Вместе с Петергофом: предметы, которые собирал для музеев Петергофа его директор Вадим Знаменов",
+      "tags": [
+        "xix",
+        "russian"
+      ],
       "museum": "Музей русского импрессионизма",
       "source": "https://www.rusimp.su/ru/exhibitions"
     },
@@ -925,7 +1174,11 @@
       "start": "2026-10-02",
       "end": "2027-02-07",
       "url": "https://abramtsevo.net/forvisitors/vistavki.html",
-      "note": "24 картины (4 — из Русского музея) и рисунки абрамцевского периода Петра Кончаловского 1909–1921"
+      "note": "24 картины (4 — из Русского музея) и рисунки абрамцевского периода Петра Кончаловского 1909–1921",
+      "tags": [
+        "russian",
+        "modern"
+      ]
     },
     {
       "title": "Кусковская ботаника",
@@ -937,7 +1190,11 @@
       "start": "2026-07-22",
       "end": "2027-04-18",
       "url": "https://kuskovo.ru/our-events/exhibitions/kuskovskaya_botanika/",
-      "note": "Растительные мотивы в фарфоре, тканях и гравюре второй половины XVIII — начала XIX века"
+      "note": "Растительные мотивы в фарфоре, тканях и гравюре второй половины XVIII — начала XIX века",
+      "tags": [
+        "old",
+        "russian"
+      ]
     },
     {
       "title": "Сюжеты и символы. Герои Эллады",
@@ -950,6 +1207,10 @@
       "end": "2027-01-17",
       "url": "https://arhangelskoe.su/news/geroi-ellady-vystavka-v-arkhangelskom/",
       "note": "160+ предметов из собрания усадьбы — фарфор, графика, живопись, скульптура — о героях греческих мифов",
+      "tags": [
+        "old",
+        "russian"
+      ],
       "source": "https://riamo.ru/news/kultura/v-arhangelskom-otkrojut-vystavku-sjuzhety-i-simvoly-geroi-ellady/"
     },
     {
@@ -962,7 +1223,11 @@
       "start": "2026-09-16",
       "end": "2027-03-28",
       "url": "https://riamo.ru/news/kultura/vystavka-bogi-i-ljudi-otkrylas-v-serpuhove/",
-      "note": "60+ работ: Крамской, Суриков, Репин, Васнецов, Поленов, Лебрен, Риччи — из Эрмитажа, ГРМ, ГТГ, ГИМ"
+      "note": "60+ работ: Крамской, Суриков, Репин, Васнецов, Поленов, Лебрен, Риччи — из Эрмитажа, ГРМ, ГТГ, ГИМ",
+      "tags": [
+        "xix",
+        "russian"
+      ]
     },
     {
       "title": "Urbi et orbi: Рим барочный и Рим античный",
@@ -973,6 +1238,9 @@
       "end": "2027-02-28",
       "url": "https://www.kp.ru/afisha/spb/vistavki/vystavka-urbi-et-orbi-rim-barochnyj-i-rim-antichnyj-v-sankt-peterburge-2026-2027/",
       "note": "400+ экспонатов: античная скульптура, караваджисты, Пьетро да Кортона, терракоты Бернини, Пиранези",
+      "tags": [
+        "old"
+      ],
       "museum": "Государственный Эрмитаж",
       "source": "https://www.sobaka.ru/entertainment/art/220014"
     },
@@ -985,6 +1253,9 @@
       "end": "2027-02-28",
       "url": "https://vk.ru/@hermitage_museum-novye-vystavki-ermitazha-oktyabr-2026",
       "note": "Около 50 рисунков для витражей мастеров Цюриха, Базеля и Берна (Штиммер, Мурер), большей частью впервые",
+      "tags": [
+        "old"
+      ],
       "museum": "Государственный Эрмитаж"
     },
     {
@@ -996,6 +1267,9 @@
       "end": "2026-12-27",
       "url": "https://vk.ru/@hermitage_museum-novye-vystavki-ermitazha-oktyabr-2026",
       "note": "Выставка одной картины: «Пейзаж с Полифемом» (1649), купленный для Эрмитажа в 1772 году, после реставрации",
+      "tags": [
+        "old"
+      ],
       "museum": "Государственный Эрмитаж",
       "source": "https://www.kp.ru/afisha/spb/vistavki/vystavka-nikolya-pussen-pejzazh-s-polifemom-k-zaversheniyu-restavraczii-v-sankt-peterburge-2026/"
     },
@@ -1008,6 +1282,9 @@
       "end": "2027-02-07",
       "url": "https://vk.ru/@hermitage_museum-novye-vystavki-ermitazha-oktyabr-2026",
       "note": "Французский ампир начала XIX века, в том числе часы по картине Давида, после реставрации",
+      "tags": [
+        "xix"
+      ],
       "museum": "Государственный Эрмитаж"
     },
     {
@@ -1019,6 +1296,9 @@
       "end": "2027-03-14",
       "url": "https://www.kp.ru/afisha/spb/vistavki/vystavka-novaya-gollandiya-v-sankt-peterburge-2026-2027/",
       "note": "Более 100 голландских картин Эрмитажа, чьё авторство и история установлены недавними исследованиями",
+      "tags": [
+        "old"
+      ],
       "museum": "Государственный Эрмитаж",
       "source": "https://www.fontanka.ru/2025/12/02/76150744/"
     },
@@ -1031,6 +1311,10 @@
       "end": "2027-03-28",
       "url": "https://vk.ru/@hermitage_museum-novye-vystavki-ermitazha-aprel-2026-god",
       "note": "Веера императрицы из Аничкова дворца — свадебные, траурные, сувенирные — и её платья",
+      "tags": [
+        "xix",
+        "russian"
+      ],
       "museum": "Государственный Эрмитаж"
     },
     {
@@ -1042,6 +1326,9 @@
       "end": "2026-12-31",
       "url": "https://www.kp.ru/afisha/spb/vistavki/vystavka-leda-i-lebed-mikelandzhelo-krug-iz-chastnoj-kollekczii-v-sankt-peterburge-2026/",
       "note": "Крупнейшая известная копия утраченной «Леды» Микеланджело, XVI век; продлена до 31 декабря",
+      "tags": [
+        "old"
+      ],
       "museum": "Государственный Эрмитаж",
       "source": "https://t.me/s/hermitage_museum"
     },
@@ -1055,7 +1342,11 @@
       "start": "2026-10-02",
       "end": "2026-12-31",
       "url": "https://kgallery.ru/serov-korovin",
-      "note": "Портреты, пейзажи и театральная графика Серова и Коровина и их учителей — из ГРМ, Музея театра, частных собраний"
+      "note": "Портреты, пейзажи и театральная графика Серова и Коровина и их учителей — из ГРМ, Музея театра, частных собраний",
+      "tags": [
+        "russian",
+        "modern"
+      ]
     },
     {
       "title": "Вилла русского мецената",
@@ -1066,6 +1357,10 @@
       "end": "2026-10-26",
       "url": "https://rusmuseum.ru/exhibitions/current/villa-russkogo-metsenata/",
       "note": "Около 100 работ: виды дач, интерьеры, мебель XVIII–XIX веков; Строганов, Шувалов, Мамонтов, Тенишева",
+      "tags": [
+        "xix",
+        "russian"
+      ],
       "museum": "Государственный Русский музей, Санкт-Петербург"
     },
     {
@@ -1077,6 +1372,10 @@
       "end": "2027-01-18",
       "url": "https://rusmuseum.ru/exhibitions/current/vsevolod-voinov-khudozhnik-muzeyshchik-kritik/",
       "note": "Около 150 работ Всеволода Воинова (1880–1945): живопись, рисунок, гравюра 1910–1930-х",
+      "tags": [
+        "russian",
+        "modern"
+      ],
       "museum": "Государственный Русский музей, Санкт-Петербург"
     },
     {
@@ -1089,7 +1388,11 @@
       "start": "2026-10-16",
       "end": "2027-03-28",
       "url": "https://www.spbmuseum.ru/exhibits_and_exhibitions/temporary_exhibitions/56445/",
-      "note": "50+ из примерно 70 известных работ художника «Союза молодёжи»: портреты, пейзажи, театр; из ГРМ и Твери"
+      "note": "50+ из примерно 70 известных работ художника «Союза молодёжи»: портреты, пейзажи, театр; из ГРМ и Твери",
+      "tags": [
+        "russian",
+        "modern"
+      ]
     },
     {
       "title": "Фарфор на императорском столе",
@@ -1101,7 +1404,11 @@
       "start": "2026-08-19",
       "end": "2027-04-12",
       "url": "https://peterhofmuseum.ru/events/533",
-      "note": "Фарфор Императорского завода из сервизов XIX — начала XX века: Фермерского дворца, Коттеджа и др."
+      "note": "Фарфор Императорского завода из сервизов XIX — начала XX века: Фермерского дворца, Коттеджа и др.",
+      "tags": [
+        "xix",
+        "russian"
+      ]
     },
     {
       "title": "Семь историй сотворения мира. К 50-летию реставрации Гатчинского дворца",
@@ -1114,6 +1421,10 @@
       "end": "2026-11-08",
       "url": "https://gatchinapalace.ru/events/exhibitions/4752/",
       "note": "Сотни предметов из фондов, многие впервые: мебель, графика, скульптура, декоративное искусство",
+      "tags": [
+        "old",
+        "russian"
+      ],
       "source": "https://vk.ru/@gatchina.palace-afisha-24-29-sentyabrya"
     },
     {
@@ -1126,7 +1437,11 @@
       "start": "2026-09-05",
       "end": "2026-10-25",
       "url": "https://cathedral.ru/ru/posts/04-09-2026-2",
-      "note": "Иконы XVIII–XIX веков разных школ из собраний Елагиноостровского дворца-музея и Исаакиевского собора"
+      "note": "Иконы XVIII–XIX веков разных школ из собраний Елагиноостровского дворца-музея и Исаакиевского собора",
+      "tags": [
+        "old",
+        "russian"
+      ]
     },
     {
       "title": "Айвазовский и русский романтический пейзаж",
@@ -1137,6 +1452,10 @@
       "end": "2026-10-25",
       "url": "https://artmuseumnn.ru/vystavki/4605/",
       "note": "Около 50 работ: 9 картин Айвазовского, Лагорио, Боголюбов, Куинджи, Рылов; из НГХМ и Музея Тропинина",
+      "tags": [
+        "xix",
+        "russian"
+      ],
       "museum": "Нижегородский государственный художественный музей"
     },
     {
@@ -1148,6 +1467,10 @@
       "end": "2026-11-15",
       "url": "https://www.pushkinmuseum.art/news/archive/2026/08_/adventure_of_talents/index.php?lang=ru",
       "note": "Авангард в Нижнем конца XIX — 1920-х: Матюшин, Богородский, Хлебников, эскизы Малевича; ГМИИ, ГТГ и др.",
+      "tags": [
+        "russian",
+        "modern"
+      ],
       "museum": "Волго-Вятский филиал ГМИИ им. А. С. Пушкина (Арсенал)"
     },
     {
@@ -1160,7 +1483,11 @@
       "start": "2026-08-28",
       "end": "2026-12-06",
       "url": "https://www.chelmusart.ru/node/20146",
-      "note": "49 работ из ГМИИ: Вуэ, Пуссен, Грёз, Юбер Робер, Виже-Лебрен, Писсарро — живопись, гравюра, скульптура"
+      "note": "49 работ из ГМИИ: Вуэ, Пуссен, Грёз, Юбер Робер, Виже-Лебрен, Писсарро — живопись, гравюра, скульптура",
+      "tags": [
+        "old",
+        "xix"
+      ]
     },
     {
       "title": "Рафаэль. Эпоха Ренессанса",
@@ -1172,7 +1499,10 @@
       "start": "2026-10-08",
       "end": "2026-11-22",
       "url": "https://kovalenkomuseum.ru/show-item/vystavka-rafael-epoha-renessansa/",
-      "note": "Более 90 гравюр и литографий XVI–XIX веков по Рафаэлю, в том числе серия «Амур и Психея»"
+      "note": "Более 90 гравюр и литографий XVI–XIX веков по Рафаэлю, в том числе серия «Амур и Психея»",
+      "tags": [
+        "old"
+      ]
     },
     {
       "title": "Рафаэль. Версии",
@@ -1183,6 +1513,9 @@
       "end": "2027-03-14",
       "url": "https://nsartmuseum.ru/exhibitions/id/679",
       "note": "70+ работ из музея Академии художеств: академические повторения Рафаэля XVIII–XIX веков, гравюры, слепки",
+      "tags": [
+        "old"
+      ],
       "museum": "Новосибирский государственный художественный музей"
     },
     {
@@ -1195,7 +1528,11 @@
       "start": "2026-09-08",
       "end": "2026-11-15",
       "url": "https://pushkinmuseum.art/events/archive/2025/exhibitions/impressionists_in_siberia/index.php",
-      "note": "Гастроли ГМИИ: Коро, Сислей, Матисс рядом с Суриковым и Коровиным; есть раздел современных художников"
+      "note": "Гастроли ГМИИ: Коро, Сислей, Матисс рядом с Суриковым и Коровиным; есть раздел современных художников",
+      "tags": [
+        "impr",
+        "russian"
+      ]
     },
     {
       "title": "Церковная живопись. Петербургская школа первой половины XIX века",
@@ -1207,7 +1544,11 @@
       "start": "2026-09-22",
       "end": "2027-09-08",
       "url": "https://rusmuseum.ru/exhibitions/traveling-expo/russkiy-muzey-pechory/",
-      "note": "Выставка Русского музея: церковная живопись петербургской школы первой половины XIX века"
+      "note": "Выставка Русского музея: церковная живопись петербургской школы первой половины XIX века",
+      "tags": [
+        "xix",
+        "russian"
+      ]
     },
     {
       "title": "Кандинский",
@@ -1220,7 +1561,10 @@
       "start": "2026-09-15",
       "end": "2027-02-14",
       "url": "https://www.mostrepalazzobonaparte.it/mostra-kandinsky",
-      "note": "Более 70 работ, в основном из Центра Помпиду: путь от Москвы к абстракции; отдельно — Габриэле Мюнтер"
+      "note": "Более 70 работ, в основном из Центра Помпиду: путь от Москвы к абстракции; отдельно — Габриэле Мюнтер",
+      "tags": [
+        "modern"
+      ]
     },
     {
       "title": "Изобретая природу. Леонардо, Арчимбольдо, Караваджо",
@@ -1233,7 +1577,10 @@
       "start": "2026-09-26",
       "end": "2027-01-10",
       "url": "https://www.centropalazzote.it/inventare-la-natura-leonardo-arcimboldo-caravaggio/",
-      "note": "Леонардо, «Садовник» Арчимбольдо, Карраччи, «Больной Вакх» Караваджо: природа в искусстве Ренессанса"
+      "note": "Леонардо, «Садовник» Арчимбольдо, Карраччи, «Больной Вакх» Караваджо: природа в искусстве Ренессанса",
+      "tags": [
+        "old"
+      ]
     },
     {
       "title": "Артемизия Джентилески во Флоренции",
@@ -1246,7 +1593,10 @@
       "start": "2026-10-21",
       "end": "2027-04-04",
       "url": "https://www.museodeglinnocenti.it/mostra/artemisia-gentileschi-a-firenze/",
-      "note": "Флорентийский период Артемизии: «Юдифь», «Магдалина»; рядом два Караваджо, Аллори, Фурини"
+      "note": "Флорентийский период Артемизии: «Юдифь», «Магдалина»; рядом два Караваджо, Аллори, Фурини",
+      "tags": [
+        "old"
+      ]
     },
     {
       "title": "Ренуар, Моне, Тулуз-Лотрек, Сезанн. Коллекция Шарф",
@@ -1259,7 +1609,11 @@
       "start": "2026-10-16",
       "end": "2027-05-02",
       "url": "https://palazzoducale.genova.it/mostra/renoir-monet-toulouse-lautrec-cezanne/",
-      "note": "Более 140 работ: Гойя, Коро, Моне, Ренуар, Дега, Сезанн, Матисс, Пикассо; в конце — современное искусство"
+      "note": "Более 140 работ: Гойя, Коро, Моне, Ренуар, Дега, Сезанн, Матисс, Пикассо; в конце — современное искусство",
+      "tags": [
+        "xix",
+        "impr"
+      ]
     },
     {
       "title": "Под знаком Леонардо. Ученики и последователи в Милане",
@@ -1273,6 +1627,9 @@
       "end": "2027-04-04",
       "url": "https://www.finestresullarte.info/mostre/gallerie-d-italia-mostre-autunno-2026-leonardo-e-sua-eredita-tiepolo-kauffmann-vigee-le-brun",
       "note": "Леонардески: Больтраффио, д’Оджоно, Солари, Луини, Джампьетрино — наследие Леонардо в Ломбардии",
+      "tags": [
+        "old"
+      ],
       "source": "https://news.artprice.com/en/16289/exhibition-in-milan-the-gallerie-d-italia-explore-leonardo-da-vinci-s-legacy"
     },
     {
@@ -1286,7 +1643,10 @@
       "start": "2026-11-06",
       "end": "2027-03-07",
       "url": "https://gallerieditalia.com/it/napoli/mostre-e-iniziative/mostre/2026/11/06/mostra-angelica-elisabeth-eta-delle-donne-pittrici-napoli/",
-      "note": "Первое сопоставление Ангелики Кауфман и Элизабет Виже-Лебрен: портреты, автопортреты, Рим и Неаполь"
+      "note": "Первое сопоставление Ангелики Кауфман и Элизабет Виже-Лебрен: портреты, автопортреты, Рим и Неаполь",
+      "tags": [
+        "old"
+      ]
     },
     {
       "title": "Джандоменико Тьеполо. Новый мир",
@@ -1299,7 +1659,10 @@
       "start": "2026-10-09",
       "end": "2027-01-17",
       "url": "https://gallerieditalia.com/it/vicenza/mostre-e-iniziative/mostre/2026/10/09/mostra-giandomenico-tiepolo-un-mondo-nuovo-vicenza/",
-      "note": "68 работ к 300-летию художника: алтарные образы, «Пульчинеллы», жанровые сцены, графика"
+      "note": "68 работ к 300-летию художника: алтарные образы, «Пульчинеллы», жанровые сцены, графика",
+      "tags": [
+        "old"
+      ]
     },
     {
       "title": "Огюст Бартольди. Свобода, озаряющая мир",
@@ -1311,6 +1674,9 @@
       "end": "2027-01-31",
       "url": "https://www.musee-orsay.fr/fr/programme/agenda/expositions/auguste-bartholdi-la-liberte-eclairant-le-monde",
       "note": "Скульптор Бартольди и рождение статуи Свободы: модели, рисунки, Виолле-ле-Дюк и Эйфель",
+      "tags": [
+        "xix"
+      ],
       "museum": "Музей д’Орсе, Париж"
     },
     {
@@ -1324,7 +1690,10 @@
       "start": "2026-10-23",
       "end": "2027-02-21",
       "url": "https://www.kunsthalle-muc.de/en/barcelona/",
-      "note": "Около 160 работ каталонского модерна 1880–1914 годов: Гауди, ранний Пикассо, Касас, Русиньоль, Нонель"
+      "note": "Около 160 работ каталонского модерна 1880–1914 годов: Гауди, ранний Пикассо, Касас, Русиньоль, Нонель",
+      "tags": [
+        "modern"
+      ]
     },
     {
       "title": "Французские связи. От Клода Лоррена до Франсуа Буше",
@@ -1337,7 +1706,10 @@
       "start": "2026-11-26",
       "end": "2027-04-04",
       "url": "https://www.pinakothek.de/en/liaisons-francaises",
-      "note": "Первая большая выставка французской живописи Пинакотеки: Лоррен, Пуссен, Лемуан, Буше — около 50 художников"
+      "note": "Первая большая выставка французской живописи Пинакотеки: Лоррен, Пуссен, Лемуан, Буше — около 50 художников",
+      "tags": [
+        "old"
+      ]
     },
     {
       "title": "От Моне до Пикассо. Еврейские коллекционеры в Германии",
@@ -1350,7 +1722,11 @@
       "start": "2026-09-11",
       "end": "2027-03-29",
       "url": "https://www.buceriuskunstforum.de/en/exhibitions/from-monet-to-picasso-jewish-art-collectors-in-germany",
-      "note": "Около 100 работ из 15 воссозданных собраний: Моне, Сезанн, Мунк, Коринт, Кирхнер, Марк, Пикассо"
+      "note": "Около 100 работ из 15 воссозданных собраний: Моне, Сезанн, Мунк, Коринт, Кирхнер, Марк, Пикассо",
+      "tags": [
+        "impr",
+        "modern"
+      ]
     },
     {
       "title": "Рубенс, Йорданс, ван Дейк. Рисунки фламандских мастеров",
@@ -1363,7 +1739,10 @@
       "start": "2026-10-10",
       "end": "2027-01-31",
       "url": "https://www.smb.museum/en/exhibitions/detail/rubens-jordaens-van-dyck/",
-      "note": "Более 100 фламандских рисунков XVII века 28 мастеров: Рубенс, Йорданс, ван Дейк, Брейгель, Снейдерс"
+      "note": "Более 100 фламандских рисунков XVII века 28 мастеров: Рубенс, Йорданс, ван Дейк, Брейгель, Снейдерс",
+      "tags": [
+        "old"
+      ]
     },
     {
       "title": "ИнтерНациональная галерея 1. Национальный музей в Варшаве",
@@ -1375,6 +1754,9 @@
       "end": "2027-01-17",
       "url": "https://www.smb.museum/en/exhibitions/detail/internationalgalerie-1/",
       "note": "Польская живопись из Национального музея в Варшаве: Матейко, Мальчевский и другие",
+      "tags": [
+        "xix"
+      ],
       "museum": "Старая национальная галерея, Берлин"
     },
     {
@@ -1388,7 +1770,10 @@
       "start": "2026-04-25",
       "end": "2027-01-03",
       "url": "https://www.smb.museum/en/exhibitions/detail/ruin-and-rush/",
-      "note": "Около 35 работ о Берлине от кайзеровской эпохи до Веймара: Дикс, Грос, Кирхнер, Ханна Хёх"
+      "note": "Около 35 работ о Берлине от кайзеровской эпохи до Веймара: Дикс, Грос, Кирхнер, Ханна Хёх",
+      "tags": [
+        "modern"
+      ]
     },
     {
       "title": "Ван Гог, Ходлер и кабриолет. Коллекционер Гертруда Дюби-Мюллер",
@@ -1400,6 +1785,10 @@
       "end": "2027-02-07",
       "url": "https://kunstmuseumbasel.ch/en/exhibitions/2026/van-gogh-hodler-und-ein-cabriolet",
       "note": "Около 80 работ: Ван Гог, Ходлер, Сезанн, Климт, Матисс, Амье, Джованни Джакометти",
+      "tags": [
+        "impr",
+        "modern"
+      ],
       "museum": "Базельский художественный музей, Базель"
     },
     {
@@ -1412,6 +1801,9 @@
       "end": "2027-02-07",
       "url": "https://kunstmuseumbasel.ch/en/exhibitions/2026/friendship-collecting-connoisseurship-karl-and-marianne-im-obersteg",
       "note": "Около 40 работ и письма: Явленский, Верёвкина, Шагал, Кирхнер, Амье — классический модернизм",
+      "tags": [
+        "modern"
+      ],
       "museum": "Базельский художественный музей, Базель"
     },
     {
@@ -1425,7 +1817,10 @@
       "start": "2026-09-04",
       "end": "2027-01-10",
       "url": "https://museumordrupgaard.dk/en/exhibitions/pekka-halonen",
-      "note": "Ретроспектива финского «певца снега» (1865–1933) — проект Пти-Пале и Атенеума, «Стирка на льду»"
+      "note": "Ретроспектива финского «певца снега» (1865–1933) — проект Пти-Пале и Атенеума, «Стирка на льду»",
+      "tags": [
+        "xix"
+      ]
     },
     {
       "title": "Художники Фюна. Искусство превыше всего!",
@@ -1437,6 +1832,9 @@
       "end": "2027-01-24",
       "url": "https://www.hirschsprung.dk/en/exhibitions/the-funen-painters-art-above-all",
       "note": "Три пары «фюнских художников» — Сюберги, Ларсены, Сване: датская живопись рубежа XIX–XX веков",
+      "tags": [
+        "xix"
+      ],
       "museum": "Собрание Хиршпрунга, Копенгаген"
     },
     {
@@ -1451,6 +1849,9 @@
       "end": "2027-01-10",
       "url": "https://www.museot.fi/exhibitions/index.php?nayttely_id=33283",
       "note": "Витхос (1627–1703) и голландцы в Риме: ван Виттел, Бот, Пуленбург; работы из музеев Нидерландов",
+      "tags": [
+        "old"
+      ],
       "source": "https://www.museot.fi/en/museums/sinebrychoffin-taidemuseo"
     },
     {
@@ -1465,6 +1866,9 @@
       "end": "2027-02-28",
       "url": "https://www.szepmuveszeti.hu/",
       "note": "Около 150 работ, 80 из них — Гоген; из Метрополитена, MoMA, Орсе, Тейт; рядом Сезанн, Ван Гог, Бернар",
+      "tags": [
+        "impr"
+      ],
       "source": "https://welovebudapest.com/cikk/2026/09/17/paul-gauguin-kiallitas-budapest-2026-nyitas-szepmuveszeti-muzeum/"
     },
     {
@@ -1478,7 +1882,10 @@
       "start": "2026-09-25",
       "end": "2027-03-28",
       "url": "https://munal.mx/es/exposiciones/%C3%A1ngel-z%C3%A1rraga-los-ideales-del-arte",
-      "note": "Мексиканский модернист парижской школы (1886–1946): работы 1909–1930-х"
+      "note": "Мексиканский модернист парижской школы (1886–1946): работы 1909–1930-х",
+      "tags": [
+        "modern"
+      ]
     },
     {
       "title": "Маргарет Престон",
@@ -1491,7 +1898,24 @@
       "start": "2026-09-04",
       "end": "2027-01-31",
       "url": "https://www.ngv.vic.gov.au/exhibition/margaret-preston/",
-      "note": "Ретроспектива первой звезды австралийского модернизма (1875–1963): натюрморты и ксилографии"
+      "note": "Ретроспектива первой звезды австралийского модернизма (1875–1963): натюрморты и ксилографии",
+      "tags": [
+        "modern"
+      ]
+    },
+    {
+      "title": "Сказка рядом",
+      "venue": "Новгородский музей-заповедник",
+      "city": "Великий Новгород",
+      "country": "Россия",
+      "start": "2026-08-15",
+      "end": "2026-11-08",
+      "url": "https://novgorod.rusimp.su/",
+      "note": "Выставка Музея русского импрессионизма и Новгородского музея-заповедника",
+      "tags": [
+        "russian"
+      ],
+      "museum": "Новгородский музей-заповедник, Великий Новгород"
     }
   ]
 }

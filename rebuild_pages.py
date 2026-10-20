@@ -146,7 +146,7 @@ def main():
     print("✓ Страницы музеев")
 
     # Афиша: крупные выставки в России и в мире (afisha.json).
-    if bs.generate_afisha(bs.museum_names(meta, visits),
+    if bs.generate_afisha(bs.museum_names(meta, visits), all_posts=meta, visits=visits,
                           offline="--offline" in sys.argv or "--no-geocode" in sys.argv):
         print("✓ Афиша")
 

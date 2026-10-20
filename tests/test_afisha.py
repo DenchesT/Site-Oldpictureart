@@ -9,7 +9,15 @@
   • ссылка на страницу музея — только если музей есть на карте собраний;
   • сборка подсказывает, что убрать и когда пополнить список;
   • нет afisha.json — нет ни страницы, ни ссылок на неё;
-  • сам afisha.json в порядке: без ошибок, ссылки https, даты разумные.
+  • фильтры: город России, страна для «Мира», эпоха (tags); «Рядом со мной»
+    и карта на телефоне — за кнопкой; «Успеть на этой неделе»;
+  • «На сайте: Айвазовский — 3 работы» — фамилии в падежах, частые фамилии
+    только с именем; явный список artists;
+  • «Был — снимки и впечатления» и обратная ссылка «Сейчас в афише»;
+  • разметка ExhibitionEvent для поисковиков;
+  • ссылки выставок проверяются раз в неделю, нерабочие — в журнал;
+  • сам afisha.json в порядке: без ошибок, ссылки https, даты разумные,
+    у каждой записи есть эпоха.
 
 Запуск:  python tests/test_afisha.py
 """
@@ -121,10 +129,17 @@ try:
        'data-region="russia" aria-pressed="true">Россия<span class="visit-count">2</span>' in page
        and 'data-region="world" aria-pressed="false">Мир<span class="visit-count">3</span>' in page)
     ok("дата обновления списка", "Список обновлён 19 октября 2026" in page)
-    ok("переключатель городов России со счётчиками",
-       'data-area="all" aria-pressed="true">Все города<span class="visit-count">2</span>' in page
-       and 'data-area="spb" aria-pressed="false">Петербург<span class="visit-count">1</span>' in page
-       and 'data-area="regions" aria-pressed="false">Другие города<span class="visit-count">1</span>' in page)
+    ok("город России — выпадающий список (числа ставит скрипт)",
+       '<select id="afisha-area"><option value="all" data-label="Все города">Все города</option>' in page
+       and '<option value="spb" data-label="Петербург">Петербург</option>' in page
+       and '<option value="regions" data-label="Другие города">Другие города</option>' in page)
+    ok("страна — для «Мира», спрятана, пока выбрана Россия; чаще встречающиеся — выше",
+       '<label class="afisha-select" id="afisha-country-box" hidden>' in page
+       and page.find('<option value="Франция"') > 0)
+    ok("в списке эпох — только те, что есть у идущих", '<select id="afisha-epoch"><option value="all" data-label="Все эпохи">Все эпохи</option></select>' in page)
+    ok("«Успеть на этой неделе» — место под блок, заполняет скрипт",
+       '<section class="afisha-week" id="afisha-week"' in page and 'id="afisha-week-list"' in page)
+    ok("без точек на карте нет и «Рядом со мной»", 'id="afisha-near-btn"' not in page)
     ok("у записи России — город, у мира — нет", 'data-region="russia" data-area="spb"' in page
        and 'data-region="world" data-area' not in page)
     ok("адрес страницы — канонический", f'{sc.BASE_URL}/afisha.html' in page)
@@ -191,6 +206,27 @@ try:
        and "vendor/leaflet.markercluster/leaflet.markercluster.js" in page_map and "map-config.js" in page_map)
     ok("нет ни одной точки — нет и карты", 'id="afisha-map"' not in af.render_afisha_page(items, updated, known, TODAY, {})
        and "leaflet.js" not in af.render_afisha_page(items, updated, known, TODAY, {}))
+    ok("на телефоне карта — за кнопкой «Показать на карте» со счётчиком меток",
+       '<button type="button" class="afisha-map-toggle" id="afisha-map-toggle" aria-expanded="false"' in page_map
+       and re.search(r'Показать на карте</span><span class="visit-count">\d+</span>', page_map))
+    ok("есть точки — есть «Рядом со мной», и сказано, что место не уходит на сайт",
+       'id="afisha-near-btn" aria-pressed="false">Рядом со мной</button>' in page_map
+       and "только в вашем браузере" in page_map)
+
+    # ---------- разметка для поисковиков ----------
+    ld = re.search(r'<script type="application/ld\+json">(.*?)</script>', page_map, re.S)
+    graph = json.loads(ld.group(1))["@graph"] if ld else []
+    events = [g for g in graph if g.get("@type") == "ExhibitionEvent"]
+    ok("разметка ExhibitionEvent — у каждой идущей и будущей выставки",
+       len(events) == sum(1 for it in items if af.phase(it, TODAY) in ("running", "soon")), str(len(events)))
+    ev = next((e for e in events if e["name"] == "Последние дни"), {})
+    ok("…даты, место с адресом, ссылка", ev.get("startDate") == "2026-09-01" and ev.get("endDate") == "2026-10-22"
+       and ev.get("location", {}).get("address", {}).get("addressLocality") == "Париж"
+       and ev.get("url", "").startswith("https://"), str(ev))
+    ok("…точные координаты — в разметке", ev.get("location", {}).get("geo", {}).get("latitude") == 48.86)
+    ev_rough = next((e for e in events if e["name"] == "Скоро откроется"), {})
+    ok("…приблизительные (по городу) — нет", "geo" not in ev_rough.get("location", {}), str(ev_rough))
+    ok("закончившихся в разметке нет", not any(e["name"] in ("Закрылась", "Откроется нескоро") for e in events))
 
     # ---------- подсказки сборки ----------
     class Log:
@@ -212,6 +248,137 @@ try:
     af.afisha_report(items, [], "2026-01-01", TODAY, log=log)
     ok("давно не обновлялся список — подсказка", any("не обновлялся" in m for _, m in log.lines))
 
+    # ---------- эпоха ----------
+    ok("tags — только из списка эпох", af.problems(item("М", tags=["impr", "xix"])) == []
+       and any("tags" in p for p in af.problems(item("М", tags=["импрессионизм"])))
+       and any("tags" in p for p in af.problems(item("М", tags="impr"))))
+    ok("artists — список имён", any("artists" in p for p in af.problems(item("М", artists="Моне"))))
+    tagged = [dict(items[0], tags=["impr"]), dict(items[6], tags=["russian", "xix"])]
+    page_t = af.render_afisha_page(tagged, updated, known, TODAY)
+    ok("у записи — метки эпохи для фильтра", 'data-tags="russian xix"' in page_t)
+    ok("в списке эпох — только встретившиеся, в порядке EPOCHS",
+       re.search(r'<select id="afisha-epoch">.*?</select>', page_t).group(0).count("<option") == 4
+       and page_t.find('value="xix"') < page_t.find('value="impr"') < page_t.find('value="russian"')
+       and 'value="old"' not in page_t)
+
+    # ---------- «На сайте: …» ----------
+    posts = [
+        {"artist": "Иван Константинович Айвазовский", "filename": "aivazovsky-b-1850.html", "title": "Буря",
+         "creation_year": 1850, "thumbs": ["images/thumbs/a1.webp"]},
+        {"artist": "Иван Константинович Айвазовский", "filename": "aivazovsky-a-1840.html", "title": "Штиль",
+         "creation_year": 1840, "thumbs": ["images/thumbs/a2.webp"]},
+        {"artist": "Иван Константинович Айвазовский", "filename": "aivazovsky-c.html", "title": "Без года",
+         "thumbs": ["images/thumbs/a3.webp"]},
+        {"artist": "Клод Моне", "filename": "monet-1.html", "title": "Кувшинки", "thumbs": ["images/thumbs/m1.webp"]},
+        {"artist": "Николай Дмитриевич Кузнецов", "filename": "kuznetsov-1.html", "title": "Портрет"},
+        {"artist": "Константин Андреевич Сомов", "filename": "somov-1.html", "title": "Арлекин"},
+        {"artist": "Илья Ефимович Репин", "filename": "repin-1.html", "title": "Бурлаки"},
+        {"artist": "Винсент Виллем ван Гог", "filename": "gogh-1.html", "title": "Ирисы"},
+        {"artist": "Илер-Жермен-Эдгар де Га (Эдгар Дега)", "filename": "degas-1.html", "title": "Балерины"},
+        {"artist": "Анри де Тулуз-Лотрек-Монфа", "filename": "lautrec-1.html", "title": "Мулен Руж"},
+        {"artist": "Анонимные художники, Италия", "filename": "anon-1.html", "title": "Икона"},
+    ]
+    idx = af.works_index(posts)
+    ok("фамилия: обычная, «Ван Гог», в скобках, тройная через дефис",
+       af.artist_keys("Клод Моне") == [("Моне", "Моне")]
+       and af.artist_keys("Винсент Виллем ван Гог") == [("Ван Гог", "Ван Гог")]
+       and af.artist_keys("Илер-Жермен-Эдгар де Га (Эдгар Дега)") == [("Дега", "Дега")]
+       and af.artist_keys("Анри де Тулуз-Лотрек-Монфа") == [("Тулуз-Лотрек", "Тулуз-Лотрек")])
+    ok("…«Анонимные художники, …» — не человек, не ищется", af.artist_keys("Анонимные художники, Италия") == [])
+    ok("…другое написание фамилии подписывается по-нашему",
+       ("Русиньоль", "Рузиньол") in af.artist_keys("Сантьяго Рузиньол-и-Пратс"))
+
+    def found(title, note="", **kw):
+        return [(a, label) for a, label, _ in af.site_works(dict(item(title, note=note), **kw), idx)]
+    ok("фамилия в падеже: «Айвазовского», «Репина», «ван Гога»",
+       found("Мир Айвазовского") == [("Иван Константинович Айвазовский", "Айвазовский")]
+       and found("Портреты Репина") == [("Илья Ефимович Репин", "Репин")]
+       and found("Подсолнухи ван Гога") == [("Винсент Виллем ван Гог", "Ван Гог")])
+    ok("…несклоняемая — как есть: «Моне», «Дега»", found("Моне и Дега") == [("Клод Моне", "Моне"), ("Илер-Жермен-Эдгар де Га (Эдгар Дега)", "Дега")])
+    ok("…часть другого слова — не совпадение: «Сомовский», «Репинский»", found("Сомовский дом. Репинский уголок") == [])
+    ok("…частая фамилия — только с именем или инициалом",
+       found("Собрание Кузнецова") == [] and found("Николай Кузнецов и его круг")[0][0] == "Николай Дмитриевич Кузнецов"
+       and found("Н. Д. Кузнецов. Портреты") != [])
+    ok("…ищется и в заметке", found("Морская живопись", "В том числе Айвазовский")[0][1] == "Айвазовский")
+    ok("…явный список artists главнее поиска", found("Мир Айвазовского", artists=["Клод Моне"]) == [("Клод Моне", "Моне")]
+       and found("Мир Айвазовского", artists=[]) == [])
+    w = af.works_html(af.site_works(item("Айвазовский и Моне"), idx))
+    ok("«На сайте: Айвазовский — 3 работы» со ссылкой на страницу художника",
+       '<a href="' + af.artist_slug("Иван Константинович Айвазовский") + '">Айвазовский</a> — 3 работы' in w
+       and "Моне</a> — 1 работа" in w, w[:300])
+    ok("…миниатюры по очереди от каждого, сначала ранние", re.findall(r'<a href="([^"]+)" title=', w)[:3]
+       == ["aivazovsky-a-1840.html", "monet-1.html", "aivazovsky-b-1850.html"], w)
+    ok("…не больше четырёх, грузятся лениво", w.count("<li>") == 4 and 'loading="lazy"' in w)
+    ok("ничего не нашлось — блока нет", af.works_html([]) == "")
+    page_w = af.render_afisha_page([dict(items[6], title="Мир Айвазовского")], updated, known, TODAY, index=idx)
+    ok("на странице афиши — блок «На сайте»", 'class="afisha-works"' in page_w and "aivazovsky-a-1840.html" in page_w)
+
+    # ---------- «Был — снимки и впечатления» ----------
+    visits = [
+        {"filename": "visit-2026-10-12-skazka.html", "kind": "выставка", "title": "«Сказка рядом»",
+         "run": "15.08.2026 — 08.11.2026"},
+        {"filename": "visit-2024-old.html", "kind": "выставка", "title": "Сказка рядом", "run": "01.02.2024 — 01.05.2024"},
+        {"filename": "visit-2026-cafe.html", "kind": "прогулка", "title": "Сказка рядом"},
+        {"filename": "visit-2026-repin.html", "kind": "выставка", "title": "Илья Репин. Портреты друзей"},
+    ]
+    show = [dict(item("Сказка рядом", start="2026-08-15", end="2026-11-08"), id="a-skazka"),
+            dict(item("Репин", start="2026-09-01", end="2026-12-01"), id="a-repin"),
+            dict(item("Другое", start="2026-09-01", end="2026-12-01"), id="a-other", visit="visit-2026-repin.html"),
+            dict(item("Морская живопись XIX века", start="2026-09-01", end="2026-12-01"), id="a-sea")]
+    mv = af.match_visits(show, visits)
+    ok("поход находится по названию и срокам (кавычки не мешают)", mv.get("a-skazka", {}).get("filename") == "visit-2026-10-12-skazka.html", str(mv))
+    ok("…выставка с тем же названием в другие годы — не она",
+       af.match_visits([show[0]], visits[1:]).get("a-skazka") is None)
+    ok("…прогулка — не выставка", af.match_visits([show[0]], [visits[2]]) == {})
+    ok("…короткое название не цепляется за длинное («Репин» ≠ «Илья Репин. …»)", "a-repin" not in mv)
+    ok("…поле visit в записи — явно", mv.get("a-other", {}).get("filename") == "visit-2026-repin.html")
+    ok("…не был — нет", "a-sea" not in mv)
+    page_v = af.render_afisha_page([dict(items[6], id="a-skazka")], updated, known, TODAY,
+                                   visited={"a-skazka": visits[0]})
+    ok("на странице — «Был — снимки и впечатления» со ссылкой на поход",
+       '<p class="afisha-been"><a href="visit-2026-10-12-skazka.html">Был — снимки и впечатления</a></p>' in page_v)
+    from sitebuild import visits as vs
+    back = vs.afisha_backlink(dict(show[0]))
+    ok("обратно: на странице похода — «Сейчас в афише →», пока выставка идёт",
+       back == '<p class="afisha-backlink" data-end="2026-11-08" hidden><a href="afisha.html#a-skazka">Сейчас в афише →</a></p>')
+    ok("…выставки нет в афише — нет и ссылки", vs.afisha_backlink(None) == "")
+
+    # ---------- проверка ссылок раз в неделю ----------
+    links = os.path.join(tmp, "links.json")
+    checked = []
+
+    def fake_check(u):
+        checked.append(u)
+        if u.endswith("/12"):
+            return ("bad", "нет страницы (404)")
+        if u.endswith("/14"):
+            return ("bad", "уводит на https://example.org/new")
+        return ("ok", "")
+    link_items = [item("Двенадцать букв", url="https://example.org/12"),
+                  item("Ведёт куда-то", url="https://example.org/14"), item("Хорошая", url="https://example.org/ok")]
+    log = Log()
+    bad = af.check_afisha_links(link_items, TODAY, path=links, check=fake_check, log=log)
+    ok("ссылки афиши проверяются, нерабочие — предупреждением с подсказкой",
+       bad == {"https://example.org/12": "нет страницы (404)"}
+       and any(k == "warning" and "«Двенадцать букв»" in m and "afisha.json" in m for k, m in log.lines), str(log.lines))
+    ok("…переезд на другой адрес — не поломка", "https://example.org/14" not in bad)
+    ok("…итог записан с датой", json.load(open(links, encoding="utf-8")).get("checked") == TODAY.isoformat())
+    checked.clear()
+    log = Log()
+    af.check_afisha_links(link_items, date(2026, 10, 23), path=links, check=fake_check, log=log)
+    ok("…через несколько дней — не проверяет, но о нерабочей напоминает",
+       not checked and any("«Двенадцать букв»" in m for _, m in log.lines))
+    af.check_afisha_links(link_items, date(2026, 10, 26), path=links, check=fake_check, log=Log())
+    ok("…через неделю — проверяет снова", len(checked) == 3)
+    checked.clear()
+    af.check_afisha_links(link_items, date(2026, 12, 1), offline=True, path=links, check=fake_check, log=Log())
+    ok("…без сети — не проверяет", not checked)
+    log = Log()
+    af.check_afisha_links(link_items, date(2026, 12, 2), path=os.path.join(tmp, "l2.json"),
+                          check=lambda u: 1 / 0, log=log)
+    ok("…проверка сломалась — сборка идёт дальше, файл не пишется",
+       any("в следующий раз" in m for _, m in log.lines) and not os.path.exists(os.path.join(tmp, "l2.json")))
+
     # ---------- запись страницы ----------
     out = os.path.join(tmp, "docs")
     os.makedirs(out)
@@ -220,12 +387,14 @@ try:
         af.OUTPUT_DIR = out
         # Без сети и со своим кэшем: проверка не должна ни ходить в интернет,
         # ни писать afisha_places.json проекта.
-        n = af.generate_afisha(known, TODAY, path, offline=True, places=os.path.join(tmp, "p.json"))
+        n = af.generate_afisha(known, TODAY, path, offline=True, places=os.path.join(tmp, "p.json"),
+                               links=os.path.join(tmp, "links-gen.json"))
         ok("generate_afisha пишет afisha.html", n == 5 and os.path.exists(os.path.join(out, "afisha.html")), str(n))
         empty = os.path.join(tmp, "empty.json")
         with open(empty, "w", encoding="utf-8") as f:
             json.dump({"exhibitions": []}, f)
-        ok("пустой список — страница убирается", af.generate_afisha(known, TODAY, empty, offline=True, places=os.path.join(tmp, "p.json")) == 0
+        ok("пустой список — страница убирается", af.generate_afisha(known, TODAY, empty, offline=True, places=os.path.join(tmp, "p.json"),
+                                                                     links=os.path.join(tmp, "links-gen.json")) == 0
            and not os.path.exists(os.path.join(out, "afisha.html")))
     finally:
         af.OUTPUT_DIR = saved
@@ -260,6 +429,8 @@ names = set(bs.museum_names(json.load(open("posts_meta.json", encoding="utf-8"))
 lost = [x["museum"] for x in items if x.get("museum") and x["museum"] not in names]
 ok("поле museum — точные названия с карты собраний", not lost, ", ".join(lost))
 ok("дата обновления записана", bool(updated))
+untagged = [x["title"] for x in items if not x.get("tags")]
+ok("у каждой выставки — эпоха (tags) для фильтра", not untagged, ", ".join(untagged[:5]))
 # Перепутанные широта и долгота — частая опечатка: точка улетает в океан.
 off = [x["title"] for x in items if "lat" in x and af.region(x) == "russia"
        and not (41 <= float(x["lat"]) <= 82 and 19 <= float(x["lon"]) <= 180)]

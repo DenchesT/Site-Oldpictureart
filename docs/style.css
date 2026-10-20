@@ -2434,7 +2434,8 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .35);
   font: 600 12px/1 var(--ff-data);
 }
-.afisha-map .leaflet-popup-content { font-family: var(--ff-text); font-size: var(--fs-sm); line-height: 1.4; }
+.afisha-map .leaflet-popup-content { font-family: var(--ff-text); font-size: var(--fs-sm); line-height: 1.4; margin: 10px 14px; }
+@media (max-width: 600px) { .afisha-map .leaflet-popup-content { font-size: var(--fs-xs); } }
 .afisha-map .leaflet-popup-content b a { color: var(--link); text-decoration: none; }
 .afisha-map .popup-place, .afisha-map .popup-when, .afisha-map .popup-approx, .afisha-map .popup-site { display: block; margin-top: 2px; }
 .afisha-map .popup-when { font-family: var(--ff-data); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .04em; }
@@ -2452,10 +2453,6 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 }
 @media (max-width: 600px) { .afisha-map.mini-map { height: 300px; } }
 .afisha-section[hidden] { display: none; }
-/* Города России — отдельными «фишками»: в одну рамку на телефоне не влезают. */
-.afisha-area { flex-wrap: wrap; gap: 4px; border: 0; overflow: visible; }
-.afisha-area[hidden] { display: none; }
-.afisha-area button, .afisha-area button + button { border: 1px solid var(--border); border-radius: 2px; }
 .afisha-list { list-style: none; margin: 0 0 var(--s5); padding: 0; }
 .afisha-item {
   padding: var(--s3) 0 var(--s3) var(--s3);
@@ -2478,6 +2475,83 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 .afisha-links { margin: var(--s2) 0 0; font-size: var(--fs-sm); }
 .afisha-links a { color: var(--link); }
 .afisha-foot { color: var(--muted); font-size: var(--fs-sm); max-width: 70ch; margin: var(--s4) 0 0; }
+
+/* Фильтры: город (Россия) или страна (Мир), эпоха, «Рядом со мной».
+   Выпадающие списки, а не ряды кнопок: на телефоне четыре строки фишек
+   съедали полэкрана. */
+.afisha-bar { align-items: flex-start; }
+.afisha-filters { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: flex-end; }
+.afisha-select { display: inline-flex; flex-direction: column; gap: 2px; }
+.afisha-select[hidden] { display: none; }
+.afisha-select > span {
+  font-family: var(--ff-data); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+}
+.afisha-select select {
+  font-family: var(--ff-data); font-size: var(--fs-xs); color: var(--text);
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 2px;
+  padding: var(--s2) var(--s2); min-width: 9.5rem; max-width: 15rem;
+}
+.afisha-near-btn {
+  font-family: var(--ff-data); font-size: var(--fs-xs); letter-spacing: .06em; text-transform: uppercase;
+  background: var(--card-bg); color: var(--link); border: 1px solid var(--border); border-radius: 2px;
+  padding: var(--s2) var(--s3); cursor: pointer; line-height: 1.4;
+}
+.afisha-near-btn::before { content: "◎ "; }
+.afisha-near-btn[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.afisha-near-btn:disabled { opacity: .6; cursor: progress; }
+.afisha-near-note { margin: var(--s3) 0 0; font-size: var(--fs-sm); color: var(--text-2); }
+.afisha-near-note a { color: var(--link); }
+.afisha-near-note[hidden] { display: none; }
+.afisha-dist {
+  margin-left: var(--s2); font-family: var(--ff-data); font-size: var(--fs-xs); color: var(--link); white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .afisha-filters { width: 100%; }
+  .afisha-select { flex: 1 1 8rem; }
+  .afisha-select select { min-width: 0; width: 100%; max-width: none; }
+  .afisha-near-btn { flex: 1 1 100%; }
+}
+
+/* «Успеть на этой неделе» — выставки в последние дни, одной строкой каждая. */
+.afisha-week {
+  margin: 0 0 var(--s4); padding: var(--s3) var(--s4);
+  border: 1px solid var(--border); border-left: 3px solid var(--warning); background: var(--card-bg);
+}
+.afisha-week[hidden] { display: none; }
+.afisha-week-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s1); }
+.afisha-week-list li { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: var(--s3); }
+.afisha-week-list a { color: var(--link); text-decoration: none; }
+.afisha-week-list a:hover { text-decoration: underline; }
+.afisha-week-list .now-when { color: var(--warning); }
+
+/* Карта на телефоне свёрнута за кнопкой — список виден сразу. */
+.afisha-map-wrap[hidden] { display: none; }
+.afisha-map-toggle {
+  display: none; width: 100%; margin: 0 0 var(--s3); padding: var(--s2) var(--s3);
+  font-family: var(--ff-data); font-size: var(--fs-xs); letter-spacing: .06em; text-transform: uppercase;
+  background: var(--card-bg); color: var(--link); border: 1px solid var(--border); border-radius: 2px; cursor: pointer;
+}
+@media (max-width: 600px) {
+  .afisha-map-toggle { display: flex; justify-content: center; gap: var(--s2); }
+  .afisha-map-wrap:not(.open) .afisha-map { display: none; }
+}
+
+/* «На сайте: …» — работы этих художников в собрании, миниатюрами. */
+.afisha-works { margin: var(--s2) 0 0; }
+.afisha-works-title { margin: 0; font-size: var(--fs-sm); color: var(--text-2); }
+.afisha-works-title a { color: var(--link); }
+.afisha-thumbs { list-style: none; margin: var(--s2) 0 0; padding: 0; display: flex; gap: var(--s2); flex-wrap: wrap; }
+.afisha-thumbs img {
+  display: block; height: 64px; width: auto; max-width: 110px; object-fit: cover;
+  border: 1px solid var(--border); background: var(--panel);
+}
+.afisha-thumbs a:hover img { border-color: var(--link); }
+.afisha-been { margin: var(--s2) 0 0; font-size: var(--fs-sm); }
+.afisha-been a { color: var(--success); font-weight: 600; }
+.afisha-been a::before { content: "✓ "; }
+.afisha-backlink { margin: var(--s2) 0 0; font-family: var(--ff-data); font-size: var(--fs-xs); letter-spacing: .06em; text-transform: uppercase; }
+.afisha-backlink a { color: var(--link); }
+.afisha-backlink[hidden] { display: none; }
 
 /* Название выставки и музея — ссылки из самого поста, на страницу
    выставки и сайт музея. Заголовок должен остаться заголовком, поэтому

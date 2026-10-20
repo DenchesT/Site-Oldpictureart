@@ -22,6 +22,7 @@ from .links import clean_links, ext_link, link_for, source_block, source_items
 from .html import jsonld_script, site_og_image, telegram_post_link, tidy
 from .images import size_attrs
 from .places import museum_href, museum_info, place_jsonld, visit_map_names, visit_museum_names
+from .afisha import AFISHA_PAGE, load_afisha, match_visits
 
 logger = logging.getLogger("build_site")
 
@@ -466,7 +467,7 @@ def visit_jsonld(visit, info=None, organizers=None):
 
 
 @tidy
-def render_visit_page(visit, visits, all_posts=None, map_names=None):
+def render_visit_page(visit, visits, all_posts=None, map_names=None, afisha=None):
     """Страница одного посещения: все снимки, сведения, ссылка на карту.
 
     Разметка та же, что у страницы работы, — шапка, колонка снимков,
@@ -614,6 +615,7 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
       <h1>{h1_html}</h1>
       {sub_head}
       {run_status(visit, full=True)}
+      {afisha_backlink(afisha)}
     </header>
     {img_html}
   </div>
@@ -636,7 +638,27 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None):
 {TOAST_JS}
 {SHARE_JS}
 {RUN_STATUS_JS}
+{AFISHA_BACKLINK_JS if afisha else ""}
 </body></html>"""
+
+
+# Выставка из похода есть и в афише сайта — ссылка «Сейчас в афише →».
+# Пока выставка не закрылась: дату сверяет браузер, как и «Идёт до…».
+AFISHA_BACKLINK_JS = """<script>
+(function () {
+  var p = document.querySelector('.afisha-backlink');
+  if (!p) return;
+  var e = (p.getAttribute('data-end') || '').split('-'), n = new Date();
+  p.hidden = e.length !== 3 || new Date(n.getFullYear(), n.getMonth(), n.getDate()) > new Date(+e[0], +e[1] - 1, +e[2]);
+})();
+</script>"""
+
+
+def afisha_backlink(item):
+    if not item:
+        return ""
+    return (f'<p class="afisha-backlink" data-end="{h(item["end"])}" hidden>'
+            f'<a href="{AFISHA_PAGE}#{h(item["id"])}">Сейчас в афише →</a></p>')
 
 
 # ======================================================================
@@ -742,11 +764,15 @@ def generate_visit_pages(visits, all_posts=None):
     if not visits:
         return 0
     map_names = visit_map_names(visits, all_posts)
+    # Выставки, где я был и которые есть в афише, — ссылка «Сейчас в афише».
+    afisha_items = load_afisha()[0]
+    in_afisha = {v["filename"]: it for it in afisha_items
+                 for iid, v in match_visits(afisha_items, visits).items() if iid == it["id"]}
     wanted = set()
     for v in visits:
         wanted.add(v["filename"])
         with open(os.path.join(OUTPUT_DIR, v["filename"]), "w", encoding="utf-8", newline="\n") as f:
-            f.write(render_visit_page(v, visits, all_posts, map_names))
+            f.write(render_visit_page(v, visits, all_posts, map_names, in_afisha.get(v["filename"])))
     with open(os.path.join(OUTPUT_DIR, "visits.html"), "w", encoding="utf-8", newline="\n") as f:
         f.write(render_visits_page(visits, all_posts))
     drop_calendar()
@@ -792,5 +818,7 @@ __all__ = [
     'now_on_block',
     'NOW_ON_JS',
     'drop_calendar',
+    'AFISHA_BACKLINK_JS',
+    'afisha_backlink',
     'generate_visit_pages',
 ]
