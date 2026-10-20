@@ -72,6 +72,10 @@ ok("…Петербург и пригороды", af.area(item("П", country="Р
 ok("…остальное — «Другие города»", af.area(item("К", country="Россия", city="Казань")) == "regions")
 ok("…город не угадался — можно указать area", af.area(item("Х", country="Россия", city="Хотьково", area="moscow")) == "moscow")
 ok("у выставок мира города нет", af.area(item("Л", city="Лондон")) == "")
+_js = open(os.path.join(HERE, "test_afisha.js"), encoding="utf-8").read()
+_js_list = lambda name: set(re.findall(r"'([^']+)'", re.search(r"const " + name + r" = \[(.*?)\];", _js, re.S).group(1)))
+ok("списки городов в test_afisha.js — те же, что MOSCOW_AREA и SPB_AREA",
+   _js_list("MOSCOW") == af.MOSCOW_AREA and _js_list("SPB") == af.SPB_AREA)
 ok("ссылка не http(s) — замечание", any("url" in p for p in af.problems(item("Моне", url="www.example.org"))))
 
 tmp = tempfile.mkdtemp()

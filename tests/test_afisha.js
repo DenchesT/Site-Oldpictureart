@@ -93,8 +93,12 @@ const state = page => page.evaluate(() => {
      `${st.counts[0]} / ${st.running.length + st.soon.length} / ждали ${expectRu}`);
 
   // Города России — выпадающий список.
-  const areaOf = x => x.area || (['Москва', 'Абрамцево', 'Архангельское', 'Серпухов', 'Коломна', 'Сергиев Посад', 'Истра'].includes(x.city) ? 'moscow'
-    : ['Санкт-Петербург', 'Петергоф', 'Пушкин', 'Павловск', 'Гатчина', 'Ломоносов', 'Кронштадт'].includes(x.city) ? 'spb' : 'regions');
+  // Те же списки, что MOSCOW_AREA и SPB_AREA в sitebuild/afisha.py.
+  const MOSCOW = ['Москва', 'Абрамцево', 'Архангельское', 'Серпухов', 'Коломна', 'Сергиев Посад', 'Истра', 'Новый Иерусалим',
+    'Мелихово', 'Мураново', 'Подольск', 'Клин', 'Звенигород', 'Дмитров', 'Можайск', 'Бородино', 'Кусково', 'Коломенское', 'Царицыно', 'Ясенево'];
+  const SPB = ['Санкт-Петербург', 'Петербург', 'Петергоф', 'Пушкин', 'Царское Село', 'Павловск', 'Гатчина', 'Ломоносов', 'Ораниенбаум',
+    'Кронштадт', 'Стрельна', 'Репино'];
+  const areaOf = x => x.area || (MOSCOW.includes(x.city) ? 'moscow' : SPB.includes(x.city) ? 'spb' : 'regions');
   const liveOf = ru => data.filter(x => (x.country === 'Россия') === ru && x.end >= DAY && (x.start <= DAY || (new Date(x.start) - new Date(DAY)) / 864e5 <= 92));
   const live = liveOf(true), liveWorld = liveOf(false);
   const opts = id => page.evaluate(i => [...document.querySelectorAll('#' + i + ' option')].filter(o => !o.hidden)
@@ -249,6 +253,7 @@ const state = page => page.evaluate(() => {
       await page.evaluate(t => { const li = [...document.querySelectorAll('.afisha-item[data-lat]')].find(l => !l.hidden && l.querySelector('.afisha-title a').textContent === t);
         li.querySelector('.afisha-pin').click(); }, lone.title);
       await page.waitForSelector('#afisha-map .leaflet-popup-content', { timeout: 8000 }).catch(() => null);
+      await page.waitForTimeout(600);           // карта ещё досдвигается, чтобы подсказка влезла
       const geom = await page.evaluate(() => {
         const r = s => { const e = document.querySelector('#afisha-map ' + s); return e ? e.getBoundingClientRect() : null; };
         const pop = r('.leaflet-popup-content-wrapper'), zoom = r('.leaflet-control-zoom'), lay = r('.leaflet-control-layers');
