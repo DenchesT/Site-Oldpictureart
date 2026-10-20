@@ -26,15 +26,19 @@ from html import escape as h
 
 from site_common import (
     head_common, scroll_top_button, theme_button, site_footer, COMMON_JS, SCROLL_TOP_JS,
-    BASE_URL, latin_slug, museum_page, AFISHA_FILE, has_afisha,
+    BASE_URL, latin_slug, museum_page, AFISHA_FILE, has_afisha, MAP_LAYERS_JS,
 )
 from .config import OUTPUT_DIR
-from .text import plural_ru
+from .text import load_json, plural_ru, save_json
 from .html import tidy
+from .places import LEAFLET_CSS, LEAFLET_JS, museum_directory, museum_info
 
 logger = logging.getLogger("build_site")
 
 AFISHA_PAGE = "afisha.html"
+# Где выставки на карте: найденное геокодером карты собраний запоминается
+# здесь (как museum_coordinates.json у карты) — второй раз не ищется.
+PLACES_FILE = "afisha_places.json"
 RUSSIA = "Россия"
 # Меньше стольких идущих выставок — сборка напомнит пополнить список.
 MIN_RUNNING = {"russia": 5, "world": 8}
@@ -42,8 +46,8 @@ MIN_RUNNING = {"russia": 5, "world": 8}
 STALE_DAYS = 14
 # «Скоро откроются» — только то, что откроется в ближайшие столько дней.
 SOON_DAYS = 92
-# На главной — столько выставок в каждой колонке.
-INDEX_COUNT = 3
+# В панели главной — столько выставок в России и в мире (упор на Россию).
+INDEX_COUNT = {"russia": 3, "world": 2}
 REQUIRED = ("title", "venue", "city", "country", "start", "end", "url")
 # Во вкладке «Россия» выставок много — её можно сузить до Москвы, Петербурга
 # или остальных городов. Город относится к Москве или Петербургу по этим
@@ -83,6 +87,15 @@ def problems(item):
         out.append("end раньше start")
     if item.get("url") and not re.match(r"https?://", str(item["url"])):
         out.append("url должен начинаться с https://")
+    if ("lat" in item) != ("lon" in item):
+        out.append("lat и lon пишутся парой")
+    elif "lat" in item:
+        try:
+            lat, lon = float(item["lat"]), float(item["lon"])
+            if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+                raise ValueError
+        except (TypeError, ValueError):
+            out.append("lat и lon — числа: широта от -90 до 90, долгота от -180 до 180")
     if item.get("area") and item["area"] not in dict(AREAS):
         out.append(f"area бывает только {', '.join(k for k, _ in AREAS)}")
     return out
@@ -139,6 +152,76 @@ def area(item):
     return "regions"
 
 
+def place_key(item):
+    """Под каким именем место ищется и лежит в кэше: «Музей, город»."""
+    return f"{item['venue'].strip()}, {item['city'].strip()}"
+
+
+def locate(items, known=(), offline=False, path=PLACES_FILE, log=logger.info):
+    """{id записи: (широта, долгота, приблизительно ли)} — для карты афиши.
+
+    Откуда координаты, по старшинству:
+      1. "lat" и "lon" в самой записи afisha.json — поправка руками;
+      2. поле "museum" — место с карты собраний, у него координаты уже есть;
+      3. кэш afisha_places.json;
+      4. тот же поиск, что у карты собраний (generate_map.geocode): Wikidata,
+         OpenStreetMap, на худой конец — город. Без сети (--offline) — нет.
+    Подсказка поиску — поле "query" в записи (адрес или название по-английски).
+    """
+    known = set(known or ())
+    cache = load_json(path, {})
+    directory = None
+    out, changed, network = {}, False, not offline
+    pending = sorted({place_key(it) for it in items
+                      if not ("lat" in it and "lon" in it)
+                      and not ((it.get("museum") or "") in known)
+                      and place_key(it) not in cache})
+    if pending and network:
+        log(f"Афиша: ищу на карте места выставок — {len(pending)} (один раз, дальше из {path})")
+    for it in items:
+        try:
+            if "lat" in it and "lon" in it:
+                out[it["id"]] = (float(it["lat"]), float(it["lon"]), bool(it.get("approx")))
+                continue
+        except (TypeError, ValueError):
+            pass
+        name = (it.get("museum") or "").strip()
+        if name in known:
+            directory = directory or museum_directory()
+            info = museum_info(name, directory)
+            if info.get("lat") is not None and info.get("lon") is not None:
+                out[it["id"]] = (info["lat"], info["lon"], bool(info.get("approx")))
+                continue
+        key = place_key(it)
+        hint = (it.get("query") or "").strip()
+        cached = cache.get(key)
+        if cached and (cached.get("hint") or "") == hint:
+            out[it["id"]] = (cached["lat"], cached["lon"], cached.get("precision") == "approx")
+            continue
+        if key in cache and cached is None and not hint:
+            continue                                   # уже искали — не нашлось
+        if not network:
+            if cached:
+                out[it["id"]] = (cached["lat"], cached["lon"], cached.get("precision") == "approx")
+            continue
+        try:
+            import generate_map as gm
+            found = gm.geocode(key, cache, {key: {"query": hint}} if hint else {}, retry_failed=bool(hint),
+                               hint=f'Точнее — впишите в {AFISHA_FILE} у этой выставки "query": "адрес, город" '
+                                    f'или "lat" и "lon".')
+        except Exception as e:                         # сеть пропала — остальных в следующий раз
+            log(f"Афиша: поиск мест на карте прервался ({e.__class__.__name__}) — продолжу в следующий раз")
+            network = False
+            continue
+        changed = True
+        if found:
+            cache[key] = dict(found, hint=hint)
+            out[it["id"]] = (found["lat"], found["lon"], found.get("precision") == "approx")
+    if changed:
+        save_json(path, cache)
+    return out
+
+
 def phase(item, today):
     """'ended', 'running', 'soon' (откроется в ближайшие SOON_DAYS) или 'later'."""
     start, end = _iso(item["start"]), _iso(item["end"])
@@ -190,19 +273,23 @@ def museum_link(item, known):
             f'Картины этого музея на сайте</a>')
 
 
-def afisha_item(item, known):
-    """Запись на странице афиши."""
+def afisha_item(item, known, coords=None):
+    """Запись на странице афиши. coords — (широта, долгота, приблизительно)."""
     orig = item.get("title_orig") or ""
     note = item.get("note") or ""
     link = museum_link(item, known)
+    geo = ""
+    if coords:
+        geo = f' data-lat="{coords[0]:.5f}" data-lon="{coords[1]:.5f}"' + (" data-approx" if coords[2] else "")
     return (
         f'<li class="afisha-item" id="{h(item["id"])}" data-start="{h(item["start"])}" '
         f'data-end="{h(item["end"])}" data-region="{region(item)}"'
-        + (f' data-area="{area(item)}"' if area(item) else "") + '>'
+        + (f' data-area="{area(item)}"' if area(item) else "") + geo + '>'
         + f'<h3 class="afisha-title"><a href="{h(item["url"])}" target="_blank" rel="noopener">'
         f'{h(item["title"])}</a></h3>'
         + (f'<p class="afisha-orig">{h(orig)}</p>' if orig and orig != item["title"] else "")
-        + f'<p class="afisha-where">{h(where_line(item))}</p>'
+        + f'<p class="afisha-where">{h(where_line(item))}'
+        + ('<button type="button" class="afisha-pin">на карте</button>' if coords else '') + '</p>'
         f'<p class="afisha-dates"><span class="afisha-range">{h(date_range(item))}</span>'
         f'<span class="now-when afisha-when"></span></p>'
         + (f'<p class="afisha-note">{h(note)}</p>' if note else "")
@@ -211,11 +298,16 @@ def afisha_item(item, known):
 
 
 def afisha_block(items, today=None):
-    """Блок «Выставки в России и в мире» на главной.
+    """Афиша в левой панели главной — под фильтрами.
 
-    В разметке — все идущие и будущие на день сборки; браузер оставит по
-    INDEX_COUNT ближайших к закрытию в каждой колонке. Нет записей — нет блока.
+    Заголовок раздела — ссылка на afisha.html, под ним выставки «В России»
+    и «В мире» (сколько — INDEX_COUNT), ближайшие к закрытию: название в одну
+    строку (целиком — в подсказке), ниже город и срок. В разметке — все
+    идущие и будущие на день сборки, браузер оставляет нужные на сегодня.
+    Раньше это был блок над галереей, на всю ширину, — занимал полэкрана.
     """
+    if not items:
+        return ""
     today = today or date.today()
     parts = split(items, today)
     cols = []
@@ -223,76 +315,79 @@ def afisha_block(items, today=None):
         rows = parts[key]["running"] + parts[key]["soon"]
         if not rows:
             continue
-        # Строка — в две линии: название (длинное обрезается многоточием,
-        # целиком — во всплывающей подсказке) и «музей, город · срок».
         lis = "".join(
-            f'<li class="now-item" data-start="{h(it["start"])}" data-end="{h(it["end"])}" hidden>'
-            f'<a href="{AFISHA_PAGE}#{h(it["id"])}" title="{h(it["title"])}">{h(it["title"])}</a>'
-            f'<span class="now-where">{h(it["venue"].split(",")[0].strip())}, {h(it["city"])}</span>'
+            f'<li class="now-item afisha-side-item" data-start="{h(it["start"])}" data-end="{h(it["end"])}" hidden>'
+            f'<a href="{AFISHA_PAGE}#{h(it["id"])}" title="{h(it["title"])} — {h(it["venue"])}, {h(it["city"])}">'
+            f'{h(it["title"])}</a>'
+            f'<span class="now-where">{h(it["city"])}</span>'
             f'<span class="now-when"></span></li>'
             for it in rows)
-        cols.append(f'<div class="afisha-col" data-region="{key}"><h3 class="afisha-col-title">{label}</h3>'
-                    f'<ul class="now-list">{lis}</ul></div>')
-    if not cols:
-        return ""
-    return (f'<section class="now-on afisha-block" id="afisha-block" aria-labelledby="afisha-block-title" hidden>'
-            f'<h2 id="afisha-block-title" class="now-title">Выставки в России и в мире</h2>'
-            f'<div class="afisha-cols">{"".join(cols)}</div>'
-            f'<p class="afisha-more"><a href="{AFISHA_PAGE}">Вся афиша →</a></p></section>')
+        cols.append(f'<div class="afisha-col" data-region="{key}" data-limit="{INDEX_COUNT[key]}">'
+                    f'<p class="afisha-col-title">{label}</p>'
+                    f'<ul class="afisha-side-list">{lis}</ul></div>')
+    return (f'<div class="sidebar-section sidebar-afisha" id="afisha-block">'
+            f'<a class="sidebar-title sidebar-icon icon-afisha no-arrow" href="{AFISHA_PAGE}">Выставки сейчас</a>'
+            f'<div class="afisha-side" hidden>{"".join(cols)}</div></div>')
 
 
 # Что идёт сегодня — решает браузер. Одна функция на страницу афиши и на
-# блок главной: подпись срока, «последние дни», «откроется …»; закончившееся
-# убирается, на главной — по INDEX_COUNT в колонке.
+# раздел в панели главной: подпись срока, «последние дни», «откроется …»;
+# закончившееся убирается, на главной — по INDEX_COUNT в группе, и подписи
+# короче («до 25 окт.»), чтобы влезали в узкую панель.
 AFISHA_JS = """<script>
 (function () {
   var MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля',
                 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
   function day(s) { var p = (s || '').split('-'); return p.length === 3 ? new Date(+p[0], +p[1] - 1, +p[2]) : null; }
   var now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  function human(d) {
-    return d.getDate() + ' ' + MONTHS[d.getMonth()] + (d.getFullYear() !== today.getFullYear() ? ' ' + d.getFullYear() : '');
+  var SHORT = ['янв.', 'февр.', 'марта', 'апр.', 'мая', 'июня', 'июля',
+               'авг.', 'сент.', 'окт.', 'нояб.', 'дек.'];
+  function human(d, short) {
+    return d.getDate() + ' ' + (short ? SHORT : MONTHS)[d.getMonth()] +
+      (d.getFullYear() !== today.getFullYear() ? ' ' + d.getFullYear() : '');
   }
   // 'ended' | 'running' | 'soon' | 'later' — и подпись к сроку.
-  function mark(li, soonDays) {
+  function mark(li, soonDays, short) {
     var start = day(li.getAttribute('data-start')), end = day(li.getAttribute('data-end'));
     var when = li.querySelector('.now-when');
     li.classList.remove('now-last', 'now-soon');
     if (!end || today > end) return 'ended';
     if (start && today < start) {
       if ((start - today) / 864e5 > soonDays) return 'later';
-      if (when) when.textContent = 'откроется ' + human(start);
+      if (when) when.textContent = (short ? 'с ' : 'откроется ') + human(start, short);
       li.classList.add('now-soon');
       return 'soon';
     }
     var left = Math.round((end - today) / 864e5);
-    if (when) when.textContent = left === 0 ? 'последний день' : (left <= 7 ? 'последние дни — до ' : 'до ') + human(end);
+    if (when) when.textContent = left === 0 ? 'последний день'
+      : (left <= 7 && !short ? 'последние дни — до ' : 'до ') + human(end, short);
     if (left <= 7) li.classList.add('now-last');
     return 'running';
   }
 
-  // ---- блок на главной
+  // ---- раздел в панели главной
   var block = document.getElementById('afisha-block');
   if (block) {
-    var any = false;
+    var any = false, box = block.querySelector('.afisha-side') || block;
     Array.prototype.forEach.call(block.querySelectorAll('.afisha-col'), function (col) {
       var shown = 0, running = [], soon = [];
       Array.prototype.forEach.call(col.querySelectorAll('.now-item'), function (li) {
-        var st = mark(li, 31);
+        var st = mark(li, 31, true);
         if (st === 'running') running.push(li); else if (st === 'soon') soon.push(li); else li.remove();
       });
       // Порядок — на сегодня: идущие по дате закрытия, потом скорые.
       var by = function (attr) { return function (a, b) { return a.getAttribute(attr) < b.getAttribute(attr) ? -1 : 1; }; };
       running.sort(by('data-end'));
       soon.sort(by('data-start'));
-      var list = col.querySelector('.now-list');
+      var list = col.querySelector('ul'), limit = +col.getAttribute('data-limit') || 3;
       running.concat(soon).forEach(function (li) {
-        if (shown < __COUNT__) { li.hidden = false; list.appendChild(li); shown++; } else li.remove();
+        if (shown < limit) { li.hidden = false; list.appendChild(li); shown++; } else li.remove();
       });
       col.hidden = !shown;
       if (shown) any = true;
     });
-    block.hidden = !any;
+    // Ничего не идёт — остаётся только ссылка на афишу.
+    box.hidden = !any;
   }
 
   // ---- страница афиши
@@ -345,6 +440,8 @@ AFISHA_JS = """<script>
     // Переключатель городов нужен только России, и только если городов больше одного.
     if (areaBox) areaBox.hidden = reg !== 'russia' || areaBtns.filter(function (b) { return !b.hidden; }).length < 3;
     try { localStorage.setItem('afishaRegion', reg); localStorage.setItem('afishaArea', ar); } catch (e) {}
+    // Карта слушает это событие и показывает те же выставки, что и список.
+    page.dispatchEvent(new CustomEvent('afisha:shown'));
   }
   buttons.forEach(function (b) { b.addEventListener('click', function () { show(b.getAttribute('data-region'), state.area); }); });
   areaBtns.forEach(function (b) { b.addEventListener('click', function () { show('russia', b.getAttribute('data-area')); }); });
@@ -356,16 +453,95 @@ AFISHA_JS = """<script>
   }
   if (reg !== 'world') reg = 'russia';
   show(reg, ar);
-  if (target && !target.hidden) { target.classList.add('afisha-target'); target.scrollIntoView(); }
+  function highlight(el) {
+    Array.prototype.forEach.call(page.querySelectorAll('.afisha-target'), function (x) { x.classList.remove('afisha-target'); });
+    el.classList.add('afisha-target');
+  }
+  if (target && !target.hidden) { highlight(target); target.scrollIntoView(); }
+  // Ссылка из подсказки на карте ведёт на запись: открыть её вкладку и город.
+  window.addEventListener('hashchange', function () {
+    var el = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+    if (!el || !el.classList.contains('afisha-item')) return;
+    if (el.hidden) show(el.getAttribute('data-region'), 'all');
+    highlight(el);
+    el.scrollIntoView();
+  });
 })();
-</script>""".replace("__COUNT__", str(INDEX_COUNT)).replace("__SOON__", str(SOON_DAYS))
+</script>""".replace("__SOON__", str(SOON_DAYS))
+
+
+# Карта на странице афиши: метки — те же выставки, что сейчас в списке
+# (вкладка, город, сегодняшняя дата). Скопления меток в одном городе
+# собираются в кружок с числом. Кнопка «на карте» у записи приближает
+# её метку, ссылка в подсказке метки ведёт к записи. Подложки — общие
+# с картой собраний (MAP_LAYERS_JS): Яндекс по умолчанию.
+AFISHA_MAP_JS = """
+(function () {
+  var el = document.getElementById('afisha-map'), page = document.getElementById('afisha');
+  if (!el || !page || !window.L) { if (el) el.hidden = true; return; }
+  var map = L.map(el, {scrollWheelZoom: true, worldCopyJump: true}).setView([55.75, 37.62], 4);
+  OPA_MAP.attach(map, el);
+  var cluster = L.markerClusterGroup ? L.markerClusterGroup({
+    maxClusterRadius: 36, showCoverageOnHover: false, spiderfyOnMaxZoom: true,
+    iconCreateFunction: function (c) {
+      return L.divIcon({className: 'afisha-cluster', html: '<span>' + c.getChildCount() + '</span>', iconSize: [30, 30]});
+    }
+  }) : L.layerGroup();
+  cluster.addTo(map);
+  var byId = {};
+  function esc(s) { return String(s || '').replace(/[&<>"]/g, function (c) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]; }); }
+  function refresh() {
+    cluster.clearLayers();
+    byId = {};
+    var pts = [];
+    Array.prototype.forEach.call(page.querySelectorAll('.afisha-item[data-lat]'), function (li) {
+      if (li.hidden) return;
+      var ll = [+li.getAttribute('data-lat'), +li.getAttribute('data-lon')];
+      var cls = li.classList.contains('now-last') ? ' afisha-dot-last' : li.classList.contains('now-soon') ? ' afisha-dot-soon' : '';
+      var a = li.querySelector('.afisha-title a');
+      var m = L.marker(ll, {title: a.textContent, icon: L.divIcon({className: 'afisha-dot' + cls, iconSize: [16, 16]})});
+      m.bindPopup('<b><a href="#' + li.id + '">' + esc(a.textContent) + '</a></b>' +
+        '<span class="popup-place">' + esc(li.querySelector('.afisha-where').firstChild.textContent) + '</span>' +
+        '<span class="popup-when">' + esc(li.querySelector('.now-when').textContent || li.querySelector('.afisha-range').textContent) + '</span>' +
+        (li.hasAttribute('data-approx') ? '<span class="popup-approx">место на карте приблизительное</span>' : '') +
+        '<a class="popup-site" href="' + esc(a.getAttribute('href')) + '" target="_blank" rel="noopener">Сайт выставки ↗</a>');
+      cluster.addLayer(m);
+      byId[li.id] = m;
+      pts.push(ll);
+    });
+    el.hidden = !pts.length;
+    if (!pts.length) return;
+    map.invalidateSize();
+    // Без анимации: переключили вкладку — карта сразу на месте, и щелчок
+    // «на карте» не попадает на середину чужого перелёта.
+    if (pts.length === 1) map.setView(pts[0], 12, {animate: false});
+    else map.fitBounds(L.latLngBounds(pts).pad(0.12), {maxZoom: 11, animate: false});
+  }
+  page.addEventListener('afisha:shown', refresh);
+  page.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.afisha-pin');
+    if (!b) return;
+    var m = byId[b.closest('.afisha-item').id];
+    if (!m) return;
+    // Прокрутка — сразу, без плавности: пока страница плавно едет,
+    // анимация приближения у группировки меток не всегда доходит до конца.
+    el.scrollIntoView({block: 'center'});
+    if (cluster.zoomToShowLayer) cluster.zoomToShowLayer(m, function () { m.openPopup(); });
+    else { map.setView(m.getLatLng(), 13); m.openPopup(); }
+  });
+  refresh();
+  el.afishaMap = map;   // для проверок
+  el.afishaCluster = cluster;
+})();
+"""
 
 
 @tidy
-def render_afisha_page(items, updated="", known=(), today=None):
-    """Страница afisha.html."""
+def render_afisha_page(items, updated="", known=(), today=None, coords=None):
+    """Страница afisha.html. coords — {id: (широта, долгота, приблизительно)} для карты."""
     today = today or date.today()
     known = set(known or ())
+    coords = coords or {}
     parts = split(items, today)
     running = sorted(parts["russia"]["running"] + parts["world"]["running"], key=lambda x: x["end"])
     soon = sorted(parts["russia"]["soon"] + parts["world"]["soon"], key=lambda x: x["start"])
@@ -383,7 +559,15 @@ def render_afisha_page(items, updated="", known=(), today=None):
         description=("Крупные выставки искусства до 1940 года в музеях России и мира: что идёт сейчас "
                      "и что скоро откроется — старые мастера, XIX век, импрессионисты, модерн и авангард."),
         canonical=f"{BASE_URL}/{AFISHA_PAGE}",
+        extra=("\n" + LEAFLET_CSS + '\n<link rel="stylesheet" href="vendor/leaflet.markercluster/MarkerCluster.css">')
+        if coords else "",
     )
+    has_map = any(it["id"] in coords for it in running + soon)
+    map_html = ('<section class="afisha-map mini-map" id="afisha-map" aria-label="Выставки на карте"></section>'
+                if has_map else "")
+    map_js = (LEAFLET_JS + '\n<script src="vendor/leaflet.markercluster/leaflet.markercluster.js"></script>'
+              '\n<script src="map-config.js"></script>\n<script>' + MAP_LAYERS_JS + AFISHA_MAP_JS + '</script>'
+              if has_map else "")
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 {head}
 </head><body class="tag-page afisha-page">
@@ -409,13 +593,14 @@ def render_afisha_page(items, updated="", known=(), today=None):
   </div>
 </header>
 <main id="afisha" class="afisha">
+{map_html}
 <section class="afisha-section" id="afisha-running-box" aria-labelledby="afisha-running-title">
 <h2 class="museum-section" id="afisha-running-title">Идут сейчас</h2>
-<ul class="afisha-list" id="afisha-running">{''.join(afisha_item(it, known) for it in running)}</ul>
+<ul class="afisha-list" id="afisha-running">{''.join(afisha_item(it, known, coords.get(it["id"])) for it in running)}</ul>
 </section>
 <section class="afisha-section" id="afisha-soon-box" aria-labelledby="afisha-soon-title">
 <h2 class="museum-section" id="afisha-soon-title">Скоро откроются</h2>
-<ul class="afisha-list" id="afisha-soon">{''.join(afisha_item(it, known) for it in soon)}</ul>
+<ul class="afisha-list" id="afisha-soon">{''.join(afisha_item(it, known, coords.get(it["id"])) for it in soon)}</ul>
 </section>
 <p class="no-results" id="afisha-empty" hidden>Сейчас здесь пусто — список скоро пополнится.</p>
 <p class="afisha-foot">{upd_text}Список собран по сайтам музеев; перед походом сроки и часы работы лучше проверить на странице выставки.</p>
@@ -424,6 +609,7 @@ def render_afisha_page(items, updated="", known=(), today=None):
 {SCROLL_TOP_JS}
 {COMMON_JS}
 {AFISHA_JS}
+{map_js}
 </body></html>"""
 
 
@@ -447,11 +633,13 @@ def afisha_report(items, errors, updated, today, log=logger):
         log.info(f"Афиша: список не обновлялся с {ru_date(upd)} — стоит проверить, что открылось нового")
 
 
-def generate_afisha(known=(), today=None, path=AFISHA_FILE):
+def generate_afisha(known=(), today=None, path=AFISHA_FILE, offline=False, places=PLACES_FILE):
     """Пишет docs/afisha.html. Возвращает число идущих и будущих выставок.
 
     known — названия мест с карты собраний: у записи с полем museum из
-    этого списка появляется ссылка на страницу музея на сайте.
+    этого списка появляется ссылка на страницу музея на сайте, а метка на
+    карте афиши берёт его координаты. Остальные места ищутся (locate);
+    offline=True — только то, что уже найдено.
     """
     today = today or date.today()
     items, errors, updated = load_afisha(path)
@@ -466,10 +654,21 @@ def generate_afisha(known=(), today=None, path=AFISHA_FILE):
     unknown = sorted({it["museum"] for it in items if it.get("museum") and it["museum"] not in set(known)})
     for name in unknown:
         logger.info(f"Афиша: музея «{name}» нет на карте собраний — ссылки на его страницу не будет")
-    with open(target, "w", encoding="utf-8", newline="\n") as f:
-        f.write(render_afisha_page(items, updated, known, today))
-    afisha_report(items, errors, updated, today)
     parts = split(items, today)
+    live_items = [it for r in parts.values() for p in r.values() for it in p]
+    coords = locate(live_items, known, offline, places)
+    with open(target, "w", encoding="utf-8", newline="\n") as f:
+        f.write(render_afisha_page(items, updated, known, today, coords))
+    afisha_report(items, errors, updated, today)
+    missing = [it for it in live_items if it["id"] not in coords]
+    approx = sorted({place_key(it) for it in live_items if it["id"] in coords and coords[it["id"]][2]})
+    if missing and not offline:
+        logger.info(f"Афиша: на карте нет {len(missing)} — место не нашлось; можно вписать в {AFISHA_FILE} "
+                    f'"lat" и "lon" у выставки: ' + "; ".join(f"«{it['title']}»" for it in missing[:5])
+                    + (" …" if len(missing) > 5 else ""))
+    if approx:
+        logger.info(f"Афиша: по городу, а не по зданию — {len(approx)}: " + "; ".join(approx[:5])
+                    + (" …" if len(approx) > 5 else ""))
     live = sum(len(parts[r][p]) for r in parts for p in parts[r])
     logger.info(f"Афиша: {len(parts['russia']['running'])} идут в России, "
                 f"{len(parts['world']['running'])} в мире, скоро откроются — "
@@ -481,5 +680,6 @@ __all__ = [
     'AFISHA_FILE', 'AFISHA_PAGE', 'RUSSIA', 'MIN_RUNNING', 'STALE_DAYS', 'SOON_DAYS', 'INDEX_COUNT',
     'REQUIRED', 'AREAS', 'MOSCOW_AREA', 'SPB_AREA', 'area', 'problems', 'load_afisha', 'afisha_id', 'region', 'phase',
     'ru_date', 'date_range', 'split', 'where_line', 'museum_link', 'afisha_item', 'afisha_block',
-    'AFISHA_JS', 'render_afisha_page', 'afisha_report', 'generate_afisha',
+    'AFISHA_JS', 'AFISHA_MAP_JS', 'PLACES_FILE', 'place_key', 'locate', 'render_afisha_page', 'afisha_report',
+    'generate_afisha',
 ]

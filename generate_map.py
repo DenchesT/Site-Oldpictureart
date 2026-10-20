@@ -530,7 +530,8 @@ def city_fallback(museum_name, manual=None):
 
 # ------------------------------------------------------------------ geocode
 
-def geocode(museum_name, cache, overrides=None, retry_failed=False, offline=False, stats=None):
+def geocode(museum_name, cache, overrides=None, retry_failed=False, offline=False, stats=None,
+            hint=None):
     """Ищет координаты музея: ручной справочник → кэш → Wikidata → Nominatim → город.
 
     Порядок здесь важнее, чем кажется. Кэш проверяется ДО любых сетевых
@@ -541,6 +542,8 @@ def geocode(museum_name, cache, overrides=None, retry_failed=False, offline=Fals
     retry_failed=True — заново спросить те названия, что записались в кэш
     как null (иначе одна неудача запоминалась навсегда).
     offline=True — вообще не ходить в сеть, брать только готовое.
+    hint — что подсказать в журнале, если место нашлось только по городу
+    (афиша зовёт этот же поиск, а поправки у неё в другом файле).
     """
     overrides = overrides or {}
     stats = stats if stats is not None else {}
@@ -705,8 +708,8 @@ def geocode(museum_name, cache, overrides=None, retry_failed=False, offline=Fals
     result = city_fallback(museum_name, manual)
     if result:
         logger.warning(f"  ≈ {museum_name} → приблизительно, по месту «{result['display_name']}». "
-                       f"Метка не на здании — впишите адрес в {OVERRIDES_FILE}: "
-                       f'"{museum_name}": {{"address": "улица дом, город"}}')
+                       + (hint or f"Метка не на здании — впишите адрес в {OVERRIDES_FILE}: "
+                                  f'"{museum_name}": {{"address": "улица дом, город"}}'))
         return remember(result, wanted_query or museum_name)
 
     # Ничего не нашлось. Если прежние координаты были — оставляем их:

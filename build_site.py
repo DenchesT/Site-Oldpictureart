@@ -286,7 +286,7 @@ async def main():
     # Страницы музеев — после карты: координаты берутся из её свежего кэша.
     generate_museum_pages(all_posts, all_visits)
     # Афиша: крупные выставки в России и в мире (afisha.json).
-    generate_afisha(museum_names(all_posts, all_visits))
+    generate_afisha(museum_names(all_posts, all_visits))     # места на карте ищет в сети
     # Генерация квиза и таймлайна
     try:
         subprocess.run([sys.executable, "generate_quiz.py"], check=True)

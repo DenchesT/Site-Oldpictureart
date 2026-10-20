@@ -124,6 +124,49 @@ const state = page => page.evaluate(() => {
   await page.waitForTimeout(200);
   st = await state(page);
   ok('выбранная вкладка запоминается', st.pressed === 'world', st.pressed);
+
+  // ---------- карта ----------
+  const mapState = () => page.evaluate(() => {
+    const el = document.getElementById('afisha-map');
+    if (!el || !el.afishaCluster) return null;
+    const want = [...document.querySelectorAll('.afisha-item[data-lat]')].filter(li => !li.hidden).length;
+    return { shown: !el.hidden, markers: el.afishaCluster.getLayers().length, want };
+  });
+  let ms = await mapState();
+  const hasCoords = /data-lat=/.test(fs.readFileSync(path.join(DOCS, 'afisha.html'), 'utf8'));
+  if (hasCoords) {
+    ok('на странице — карта выставок', ms && ms.shown, JSON.stringify(ms));
+    ok('…метки — ровно те выставки, что сейчас в списке', ms && ms.markers === ms.want && ms.want > 0, JSON.stringify(ms));
+    await page.click('.afisha-switch [data-region="russia"]');
+    await page.waitForTimeout(150);
+    const ru = await mapState();
+    await page.click('.afisha-switch [data-region="world"]');
+    await page.waitForTimeout(150);
+    const wo = await mapState();
+    ok('…вкладка меняет и метки', ru && wo && ru.markers === ru.want && wo.markers === wo.want && ru.want !== wo.want,
+       JSON.stringify({ ru, wo }));
+    // Приближение к метке — анимация, а ей нужны идущие часы: на странице
+    // с подставленной датой время стоит. Поэтому здесь — настоящее «сегодня».
+    const live = await ctx.newPage();
+    await live.goto(f('afisha.html'));
+    await live.waitForTimeout(400);
+    const pinTitle = await live.$eval('.afisha-item:not([hidden]) .afisha-pin', b => b.closest('.afisha-item').querySelector('.afisha-title a').textContent.trim()).catch(() => null);
+    if (pinTitle) {
+      await live.click('.afisha-item:not([hidden]) .afisha-pin');
+      await live.waitForSelector('.leaflet-popup-content', { timeout: 6000 }).catch(() => null);
+      const pop = await live.$eval('.leaflet-popup-content', e => e.textContent).catch(() => '');
+      ok('«на карте» открывает подсказку этой выставки', pop.includes(pinTitle), pop.slice(0, 80));
+      const target = await live.$eval('.leaflet-popup-content b a', a => a.getAttribute('href')).catch(() => '');
+      if (target) await live.click('.leaflet-popup-content b a');
+      await live.waitForTimeout(300);
+      ok('…ссылка в подсказке ведёт к записи и подсвечивает её',
+         await live.evaluate(id => { const el = document.getElementById(id); return !!el && !el.hidden && el.classList.contains('afisha-target'); }, target.slice(1)),
+         target);
+    }
+    await live.close();
+  } else {
+    ok('координат нет — карты нет', !ms);
+  }
   await page.close();
 
   // Через месяц: закончившееся ушло, открывшееся переехало в «Идут сейчас».
@@ -171,10 +214,12 @@ const state = page => page.evaluate(() => {
   const blk = await page.evaluate(() => {
     const b = document.getElementById('afisha-block');
     if (!b) return null;
+    const side = b.querySelector('.afisha-side');
     return {
-      hidden: b.hidden,
+      inSidebar: !!b.closest('#sidebar'),
+      hidden: !side || side.hidden,
       cols: [...b.querySelectorAll('.afisha-col')].filter(c => !c.hidden).map(c => ({
-        region: c.dataset.region,
+        region: c.dataset.region, limit: +c.dataset.limit,
         rows: [...c.querySelectorAll('.now-item')].filter(li => !li.hidden).map(li => ({
           href: li.querySelector('a').getAttribute('href'), end: li.dataset.end, start: li.dataset.start,
           when: li.querySelector('.now-when').textContent.trim() })),
@@ -182,18 +227,22 @@ const state = page => page.evaluate(() => {
       more: !!b.querySelector('a[href="afisha.html"]'),
     };
   });
-  ok('на главной блок афиши виден', blk && !blk.hidden, JSON.stringify(blk && blk.hidden));
-  ok('…две колонки: Россия и мир', blk && blk.cols.map(c => c.region).join() === 'russia,world');
-  ok('…не больше трёх в колонке', blk && blk.cols.every(c => c.rows.length && c.rows.length <= 3));
+  ok('на главной афиша — в левой панели, список виден', blk && blk.inSidebar && !blk.hidden, JSON.stringify(blk && blk.hidden));
+  ok('…две группы: Россия и мир', blk && blk.cols.map(c => c.region).join() === 'russia,world');
+  ok('…в России до трёх, в мире до двух', blk && blk.cols.every(c => c.rows.length && c.rows.length <= c.limit)
+     && blk.cols[0].limit === 3 && blk.cols[1].limit === 2, blk && JSON.stringify(blk.cols.map(c => [c.region, c.rows.length])));
+  ok('…подписи срока короткие («до 25 окт.»)', blk && blk.cols.every(c => c.rows.every(r => /^(до|с) \d+ [а-я]+\.?( \d{4})?$|^последний день$/.test(r.when))),
+     blk && JSON.stringify(blk.cols.map(c => c.rows.map(r => r.when))));
   ok('…идущие, ближайшие к закрытию', blk && blk.cols.every(c => c.rows.every((r, i, a) => r.start <= DAY && (!i || a[i - 1].end <= r.end))),
      blk && JSON.stringify(blk.cols.map(c => c.rows.map(r => r.end))));
   const ids = new Set((fs.readFileSync(path.join(DOCS, 'afisha.html'), 'utf8').match(/id="a-[^"]+"/g) || []).map(s => s.slice(4, -1)));
   ok('…строки ведут на записи афиши', blk && blk.cols.every(c => c.rows.every(r => r.href.startsWith('afisha.html#') && ids.has(r.href.slice(12)))));
-  ok('…и ссылка «Вся афиша»', blk && blk.more);
+  ok('…заголовок раздела — ссылка на афишу', blk && blk.more);
   ok('главная без ошибок скрипта', page.errors.length === 0, page.errors.join(' | '));
   await page.close();
   page = await openAt(ctx, 'index.html', LAST + 'T12:00:00');
-  ok('всё закончилось — блока на главной нет', await page.$eval('#afisha-block', b => b.hidden).catch(() => true));
+  ok('всё закончилось — списка нет, ссылка на афишу осталась',
+     await page.$eval('#afisha-block', b => b.querySelector('.afisha-side').hidden && !!b.querySelector('a[href="afisha.html"]')).catch(() => false));
   await page.close();
 
   // ---------- телефон ----------

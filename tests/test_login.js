@@ -179,9 +179,9 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
      await page.evaluate(() => {
        const cards = document.getElementById('cards').getBoundingClientRect().top;
        const bar = document.querySelector('.results-bar').getBoundingClientRect().top;
-       // Над списком — шапка и блоки «Идёт сейчас» и афиши; между ними и
+       // Над списком — шапка и блок «Идёт сейчас»; между ними и
        // строкой над картинами ничего лишнего быть не должно.
-       const above = Math.max(...['body > header', '#now-on', '#afisha-block'].map(sel => {
+       const above = Math.max(...['body > header', '#now-on'].map(sel => {
          const el = document.querySelector(sel);
          return el && !el.hidden ? el.getBoundingClientRect().bottom : 0;
        }));

@@ -54,6 +54,8 @@ ok("хорошая запись — без замечаний", af.problems(item
 ok("нет поля — замечание", any("venue" in p for p in af.problems({k: v for k, v in item("Моне").items() if k != "venue"})))
 ok("дата не ГГГГ-ММ-ДД — замечание", any("start" in p for p in af.problems(item("Моне", start="01.09.2026"))))
 ok("конец раньше начала — замечание", any("раньше" in p for p in af.problems(item("Моне", start="2026-12-01", end="2026-11-01"))))
+ok("lat без lon — замечание", any("парой" in p for p in af.problems(item("Моне", lat=48.86))))
+ok("широта за пределами — замечание", any("широта" in p for p in af.problems(item("Моне", lat=148.86, lon=2.33))))
 ok("area — только moscow, spb или regions", any("area" in p for p in af.problems(item("Моне", area="москва"))))
 ok("город России: Москва и Подмосковье", af.area(item("М", country="Россия", city="Москва")) == "moscow"
    and af.area(item("А", country="Россия", city="Абрамцево")) == "moscow")
@@ -127,13 +129,68 @@ try:
        and 'data-region="world" data-area' not in page)
     ok("адрес страницы — канонический", f'{sc.BASE_URL}/afisha.html' in page)
 
-    # ---------- блок на главной ----------
+    # ---------- раздел в панели главной ----------
     block = af.afisha_block(items, TODAY)
-    ok("блок на главной: обе колонки", 'data-region="russia"' in block and 'data-region="world"' in block)
+    ok("в панели главной: Россия и мир", 'data-region="russia"' in block and 'data-region="world"' in block)
+    ok("…в России три, в мире две — упор на Россию",
+       'data-region="russia" data-limit="3"' in block and 'data-region="world" data-limit="2"' in block)
+    ok("…заголовок — ссылка на афишу", '<a class="sidebar-title sidebar-icon icon-afisha no-arrow" href="afisha.html">' in block)
     ok("строки ведут на запись в афише", f'href="afisha.html#{items[0]["id"]}"' in block)
-    ok("закончившихся в блоке нет", "Закрылась" not in block)
-    ok("блок спрятан до скрипта", 'id="afisha-block"' in block and " hidden>" in block)
-    ok("всё закончилось — блока нет", af.afisha_block([items[2], items[3]], TODAY) == "")
+    ok("…в строке город, без длинного названия музея", '<span class="now-where">Санкт-Петербург</span>' in block)
+    ok("закончившихся в разделе нет", "Закрылась" not in block)
+    ok("список спрятан до скрипта", 'id="afisha-block"' in block and '<div class="afisha-side" hidden>' in block)
+    ended = af.afisha_block([items[2], items[3]], TODAY)
+    ok("всё закончилось — остаётся только ссылка", 'href="afisha.html"' in ended and "afisha-col" not in ended)
+    ok("афиши нет — нет и раздела", af.afisha_block([], TODAY) == "")
+
+    # ---------- карта ----------
+    import types
+    calls = []
+    fake = types.SimpleNamespace(geocode=lambda key, cache, ov=None, **kw: calls.append((key, ov)) or (
+        {"lat": 48.86, "lon": 2.33, "precision": "exact"} if "Последние" in key else None))
+    real_gm = sys.modules.get("generate_map")
+    places = os.path.join(tmp, "places.json")
+    with open(places, "w", encoding="utf-8") as f:
+        json.dump({af.place_key(items[4]): {"lat": 48.85, "lon": 2.35, "precision": "approx", "hint": ""}}, f)
+    manual = dict(items[0], lat=48.8600, lon=2.3266)
+    try:
+        sys.modules["generate_map"] = fake
+        co = af.locate([manual, items[1], items[4], items[7]], set(), offline=False, path=places, log=lambda m: None)
+    finally:
+        if real_gm is not None:
+            sys.modules["generate_map"] = real_gm
+        else:
+            sys.modules.pop("generate_map", None)
+    ok("координаты: вписанные в запись — главнее всего", co.get(manual["id"]) == (48.86, 2.3266, False), str(co))
+    rough = dict(items[0], lat=54.72, lon=55.94, approx=True)
+    ok("…с \"approx\": true — метка помечена приблизительной",
+       af.locate([rough], set(), offline=True, path=places, log=lambda m: None).get(rough["id"]) == (54.72, 55.94, True))
+    ok("…найденное раньше — из кэша, без поиска", co.get(items[4]["id"]) == (48.85, 2.35, True)
+       and not any(af.place_key(items[4]) == c[0] for c in calls), str(calls))
+    ok("…остальное ищет поиск карты собраний", co.get(items[1]["id"]) == (48.86, 2.33, False)
+       and af.place_key(items[1]) in [c[0] for c in calls])
+    ok("…не нашлось — метки нет", items[7]["id"] not in co)
+    saved_places = json.load(open(places, encoding="utf-8"))
+    ok("найденное записано в кэш", saved_places.get(af.place_key(items[1]), {}).get("lat") == 48.86)
+    calls.clear()
+    try:
+        sys.modules["generate_map"] = fake
+        co2 = af.locate([items[1], dict(items[2], venue="Новое место")], set(), offline=True, path=places, log=lambda m: None)
+    finally:
+        if real_gm is not None:
+            sys.modules["generate_map"] = real_gm
+        else:
+            sys.modules.pop("generate_map", None)
+    ok("без сети — только найденное, поиск не зовётся", items[1]["id"] in co2 and not calls)
+    page_map = af.render_afisha_page(items, updated, known, TODAY, co)
+    ok("на странице — карта и данные для меток", 'id="afisha-map"' in page_map
+       and f'id="{items[1]["id"]}"' in page_map and 'data-lat="48.86000" data-lon="2.33000"' in page_map)
+    ok("…у записи с координатами — кнопка «на карте», без них — нет",
+       page_map.count('class="afisha-pin"') == sum(1 for it in items if it["id"] in co and af.phase(it, TODAY) in ("running", "soon")))
+    ok("…Leaflet и группировка меток — свои копии", "vendor/leaflet/leaflet.js" in page_map
+       and "vendor/leaflet.markercluster/leaflet.markercluster.js" in page_map and "map-config.js" in page_map)
+    ok("нет ни одной точки — нет и карты", 'id="afisha-map"' not in af.render_afisha_page(items, updated, known, TODAY, {})
+       and "leaflet.js" not in af.render_afisha_page(items, updated, known, TODAY, {}))
 
     # ---------- подсказки сборки ----------
     class Log:
@@ -161,12 +218,14 @@ try:
     saved = af.OUTPUT_DIR
     try:
         af.OUTPUT_DIR = out
-        n = af.generate_afisha(known, TODAY, path)
+        # Без сети и со своим кэшем: проверка не должна ни ходить в интернет,
+        # ни писать afisha_places.json проекта.
+        n = af.generate_afisha(known, TODAY, path, offline=True, places=os.path.join(tmp, "p.json"))
         ok("generate_afisha пишет afisha.html", n == 5 and os.path.exists(os.path.join(out, "afisha.html")), str(n))
         empty = os.path.join(tmp, "empty.json")
         with open(empty, "w", encoding="utf-8") as f:
             json.dump({"exhibitions": []}, f)
-        ok("пустой список — страница убирается", af.generate_afisha(known, TODAY, empty) == 0
+        ok("пустой список — страница убирается", af.generate_afisha(known, TODAY, empty, offline=True, places=os.path.join(tmp, "p.json")) == 0
            and not os.path.exists(os.path.join(out, "afisha.html")))
     finally:
         af.OUTPUT_DIR = saved
@@ -178,7 +237,10 @@ finally:
 ok("ссылка «Афиша» в подвале", 'href="afisha.html">Афиша</a>' in sc.site_footer())
 if os.path.exists("docs/afisha.html"):
     idx = open("docs/index.html", encoding="utf-8").read()
-    ok("на главной — блок и пункт меню", 'id="afisha-block"' in idx and 'icon-afisha' in idx)
+    ok("на главной афиша — в левой панели, под фильтрами",
+       idx.find('id="sidebar"') < idx.find('id="afisha-block"') < idx.find('</aside>')
+       and idx.find("'Техника'") < 0 and idx.find('icon-technique') < idx.find('id="afisha-block"'))
+    ok("…и над галереей её больше нет", idx.find('id="afisha-block"') > idx.find('<div class="layout">'))
     ok("афиша в карте сайта", "/afisha.html</loc>" in open("docs/sitemap.xml", encoding="utf-8").read())
 
 # ---------- сам afisha.json ----------
@@ -198,6 +260,13 @@ names = set(bs.museum_names(json.load(open("posts_meta.json", encoding="utf-8"))
 lost = [x["museum"] for x in items if x.get("museum") and x["museum"] not in names]
 ok("поле museum — точные названия с карты собраний", not lost, ", ".join(lost))
 ok("дата обновления записана", bool(updated))
+# Перепутанные широта и долгота — частая опечатка: точка улетает в океан.
+off = [x["title"] for x in items if "lat" in x and af.region(x) == "russia"
+       and not (41 <= float(x["lat"]) <= 82 and 19 <= float(x["lon"]) <= 180)]
+ok("у выставок России метки — в России", not off, ", ".join(off))
+
+ok("проверка не оставила кэш мест в проекте", not os.path.exists(os.path.join(ROOT, "afisha_places.json"))
+   or open(os.path.join(ROOT, "afisha_places.json"), encoding="utf-8").read().find("Музей Последние дни") < 0)
 
 print("\n====== АФИША ======")
 for name, passed, extra in results:

@@ -2345,35 +2345,112 @@ a:has(.painting):focus-visible .painting-hint { opacity: 1; transform: none; }
 .visits-page .now-on { margin: var(--s4) 0 var(--s3); }
 
 /* Афиша — крупные выставки в России и в мире (sitebuild/afisha.py).
-   На главной — блок того же вида, что «Идёт сейчас», только с синей
-   полосой и в две колонки; на странице — вкладки и список записей. */
-.afisha-block { border-left-color: var(--link); }
-.afisha-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--s3) var(--s5); }
-.afisha-col[hidden] { display: none; }
-.afisha-col-title {
-  margin: 0 0 var(--s2);
+   На главной — раздел в левой панели под фильтрами: ссылка «Выставки
+   сейчас» и по три выставки в России и в мире — название в одну строку,
+   под ним город и срок. На странице — вкладки и список записей. */
+.sidebar-afisha { margin-bottom: var(--s2); }
+/* Заголовок — ссылка на афишу, но среди фильтров выглядит как они:
+   мелкие прописные, без отступа, стрелка справа вместо «плюса». */
+.sidebar .sidebar-afisha > a.sidebar-title {
+  font-size: var(--fs-xs);
+  padding: var(--s2) 0;
+  border-left: 0;
+  color: var(--muted);
+}
+.sidebar .sidebar-afisha > a.sidebar-title:hover { background: none; color: var(--text); }
+.sidebar .sidebar-afisha > a.sidebar-title::after {
+  content: '→';
+  margin-left: auto;
   font-size: var(--fs-sm);
-  font-style: normal;
-  font-weight: 600;
-  color: var(--text);
+  color: var(--muted);
 }
-/* На главной строка выставки — в две линии, чтобы блок не растягивался:
-   название в одну строку с многоточием, под ним музей, город и срок. */
-.afisha-block .now-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--s3); row-gap: 0; }
-.afisha-block .now-item[hidden] { display: none; }
-.afisha-block .now-item a { grid-column: 1 / -1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.afisha-block .now-where { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.afisha-block .now-when { justify-self: end; }
-@media (max-width: 600px) {
-  .afisha-block .now-item { grid-template-columns: minmax(0, 1fr); }
-  .afisha-block .now-where { white-space: normal; }
-  .afisha-block .now-when { justify-self: start; }
+.afisha-side { padding: var(--s2) 0 var(--s1); }
+.afisha-side[hidden], .afisha-col[hidden] { display: none; }
+.afisha-col + .afisha-col { margin-top: var(--s3); }
+.afisha-col-title {
+  margin: 0 0 var(--s1);
+  font-family: var(--ff-data);
+  font-size: var(--fs-xs);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
-.afisha-more { margin: var(--s3) 0 0; font-size: var(--fs-sm); }
-.afisha-more a { color: var(--link); }
-.now-on:not([hidden]) + .afisha-block { margin-top: calc(-1 * var(--s3)); }
+.afisha-side-list { display: grid; gap: var(--s2); }
+.sidebar .afisha-side-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: var(--s2);
+  align-items: baseline;
+}
+.sidebar .afisha-side-item[hidden] { display: none; }
+.sidebar .afisha-side-item a {
+  grid-column: 1 / -1;
+  display: block;
+  padding: 0;
+  border: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.35;
+  color: var(--link);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar .afisha-side-item a:hover { background: none; text-decoration: underline; }
+/* На телефоне ссылкам панели дают высоту 42px под палец; строке выставки
+   это ни к чему — нажимается вся строка, а пустота разрывает её надвое. */
+@media (max-width: 900px) {
+  .sidebar .afisha-side-item a { min-height: 0; padding: var(--s1) 0 0; }
+  .sidebar .sidebar-afisha > a.sidebar-title { min-height: 42px; }
+}
+.afisha-side-item .now-where {
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.afisha-side-item .now-when { font-size: 10px; letter-spacing: .04em; }
 
 .afisha { max-width: 860px; }
+/* Карта афиши: те же выставки, что в списке. Точка — цвет срока, как у
+   плашек: идёт — зелёный, последние дни — охра, скоро — синий. */
+.afisha-map.mini-map { aspect-ratio: auto; height: 380px; margin: 0 0 var(--s5); }
+.afisha-map[hidden] { display: none; }
+.afisha-dot {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--success);
+  border: 3px solid var(--card-bg);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .35);
+}
+.afisha-dot.afisha-dot-last { background: var(--warning); }
+.afisha-dot.afisha-dot-soon { background: var(--link); }
+.afisha-cluster span {
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--text);
+  color: var(--bg);
+  border: 3px solid var(--card-bg);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .35);
+  font: 600 12px/1 var(--ff-data);
+}
+.afisha-map .leaflet-popup-content { font-family: var(--ff-text); font-size: var(--fs-sm); line-height: 1.4; }
+.afisha-map .leaflet-popup-content b a { color: var(--link); text-decoration: none; }
+.afisha-map .popup-place, .afisha-map .popup-when, .afisha-map .popup-approx, .afisha-map .popup-site { display: block; margin-top: 2px; }
+.afisha-map .popup-when { font-family: var(--ff-data); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .04em; }
+.afisha-map .popup-approx { color: var(--muted); font-size: var(--fs-xs); }
+.afisha-pin {
+  margin-left: var(--s2);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--link);
+  font: inherit;
+  font-size: var(--fs-xs);
+  text-decoration: underline;
+  cursor: pointer;
+}
+@media (max-width: 600px) { .afisha-map.mini-map { height: 300px; } }
 .afisha-section[hidden] { display: none; }
 /* Города России — отдельными «фишками»: в одну рамку на телефоне не влезают. */
 .afisha-area { flex-wrap: wrap; gap: 4px; border: 0; overflow: visible; }
