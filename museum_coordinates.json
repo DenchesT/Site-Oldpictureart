@@ -624,5 +624,21 @@
     "display_name": "Выставочные залы на Ярославовом дворище",
     "source": "override",
     "precision": "exact"
+  },
+  "Лондонская национальная галерея, Лондон": {
+    "lat": 51.50888888888889,
+    "lon": -0.12833333333333333,
+    "display_name": "Лондонская национальная галерея",
+    "source": "wikidata:Q180788",
+    "precision": "exact",
+    "query": "Лондонская национальная галерея",
+    "hint": "\n",
+    "details": {
+      "lat": 51.50888888888889,
+      "lon": -0.12833333333333333,
+      "address": "Trafalgar Square, London WC2N 5DN",
+      "site": "https://www.nationalgallery.org.uk",
+      "country": "Соединённое Королевство"
+    }
   }
 }

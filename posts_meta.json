@@ -4599,5 +4599,47 @@
       "images/views/detaille-son-1888-1.jpg"
     ],
     "card": "images/cards/detaille-son-1888.jpg"
+  },
+  {
+    "id": 583,
+    "date": "2026-10-22",
+    "filename": "denittis-zimnii-peizazh-1880.html",
+    "images": [
+      "images/denittis-zimnii-peizazh-1880-1.jpg"
+    ],
+    "hires": [
+      "images/denittis-zimnii-peizazh-1880-hires-1.jpg"
+    ],
+    "thumbs": [
+      "images/thumbs/denittis-zimnii-peizazh-1880.jpg"
+    ],
+    "links": [],
+    "artist": "Джузеппе де Ниттис",
+    "title": "Winter Landscape (Зимний пейзаж), 1880",
+    "medium": "Дерево, масло, 21,4 x 26,8 см",
+    "material": "Дерево",
+    "techniques": [
+      "масло"
+    ],
+    "size": "21,4 x 26,8 см",
+    "museum": "Лондонская национальная галерея, Лондон",
+    "history": [
+      "1) The Gere Collection, переданная в долгосрочную аренду Национальной галерее"
+    ],
+    "description": "Под свинцово-серым небом одинокая женская фигура пробирается по заснеженному садовому участку. С трёх сторон сад окружён стеной, но с четвертой стороны он открыт и примыкает к высокой загородной вилле. Как и сад, дом выглядит новым. Возможно, действие происходит в пригороде Парижа. Эскиз, похоже, был написан с высоты, возможно, из верхнего окна соседнего дома.",
+    "urls": [
+      "https://www.nationalgallery.org.uk/paintings/giuseppe-de-nittis-winter-landscape"
+    ],
+    "tags": [
+      "denittis",
+      "nationalgallery",
+      "картина"
+    ],
+    "raw": "Джузеппе де Ниттис \n⸻\nWinter Landscape (Зимний пейзаж), 1880\n⸻\nДерево, масло, 21,4 x 26,8 см\n⸻\nЛондонская национальная галерея, Лондон\n⸻\n1) The Gere Collection, переданная в долгосрочную аренду Национальной галерее\n⸻\nПод свинцово-серым небом одинокая женская фигура пробирается по заснеженному садовому участку. С трёх сторон сад окружён стеной, но с четвертой стороны он открыт и примыкает к высокой загородной вилле. Как и сад, дом выглядит новым. Возможно, действие происходит в пригороде Парижа. Эскиз, похоже, был написан с высоты, возможно, из верхнего окна соседнего дома. \n⸻\nhttps://www.nationalgallery.org.uk/paintings/giuseppe-de-nittis-winter-landscape\n⸻\n#denittis@oldpictureart\n#nationalgallery@oldpictureart\n#картина@oldpictureart\n",
+    "creation_year": 1880,
+    "views": [
+      "images/views/denittis-zimnii-peizazh-1880-1.jpg"
+    ],
+    "card": "images/cards/denittis-zimnii-peizazh-1880.jpg"
   }
 ]
