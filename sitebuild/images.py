@@ -56,6 +56,15 @@ def compress_if_huge(fp):
         logger.warning(f"Не сжато: {e}")
         return fp
 
+def oversized(path, limit):
+    """Картинка больше limit по большей стороне (заголовок файла, без чтения всего)."""
+    try:
+        with Image.open(path) as im:
+            return max(im.size) > limit
+    except Exception:
+        return False
+
+
 def make_thumbnail(src, slug, idx):
     if not PIL_AVAILABLE or not os.path.exists(src): return ""
     os.makedirs(THUMB_DIR, exist_ok=True)
@@ -269,6 +278,37 @@ def make_view(src, slug, idx):
         return ""
 
 
+def shrink_thumbs(records):
+    """Уменьшает миниатюры, сделанные крупнее THUMB_DIMENSION.
+
+    До октября 2026 миниатюры делались под 1200px при качестве 90 — по
+    150–450 КБ на картинку, которую показывают шириной 130px. Новые
+    делаются под THUMB_DIMENSION, а прежние уменьшаем здесь — один раз:
+    у уже уменьшенных открывается только заголовок файла. Возвращает
+    число уменьшенных.
+    """
+    if not PIL_AVAILABLE:
+        return 0
+    done = 0
+    for rec in records:
+        for rel in rec.get("thumbs") or []:
+            path = os.path.join(OUTPUT_DIR, rel)
+            if not oversized(path, THUMB_DIMENSION):
+                continue
+            try:
+                with Image.open(path) as im:
+                    im = im.convert("RGB") if im.mode != "RGB" else im.copy()
+                im.thumbnail((THUMB_DIMENSION, THUMB_DIMENSION), Image.LANCZOS)
+                im.save(path, "JPEG", quality=THUMB_QUALITY, optimize=True)
+                forget_image_size(rel)
+                done += 1
+            except Exception as e:
+                logger.warning(f"Миниатюра не уменьшена — {rel}: {e}")
+    if done:
+        logger.info(f"Миниатюр уменьшено до {THUMB_DIMENSION}px: {done}")
+    return done
+
+
 def build_views(records):
     """Досоздаёт копии для просмотра там, где их ещё нет.
 
@@ -328,6 +368,14 @@ def image_size(rel_path):
     return tuple(size) if size else None
 
 
+def forget_image_size(rel_path):
+    """Файл пересоздан другого размера — забыть запомненные width/height."""
+    global _image_sizes
+    if _image_sizes is None:
+        _image_sizes = load_json(SIZES_FILE, {})
+    _image_sizes.pop(rel_path, None)
+
+
 def save_image_sizes():
     if _image_sizes:
         save_json(SIZES_FILE, _image_sizes)
@@ -344,7 +392,9 @@ __all__ = [
     'ImageFont',
     'PIL_AVAILABLE',
     'compress_if_huge',
+    'oversized',
     'make_thumbnail',
+    'shrink_thumbs',
     'CARD_W',
     'CARD_H',
     'CARD_BG',
@@ -363,6 +413,7 @@ __all__ = [
     'build_views',
     '_image_sizes',
     'image_size',
+    'forget_image_size',
     'save_image_sizes',
     'size_attrs',
 ]

@@ -16,7 +16,7 @@ from site_common import (
 )
 import logging
 from .config import OUTPUT_DIR
-from .text import load_json, lower_first, plural_ru, slugify
+from .text import load_json, lower_first, plural_ru, slugify, typo_ru
 from .slugs import artist_slug, retire_pages, surname_key, tag_slug
 from .links import clean_links, source_block, source_items
 from .html import artwork_jsonld, download_name, page_title, site_og_image, telegram_post_link, tidy
@@ -93,15 +93,21 @@ def render_post_page(post, all_posts=None):
 
     desc_html = ""
     if desc:
-        paras = "".join(f"<p>{h(p)}</p>" for p in desc.split("\n\n") if p.strip())
+        paras = "".join(f"<p>{h(typo_ru(p))}</p>" for p in desc.split("\n\n") if p.strip())
         desc_html = f'<section class="description">{paras}</section>'
 
     hist = post.get("history") or post.get("note") or ""
     if isinstance(hist, str): hist = [s.strip() for s in re.split(r"⸻|\n", hist) if s.strip()]
     hist_html = ""
     if hist:
-        its = "".join(f"<li>{h(s)}</li>" for s in hist)
-        hist_html = f'<section class="history"><h3>Происхождение</h3><ul>{its}</ul></section>'
+        # В канале пункты пронумерованы руками: «1) Приобретена…». В <ul>
+        # это давало точку и номер сразу — нумерует теперь сам список.
+        numbered = all(re.match(r"\d+[).]\s", s) for s in hist)
+        if numbered:
+            hist = [re.sub(r"^\d+[).]\s+", "", s) for s in hist]
+        its = "".join(f"<li>{h(typo_ru(s))}</li>" for s in hist)
+        tag = "ol" if numbered else "ul"
+        hist_html = f'<section class="history"><h3>Происхождение</h3><{tag}>{its}</{tag}></section>'
 
     # Источники: ссылки, спрятанные под словами поста (с их подписью), и
     # голые адреса из текста. Раньше были видны только вторые.

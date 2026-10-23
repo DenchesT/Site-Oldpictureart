@@ -245,6 +245,7 @@ async def main():
                     if t: th.append(t)
                 p["thumbs"] = th
             logger.info("Миниатюры готовы")
+        shrink_thumbs(all_posts + all_visits)
         build_views(all_posts + all_visits)
         build_cards(all_posts)
     # Оригиналы новых постов — в хранилище, если оно настроено. До записи

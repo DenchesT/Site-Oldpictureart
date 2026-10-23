@@ -21,8 +21,17 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
 // места, и адрес у них показывать негде: карточка одна, у основного
 // названия. Считать их значило бы ждать на странице лишний адрес.
 const OVERRIDES = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'museum_overrides.json'), 'utf8'));
-const WANT_ADDR = Object.entries(OVERRIDES)
-  .filter(([k, v]) => !k.startsWith('_') && v && v.address && !v.same_as).length;
+const WANT_NAMES = Object.entries(OVERRIDES)
+  .filter(([k, v]) => !k.startsWith('_') && v && v.address && !v.same_as).map(([k]) => k);
+const WANT_ADDR = WANT_NAMES.length;
+// Места не из справочника адрес получают от поиска (Wikidata, OSM) — он
+// лежит в кэше координат, в details.address. Такой адрес тоже законный:
+// сравниваем имена, а не только число.
+const CACHE_FILE = path.join(__dirname, '..', 'museum_coordinates.json');
+const AUTO_NAMES = fs.existsSync(CACHE_FILE)
+  ? Object.entries(JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8')))
+    .filter(([, v]) => v && v.details && (v.details.address || '').trim()).map(([k]) => k)
+  : [];
 
 (async () => {
   const browser = await chromium.launch(LAUNCH);
@@ -39,6 +48,7 @@ const WANT_ADDR = Object.entries(OVERRIDES)
     return {
       cards: cards.length,
       withAddr: withAddr.length,
+      names: cards.map(c => [(c.querySelector('h3') || {}).textContent || '', !!c.querySelector('.museum-address')]),
       empty: withAddr.filter(c => !c.querySelector('.museum-address').textContent.trim()).length,
       sample: withAddr[0] && withAddr[0].querySelector('.museum-address').textContent.trim(),
       // адрес должен стоять после строки с городом и до ссылки на сайт
@@ -55,8 +65,12 @@ const WANT_ADDR = Object.entries(OVERRIDES)
     };
   });
 
-  ok('адреса отрисованы', info.withAddr === WANT_ADDR,
-    `${info.withAddr} из ${info.cards} карточек, в справочнике ${WANT_ADDR}`);
+  const onPage = new Set(info.names.map(([n]) => n.trim()));
+  const missing = WANT_NAMES.filter(n => onPage.has(n) && !info.names.find(([m, a]) => m.trim() === n && a));
+  const stray = info.names.filter(([n, a]) => a && !WANT_NAMES.includes(n.trim()) && !AUTO_NAMES.includes(n.trim())).map(([n]) => n);
+  ok('адреса отрисованы: у всех мест справочника с адресом он есть', info.withAddr >= WANT_ADDR - WANT_NAMES.filter(n => !onPage.has(n)).length && !missing.length,
+    `${info.withAddr} из ${info.cards} карточек, в справочнике ${WANT_ADDR}; без адреса: ${missing.join(', ')}`);
+  ok('…и каждый показанный адрес — из справочника или найден поиском', !stray.length, stray.join(', '));
   ok('пустых абзацев с адресом нет', info.empty === 0, `${info.empty}`);
   ok('адрес идёт после города и до ссылки', info.orderOk);
   ok('адрес виден на странице', info.visible, info.sample);

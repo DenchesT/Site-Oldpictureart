@@ -193,7 +193,7 @@ def render_ukazatel(all_posts, info=None):
     )
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 {head}
-</head><body class="tag-page index-page">
+</head><body class="tag-page ukazatel-page">
 <div class="tag-topbar">
   <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
   <a href="stats.html" class="back">Статистика</a>

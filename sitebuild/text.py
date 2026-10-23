@@ -206,7 +206,27 @@ def load_json(path, default):
 def save_json(path, data):
     with open(path, "w", encoding="utf-8", newline="\n") as f: json.dump(data, f, ensure_ascii=False, indent=2)
 
+_CYR = re.compile(r"[А-Яа-яЁё]")
+
+
+def typo_ru(s):
+    """Типографика русского текста из канала — только для показа.
+
+    Дефис между словами («красный - отчётливо») — тире с неразрывным
+    пробелом перед ним; парные "прямые" кавычки — «ёлочки». Текст без
+    кириллицы (названия на языке оригинала) не трогаем, непарную кавычку
+    оставляем как есть.
+    """
+    if not s or not _CYR.search(s):
+        return s
+    s = re.sub(r"(?<=\S) [-–] (?=\S)", "\u00a0— ", s)
+    if s.count('"') % 2 == 0:
+        s = re.sub(r'"([^"\n]+)"', "«\\1»", s)
+    return s
+
+
 __all__ = [
+    'typo_ru',
     'load_dictionary',
     'save_dictionary',
     'parse_medium_details',

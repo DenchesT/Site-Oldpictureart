@@ -16,7 +16,7 @@ from site_common import (
 )
 import logging
 from .config import OUTPUT_DIR
-from .text import SEPARATOR_RE, TAG_RE, URL_RE, plural_ru, slugify
+from .text import SEPARATOR_RE, TAG_RE, URL_RE, plural_ru, slugify, typo_ru
 from .slugs import retire_pages, tag_slug, visit_heading
 from .links import clean_links, ext_link, link_for, source_block, source_items
 from .html import jsonld_script, site_og_image, telegram_post_link, tidy
@@ -298,7 +298,7 @@ def visit_card(v, show_place=True, place_text=None):
            f' loading="lazy" decoding="async"></div>') if cover else '<div class="card-img"></div>'
     place = place_text if place_text is not None else v.get("place")
     sub = (place if show_place else "") if v.get("title") else v.get("note", "")
-    sub_html = f'<div class="card-title">{h(sub)}</div>' if sub else ''
+    sub_html = f'<div class="card-title">{h(typo_ru(sub))}</div>' if sub else ''
     # Вид похода стоит там же, где у картины собрание, — строкой под
     # названием. В колонке номера ему не место: на телефоне она шириной
     # в два знака, и слово «выставка» наезжало на снимок.
@@ -523,7 +523,7 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None, afisha=None
     spec_rows = [("<span>Что</span>", h(visit_kind_label(visit["kind"]).capitalize())),
                  ("<span>Место</span>", place_cell),
                  ("<span>Организаторы</span>", org_cell),
-                 ("<span>Раздел</span>", h(visit.get("note", ""))),
+                 ("<span>Раздел</span>", h(typo_ru(visit.get("note", "")))),
                  (run_label(visit.get("run")), h(visit.get("run", ""))),
                  ("<span>Побывал</span>", h(visit.get("visited", ""))),
                  ("<span>Снимков</span>", str(len(photos)) if photos else "")]
@@ -583,9 +583,15 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None, afisha=None
 
     desc = heading + (f", {place}" if place and place != heading else "")
     desc += f". Побывал {visit['visited']}." if visit.get("visited") else "."
-    tab = f"{heading} — Old Picture Art"
+    # У постоянной экспозиции заголовок — название музея, как и у страницы
+    # музея: в выдаче было две одинаковые строки. Поход отличают снимки и дата.
+    suffix = f" — снимки, {visit['visited']}" if visit.get("visited") else " — снимки"
+    tab = heading + suffix
     if len(tab) > 70:
-        tab = heading if len(heading) <= 70 else heading[:67].rsplit(" ", 1)[0] + "…"
+        room = 70 - len(suffix) - 1
+        tab = heading[:room].rsplit(" ", 1)[0].rstrip(" ,.") + "…" + suffix
+    elif len(tab + " — Old Picture Art") <= 70:
+        tab += " — Old Picture Art"
     head = head_common(
         title=h(tab),
         description=desc,

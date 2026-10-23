@@ -67,7 +67,6 @@ def generate_timeline_page():
 <html lang="ru" data-theme="light"><head>
 {head}
 <style>
-.timeline-topbar {{ display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding: .4rem 1rem; }}
 .timeline-slider {{
   width: 100%; margin: 1.5rem 0; -webkit-appearance: none; appearance: none;
   height: 8px; border-radius: 4px; background: var(--border); outline: none;

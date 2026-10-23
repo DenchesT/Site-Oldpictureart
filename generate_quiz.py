@@ -731,7 +731,6 @@ def generate_quiz_page():
     padding: 0.25rem 0.8rem;
   }}
 }}
-.quiz-topbar {{ display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding: .4rem 1rem; }}
 </style>
 </head><body class="quiz-page">
 <div class="quiz-topbar">
