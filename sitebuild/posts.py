@@ -83,7 +83,7 @@ def render_post_page(post, all_posts=None):
         # Собрание — ссылка на страницу музея (там и карта), а у частных
         # собраний, у которых своей страницы нет, — на карточку на карте
         spec_html += (f'<div><span>Собрание</span><b><a href="{h(museum_href(post["museum"]))}">'
-                      f'{h(post["museum"])}</a></b></div>')
+                      f'{h(typo_ru(post["museum"]))}</a></b></div>')
     spec_html += '</div>'
 
     tags_html = ""
@@ -325,7 +325,7 @@ def card_html(p, cat_no=None, cat_width=3, show_artist=True, show_museum=True):
     if p.get("thumbs"): cv = p["thumbs"][0]
     elif p.get("images"): cv = p["images"][0]
     cv = h(cv)
-    museum_name = h(p.get('museum', ''))
+    museum_name = h(typo_ru(p.get('museum', '')))
     artist_name = h(p["artist"])
     title_name = h(p["title"])
     # Экранированные кавычки внутри f-строки требуют Python 3.12+,
@@ -355,12 +355,16 @@ def card_html(p, cat_no=None, cat_width=3, show_artist=True, show_museum=True):
 def render_tag_page(tag, posts, cat_no=None, cat_width=3):
     """cat_no — сквозные каталожные номера всего собрания: на странице тега
     номер должен остаться тем же, что и на главной, иначе он ничего не значит."""
-    cards = [card_html(p, cat_no, cat_width)
-             for p in sorted(posts, key=lambda x: x["date"], reverse=True)]
+    newest = sorted(posts, key=lambda x: x["date"], reverse=True)
+    cards = [card_html(p, cat_no, cat_width) for p in newest]
+    # Превью ссылки — карточка самой свежей работы подборки (1200×630, как
+    # у страницы работы); без неё ссылка на тег в мессенджере была голым текстом.
+    cover = next((p.get("card") or p["images"][0] for p in newest if p.get("card") or p.get("images")), "")
     head = head_common(
         title=f"#{h(tag)} — Old Picture Art",
         description=f"Картины по тегу #{tag} — подборка из {len(posts)} работ в галерее Old Picture Art.",
         canonical=f"{BASE_URL}/tag-{tag_slug(tag)}.html",
+        og_image=f"{BASE_URL}/{cover}" if cover else "",
     )
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 {head}
@@ -434,7 +438,7 @@ def render_index(all_posts, visits=None):
             decade_attr = f'data-decade="{d_start}–{d_start+9}"'
         artist_name = h(p['artist'])
         title_name = h(p['title'])
-        museum_name = h(p.get('museum', ''))
+        museum_name = h(typo_ru(p.get('museum', '')))
 
         # Дата публикации
         pub_date = p.get('date', '')[:10] if p.get('date') else ''
@@ -488,7 +492,7 @@ def render_index(all_posts, visits=None):
             if t and len(t)>2: technique_count[t] += 1
     
     ah = "".join(f'<li><a href="#" class="filter-link" data-type="artist" data-val="{h(a.lower())}">{h(a)} <span class="count">({artist_count[a]})</span></a></li>' for a in authors)
-    mh = "".join(f'<li><a href="#" class="filter-link" data-type="museum" data-val="{h(slugify(m))}">{h(m)} <span class="count">({museum_count[m]})</span></a></li>' for m in museums if m)
+    mh = "".join(f'<li><a href="#" class="filter-link" data-type="museum" data-val="{h(slugify(m))}">{h(typo_ru(m))} <span class="count">({museum_count[m]})</span></a></li>' for m in museums if m)
     # Материал в базе записан с заглавной («Холст»), техника — со строчной
     # («масло»). В списке фильтров они стоят рядом, поэтому приводим
     # к одному виду: со строчной, как принято в описании работы.
@@ -566,7 +570,7 @@ def render_index(all_posts, visits=None):
     quiz_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-quiz no-arrow" '
                       'href="quiz.html">Квиз</a></div>')
     timeline_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-timeline no-arrow" '
-                          'href="timeline.html">Таймлайн</a></div>')
+                          'href="timeline.html">Хронология</a></div>')
     map_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-map no-arrow" '
                      'href="museums.html">Карта собраний</a></div>')
     # Посещения появляются в меню только когда в канале нашлись

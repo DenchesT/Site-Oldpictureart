@@ -93,6 +93,21 @@ const CARDS = (html.match(/class="museum-card"/g) || []).length;
     await page.selectOption('#museum-sort', 'count');
     await page.waitForTimeout(300);
 
+    // места без точки на карте («Частная коллекция») — в конце при любом порядке
+    const lastOff = async () => page.evaluate(() => {
+      const m = [...document.querySelectorAll('.museum-card')].map(c => c.dataset.mapped);
+      const firstOff = m.indexOf('0');
+      return firstOff === -1 || m.slice(firstOff).every(x => x === '0');
+    });
+    const offCount = await page.locator('.museum-card[data-mapped="0"]').count();
+    let offOk = await lastOff();
+    for (const mode of ['name', 'country', 'count']) {
+      await page.selectOption('#museum-sort', mode);
+      await page.waitForTimeout(150);
+      offOk = offOk && await lastOff();
+    }
+    ok('места без точки на карте — в конце списка при любом порядке', offOk, `таких карточек ${offCount}`);
+
     // клик по карточке ведёт к метке
     const mapped = page.locator('.museum-card[data-mapped="1"]').first();
     const beforeCenter = await page.evaluate(() => map.getCenter().lat + ',' + map.getCenter().lng);

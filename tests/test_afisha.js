@@ -345,6 +345,37 @@ const state = page => page.evaluate(() => {
      await page.$eval('#afisha-block', b => b.querySelector('.afisha-side').hidden && !!b.querySelector('a[href="afisha.html"]')).catch(() => false));
   await page.close();
 
+  // ---------- «Сейчас в афише» на странице музея ----------
+  {
+    const pages = fs.readdirSync(DOCS).filter(x => x.startsWith('museum-') && x.endsWith('.html'))
+      .map(x => [x, (fs.readFileSync(path.join(DOCS, x), 'utf8').split('id="museum-afisha"')[1] || '').split('</section>')[0]])
+      .filter(([, sec]) => sec).sort((a, b) => b[1].split('now-item').length - a[1].split('now-item').length);
+    ok('на страницах музеев есть блок афиши (у музеев с выставками в afisha.json)', pages.length > 0, String(pages.length));
+    if (pages.length) {
+      const [file, sec] = pages[0];
+      const rows = [...sec.matchAll(/data-start="([^"]+)" data-end="([^"]+)"/g)].map(m => ({ start: m[1], end: m[2] }));
+      const days = (a, b) => (new Date(a) - new Date(b)) / 864e5;
+      const run = rows.filter(r => r.start <= DAY && r.end >= DAY).sort((a, b) => a.end < b.end ? -1 : 1);
+      const soon = rows.filter(r => r.start > DAY && days(r.start, DAY) <= 92).sort((a, b) => a.start < b.start ? -1 : 1);
+      const ctxM = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+      const p = await openAt(ctxM, file, DAY + 'T12:00:00');
+      const got = await p.evaluate(() => {
+        const box = document.getElementById('museum-afisha');
+        return { shown: !box.hidden, rows: [...box.querySelectorAll('.now-item')].filter(li => !li.hidden)
+          .map(li => ({ start: li.dataset.start, end: li.dataset.end, when: li.querySelector('.now-when').textContent })) };
+      });
+      const want = run.concat(soon);
+      ok(`${file}: видны идущие и открывающиеся в ближайшие 92 дня, закончившихся нет`,
+         got.shown === (want.length > 0) && got.rows.length === want.length, `${got.rows.length} / ждали ${want.length}`);
+      ok('…сначала идущие по дате закрытия, потом будущие по дате открытия',
+         JSON.stringify(got.rows.map(r => r.start + r.end)) === JSON.stringify(want.map(r => r.start + r.end)));
+      ok('…у идущих «до …», у будущих «откроется …»',
+         got.rows.every(r => r.start > DAY ? /^откроется /.test(r.when) : /^(до |последний день)/.test(r.when)), got.rows.map(r => r.when).join(' | '));
+      await p.close();
+      await ctxM.close();
+    }
+  }
+
   // ---------- телефон ----------
   const phone = await browser.newContext({ viewport: { width: 375, height: 800 }, isMobile: true, hasTouch: true });
   for (const n of ['afisha.html', 'index.html']) {

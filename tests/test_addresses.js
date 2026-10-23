@@ -48,7 +48,9 @@ const AUTO_NAMES = fs.existsSync(CACHE_FILE)
     return {
       cards: cards.length,
       withAddr: withAddr.length,
-      names: cards.map(c => [(c.querySelector('h3') || {}).textContent || '', !!c.querySelector('.museum-address')]),
+      // data-name — имя как в справочнике (строчными); в заголовке оно
+      // показано с типографикой («ёлочки», «музей-заповедник»).
+      names: cards.map(c => [c.dataset.name || '', !!c.querySelector('.museum-address')]),
       empty: withAddr.filter(c => !c.querySelector('.museum-address').textContent.trim()).length,
       sample: withAddr[0] && withAddr[0].querySelector('.museum-address').textContent.trim(),
       // адрес должен стоять после строки с городом и до ссылки на сайт
@@ -65,10 +67,12 @@ const AUTO_NAMES = fs.existsSync(CACHE_FILE)
     };
   });
 
-  const onPage = new Set(info.names.map(([n]) => n.trim()));
-  const missing = WANT_NAMES.filter(n => onPage.has(n) && !info.names.find(([m, a]) => m.trim() === n && a));
-  const stray = info.names.filter(([n, a]) => a && !WANT_NAMES.includes(n.trim()) && !AUTO_NAMES.includes(n.trim())).map(([n]) => n);
-  ok('адреса отрисованы: у всех мест справочника с адресом он есть', info.withAddr >= WANT_ADDR - WANT_NAMES.filter(n => !onPage.has(n)).length && !missing.length,
+  const low = s => s.trim().toLowerCase();
+  const want = WANT_NAMES.map(low), auto = AUTO_NAMES.map(low);
+  const onPage = new Set(info.names.map(([n]) => low(n)));
+  const missing = want.filter(n => onPage.has(n) && !info.names.find(([m, a]) => low(m) === n && a));
+  const stray = info.names.filter(([n, a]) => a && !want.includes(low(n)) && !auto.includes(low(n))).map(([n]) => n);
+  ok('адреса отрисованы: у всех мест справочника с адресом он есть', info.withAddr >= WANT_ADDR - want.filter(n => !onPage.has(n)).length && !missing.length,
     `${info.withAddr} из ${info.cards} карточек, в справочнике ${WANT_ADDR}; без адреса: ${missing.join(', ')}`);
   ok('…и каждый показанный адрес — из справочника или найден поиском', !stray.length, stray.join(', '));
   ok('пустых абзацев с адресом нет', info.empty === 0, `${info.empty}`);

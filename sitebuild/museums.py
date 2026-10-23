@@ -18,7 +18,7 @@ from site_common import (
 )
 import logging
 from .config import OUTPUT_DIR
-from .text import plural_ru, slugify
+from .text import plural_ru, slugify, typo_ru
 from .slugs import artist_slug, retire_pages, surname_key
 from .html import catalogue_numbers, jsonld_script, tidy, year_span
 from .places import (
@@ -27,13 +27,18 @@ from .places import (
 )
 from .visits import RUN_STATUS_JS, visit_card, visit_sort_key
 from .posts import card_html
+from .afisha import MUSEUM_AFISHA_JS, load_afisha, museum_afisha_block
 
 logger = logging.getLogger("build_site")
 
 @tidy
 def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, neighbours=(None, None),
-                       away=()):
-    """Страница одного собрания: картины, походы, адрес, сайт, карта."""
+                       away=(), afisha=()):
+    """Страница одного собрания: картины, походы, адрес, сайт, карта.
+
+    afisha — записи афиши с полем museum = name: блок «Сейчас в афише».
+    """
+    shown = typo_ru(name)          # имя для показа; name — ключ справочника и адрес страницы
     works = sorted(works, key=lambda x: (x.get("creation_year") or 9999, x.get("date", "")))
     been = sorted(been, key=visit_sort_key, reverse=True)
     cards = [card_html(p, cat_no, cat_width, show_museum=False) for p in works]
@@ -93,7 +98,7 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
             '<div class="museum-map"><h2 class="museum-caption">На карте</h2>'
             f'<div class="mini-map" id="mini-map" data-lat="{lat:.6f}" data-lon="{lon:.6f}"'
             f'{" data-approx" if info.get("approx") else ""} role="img" '
-            f'aria-label="{h(name)} на карте"></div>'
+            f'aria-label="{h(shown)} на карте"></div>'
             '<p class="mini-map-links">'
             + ('<span class="mini-map-note">Расположение приблизительное — по городу.</span> '
                if info.get("approx") else "")
@@ -124,21 +129,21 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
     nav = []
     if prev_name:
         nav.append(f'<a class="prev-post" href="{h(museum_page(prev_name))}">'
-                   f'<span class="icon-prev" aria-hidden="true"></span> {h(prev_name)}</a>')
+                   f'<span class="icon-prev" aria-hidden="true"></span> {h(typo_ru(prev_name))}</a>')
     if next_name:
         nav.append(f'<a class="next-post" href="{h(museum_page(next_name))}">'
-                   f'{h(next_name)} <span class="icon-next" aria-hidden="true"></span></a>')
+                   f'{h(typo_ru(next_name))} <span class="icon-next" aria-hidden="true"></span></a>')
     nav_html = f'<nav class="post-nav">{"".join(nav)}</nav>' if nav else ""
 
-    title = f"{name} — Old Picture Art"
+    title = f"{shown} — Old Picture Art"
     if len(title) > 70:
-        title = name if len(name) <= 70 else name[:67].rsplit(" ", 1)[0] + "…"
+        title = shown if len(shown) <= 70 else shown[:67].rsplit(" ", 1)[0] + "…"
     bits = []
     if works:
         bits.append(f"{len(works)} {plural_ru(len(works), 'работа', 'работы', 'работ')} в собрании Old Picture Art")
     if been:
         bits.append(been_phrase_ru(len(been)).lower())
-    desc = f"{name}: " + (", ".join(bits) if bits else "место на карте Old Picture Art") + "."
+    desc = f"{shown}: " + (", ".join(bits) if bits else "место на карте Old Picture Art") + "."
     if info.get("address"):
         desc += f" Адрес: {info['address']}."
     cover = (works[0].get("images") or [""])[0] if works else (been[0].get("images") or [""])[0] if been else ""
@@ -161,6 +166,11 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
     # Картины собрания, под ними — походы сюда теми же карточками, что в
     # разделе «Посещения». Что это не всё собрание музея, сказано в шапке.
     main = []
+    # Выставки музея из афиши — над работами: это то, что можно увидеть
+    # сейчас. Что идёт, решает браузер; нечего показать — блока не видно.
+    now_html = museum_afisha_block(afisha)
+    if now_html:
+        main.append(now_html)
     if cards:
         main.append('<h2 class="museum-section">Работы</h2>'
                     f'<div class="grid list">{"".join(cards)}</div>')
@@ -213,7 +223,7 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
 {scroll_top_button()}
 <header class="artist-head museum-head">
   <p class="eyebrow">{"Собрание" if works else "Место"}</p>
-  <h1>{h(name)}</h1>
+  <h1>{h(shown)}</h1>
   {hero}
 </header>
 {grid}
@@ -222,6 +232,7 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
 {SCROLL_TOP_JS}
 {COMMON_JS}
 {RUN_STATUS_JS if been else ""}
+{MUSEUM_AFISHA_JS if now_html else ""}
 {map_js}
 </body></html>"""
 
@@ -251,6 +262,12 @@ def generate_museum_pages(all_posts, visits):
             if card and card != venue:
                 away[card].append((v, venue or "", museum_info(venue, directory)["city"] if venue else ""))
 
+    # Выставки из афиши по музеям (поле museum — точное название места).
+    on_show = defaultdict(list)
+    for it in load_afisha()[0]:
+        if it.get("museum"):
+            on_show[it["museum"].strip()].append(it)
+
     ordered = sorted(names, key=lambda n: n.lower())
     seen = {}
     for i, name in enumerate(ordered):
@@ -262,7 +279,7 @@ def generate_museum_pages(all_posts, visits):
                       ordered[i + 1] if i < len(ordered) - 1 else None)
         html = render_museum_page(name, by_museum.get(name, []), by_place.get(name, []),
                                   museum_info(name, directory), all_posts, cat_no, cat_width,
-                                  neighbours, away.get(name, ()))
+                                  neighbours, away.get(name, ()), on_show.get(name, ()))
         with open(os.path.join(OUTPUT_DIR, fn), "w", encoding="utf-8", newline="\n") as f:
             f.write(html)
     moved, removed = retire_pages("museum-", set(seen), {})

@@ -297,9 +297,9 @@ async def main():
     
     try:
         subprocess.run([sys.executable, "generate_timeline.py"], check=True)
-        logger.info("Таймлайн сгенерирован")
+        logger.info("Хронология сгенерирована")
     except Exception as e:
-        logger.error(f"Ошибка генерации таймлайна: {e}")
+        logger.error(f"Ошибка генерации хронологии: {e}")
     with open(os.path.join(OUTPUT_DIR, "index.html"), "w", encoding="utf-8", newline="\n") as f: f.write(render_index(all_posts))
     with open(os.path.join(OUTPUT_DIR, "404.html"), "w", encoding="utf-8", newline="\n") as f: f.write(render_404())
     with open(os.path.join(OUTPUT_DIR, "privacy.html"), "w", encoding="utf-8", newline="\n") as f: f.write(render_privacy())

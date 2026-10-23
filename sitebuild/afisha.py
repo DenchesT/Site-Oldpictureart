@@ -505,6 +505,68 @@ def afisha_item(item, known, coords=None, works=None, visit=None):
         + '</li>')
 
 
+def museum_afisha_block(items):
+    """«Сейчас в афише» на странице музея — его выставки из афиши.
+
+    В разметке все записи и даты; что идёт сегодня и что откроется в
+    ближайшие SOON_DAYS дней, решает браузер (MUSEUM_AFISHA_JS), как и на
+    самой афише. Ничего не идёт — блок остаётся спрятанным.
+    """
+    if not items:
+        return ""
+    rows = "".join(
+        f'<li class="now-item" data-start="{h(it["start"])}" data-end="{h(it["end"])}" hidden>'
+        f'<a href="{AFISHA_PAGE}#{h(it["id"])}">{h(it["title"])}</a>'
+        f'<span class="now-where">{h(it["venue"])}</span>'
+        f'<span class="now-when"></span></li>'
+        for it in sorted(items, key=lambda it: (it["end"], it["start"])))
+    return (f'<section class="now-on museum-afisha" id="museum-afisha" data-soon="{SOON_DAYS}" '
+            f'aria-labelledby="museum-afisha-title" hidden>'
+            f'<h2 id="museum-afisha-title" class="now-title">Сейчас в афише</h2>'
+            f'<ul class="now-list">{rows}</ul>'
+            f'<p class="museum-afisha-more"><a href="{AFISHA_PAGE}">Все выставки</a></p></section>')
+
+
+MUSEUM_AFISHA_JS = """<script>
+(function () {
+  var box = document.getElementById('museum-afisha');
+  if (!box) return;
+  var MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля',
+                'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+  var SOON = +box.getAttribute('data-soon') || 92;
+  function day(s) { var p = (s || '').split('-'); return p.length === 3 ? new Date(+p[0], +p[1] - 1, +p[2]) : null; }
+  var now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  function human(d) {
+    return d.getDate() + ' ' + MONTHS[d.getMonth()] + (d.getFullYear() !== today.getFullYear() ? ' ' + d.getFullYear() : '');
+  }
+  var running = [], soon = [];
+  Array.prototype.forEach.call(box.querySelectorAll('.now-item'), function (li) {
+    var start = day(li.getAttribute('data-start')), end = day(li.getAttribute('data-end'));
+    if (!end || today > end) { li.remove(); return; }
+    var when = li.querySelector('.now-when');
+    if (start && today < start) {
+      if ((start - today) / 864e5 > SOON) { li.remove(); return; }
+      when.textContent = 'откроется ' + human(start); li.classList.add('now-soon');
+      soon.push([start, li]);
+    } else {
+      var left = Math.round((end - today) / 864e5);
+      when.textContent = left === 0 ? 'последний день' : 'до ' + human(end);
+      if (left <= 7) li.classList.add('now-last');
+      running.push([end, li]);
+    }
+    li.hidden = false;
+  });
+  if (!running.length && !soon.length) return;
+  // Сначала идущие — кто раньше закрывается, потом будущие — кто раньше откроется.
+  var list = box.querySelector('.now-list');
+  running.sort(function (a, b) { return a[0] - b[0]; }).concat(soon.sort(function (a, b) { return a[0] - b[0]; }))
+    .forEach(function (x) { list.appendChild(x[1]); });
+  if (!running.length) box.querySelector('.now-title').textContent = 'Скоро в афише';
+  box.hidden = false;
+})();
+</script>"""
+
+
 def afisha_block(items, today=None):
     """Афиша в левой панели главной — под фильтрами.
 
@@ -1149,7 +1211,7 @@ def generate_afisha(known=(), today=None, path=AFISHA_FILE, offline=False, place
 __all__ = [
     'AFISHA_FILE', 'AFISHA_PAGE', 'RUSSIA', 'MIN_RUNNING', 'STALE_DAYS', 'SOON_DAYS', 'INDEX_COUNT',
     'REQUIRED', 'AREAS', 'MOSCOW_AREA', 'SPB_AREA', 'area', 'problems', 'load_afisha', 'afisha_id', 'region', 'phase',
-    'ru_date', 'date_range', 'split', 'where_line', 'museum_link', 'afisha_item', 'afisha_block',
+    'ru_date', 'date_range', 'split', 'where_line', 'museum_link', 'afisha_item', 'museum_afisha_block', 'MUSEUM_AFISHA_JS', 'afisha_block',
     'AFISHA_JS', 'AFISHA_MAP_JS', 'PLACES_FILE', 'place_key', 'locate', 'render_afisha_page', 'afisha_report',
     'generate_afisha', 'EPOCHS', 'LINKS_FILE', 'LINKS_EVERY_DAYS', 'COMMON_SURNAMES', 'SURNAME_ALIASES',
     'artist_keys', 'works_index', 'site_works', 'works_html', 'match_visits', 'afisha_jsonld', 'check_afisha_links',

@@ -79,7 +79,7 @@ def render_404():
   <h1>Страница не найдена</h1>
   <p class="error-text">Возможно, картину переименовали или ссылка устарела.</p>
   <p><a class="random-btn" href="./">В галерею</a></p>
-  <p class="error-links"><a href="quiz.html">Квиз</a> · <a href="timeline.html">Таймлайн</a> · <a href="museums.html">Карта собраний</a></p>
+  <p class="error-links"><a href="quiz.html">Квиз</a> · <a href="timeline.html">Хронология</a> · <a href="museums.html">Карта собраний</a></p>
 </main>
 {site_footer()}
 {COMMON_JS}

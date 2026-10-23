@@ -347,6 +347,23 @@ try:
        back == '<p class="afisha-backlink" data-end="2026-11-08" hidden><a href="afisha.html#a-skazka">Сейчас в афише →</a></p>')
     ok("…выставки нет в афише — нет и ссылки", vs.afisha_backlink(None) == "")
 
+    # ---------- «Сейчас в афише» на странице музея ----------
+    mb = af.museum_afisha_block([items[6], items[0]])
+    ok("блок музея: записи с датами для браузера, ссылки на афишу, спрятан до скрипта",
+       'id="museum-afisha"' in mb and ' hidden>' in mb.split("<h2")[0]
+       and f'href="afisha.html#{items[0]["id"]}"' in mb and 'data-start="2026-10-16" data-end="2027-05-10"' in mb
+       and f'data-soon="{af.SOON_DAYS}"' in mb)
+    ok("…по дате закрытия; нет выставок — нет блока",
+       mb.find(items[0]["id"]) < mb.find(items[6]["id"]) and af.museum_afisha_block([]) == "")
+    from sitebuild import museums as ms
+    rm = "Государственный Русский музей, Санкт-Петербург"
+    mpage = ms.render_museum_page(rm, [], [], {"name": rm, "city": "Санкт-Петербург"}, [], {}, 3, afisha=[items[6]])
+    ok("страница музея: блок «Сейчас в афише» и его скрипт",
+       'id="museum-afisha"' in mpage and "museum-afisha" in af.MUSEUM_AFISHA_JS and af.MUSEUM_AFISHA_JS.strip()[:20] in mpage)
+    ok("…без выставок — ни блока, ни скрипта",
+       'id="museum-afisha"' not in ms.render_museum_page("Музей", [], [], {"name": "Музей"}, [], {}, 3)
+       and "getElementById('museum-afisha')" not in ms.render_museum_page("Музей", [], [], {"name": "Музей"}, [], {}, 3))
+
     # ---------- проверка ссылок раз в неделю ----------
     links = os.path.join(tmp, "links.json")
     checked = []

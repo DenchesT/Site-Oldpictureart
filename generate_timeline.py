@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Генератор страницы таймлайна для Old Picture Art.
+Генератор страницы «Хронология» (timeline.html) для Old Picture Art.
 Запуск: python generate_timeline.py
 """
 
@@ -42,6 +42,9 @@ def generate_timeline_page():
                 "artist": p["artist"],
                 "title": p["title"],
                 "year": p.get("creation_year", decade),
+                # Год в название обычно уже вписан («…, 1805–06») — тогда
+                # отдельной строкой под ним его не повторяем.
+                "showYear": str(p.get("creation_year", decade)) not in (p.get("title") or ""),
                 "file": p["filename"],
                 "thumb": p["thumbs"][0] if p.get("thumbs") else (p["images"][0] if p.get("images") else "")
             }
@@ -58,7 +61,7 @@ def generate_timeline_page():
         getdecade_mid = min(sorted_decades, key=lambda d: abs(d - getdecade_mid))
 
     head = head_common(
-        title="Таймлайн — Old Picture Art",
+        title="Хронология — Old Picture Art",
         description=f"Картины по десятилетиям: от {min_year} до {max_year} года. Двигайте ползунок, чтобы увидеть эпоху.",
         canonical=f"{BASE_URL}/timeline.html",
     )
@@ -117,7 +120,7 @@ def generate_timeline_page():
   {theme_button('theme-toggle-inline')}
 </div>
 <div class="timeline-container">
-  <h1 class="timeline-h1">Таймлайн картин</h1>
+  <h1 class="timeline-h1">Хронология картин</h1>
   <div class="timeline-labels"><span>{min_year}</span><span>{max_year}</span></div>
   <label class="visually-hidden" for="timeline-slider">Десятилетие</label>
   <input type="range" class="timeline-slider" id="timeline-slider" min="{min_year}" max="{max_year}"
@@ -167,8 +170,9 @@ function updateTimeline(decade) {{
 
         const body = document.createElement('div');
         body.className = 'timeline-card-body';
-        [['timeline-card-artist', p.artist], ['timeline-card-title', p.title], ['timeline-card-year', p.year]]
+        [['timeline-card-artist', p.artist], ['timeline-card-title', p.title], ['timeline-card-year', p.showYear ? p.year : '']]
             .forEach(([cls, val]) => {{
+                if (val == null || val === '') return;
                 const d = document.createElement('div');
                 d.className = cls;
                 d.textContent = val == null ? '' : String(val);
@@ -202,7 +206,7 @@ slider.addEventListener('input', function() {{
     with open(output_path, "w", encoding="utf-8", newline="\n") as f:
         f.write(html)
     
-    print(f"Таймлайн сохранён: {output_path}")
+    print(f"Хронология сохранена: {output_path}")
 
 if __name__ == "__main__":
     generate_timeline_page()

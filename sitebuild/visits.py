@@ -294,7 +294,7 @@ def visit_card(v, show_place=True, place_text=None):
              ("f-shots", "<span>Снимков</span>", str(shots) if shots else "")]
     facts_html = "".join(f'<div class="{cls}">{label}<b>{h(val)}</b></div>'
                          for cls, label, val in facts if val)
-    img = (f'<div class="card-img"><img src="{h(cover)}" alt="{h(heading)}"{size_attrs(cover)}'
+    img = (f'<div class="card-img"><img src="{h(cover)}" alt="{h(typo_ru(heading))}"{size_attrs(cover)}'
            f' loading="lazy" decoding="async"></div>') if cover else '<div class="card-img"></div>'
     place = place_text if place_text is not None else v.get("place")
     sub = (place if show_place else "") if v.get("title") else v.get("note", "")
@@ -306,7 +306,7 @@ def visit_card(v, show_place=True, place_text=None):
         f'<article class="card visit-card" data-kind="{h(v["kind"])}">'
         f'{img}'
         f'<div class="card-body">'
-        f'<div class="card-artist"><a class="card-link" href="{h(v["filename"])}">{h(heading)}</a></div>'
+        f'<div class="card-artist"><a class="card-link" href="{h(v["filename"])}">{h(typo_ru(heading))}</a></div>'
         f'{sub_html}'
         f'<div class="card-museum visit-kind">{h(visit_kind_label(v["kind"]))}</div>'
         f'{run_status(v, "div")}</div>'
@@ -491,14 +491,14 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None, afisha=None
         small = thumbs[i] if i < len(thumbs) else src
         loading = ('fetchpriority="high" decoding="async"' if i == 0
                    else 'loading="lazy" decoding="async"')
-        meta_bits = [x for x in (place if place != heading else "", visit.get("visited", "")) if x]
+        meta_bits = [x for x in (typo_ru(place) if place != heading else "", visit.get("visited", "")) if x]
         vw = vlist[i] if i < len(vlist) else ""
         shots.append(
             f'<a href="{h(big)}" class="painting-link shot" target="_blank" rel="noopener" '
             + (f'data-view="{h(vw)}" ' if vw else '')
-            + f'title="Рассмотреть" data-title="{h(heading)}" data-meta="{h(", ".join(meta_bits))}" '
+            + f'title="Рассмотреть" data-title="{h(typo_ru(heading))}" data-meta="{h(", ".join(meta_bits))}" '
             f'data-download="{h(slug)}-{i + 1}{h(os.path.splitext(big)[1] or ".jpg")}">'
-            f'<img src="{h(small)}" alt="{h(heading)}, снимок {i + 1}" class="painting"{size_attrs(small)} {loading}>'
+            f'<img src="{h(small)}" alt="{h(typo_ru(heading))}, снимок {i + 1}" class="painting"{size_attrs(small)} {loading}>'
             f'<span class="painting-hint" aria-hidden="true">'
             f'<span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a>'
         )
@@ -515,10 +515,10 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None, afisha=None
         parts = place_parts(place, visit_museum_names(all_posts) + list((map_names or {}).values()))
         where = ", ".join(x for x in (parts["venue"], parts["section"]) if x)
     if museum:
-        place_cell = f'<a href="{h(museum_href(museum))}">{h(where)}</a>'
+        place_cell = f'<a href="{h(museum_href(museum))}">{h(typo_ru(where))}</a>'
     else:
-        place_cell = h(where) if where != heading else ""
-    org_cell = ", ".join(f'<a href="{h(museum_href(card))}">{h(name)}</a>' if card else h(name)
+        place_cell = h(typo_ru(where)) if where != heading else ""
+    org_cell = ", ".join(f'<a href="{h(museum_href(card))}">{h(typo_ru(name))}</a>' if card else h(typo_ru(name))
                          for name, card in organizers)
     spec_rows = [("<span>Что</span>", h(visit_kind_label(visit["kind"]).capitalize())),
                  ("<span>Место</span>", place_cell),
@@ -547,11 +547,12 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None, afisha=None
     used = set()
 
     def linked(text):
+        # Ссылку ищем по тексту как в посте, а показываем с типографикой.
         i = link_for(text, links, used)
         if i is None:
-            return h(text)
+            return h(typo_ru(text))
         used.add(i)
-        return ext_link(text, links[i]["url"])
+        return ext_link(typo_ru(text), links[i]["url"])
 
     h1_html = linked(heading)
     sub_head = f'<h2>{linked(place)}</h2>' if place and place != heading else ''
@@ -573,23 +574,24 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None, afisha=None
     nav = []
     if idx > 0:
         prev = ordered[idx - 1]
-        nav.append(f'<a href="{h(prev["filename"])}" class="prev-post" title="{h(visit_heading(prev))}">'
+        nav.append(f'<a href="{h(prev["filename"])}" class="prev-post" title="{h(typo_ru(visit_heading(prev)))}">'
                    f'<span class="icon-prev" aria-hidden="true"></span> Раньше</a>')
     if 0 <= idx < len(ordered) - 1:
         nxt = ordered[idx + 1]
-        nav.append(f'<a href="{h(nxt["filename"])}" class="next-post" title="{h(visit_heading(nxt))}">'
+        nav.append(f'<a href="{h(nxt["filename"])}" class="next-post" title="{h(typo_ru(visit_heading(nxt)))}">'
                    f'Позже <span class="icon-next" aria-hidden="true"></span></a>')
     nav_html = f'<nav class="post-nav">{"".join(nav)}</nav>' if nav else ""
 
-    desc = heading + (f", {place}" if place and place != heading else "")
+    desc = typo_ru(heading + (f", {place}" if place and place != heading else ""))
     desc += f". Побывал {visit['visited']}." if visit.get("visited") else "."
     # У постоянной экспозиции заголовок — название музея, как и у страницы
     # музея: в выдаче было две одинаковые строки. Поход отличают снимки и дата.
     suffix = f" — снимки, {visit['visited']}" if visit.get("visited") else " — снимки"
-    tab = heading + suffix
+    shown = typo_ru(heading)
+    tab = shown + suffix
     if len(tab) > 70:
         room = 70 - len(suffix) - 1
-        tab = heading[:room].rsplit(" ", 1)[0].rstrip(" ,.") + "…" + suffix
+        tab = shown[:room].rsplit(" ", 1)[0].rstrip(" ,.") + "…" + suffix
     elif len(tab + " — Old Picture Art") <= 70:
         tab += " — Old Picture Art"
     head = head_common(
@@ -709,8 +711,8 @@ def now_on_block(visits, all_posts=None, today=None):
     upcoming.sort(key=lambda item: item[1][1])          # закрывается раньше — выше
     items = "".join(
         f'<li class="now-item" data-start="{d[0]}" data-end="{d[1]}" hidden>'
-        f'<a href="{h(v["filename"])}">{h(visit_heading(v))}</a>'
-        f'<span class="now-where">{h(venue_line(v, map_names))}</span>'
+        f'<a href="{h(v["filename"])}">{h(typo_ru(visit_heading(v)))}</a>'
+        f'<span class="now-where">{h(typo_ru(venue_line(v, map_names)))}</span>'
         f'<span class="now-when"></span></li>'
         for v, d in upcoming)
     return (f'<section class="now-on" id="now-on" aria-labelledby="now-on-title" hidden>'

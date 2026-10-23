@@ -13,7 +13,7 @@ from site_common import (
 )
 import logging
 from .config import OUTPUT_DIR
-from .text import lower_first, plural_ru, slugify
+from .text import lower_first, plural_ru, slugify, typo_ru
 from .slugs import artist_slug, retire_pages, surname_key
 from .html import catalogue_numbers, jsonld_script, site_og_image, tidy, year_span
 from .places import museum_href
@@ -71,7 +71,7 @@ def render_artist_page(artist, posts, all_posts, cat_no, cat_width, info=None):
     museum_html = ""
     if museums:
         items = "".join(
-            f'<li><a href="{h(museum_href(m))}">{h(m)}</a></li>' for m in museums)
+            f'<li><a href="{h(museum_href(m))}">{h(typo_ru(m))}</a></li>' for m in museums)
         museum_html = (f'<div class="aside-block"><h3>Собрания</h3>'
                        f'<ul class="plain-list">{items}</ul></div>')
 
@@ -171,7 +171,7 @@ def render_ukazatel(all_posts, info=None):
             n = len(posts)
             extra = note(name) if note else ""
             extra_html = f' <span class="idx-years">{h(extra)}</span>' if extra else ""
-            out.append(f'<li><a href="{h(link)}">{h(name)}</a>{extra_html}<span class="idx-n">{n}</span></li>')
+            out.append(f'<li><a href="{h(link)}">{h(typo_ru(name))}</a>{extra_html}<span class="idx-n">{n}</span></li>')
         return (f'<section class="idx-col" id="{anchor}"><h2>{h(title)} '
                 f'<span class="idx-total">{len(items)}</span></h2>'
                 f'<ul class="idx-list">{"".join(out)}</ul></section>')
@@ -223,7 +223,7 @@ def _bar_rows(pairs, total, href=None, unit=("работа", "работы", "р
     out = []
     for name, n in pairs:
         w = round(n / top * 100, 1)
-        label = h(name)
+        label = h(typo_ru(name))
         if href:
             link = href(name)
             label = f'<a href="{h(link)}">{label}</a>'

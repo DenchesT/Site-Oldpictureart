@@ -20,7 +20,7 @@ import logging
 
 from site_common import (head_common, theme_button, scroll_top_button, site_footer,
                          COMMON_JS, SCROLL_TOP_JS, BASE_URL, VISITS_FILE, visit_places, visit_organizers,
-                         museum_page, visit_kind_label, MAP_LAYERS_JS)
+                         museum_page, visit_kind_label, MAP_LAYERS_JS, typo_ru)
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -1482,6 +1482,9 @@ function sortMuseums(mode) {
   var list = document.getElementById('museum-list');
   var cards = Array.prototype.slice.call(list.querySelectorAll('.museum-card'));
   cards.sort(function (a, b) {
+    // Без точки на карте — всегда в конце, при любом порядке.
+    var off = (a.dataset.mapped === '0') - (b.dataset.mapped === '0');
+    if (off) return off;
     if (mode === 'name') return a.dataset.name.localeCompare(b.dataset.name, 'ru');
     if (mode === 'country') {
       var ca = a.dataset.country || 'яяя', cb = b.dataset.country || 'яяя';
@@ -1961,8 +1964,15 @@ def generate_museums_page(retry_failed=False, offline=False):
     found_locations = 0
     countries = set()
 
+    # Места без точки на карте («Частная коллекция», «Неизвестно где») — в
+    # конце: список стоит рядом с картой, и первой шла карточка, которую на
+    # карте не найти.
+    def on_map(name):
+        loc = locations.get(name, {})
+        return bool(loc.get('lat') and loc.get('lon'))
     for museum, posts in sorted(museums_dict.items(),
-                                key=lambda kv: (-len(kv[1]), -len(visits_dict.get(kv[0], [])), kv[0].lower())):
+                                key=lambda kv: (not on_map(kv[0]), -len(kv[1]),
+                                                -len(visits_dict.get(kv[0], [])), kv[0].lower())):
         been = visits_dict.get(museum, [])
         loc = locations.get(museum, {})
         city = loc.get('city', '')
@@ -2078,7 +2088,7 @@ def generate_museums_page(retry_failed=False, offline=False):
             f'         data-visits="{len(been)}"',
             f'         data-name="{h(museum.lower())}" data-country="{h(country.lower())}"',
             f'         data-mapped="{mapped}">',
-            f'  <header class="museum-card-head"><h3>{h(museum)}</h3>'
+            f'  <header class="museum-card-head"><h3>{h(typo_ru(museum))}</h3>'
             f'<span class="{badge_class}" title="{badge_title}">{badge}</span></header>',
             f'  {location_html}',
             f'  {address_html}' if address_html else "",
@@ -2093,7 +2103,7 @@ def generate_museums_page(retry_failed=False, offline=False):
 
         if lat and lon:
             map_data.append({
-                'id': museum_id, 'name': museum, 'place': loc_line,
+                'id': museum_id, 'name': typo_ru(museum), 'place': loc_line,
                 'lat': lat, 'lon': lon, 'count': len(posts),
                 'visits': len(been), 'approx': approx, 'page': page,
             })

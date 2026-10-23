@@ -1573,6 +1573,11 @@ h1, h2, h3 { overflow-wrap: break-word; }
 
 .timeline-current { font-weight: 500; letter-spacing: .04em; }
 .quiz-btn { font-family: var(--ff-text); }
+/* Название в вопросе «кто» — после ответа; до него на его месте подпись. */
+.quiz-title.quiz-title-hidden {
+  font-family: var(--ff-data); font-style: normal; font-size: var(--fs-xs);
+  letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+}
 
 /* ==========================================================================
    КАРТОЧКА КАК <article>
@@ -2369,6 +2374,10 @@ h1, h2, h3 { overflow-wrap: break-word; }
 .now-last .now-when { color: var(--warning); }
 .now-soon .now-when { color: var(--link); }
 .visits-page .now-on { margin: var(--s4) 0 var(--s3); }
+/* На странице музея — его выставки из афиши, над работами. */
+.museum-afisha { margin: var(--s5) 0 var(--s4); }
+.museum-afisha-more { margin: var(--s2) 0 0; font-family: var(--ff-data); font-size: var(--fs-xs); letter-spacing: .06em; text-transform: uppercase; }
+.museum-afisha-more a { color: var(--link); }
 
 /* Афиша — крупные выставки в России и в мире (sitebuild/afisha.py).
    На главной — раздел в левой панели под фильтрами: ссылка «Выставки

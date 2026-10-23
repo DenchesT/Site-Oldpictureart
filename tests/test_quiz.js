@@ -88,12 +88,20 @@ const ok = (name, cond, extra) => results.push({ name, pass: !!cond, extra: extr
   });
   ok('за круг картины не повторяются', deckOk[0] === deckOk[1], `${deckOk[0]} из ${deckOk[1]}`);
 
+  // название — после ответа: до него оно подсказывало автора
+  const before = await page.evaluate(() => ({ t: document.getElementById('quiz-title').textContent,
+    alt: document.getElementById('quiz-image').alt, real: currentPost.title }));
+  ok('в «художнике» название до ответа не показано (ни под картиной, ни в alt)',
+     !!before.real && !before.t.includes(before.real) && !before.alt.includes(before.real), JSON.stringify(before));
+
   // ответ засчитывается
   await page.evaluate(() => resetScore());
   await page.evaluate(() => [...document.querySelectorAll('.quiz-btn')]
     .find(b => b.textContent === currentPost.artist).click());
   ok('верный ответ засчитан', await page.textContent('#score') === '1' && await page.textContent('#total') === '1');
   ok('после ответа — ссылка на картину', await page.locator('.quiz-link').count() === 1);
+  const after = await page.evaluate(() => ({ t: document.getElementById('quiz-title').textContent, real: currentPost.title }));
+  ok('…и название картины целиком', after.t === after.real, JSON.stringify(after));
 
   // ============================================ «когда написано»
   await page.click('.quiz-modes [data-mode="year"]');

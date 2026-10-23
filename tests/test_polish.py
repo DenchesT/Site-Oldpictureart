@@ -6,7 +6,9 @@
   • миниатюры не крупнее THUMB_DIMENSION: прежние, под 1200px, сборка
     уменьшает сама, и width/height у <img> считываются заново;
   • происхождение — нумерованный список без «1)» в тексте;
-  • у похода в музей заголовок вкладки не совпадает со страницей музея.
+  • у похода в музей заголовок вкладки не совпадает со страницей музея;
+  • названия мест показываются с «ёлочками» и «музеем-заповедником»;
+  • у страниц тегов есть картинка для превью ссылки.
 
 Запуск:  python tests/test_polish.py
 """
@@ -42,6 +44,12 @@ ok("дефис в слове и в датах остаётся", typo_ru("Унт
 ok("текст без кириллицы не трогаем", typo_ru('Paysage - "Le Rêve"') == 'Paysage - "Le Rêve"')
 ok("непарная кавычка остаётся как есть", typo_ru('один "два - три') == 'один "два — три')
 ok("пустое — пустое", typo_ru("") == "" and typo_ru(None) is None)
+ok("«музей заповедник» — через дефис, в любом падеже",
+   typo_ru("Новгородский музей заповедник") == "Новгородский музей-заповедник"
+   and typo_ru("в Новгородском музее заповеднике") == "в Новгородском музее-заповеднике"
+   and typo_ru("музей-заповедник «Ростовский Кремль»") == "музей-заповедник «Ростовский Кремль»")
+ok("название места с кавычками — «ёлочки»",
+   typo_ru('Ассоциация "Живопись в Нормандии", Довиль') == "Ассоциация «Живопись в Нормандии», Довиль")
 
 # ---------- миниатюры ----------
 ok("миниатюры делаются не крупнее 600px", im.THUMB_DIMENSION <= 600)
@@ -89,6 +97,19 @@ if os.path.exists(os.path.join(DOCS, "index.html")):
         if t:
             titles[t.group(1).strip()].append(f)
     dup = {t: fs for t, fs in titles.items() if len(fs) > 1}
+    tags = [f for f in pages if f.startswith("tag-")
+            and 'http-equiv="refresh"' not in open(os.path.join(DOCS, f), encoding="utf-8").read(600)]
+    no_og = [f for f in tags if 'property="og:image"' not in open(os.path.join(DOCS, f), encoding="utf-8").read(4000)]
+    ok("у страниц тегов есть картинка для превью ссылки", tags and not no_og, ", ".join(no_og[:3]))
+    raw = re.compile(r'"[^"<>]*[А-Яа-я][^"<>]*"|[Мм]узей заповедник')
+    shown = []
+    for f in [x for x in pages if x.startswith(("museum-", "visit"))] + ["museums.html", "ukazatel.html", "index.html"]:
+        txt = open(os.path.join(DOCS, f), encoding="utf-8").read()
+        for tag in re.findall(r"<h1>(.*?)</h1>|<h3>(.*?)</h3>|class=\"card-museum\"><a[^>]*>(.*?)</a>", txt):
+            t = "".join(tag)
+            if raw.search(t.replace("&quot;", '"')):
+                shown.append(f"{f}: {t[:60]}")
+    ok("в заголовках и названиях мест — «ёлочки» и «музей-заповедник»", not shown, "; ".join(shown[:3]))
     ok("у страниц нет одинаковых заголовков вкладки", not dup, "; ".join(f"{t}: {fs}" for t, fs in list(dup.items())[:3]))
     thumbs = os.path.join(DOCS, "images", "thumbs")
     if im.PIL_AVAILABLE and os.path.isdir(thumbs):

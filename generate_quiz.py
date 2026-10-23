@@ -880,12 +880,17 @@ function newQuestion() {{
 
     // В вопросе «когда» дата из названия убрана — иначе ответ был бы
     // написан под картиной, — а художник показан: это честная подсказка.
+    // В вопросе «кто» название до ответа не показываем: «Портрет
+    // императора Николая II» или «Улица в Море» сами подсказывали автора.
+    const hideTitle = mode === 'artist';
     const title = mode === 'year' ? currentPost.t : currentPost.title;
     const img = document.getElementById('quiz-image');
     img.src = currentPost.images[0];
-    img.alt = 'Картина: ' + (title || 'без названия');
+    img.alt = hideTitle ? 'Картина — угадайте художника' : 'Картина: ' + (title || 'без названия');
     img.hidden = false;
-    document.getElementById('quiz-title').textContent = title || '';
+    const titleEl = document.getElementById('quiz-title');
+    titleEl.textContent = hideTitle ? 'Название — после ответа' : (title || '');
+    titleEl.classList.toggle('quiz-title-hidden', hideTitle);
     const who = document.getElementById('quiz-artist');
     who.textContent = mode === 'year' ? currentPost.artist : '';
     who.hidden = mode !== 'year';
@@ -927,6 +932,11 @@ function checkAnswer(btn, answer) {{
             : '✗ Неправильно. Правильный ответ: ' + currentPost.artist + '. '));
     }}
     showScore();
+    // Ответ дан — теперь название целиком, с датой.
+    const titleEl = document.getElementById('quiz-title');
+    titleEl.textContent = currentPost.title || '';
+    titleEl.classList.remove('quiz-title-hidden');
+    document.getElementById('quiz-image').alt = 'Картина: ' + (currentPost.title || 'без названия');
     const link = document.createElement('a');
     link.href = currentPost.filename;
     link.className = 'quiz-link';
