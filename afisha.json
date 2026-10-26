@@ -1,6 +1,6 @@
 {
   "_как": "Афиша сайта: крупные выставки искусства до 1940 года в России и в мире. Страница afisha.html и блок на главной собираются отсюда. Закончившиеся выставки сайт прячет сам (по сегодняшней дате), сборка подсказывает, какие можно убрать и когда пора добавить новые. Поля: title — название по-русски, title_orig — оригинальное (по желанию), venue — музей, city, country (\"Россия\" — вкладка «Россия», остальное — «Мир»), start и end — ГГГГ-ММ-ДД, url — страница выставки на сайте музея, note — одна строка о том, что показывают, museum — как музей называется на карте собраний, если он там есть (тогда будет ссылка на его страницу), source — где проверены даты, если не на странице url. Подробнее — README, раздел «Афиша».",
-  "updated": "2026-10-20",
+  "updated": "2026-10-26",
   "exhibitions": [
     {
       "title": "Айвазовский",
@@ -52,7 +52,7 @@
       "venue": "Эрмитаж, Главный штаб",
       "city": "Санкт-Петербург",
       "country": "Россия",
-      "start": "2026-10-16",
+      "start": "2026-10-17",
       "end": "2027-03-14",
       "url": "https://portal-kultura.ru/articles/news/379253-pervyy-monparnasets-i-posledniy-rytsar-impressionizma-v-ermitazhe-otkrylas-vystavka-kuznetsova/",
       "note": "21 картина импрессиониста Константина Кузнецова (1863–1936) рядом с французской живописью Эрмитажа",
@@ -61,7 +61,7 @@
         "russian"
       ],
       "museum": "Государственный Эрмитаж",
-      "source": "https://portal-kultura.ru/articles/news/379272-ermitazh-predstavil-vystavku-russkiy-parizhanin-konstantin-kuznetsov/"
+      "source": "https://vk.ru/@hermitage_museum-novye-vystavki-ermitazha-oktyabr-2026"
     },
     {
       "title": "Виктор Борисов-Мусатов. Гармония образа",
@@ -193,20 +193,20 @@
     },
     {
       "title": "Михаил Нестеров",
-      "venue": "Выставка Русского музея",
+      "venue": "Башкирский художественный музей им. М. В. Нестерова",
       "city": "Уфа",
       "lat": 54.72453,
       "lon": 55.93606,
-      "approx": true,
       "country": "Россия",
       "start": "2026-09-26",
       "end": "2026-12-06",
       "url": "https://rusmuseum.ru/exhibitions/traveling-expo/mikhail-nesterov-2026/",
-      "note": "Нестеров из собрания Русского музея — в родном городе художника",
+      "note": "«Святая Русь»: Нестеров из собрания Русского музея — в родном городе художника, в музее его имени",
       "tags": [
         "xix",
         "russian"
-      ]
+      ],
+      "source": "https://xn--80ayms.xn--p1ai/events/exhibitions"
     },
     {
       "title": "Арзамасская академия",
@@ -693,23 +693,6 @@
       ]
     },
     {
-      "title": "Вильгельм Хаммерсхёй. Художник тихого звука",
-      "title_orig": "Vilhelm Hammershøi. Maler des stillen Klangs",
-      "venue": "Кунстхаус Цюрих",
-      "city": "Цюрих",
-      "lat": 47.3703,
-      "lon": 8.5481,
-      "country": "Швейцария",
-      "start": "2026-07-03",
-      "end": "2026-10-25",
-      "url": "https://www.kunsthaus.ch/besuch-planen/ausstellungen/vilhelm-hammershoi/",
-      "note": "Первая большая выставка Хаммерсхёя в Швейцарии: интерьеры, портреты, виды города",
-      "tags": [
-        "xix"
-      ],
-      "source": "https://www.e-flux.com/announcements/6784702/exhibition-programme-2026"
-    },
-    {
       "title": "Женщина-художник",
       "title_orig": "Woman Painter",
       "venue": "Национальный музей Норвегии",
@@ -765,7 +748,7 @@
       "country": "США",
       "start": "2026-09-06",
       "end": "2027-01-03",
-      "url": "https://www.artic.edu/exhibitions",
+      "url": "https://www.artic.edu/exhibitions/10487/mary-cassatt-after-impressionism",
       "note": "Более 75 картин, пастелей и цветных гравюр 1888–1905 годов — к 100-летию смерти художницы",
       "tags": [
         "impr"
@@ -824,7 +807,7 @@
     },
     {
       "title": "Юбилейная выставка к 25-летию Новой галереи",
-      "title_orig": "25th Anniversary Exhibition",
+      "title_orig": "25th Anniversary Exhibition: Masterworks from the Neue Galerie",
       "venue": "Новая галерея (Neue Galerie)",
       "city": "Нью-Йорк",
       "lat": 40.7813,
@@ -832,7 +815,7 @@
       "country": "США",
       "start": "2026-11-12",
       "end": "2027-01-11",
-      "url": "https://neuegalerie.org/",
+      "url": "https://www.neuegalerie.org/exhibitions/25thanniversary",
       "note": "Климт («Адель Блох-Бауэр I»), Шиле и австрийское и немецкое искусство начала XX века во всём здании",
       "tags": [
         "modern"
@@ -1354,7 +1337,7 @@
       "city": "Санкт-Петербург",
       "country": "Россия",
       "start": "2026-05-27",
-      "end": "2026-10-26",
+      "end": "2027-01-11",
       "url": "https://rusmuseum.ru/exhibitions/current/villa-russkogo-metsenata/",
       "note": "Около 100 работ: виды дач, интерьеры, мебель XVIII–XIX веков; Строганов, Шувалов, Мамонтов, Тенишева",
       "tags": [
@@ -1369,7 +1352,7 @@
       "city": "Санкт-Петербург",
       "country": "Россия",
       "start": "2026-09-25",
-      "end": "2027-01-18",
+      "end": "2026-11-16",
       "url": "https://rusmuseum.ru/exhibitions/current/vsevolod-voinov-khudozhnik-muzeyshchik-kritik/",
       "note": "Около 150 работ Всеволода Воинова (1880–1945): живопись, рисунок, гравюра 1910–1930-х",
       "tags": [
@@ -1417,7 +1400,7 @@
       "lat": 59.56394,
       "lon": 30.10803,
       "country": "Россия",
-      "start": "2026-06-07",
+      "start": "2026-06-06",
       "end": "2026-11-08",
       "url": "https://gatchinapalace.ru/events/exhibitions/4752/",
       "note": "Сотни предметов из фондов, многие впервые: мебель, графика, скульптура, декоративное искусство",
@@ -1425,38 +1408,7 @@
         "old",
         "russian"
       ],
-      "source": "https://vk.ru/@gatchina.palace-afisha-24-29-sentyabrya"
-    },
-    {
-      "title": "Сохранённые святыни",
-      "venue": "Исаакиевский собор, часовня-музей Спаса на Крови",
-      "city": "Санкт-Петербург",
-      "lat": 59.94016,
-      "lon": 30.3286,
-      "country": "Россия",
-      "start": "2026-09-05",
-      "end": "2026-10-25",
-      "url": "https://cathedral.ru/ru/posts/04-09-2026-2",
-      "note": "Иконы XVIII–XIX веков разных школ из собраний Елагиноостровского дворца-музея и Исаакиевского собора",
-      "tags": [
-        "old",
-        "russian"
-      ]
-    },
-    {
-      "title": "Айвазовский и русский романтический пейзаж",
-      "venue": "Нижегородский художественный музей, Русское искусство (Кремль, корп. 3)",
-      "city": "Нижний Новгород",
-      "country": "Россия",
-      "start": "2026-05-22",
-      "end": "2026-10-25",
-      "url": "https://artmuseumnn.ru/vystavki/4605/",
-      "note": "Около 50 работ: 9 картин Айвазовского, Лагорио, Боголюбов, Куинджи, Рылов; из НГХМ и Музея Тропинина",
-      "tags": [
-        "xix",
-        "russian"
-      ],
-      "museum": "Нижегородский государственный художественный музей"
+      "source": "https://gatchinapalace.ru/"
     },
     {
       "title": "Авантюры талантов. Среда авангарда в Нижнем Новгороде",
@@ -1606,7 +1558,7 @@
       "lat": 44.40758,
       "lon": 8.9331,
       "country": "Италия",
-      "start": "2026-10-16",
+      "start": "2026-10-15",
       "end": "2027-05-02",
       "url": "https://palazzoducale.genova.it/mostra/renoir-monet-toulouse-lautrec-cezanne/",
       "note": "Более 140 работ: Гойя, Коро, Моне, Ренуар, Дега, Сезанн, Матисс, Пикассо; в конце — современное искусство",
@@ -1864,7 +1816,7 @@
       "country": "Венгрия",
       "start": "2026-10-28",
       "end": "2027-02-28",
-      "url": "https://www.szepmuveszeti.hu/",
+      "url": "https://www.szepmuveszeti.hu/kiallitasok/gauguin/",
       "note": "Около 150 работ, 80 из них — Гоген; из Метрополитена, MoMA, Орсе, Тейт; рядом Сезанн, Ван Гог, Бернар",
       "tags": [
         "impr"
@@ -1915,7 +1867,8 @@
       "tags": [
         "russian"
       ],
-      "museum": "Новгородский музей-заповедник, Великий Новгород"
+      "museum": "Новгородский музей-заповедник, Великий Новгород",
+      "source": "https://novgorodmuseum.ru/visit/sobytiya/skazka-ryadom"
     },
     {
       "title": "Скорые помощники, тёплые заступники. Лики и пространства народной иконы",
@@ -2302,19 +2255,20 @@
       "lon": 60.59661
     },
     {
-      "title": "Искусство стран Европы XIV–XVIII веков из частного собрания",
-      "venue": "Центр «Эрмитаж-Урал»",
+      "title": "От красоты небесной к красоте земной",
+      "venue": "Екатеринбургский музей изобразительных искусств",
       "city": "Екатеринбург",
       "country": "Россия",
       "start": "2026-09-05",
-      "end": "2027-01-31",
+      "end": "2027-01-24",
       "url": "https://eanews.ru/ekaterinburg/20260831120757/iskusstvo-evropy-epohi-vozrozhdeniya-predstavyat-v-ekaterinburge",
-      "note": "Около 90 работ из частного собрания: Джованни Беллини, Луис де Моралес, Йос ван Клеве, Тенирс, круг Рубенса",
+      "note": "Искусство Европы XIV–XVIII веков из частного собрания, около 90 работ: Джованни Беллини, Луис де Моралес, Йос ван Клеве, Тенирс",
       "tags": [
         "old"
       ],
       "lat": 56.83293,
-      "lon": 60.59661
+      "lon": 60.59661,
+      "source": "https://weekend.rambler.ru/exhibitions/57077499-madonna-s-mladentsem-i-agitatsionnyy-farfor-kakie-vystavki-idut-za-predelami-moskvy/"
     },
     {
       "title": "Праздники по-русски",
@@ -2347,6 +2301,441 @@
       ],
       "lat": 43.11433,
       "lon": 131.88202
+    },
+    {
+      "title": "Михаил Врубель. Метаморфозы",
+      "venue": "Омский музей изобразительных искусств им. М. А. Врубеля, центр «Эрмитаж-Сибирь»",
+      "city": "Омск",
+      "lat": 54.98507,
+      "lon": 73.3728,
+      "country": "Россия",
+      "start": "2026-08-28",
+      "end": "2026-11-29",
+      "url": "https://www.om1.ru/news/society/430344-gk_titan_podderzhala_vystavku_mikhail_vrubel__metamorfozy/",
+      "note": "Около 30 картин и рисунков к 170-летию Врубеля из Русского музея, Третьяковки и Омска: «Царевна-Лебедь», «Пан», «Шестикрылый серафим»",
+      "tags": [
+        "russian",
+        "modern"
+      ],
+      "source": "https://xn--80ayms.xn--p1ai/events/exhibitions"
+    },
+    {
+      "title": "Николай Рерих",
+      "venue": "Национальная художественная галерея Республики Марий Эл",
+      "city": "Йошкар-Ола",
+      "lat": 56.6319,
+      "lon": 47.88696,
+      "country": "Россия",
+      "start": "2026-10-02",
+      "end": "2027-01-24",
+      "url": "https://pg12.ru/news/118269",
+      "note": "89 работ Рериха из Русского музея: «Гималайская сюита», этюды азиатских экспедиций, эскизы декораций",
+      "tags": [
+        "russian",
+        "modern"
+      ],
+      "source": "https://xn--80ayms.xn--p1ai/events/exhibitions"
+    },
+    {
+      "title": "Русский авангард начала XX века",
+      "venue": "Тульский музей изобразительных искусств",
+      "city": "Тула",
+      "lat": 54.17773,
+      "lon": 37.59501,
+      "country": "Россия",
+      "start": "2026-10-16",
+      "end": "2026-12-15",
+      "url": "https://tulapressa.ru/2026/10/v-tule-16-oktyabrya-otkroetsya-vystavka-russkogo-avangarda/",
+      "note": "31 картина из Самарского художественного музея: Кончаловский, Лентулов, Розанова, Бурлюк, В. Рождественский, Самохвалов",
+      "tags": [
+        "modern",
+        "russian"
+      ]
+    },
+    {
+      "title": "Во весь голос! Шедевры агитационного искусства",
+      "venue": "Тульский музей изобразительных искусств, «Фонд искусств»",
+      "city": "Тула",
+      "lat": 54.17773,
+      "lon": 37.59501,
+      "country": "Россия",
+      "start": "2026-09-13",
+      "end": "2027-01-12",
+      "url": "https://newstula.ru/fn_1935533.html",
+      "note": "Агитфарфор 1918–1930-х из Всероссийского музея декоративного искусства — Чехонин, Данько; палех, жостово, хохлома",
+      "tags": [
+        "modern",
+        "russian"
+      ],
+      "source": "https://weekend.rambler.ru/exhibitions/57077499-madonna-s-mladentsem-i-agitatsionnyy-farfor-kakie-vystavki-idut-za-predelami-moskvy/"
+    },
+    {
+      "title": "Флоту быть! К 330-летию военно-морского флота России",
+      "venue": "Радищевский музей, главное здание",
+      "city": "Саратов",
+      "country": "Россия",
+      "start": "2026-09-06",
+      "end": "2027-03-14",
+      "url": "https://radmuseumart.ru/news/announcements/52692/",
+      "note": "Маринистика из ЦВММ и Радищевского музея: Айвазовский, Боголюбов, Беггров; портреты Ушакова, Лазарева, Корнилова",
+      "tags": [
+        "xix",
+        "russian"
+      ],
+      "museum": "Саратовский государственный художественный музей имени А.Н. Радищева",
+      "source": "https://news.sarbc.ru/main/2026/08/31/320191.html"
+    },
+    {
+      "title": "Эффект Оперы Зимина",
+      "venue": "Ярославский музей-заповедник",
+      "city": "Ярославль",
+      "lat": 57.62132,
+      "lon": 39.88906,
+      "approx": true,
+      "country": "Россия",
+      "start": "2026-10-08",
+      "end": "2026-12-20",
+      "url": "https://www.bakhrushinmuseum.ru/2026/10/08/bahrushinskij-muzej-predstavil-vystavku-effekt-opery-zimina-k-150-letiyu-osnovatelya-chastnoj-opery/",
+      "note": "Выставка Бахрушинского музея: более 250 эскизов и документов — Поленов, Коровин, Малютин, Рерих, Билибин; «Принцесса Грёза» Врубеля",
+      "tags": [
+        "russian",
+        "modern"
+      ]
+    },
+    {
+      "title": "Художник Ленинграда. Владимир Гринберг",
+      "venue": "Музей искусства Санкт-Петербурга XX–XXI веков",
+      "city": "Санкт-Петербург",
+      "lat": 59.9265,
+      "lon": 30.30004,
+      "country": "Россия",
+      "start": "2026-10-07",
+      "end": "2026-11-22",
+      "url": "https://mispxx-xxi.ru/exhibitions/khudozhnik-leningrada-vladimir-grinberg/",
+      "note": "Портреты и виды Ленинграда Владимира Гринберга (1896–1942), в основном 1930-х; из ГМИ СПб и частных собраний",
+      "tags": [
+        "russian",
+        "modern"
+      ],
+      "source": "https://mispxx-xxi.ru/"
+    },
+    {
+      "title": "Звери земные и птицы небесные. Образы животных в христианском искусстве",
+      "venue": "Ростовский кремль",
+      "city": "Ростов Великий",
+      "country": "Россия",
+      "start": "2026-10-29",
+      "end": "2027-01-17",
+      "url": "https://www.rostmuseum.ru/events/vystavki/vystavka-zveri-zemnye-i-ptitsy-nebesnye-obrazy-zhivotnykh-v-khristianskom-iskusstve/",
+      "note": "Вместе с Сергиево-Посадским музеем-заповедником: животные и птицы в иконах и церковном искусстве XVI — начала XX века",
+      "tags": [
+        "old",
+        "russian"
+      ],
+      "museum": "Музей-заповедник «Ростовский кремль», Ростов Великий",
+      "source": "https://www.rostmuseum.ru/"
+    },
+    {
+      "title": "Императорская Россия",
+      "venue": "Пермская государственная художественная галерея",
+      "city": "Пермь",
+      "country": "Россия",
+      "start": "2026-12-04",
+      "end": "2027-01-31",
+      "url": "https://perm.aif.ru/culture/v-permskoy-galeree-predstavyat-relikvii-imperatorskoy-semi",
+      "note": "Более 270 предметов из Исторического музея: парадные портреты императоров, иконы, церковная утварь, ювелирные изделия",
+      "tags": [
+        "russian",
+        "xix"
+      ],
+      "museum": "Пермская государственная художественная галерея, Пермь",
+      "source": "https://59i.ru/novosti/novosti-permi-i-permskogo-kraja/v-permskoi-galeree-pokazhut-veschi-imperatorskoi-semi-i-nagradnoe-oruzhie.html"
+    },
+    {
+      "title": "Учитель и ученица. Василий Матэ и Анна Остроумова-Лебедева",
+      "venue": "Третьяковская галерея, Лаврушинский переулок",
+      "city": "Москва",
+      "country": "Россия",
+      "start": "2026-11-13",
+      "end": "2027-04-11",
+      "url": "https://www.tretyakovgallery.ru/exhibitions/o/uchitel-i-uchenitsa-vasiliy-mate-i-anna-ostroumova-lebedeva/",
+      "note": "Гравюра Василия Матэ (1856–1917) и его ученицы Анны Остроумовой-Лебедевой — мастера цветной ксилографии",
+      "tags": [
+        "russian",
+        "modern"
+      ],
+      "museum": "Государственная Третьяковская галерея, Москва",
+      "source": "https://www.tretyakovgallery.ru/tickets/exhibitions/?special_version=N"
+    },
+    {
+      "title": "Русский кокошник",
+      "venue": "Российский этнографический музей",
+      "city": "Санкт-Петербург",
+      "lat": 59.93795,
+      "lon": 30.33433,
+      "country": "Россия",
+      "start": "2026-11-27",
+      "end": "2027-03-14",
+      "url": "https://ethnomuseum.ru/events1/exhibitions/future/russkij-kokoshnik/",
+      "note": "Около 250 предметов XVIII — начала XX века: кокошники разных губерний, костюмные комплексы, жемчуг и золотное шитьё",
+      "tags": [
+        "russian",
+        "xix"
+      ]
+    },
+    {
+      "title": "Роден глазами Рильке",
+      "title_orig": "Rodin selon Rilke",
+      "venue": "Фонд Пьера Джанадды",
+      "city": "Мартиньи",
+      "lat": 46.095,
+      "lon": 7.07111,
+      "country": "Швейцария",
+      "start": "2026-06-26",
+      "end": "2026-11-22",
+      "url": "https://www.gianadda.ch/?view=article&id=1010:rodin-selon-rilke&catid=79",
+      "note": "Скульптура Родена в главах по книге Рильке о мастере (1903); выставку подготовил Музей Родена в Париже",
+      "tags": [
+        "xix"
+      ]
+    },
+    {
+      "title": "Ваять цвет. Шедевры Национального музея скульптуры в Вальядолиде",
+      "title_orig": "Sculpter la couleur. Chefs-d’œuvre du Musée national de sculpture, Valladolid",
+      "venue": "Лувр",
+      "city": "Париж",
+      "lat": 48.86106,
+      "lon": 2.33584,
+      "country": "Франция",
+      "start": "2026-10-07",
+      "end": "2027-01-25",
+      "url": "https://www.louvre.fr/expositions-et-evenements/expositions/sculpter-la-couleur",
+      "note": "Испанская полихромная скульптура XVII века: процессионное пасо Грегорио Фернандеса, Алонсо Кано, Педро де Мена, Луиса Рольдан",
+      "tags": [
+        "old"
+      ]
+    },
+    {
+      "title": "Курт Швиттерс. Хаос-мир. 1918–1948",
+      "title_orig": "Kurt Schwitters. Le chaos-monde. 1918–1948",
+      "venue": "Национальный музей Пикассо",
+      "city": "Париж",
+      "lat": 48.85988,
+      "lon": 2.36209,
+      "country": "Франция",
+      "start": "2026-10-06",
+      "end": "2027-02-07",
+      "url": "https://www.museepicassoparis.fr/en/agenda/kurt-schwitters-le-chaos-monde-1918-1948/",
+      "note": "Первая во Франции с 1994 года ретроспектива Швиттерса: более 300 работ и документов — Merz-коллажи, живопись, скульптура",
+      "tags": [
+        "modern"
+      ]
+    },
+    {
+      "title": "Мои дорогие друзья. Рисунок в собраниях французских художников XIX века",
+      "title_orig": "Mes chers amis. Le dessin dans les collections d’artistes français au XIXe siècle",
+      "venue": "Фонд Кюстодиа",
+      "city": "Париж",
+      "lat": 48.86139,
+      "lon": 2.31972,
+      "country": "Франция",
+      "start": "2026-10-17",
+      "end": "2027-01-17",
+      "url": "https://www.fondationcustodia.fr/Mes-chers-amis-2437",
+      "note": "Около 100 рисунков из собраний Жерико, Т. Руссо, Домье, Доре, Уистлера — Энгр, Делакруа и др.; из Лувра, Орсе, Метрополитена",
+      "tags": [
+        "xix"
+      ]
+    },
+    {
+      "title": "Хокусай. Тридцать шесть видов Фудзи из собрания Иути",
+      "title_orig": "Hokusai: Thirty-six Views of Mount Fuji from the Iuchi Collection",
+      "venue": "Далвичская картинная галерея",
+      "city": "Лондон",
+      "lat": 51.44611,
+      "lon": -0.08639,
+      "country": "Великобритания",
+      "start": "2026-10-20",
+      "end": "2027-01-17",
+      "url": "https://www.dulwichpicturegallery.org.uk/whats-on/hokusai-thirty-six-views-of-mt-fuji-from-the-iuchi-collection/",
+      "note": "Вся серия «36 видов Фудзи» (46 листов, 1830–1833) впервые в Британии целиком — с «Большой волной» и «Красной Фудзи»",
+      "tags": [
+        "east"
+      ]
+    },
+    {
+      "title": "Прерафаэлитизм. Женские пути (1850–1914)",
+      "title_orig": "Prerrafaelismo. Itinerarios femeninos (1850-1914)",
+      "venue": "Фонд MAPFRE, зал Реколетос",
+      "city": "Мадрид",
+      "lat": 40.4235,
+      "lon": -3.69195,
+      "country": "Испания",
+      "start": "2026-09-24",
+      "end": "2027-01-10",
+      "url": "https://www.fundacionmapfre.org/arte-y-cultura/exposiciones/sala-recoletos/prerrafaelismo-itinerarios-femeninos/",
+      "note": "Более 40 художниц круга прерафаэлитов: Элизабет Сиддал, Мари Спартали Стиллман, Ивлин де Морган, Мэй Моррис",
+      "tags": [
+        "xix"
+      ]
+    },
+    {
+      "title": "Я, Гюстав Курбе. Художник и бунтарь",
+      "title_orig": "Ich, Gustave Courbet. Maler und Rebell",
+      "venue": "Музей Фолькванг",
+      "city": "Эссен",
+      "lat": 51.44167,
+      "lon": 7.00417,
+      "country": "Германия",
+      "start": "2026-07-17",
+      "end": "2026-11-08",
+      "url": "https://www.museum-folkwang.de/en/exhibition/i-gustave-courbet",
+      "note": "Большая ретроспектива Курбе — от автопортретов до швейцарского изгнания; вместе с Музеем Леопольда",
+      "tags": [
+        "xix"
+      ]
+    },
+    {
+      "title": "Женни Монтиньи",
+      "title_orig": "Jenny Montigny",
+      "venue": "Музей изящных искусств (MSK)",
+      "city": "Гент",
+      "country": "Бельгия",
+      "start": "2026-10-10",
+      "end": "2027-01-10",
+      "url": "https://www.mskgent.be/en/exhibitions/jenny-montigny",
+      "note": "Первая большая ретроспектива гентской импрессионистки (1875–1937) с 1922 года: школы, сады, интерьеры, графика",
+      "tags": [
+        "impr"
+      ],
+      "museum": "Музей изящных искусств, Гент"
+    },
+    {
+      "title": "Десять царей ада. Загробный мир в средневековой Корее",
+      "title_orig": "Ten Kings of Hell: The Afterlife in Medieval Korea",
+      "venue": "Кливлендский музей искусств",
+      "city": "Кливленд",
+      "lat": 41.50889,
+      "lon": -81.61167,
+      "country": "США",
+      "start": "2026-10-11",
+      "end": "2027-01-03",
+      "url": "https://www.clevelandart.org/exhibitions/ten-kings-hell-afterlife-medieval-korea",
+      "note": "Более 100 работ эпохи Корё (918–1392) с Национальным музеем Кореи; впервые с 1960-х вместе 10 свитков «Царей ада» XIV века",
+      "tags": [
+        "east"
+      ]
+    },
+    {
+      "title": "Фонтанези. Свет Италии, пейзажи души",
+      "title_orig": "フォンタネージ――イタリアの光・心の風景",
+      "venue": "Художественный музей Мицубиси Итигокан",
+      "city": "Токио",
+      "lat": 35.67847,
+      "lon": 139.76316,
+      "country": "Япония",
+      "start": "2026-10-17",
+      "end": "2027-01-24",
+      "url": "https://mimt.jp/ex_sp/fontanesi/",
+      "note": "Первая в Японии ретроспектива Антонио Фонтанези (1818–1882): около 200 работ — его и японских учеников; с ГАМ Турина",
+      "tags": [
+        "xix"
+      ]
+    },
+    {
+      "title": "78-я выставка сокровищ Сёсоина",
+      "title_orig": "第78回 正倉院展",
+      "venue": "Национальный музей Нары",
+      "city": "Нара",
+      "lat": 34.68309,
+      "lon": 135.83831,
+      "country": "Япония",
+      "start": "2026-10-24",
+      "end": "2026-11-09",
+      "url": "https://shosoin-ten.jp/",
+      "note": "60 сокровищ VIII века из императорской сокровищницы Сёсоин, 11 впервые: фишки для го, лаковый кувшин, стекло, зеркало",
+      "tags": [
+        "east"
+      ]
+    },
+    {
+      "title": "Импрессионисты. Моне, Моризо, Ренуар и их круг",
+      "title_orig": "Die Impressionisten. Monet, Morisot, Renoir und ihr Netzwerk",
+      "venue": "Музей Барберини",
+      "city": "Потсдам",
+      "country": "Германия",
+      "start": "2026-11-07",
+      "end": "2027-02-21",
+      "url": "https://www.museum-barberini.de/en/ausstellungen/22739/the-impressionists-monet-morisot-renoir-and-their-network",
+      "note": "К 10-летию музея: более 100 картин, из них 61 Моне; Мане, Кайботт, Кассат, Сислей — из NGA, Метрополитена, Орсе",
+      "tags": [
+        "impr"
+      ],
+      "museum": "Музей Барберини, Потсдам"
+    },
+    {
+      "title": "Ванесса Белл и Дункан Грант. Внутри Блумсбери",
+      "title_orig": "Vanessa Bell & Duncan Grant: Inside Bloomsbury",
+      "venue": "Тейт Британ",
+      "city": "Лондон",
+      "country": "Великобритания",
+      "start": "2026-11-12",
+      "end": "2027-04-11",
+      "url": "https://www.tate.org.uk/whats-on/tate-britain/vanessa-bell-and-duncan-grant",
+      "note": "Более 300 работ двух художников группы Блумсбери: портреты, натюрморты, расписная мебель и керамика 1910–1930-х",
+      "tags": [
+        "modern"
+      ],
+      "museum": "Британская галерея Тейт, Лондон"
+    },
+    {
+      "title": "От Константинополя до Стамбула. Один город, две империи",
+      "title_orig": "Constantinople to Istanbul: One City, Two Empires",
+      "venue": "Музей Виктории и Альберта",
+      "city": "Лондон",
+      "country": "Великобритания",
+      "start": "2026-11-07",
+      "end": "2027-05-09",
+      "url": "https://www.vam.ac.uk/exhibitions/constantinople-to-istanbul-one-city-two-empires",
+      "note": "Более 200 предметов: византийские эмали и резная кость, Линкольнский типикон, портрет Мехмеда II работы Беллини",
+      "tags": [
+        "old",
+        "east"
+      ],
+      "museum": "Музей Виктории и Альберта, Лондон",
+      "source": "https://vanda-production-assets.s3.amazonaws.com/2026/06/10/09/11/58/7e9f413b-1617-44f7-a43d-2f2ecbf451a9/Constantinople%20to%20Istanbul%20at%20V&A%20South%20Kensington.pdf"
+    },
+    {
+      "title": "По пути в Дамаск… Карл Эрнст Остхаус и искусство ислама",
+      "title_orig": "Nach Damaskus … Karl Ernst Osthaus und die islamischen Künste",
+      "venue": "Музей Фолькванг",
+      "city": "Эссен",
+      "lat": 51.44167,
+      "lon": 7.00417,
+      "country": "Германия",
+      "start": "2026-11-06",
+      "end": "2027-02-21",
+      "url": "https://www.museum-folkwang.de/en/exhibition/following-damascus",
+      "note": "Около 300 предметов исламского собрания Остхауса — керамика, ткани, «Шахнаме», изразцы — и их след в искусстве модерна",
+      "tags": [
+        "east"
+      ]
+    },
+    {
+      "title": "Сокровища Саньсиндуя и Цзиньша",
+      "title_orig": "Trésors de Sanxingdui et Jinsha. Une fascinante civilisation chinoise",
+      "venue": "Музей Гиме",
+      "city": "Париж",
+      "lat": 48.86528,
+      "lon": 2.29389,
+      "country": "Франция",
+      "start": "2026-11-18",
+      "end": "2027-03-01",
+      "url": "https://www.guimet.fr/sites/default/files/2026-10/cp_guimet_sanxingdui.pdf",
+      "note": "Бронзовые маски и статуи, нефрит и золото древних царств Сычуани (XVI–IX вв. до н. э.), в том числе находки 2020–2022 годов",
+      "tags": [
+        "east"
+      ]
     }
   ]
 }
