@@ -279,23 +279,64 @@ RUN_STATUS_JS = """<script>
 </script>"""
 
 
+def visit_cover_index(v):
+    # Offline score; use cover_index (zero-based) for manual override.
+    pictures = v.get('images') or []
+    if not pictures:return 0
+    try:
+        override=int(v.get('cover_index'))
+        if 0 <= override < len(pictures):return override
+    except (TypeError,ValueError):pass
+    try:
+        from PIL import Image,ImageStat,ImageFilter
+        from functools import lru_cache
+    except ImportError:
+        return 1 if len(pictures)>1 else 0
+    def score(path):
+        try:
+            with Image.open(path) as im:
+                im.thumbnail((180,180)); im=im.convert('RGB')
+                stat=ImageStat.Stat(im)
+                colour=sum(stat.stddev)/3
+                hist=im.convert('L').histogram(); total=sum(hist)
+                import math
+                entropy=-sum((n/total)*math.log2(n/total) for n in hist if n) if total else 0
+                edges=ImageStat.Stat(im.filter(ImageFilter.FIND_EDGES)).mean[0]
+                # Many wall labels are nearly monochrome and low in texture.
+                return colour*0.5 + entropy*4 + min(edges,35)*0.4
+        except (OSError,ValueError):return -1
+    candidates=[]
+    for idx,rel in enumerate(pictures[:8]):
+        path=__import__('os').path.join(OUTPUT_DIR,rel)
+        candidates.append((score(path),idx))
+    if max(s for s,_ in candidates)<0:return 1 if len(pictures)>1 else 0
+    return max(candidates)[1]
+
+
+def visit_cover(v):
+    images=v.get('images') or []
+    thumbs=v.get('thumbs') or []
+    index=visit_cover_index(v)
+    return thumbs[index] if index<len(thumbs) else images[index] if index<len(images) else ''
+
+
 def visit_card(v, show_place=True, place_text=None):
     """Карточка похода — одна для списка походов и для страницы музея.
     show_place=False — на странице места: оно и так в заголовке.
     place_text — что написать вместо места из поста (на странице
     музея-участника — где шла выставка)."""
-    cover = (v.get("thumbs") or v.get("images") or [""])[0]
+    cover = visit_cover(v)
     heading = visit_heading(v)
     shots = len(v.get("images") or [])
     # Классы у строк сведений нужны плиткам: там подписи прячутся,
     # и без них «17.01.2026 · 12.12.2025 — 21.06.2026 · 7» не прочесть.
-    facts = [("f-when", "<span>Побывал</span>", v.get("visited", "")),
+    facts = [("f-when", "<span>Дата посещения</span>", v.get("visited", "")),
              ("f-run", run_label(v.get("run")), v.get("run", "")),
              ("f-shots", "<span>Снимков</span>", str(shots) if shots else "")]
     facts_html = "".join(f'<div class="{cls}">{label}<b>{h(val)}</b></div>'
                          for cls, label, val in facts if val)
-    img = (f'<div class="card-img"><img src="{h(cover)}" alt="{h(typo_ru(heading))}"{size_attrs(cover)}'
-           f' loading="lazy" decoding="async"></div>') if cover else '<div class="card-img"></div>'
+    img = (f'<a class="card-img" href="{h(v["filename"])}" aria-label="Открыть посещение: {h(typo_ru(heading))}"><img src="{h(cover)}" alt="{h(typo_ru(heading))}"{size_attrs(cover)}'
+           f' loading="lazy" decoding="async"></a>') if cover else '<div class="card-img"></div>'
     place = place_text if place_text is not None else v.get("place")
     sub = (place if show_place else "") if v.get("title") else v.get("note", "")
     sub_html = f'<div class="card-title">{h(typo_ru(sub))}</div>' if sub else ''
@@ -309,6 +350,7 @@ def visit_card(v, show_place=True, place_text=None):
         f'<div class="card-artist"><a class="card-link" href="{h(v["filename"])}">{h(typo_ru(heading))}</a></div>'
         f'{sub_html}'
         f'<div class="card-museum visit-kind">{h(visit_kind_label(v["kind"]))}</div>'
+        f'<span class="visit-shot-count">{shots} {plural_ru(shots, "фотография", "фотографии", "фотографий")}</span>'
         f'{run_status(v, "div")}</div>'
         f'<div class="card-facts">{facts_html}</div></article>'
     )
@@ -356,8 +398,8 @@ def render_visits_page(visits, all_posts=None):
       <button type="button" data-kind="музей" aria-pressed="false">Постоянные экспозиции<span class="visit-count">{museums}</span></button>
     </div>
     <div class="view-switch visit-view" role="group" aria-label="Как показывать">
-      <button type="button" data-view="grid" aria-pressed="true">Плитки</button>
-      <button type="button" data-view="list" aria-pressed="false">Опись</button>
+      <button type="button" data-view="grid" aria-pressed="true">Карточки</button>
+      <button type="button" data-view="list" aria-pressed="false">Подробный список</button>
     </div>
   </div>
 </header>
@@ -366,6 +408,7 @@ def render_visits_page(visits, all_posts=None):
 {site_footer()}
 {SCROLL_TOP_JS}
 {COMMON_JS}
+<script src="opa-ui.js" defer></script>
 {RUN_STATUS_JS}
 {NOW_ON_JS}
 <script>
@@ -486,7 +529,14 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None, afisha=None
     shots = []
     thumbs = visit.get("thumbs") or []
     vlist = visit.get("views") or []
-    for i, src in enumerate(photos):
+    cover_order = list(range(len(photos)))
+    if photos:
+        chosen = visit_cover_index(visit)
+        if 0 <= chosen < len(photos):
+            cover_order.remove(chosen)
+            cover_order.insert(0, chosen)
+    for i in cover_order:
+        src = photos[i]
         big = hires_url(hires[i] if i < len(hires) else src)
         small = thumbs[i] if i < len(thumbs) else src
         loading = ('fetchpriority="high" decoding="async"' if i == 0
@@ -498,7 +548,7 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None, afisha=None
             + (f'data-view="{h(vw)}" ' if vw else '')
             + f'title="Рассмотреть" data-title="{h(typo_ru(heading))}" data-meta="{h(", ".join(meta_bits))}" '
             f'data-download="{h(slug)}-{i + 1}{h(os.path.splitext(big)[1] or ".jpg")}">'
-            f'<img src="{h(small)}" alt="{h(typo_ru(heading))}, снимок {i + 1}" class="painting"{size_attrs(small)} {loading}>'
+            f'<img src="{h(small)}" alt="{h(typo_ru(heading))}, фотография {i + 1} из {len(photos)}" class="painting"{size_attrs(small)} {loading}>'
             f'<span class="painting-hint" aria-hidden="true">'
             f'<span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a>'
         )
@@ -643,6 +693,7 @@ def render_visit_page(visit, visits, all_posts=None, map_names=None, afisha=None
 {SCROLL_TOP_JS}
 {COMMON_JS}
 {LUPA_JS}
+<script src="opa-ui.js" defer></script>
 {TOAST_JS}
 {SHARE_JS}
 {RUN_STATUS_JS}
@@ -817,6 +868,7 @@ __all__ = [
     'run_phase',
     'run_label',
     'RUN_STATUS_JS',
+    'visit_cover_index', 'visit_cover',
     'visit_card',
     'render_visits_page',
     'visit_jsonld',

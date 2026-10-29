@@ -23,7 +23,7 @@
 <link rel="alternate" type="application/rss+xml" title="Old Picture Art" href="feed.xml">
 <link rel="preload" as="font" type="font/woff2" href="fonts/old-standard-tt-cyrillic-400-normal.woff2" crossorigin>
 <link rel="stylesheet" href="fonts/fonts.css">
-<link rel="stylesheet" href="style.css?v=70bd2a77">
+<link rel="stylesheet" href="style.css?v=f75a06a9">
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="index-page">
 <a href="#cards" class="skip-link">К галерее</a>
@@ -85,14 +85,15 @@
     <option value="title">По названию</option>
   </select>
   <div class="view-switch" role="group" aria-label="Вид списка">
-    <button type="button" id="view-list" aria-pressed="true" onclick="setView('list')">Опись</button>
-    <button type="button" id="view-grid" aria-pressed="false" onclick="setView('grid')">Плитки</button>
+    <button type="button" id="view-list" aria-pressed="true" onclick="setView('list')">Подробный список</button>
+    <button type="button" id="view-grid" aria-pressed="false" onclick="setView('grid')">Карточки</button>
   </div>
   </div>
 </div>
+<div class="active-filter-chips" id="opa-active-filters" aria-label="Выбранные фильтры" hidden></div>
 <div class="grid list" id="cards"><article class="card" data-artist="николай васильевич мещерин" data-title="лунная ночь, 1905" data-year="2026" data-month="10" data-cyear="1905" data-museum="государственная-третьяковская-галерея-москва" data-material="холст" data-techniques="темпера" data-search="николай васильевич мещерин лунная ночь, 1905 государственная третьяковская галерея, москва холст темпера гтг картина мещерин 2026-10-28" data-no="91" data-decade="1900–1909">
     <span class="card-no">091</span>
-    <div class="card-img"><img src="images/thumbs/mescherin-lunnaya-noch-1905.jpg" alt="Николай Васильевич Мещерин — Лунная ночь, 1905" width="600" height="406" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="mescherin-lunnaya-noch-1905.html" aria-label="Открыть картину: Николай Васильевич Мещерин — Лунная ночь, 1905"><img src="images/thumbs/mescherin-lunnaya-noch-1905.jpg" alt="Николай Васильевич Мещерин — Лунная ночь, 1905" width="600" height="406" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="mescherin-lunnaya-noch-1905.html">Николай Васильевич Мещерин</a></div>
         <div class="card-title">Лунная ночь, 1905</div>
@@ -102,7 +103,7 @@
     <div class="card-facts"><div><span>Год</span><b>1905</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>темпера</b></div><div><span>Размер</span><b>55 x 80,6 см</b></div></div>
     </article><article class="card" data-artist="константин павлович кузнецов" data-title="площадь согласия, 1928" data-year="2026" data-month="10" data-cyear="1928" data-museum="частная-коллекция-фонд-константина-кузнецова-москва" data-material="холст" data-techniques="масло" data-search="константин павлович кузнецов площадь согласия, 1928 частная коллекция, фонд константина кузнецова, москва холст масло pc картина кузнецов 2026-10-27" data-no="106" data-decade="1920–1929">
     <span class="card-no">106</span>
-    <div class="card-img"><img src="images/thumbs/kuznetsov-ploschad-soglasiya-1928.jpg" alt="Константин Павлович Кузнецов — Площадь Согласия, 1928" width="600" height="491" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="kuznetsov-ploschad-soglasiya-1928.html" aria-label="Открыть картину: Константин Павлович Кузнецов — Площадь Согласия, 1928"><img src="images/thumbs/kuznetsov-ploschad-soglasiya-1928.jpg" alt="Константин Павлович Кузнецов — Площадь Согласия, 1928" width="600" height="491" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="kuznetsov-ploschad-soglasiya-1928.html">Константин Павлович Кузнецов</a></div>
         <div class="card-title">Площадь Согласия, 1928</div>
@@ -112,7 +113,7 @@
     <div class="card-facts"><div><span>Год</span><b>1928</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>65 x 81 см</b></div></div>
     </article><article class="card" data-artist="эдуард мане" data-title="la maison du rueil (дом в рюэе), 1882" data-year="2026" data-month="10" data-cyear="1882" data-museum="старая-национальная-галерея-берлин" data-material="холст" data-techniques="масло" data-search="эдуард мане la maison du rueil (дом в рюэе), 1882 старая национальная галерея, берлин холст масло altenationalgalerie manet картина 2026-10-26" data-no="49" data-decade="1880–1889">
     <span class="card-no">049</span>
-    <div class="card-img"><img src="images/thumbs/manet-dom-v-ryuee-1882.jpg" alt="Эдуард Мане — La maison du Rueil (Дом в Рюэе), 1882" width="600" height="450" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="manet-dom-v-ryuee-1882.html" aria-label="Открыть картину: Эдуард Мане — La maison du Rueil (Дом в Рюэе), 1882"><img src="images/thumbs/manet-dom-v-ryuee-1882.jpg" alt="Эдуард Мане — La maison du Rueil (Дом в Рюэе), 1882" width="600" height="450" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="manet-dom-v-ryuee-1882.html">Эдуард Мане</a></div>
         <div class="card-title">La maison du Rueil (Дом в Рюэе), 1882</div>
@@ -122,7 +123,7 @@
     <div class="card-facts"><div><span>Год</span><b>1882</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>71,5 x 92,3 см</b></div></div>
     </article><article class="card" data-artist="джузеппе де ниттис" data-title="winter landscape (зимний пейзаж), 1880" data-year="2026" data-month="10" data-cyear="1880" data-museum="лондонская-национальная-галерея-лондон" data-material="дерево" data-techniques="масло" data-search="джузеппе де ниттис winter landscape (зимний пейзаж), 1880 лондонская национальная галерея, лондон дерево масло denittis nationalgallery картина 2026-10-22" data-no="46" data-decade="1880–1889">
     <span class="card-no">046</span>
-    <div class="card-img"><img src="images/thumbs/denittis-zimnii-peizazh-1880.jpg" alt="Джузеппе де Ниттис — Winter Landscape (Зимний пейзаж), 1880" width="600" height="375" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="denittis-zimnii-peizazh-1880.html" aria-label="Открыть картину: Джузеппе де Ниттис — Winter Landscape (Зимний пейзаж), 1880"><img src="images/thumbs/denittis-zimnii-peizazh-1880.jpg" alt="Джузеппе де Ниттис — Winter Landscape (Зимний пейзаж), 1880" width="600" height="375" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="denittis-zimnii-peizazh-1880.html">Джузеппе де Ниттис</a></div>
         <div class="card-title">Winter Landscape (Зимний пейзаж), 1880</div>
@@ -132,7 +133,7 @@
     <div class="card-facts"><div><span>Год</span><b>1880</b></div><div><span>Материал</span><b>дерево</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>21,4 x 26,8 см</b></div></div>
     </article><article class="card" data-artist="жан батист эдуар детай" data-title="le rêve (сон), 1888" data-year="2026" data-month="10" data-cyear="1888" data-museum="музей-дорсе-париж" data-material="холст" data-techniques="масло" data-search="жан батист эдуар детай le rêve (сон), 1888 музей д’орсе, париж холст масло detaille dorsay картина 2026-10-20" data-no="61" data-decade="1880–1889">
     <span class="card-no">061</span>
-    <div class="card-img"><img src="images/thumbs/detaille-son-1888.jpg" alt="Жан Батист Эдуар Детай — Le Rêve (Сон), 1888" width="600" height="449" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="detaille-son-1888.html" aria-label="Открыть картину: Жан Батист Эдуар Детай — Le Rêve (Сон), 1888"><img src="images/thumbs/detaille-son-1888.jpg" alt="Жан Батист Эдуар Детай — Le Rêve (Сон), 1888" width="600" height="449" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="detaille-son-1888.html">Жан Батист Эдуар Детай</a></div>
         <div class="card-title">Le Rêve (Сон), 1888</div>
@@ -142,7 +143,7 @@
     <div class="card-facts"><div><span>Год</span><b>1888</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>300 x 400 см</b></div></div>
     </article><article class="card" data-artist="джузеппе де ниттис" data-title="la place des pyramides (площадь пирамид), 1875" data-year="2026" data-month="10" data-cyear="1875" data-museum="музей-дорсе-париж" data-material="холст" data-techniques="масло" data-search="джузеппе де ниттис la place des pyramides (площадь пирамид), 1875 музей д’орсе, париж холст масло denittis dorsay картина 2026-10-17" data-no="33" data-decade="1870–1879">
     <span class="card-no">033</span>
-    <div class="card-img"><img src="images/thumbs/denittis-ploschad-piramid-1875.jpg" alt="Джузеппе де Ниттис — La Place des Pyramides (Площадь Пирамид), 1875" width="488" height="600" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="denittis-ploschad-piramid-1875.html" aria-label="Открыть картину: Джузеппе де Ниттис — La Place des Pyramides (Площадь Пирамид), 1875"><img src="images/thumbs/denittis-ploschad-piramid-1875.jpg" alt="Джузеппе де Ниттис — La Place des Pyramides (Площадь Пирамид), 1875" width="488" height="600" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="denittis-ploschad-piramid-1875.html">Джузеппе де Ниттис</a></div>
         <div class="card-title">La Place des Pyramides (Площадь Пирамид), 1875</div>
@@ -152,7 +153,7 @@
     <div class="card-facts"><div><span>Год</span><b>1875</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>92,3 x 75 см</b></div></div>
     </article><article class="card" data-artist="дмитрий эмильевич мартен" data-title="вологда зимой, 1917" data-year="2026" data-month="10" data-cyear="1917" data-museum="частная-коллекция" data-material="бумага" data-techniques="темпера" data-search="дмитрий эмильевич мартен вологда зимой, 1917 частная коллекция бумага темпера pc картина мартен 2026-10-14" data-no="103" data-decade="1910–1919">
     <span class="card-no">103</span>
-    <div class="card-img"><img src="images/thumbs/marten-vologda-zimoi-1917.jpg" alt="Дмитрий Эмильевич Мартен — Вологда зимой, 1917" width="600" height="468" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="marten-vologda-zimoi-1917.html" aria-label="Открыть картину: Дмитрий Эмильевич Мартен — Вологда зимой, 1917"><img src="images/thumbs/marten-vologda-zimoi-1917.jpg" alt="Дмитрий Эмильевич Мартен — Вологда зимой, 1917" width="600" height="468" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="marten-vologda-zimoi-1917.html">Дмитрий Эмильевич Мартен</a></div>
         <div class="card-title">Вологда зимой, 1917</div>
@@ -162,7 +163,7 @@
     <div class="card-facts"><div><span>Год</span><b>1917</b></div><div><span>Материал</span><b>бумага</b></div><div><span>Техника</span><b>темпера</b></div><div><span>Размер</span><b>61,5 x 74 см</b></div></div>
     </article><article class="card" data-artist="станислав юлианович жуковский" data-title="дорога в зимнем лесу, 1928" data-year="2026" data-month="10" data-cyear="1928" data-museum="частная-коллекция" data-material="холст" data-techniques="масло" data-search="станислав юлианович жуковский дорога в зимнем лесу, 1928 частная коллекция холст масло pc жуковский картина 2026-10-06" data-no="105" data-decade="1920–1929">
     <span class="card-no">105</span>
-    <div class="card-img"><img src="images/thumbs/zhukovskii-doroga-v-zimnem-lesu-1928.jpg" alt="Станислав Юлианович Жуковский — Дорога в зимнем лесу, 1928" width="600" height="507" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="zhukovskii-doroga-v-zimnem-lesu-1928.html" aria-label="Открыть картину: Станислав Юлианович Жуковский — Дорога в зимнем лесу, 1928"><img src="images/thumbs/zhukovskii-doroga-v-zimnem-lesu-1928.jpg" alt="Станислав Юлианович Жуковский — Дорога в зимнем лесу, 1928" width="600" height="507" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="zhukovskii-doroga-v-zimnem-lesu-1928.html">Станислав Юлианович Жуковский</a></div>
         <div class="card-title">Дорога в зимнем лесу, 1928</div>
@@ -172,7 +173,7 @@
     <div class="card-facts"><div><span>Год</span><b>1928</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>62 x 74 см</b></div></div>
     </article><article class="card" data-artist="закари астрюк" data-title="paysage avec chariot et meules de foin (пейзаж с повозкой и стогами сена), 1869-1870" data-year="2026" data-month="10" data-cyear="1869" data-museum="метрополитен-музей-нью-йорк" data-material="бумага" data-techniques="акварель" data-search="закари астрюк paysage avec chariot et meules de foin (пейзаж с повозкой и стогами сена), 1869-1870 метрополитен-музей, нью-йорк бумага акварель astruc themet картина 2026-10-04" data-no="23" data-decade="1860–1869">
     <span class="card-no">023</span>
-    <div class="card-img"><img src="images/thumbs/astruc-peizazh-s-povozkoi-i-stogami-sena-1869.jpg" alt="Закари Астрюк — Paysage avec chariot et meules de foin (Пейзаж с повозкой и стогами сена), 1869-1870" width="600" height="436" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="astruc-peizazh-s-povozkoi-i-stogami-sena-1869.html" aria-label="Открыть картину: Закари Астрюк — Paysage avec chariot et meules de foin (Пейзаж с повозкой и стогами сена), 1869-1870"><img src="images/thumbs/astruc-peizazh-s-povozkoi-i-stogami-sena-1869.jpg" alt="Закари Астрюк — Paysage avec chariot et meules de foin (Пейзаж с повозкой и стогами сена), 1869-1870" width="600" height="436" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="astruc-peizazh-s-povozkoi-i-stogami-sena-1869.html">Закари Астрюк</a></div>
         <div class="card-title">Paysage avec chariot et meules de foin (Пейзаж с повозкой и стогами сена), 1869-1870</div>
@@ -182,7 +183,7 @@
     <div class="card-facts"><div><span>Год</span><b>1869</b></div><div><span>Материал</span><b>бумага</b></div><div><span>Техника</span><b>акварель</b></div><div><span>Размер</span><b>13,6 x 16,9 см</b></div></div>
     </article><article class="card" data-artist="илья ефимович репин" data-title="парижское кафе, 1875" data-year="2026" data-month="10" data-cyear="1875" data-museum="частная-коллекция" data-material="холст" data-techniques="масло" data-search="илья ефимович репин парижское кафе, 1875 частная коллекция холст масло pc картина репин 2026-10-03" data-no="32" data-decade="1870–1879">
     <span class="card-no">032</span>
-    <div class="card-img"><img src="images/thumbs/repin-parizhskoe-kafe-1875.jpg" alt="Илья Ефимович Репин — Парижское кафе, 1875" width="600" height="377" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="repin-parizhskoe-kafe-1875.html" aria-label="Открыть картину: Илья Ефимович Репин — Парижское кафе, 1875"><img src="images/thumbs/repin-parizhskoe-kafe-1875.jpg" alt="Илья Ефимович Репин — Парижское кафе, 1875" width="600" height="377" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="repin-parizhskoe-kafe-1875.html">Илья Ефимович Репин</a></div>
         <div class="card-title">Парижское кафе, 1875</div>
@@ -192,7 +193,7 @@
     <div class="card-facts"><div><span>Год</span><b>1875</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>120,6 x 191,8 см</b></div></div>
     </article><article class="card" data-artist="пол джозеф константин габриэль" data-title="il vient de loin (он прошёл долгий путь), 1887" data-year="2026" data-month="10" data-cyear="1887" data-museum="музей-крёллер-мюллер-оттерло" data-material="холст" data-techniques="масло" data-search="пол джозеф константин габриэль il vient de loin (он прошёл долгий путь), 1887 музей крёллер-мюллер, оттерло холст масло gabriël krollermuller картина 2026-10-01" data-no="58" data-decade="1880–1889">
     <span class="card-no">058</span>
-    <div class="card-img"><img src="images/thumbs/gabriel-on-proshel-dolgii-put-1887.jpg" alt="Пол Джозеф Константин Габриэль — Il vient de loin (Он прошёл долгий путь), 1887" width="600" height="387" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="gabriel-on-proshel-dolgii-put-1887.html" aria-label="Открыть картину: Пол Джозеф Константин Габриэль — Il vient de loin (Он прошёл долгий путь), 1887"><img src="images/thumbs/gabriel-on-proshel-dolgii-put-1887.jpg" alt="Пол Джозеф Константин Габриэль — Il vient de loin (Он прошёл долгий путь), 1887" width="600" height="387" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="gabriel-on-proshel-dolgii-put-1887.html">Пол Джозеф Константин Габриэль</a></div>
         <div class="card-title">Il vient de loin (Он прошёл долгий путь), 1887</div>
@@ -202,7 +203,7 @@
     <div class="card-facts"><div><span>Год</span><b>1887</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>67 x 100 см</b></div></div>
     </article><article class="card" data-artist="шарль-франсуа добиньи" data-title="le parc à moutons (загон для овец), 1861" data-year="2026" data-month="09" data-cyear="1861" data-museum="коллекция-месдага-гаага" data-material="холст" data-techniques="масло" data-search="шарль-франсуа добиньи le parc à moutons (загон для овец), 1861 коллекция месдага, гаага холст масло daubigny mesdag картина 2026-09-30" data-no="15" data-decade="1860–1869">
     <span class="card-no">015</span>
-    <div class="card-img"><img src="images/thumbs/daubigny-zagon-dlya-ovets-1861.jpg" alt="Шарль-Франсуа Добиньи — Le parc à moutons (Загон для овец), 1861" width="600" height="323" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="daubigny-zagon-dlya-ovets-1861.html" aria-label="Открыть картину: Шарль-Франсуа Добиньи — Le parc à moutons (Загон для овец), 1861"><img src="images/thumbs/daubigny-zagon-dlya-ovets-1861.jpg" alt="Шарль-Франсуа Добиньи — Le parc à moutons (Загон для овец), 1861" width="600" height="323" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="daubigny-zagon-dlya-ovets-1861.html">Шарль-Франсуа Добиньи</a></div>
         <div class="card-title">Le parc à moutons (Загон для овец), 1861</div>
@@ -212,7 +213,7 @@
     <div class="card-facts"><div><span>Год</span><b>1861</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>96 x 176,5 см</b></div></div>
     </article><article class="card" data-artist="валентин александрович серов" data-title="портрет императора николая ii, 1900" data-year="2026" data-month="09" data-cyear="1900" data-museum="государственная-третьяковская-галерея-москва" data-material="холст" data-techniques="масло" data-search="валентин александрович серов портрет императора николая ii, 1900 государственная третьяковская галерея, москва холст масло гтг картина серов 2026-09-29" data-no="84" data-decade="1900–1909">
     <span class="card-no">084</span>
-    <div class="card-img"><img src="images/thumbs/serov-portret-imperatora-nikolaya-ii-1900.jpg" alt="Валентин Александрович Серов — Портрет императора Николая II, 1900" width="494" height="600" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="serov-portret-imperatora-nikolaya-ii-1900.html" aria-label="Открыть картину: Валентин Александрович Серов — Портрет императора Николая II, 1900"><img src="images/thumbs/serov-portret-imperatora-nikolaya-ii-1900.jpg" alt="Валентин Александрович Серов — Портрет императора Николая II, 1900" width="494" height="600" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="serov-portret-imperatora-nikolaya-ii-1900.html">Валентин Александрович Серов</a></div>
         <div class="card-title">Портрет императора Николая II, 1900</div>
@@ -222,7 +223,7 @@
     <div class="card-facts"><div><span>Год</span><b>1900</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>71,2 x 59,2 см</b></div></div>
     </article><article class="card" data-artist="жан фредерик базиль" data-title="les remparts d&#x27;aigues-mortes (бастионы эг-морта), 1867" data-year="2026" data-month="09" data-cyear="1867" data-museum="музей-фабра-монпелье" data-material="холст" data-techniques="масло" data-search="жан фредерик базиль les remparts d&#x27;aigues-mortes (бастионы эг-морта), 1867 музей фабра, монпелье холст масло bazille muséefabre картина 2026-09-28" data-no="19" data-decade="1860–1869">
     <span class="card-no">019</span>
-    <div class="card-img"><img src="images/thumbs/bazille-bastiony-eg-morta-1867.jpg" alt="Жан Фредерик Базиль — Les Remparts d&#x27;Aigues-Mortes (Бастионы Эг-Морта), 1867" width="600" height="494" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="bazille-bastiony-eg-morta-1867.html" aria-label="Открыть картину: Жан Фредерик Базиль — Les Remparts d&#x27;Aigues-Mortes (Бастионы Эг-Морта), 1867"><img src="images/thumbs/bazille-bastiony-eg-morta-1867.jpg" alt="Жан Фредерик Базиль — Les Remparts d&#x27;Aigues-Mortes (Бастионы Эг-Морта), 1867" width="600" height="494" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="bazille-bastiony-eg-morta-1867.html">Жан Фредерик Базиль</a></div>
         <div class="card-title">Les Remparts d&#x27;Aigues-Mortes (Бастионы Эг-Морта), 1867</div>
@@ -232,7 +233,7 @@
     <div class="card-facts"><div><span>Год</span><b>1867</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>46 x 75,5 см</b></div></div>
     </article><article class="card" data-artist="аурелиано де беруэте" data-title="el río isole (quimperlé) (река изоль (кемперле)), 1901" data-year="2026" data-month="09" data-cyear="1901" data-museum="музей-изящных-искусств-бильбао-бильбао" data-material="холст" data-techniques="масло" data-search="аурелиано де беруэте el río isole (quimperlé) (река изоль (кемперле)), 1901 музей изящных искусств бильбао, бильбао холст масло bilbaomuseoa deberuete картина 2026-09-26" data-no="87" data-decade="1900–1909">
     <span class="card-no">087</span>
-    <div class="card-img"><img src="images/thumbs/deberuete-reka-izol-kemperle-1901.jpg" alt="Аурелиано де Беруэте — El río Isole (Quimperlé) (Река Изоль (Кемперле)), 1901" width="457" height="600" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="deberuete-reka-izol-kemperle-1901.html" aria-label="Открыть картину: Аурелиано де Беруэте — El río Isole (Quimperlé) (Река Изоль (Кемперле)), 1901"><img src="images/thumbs/deberuete-reka-izol-kemperle-1901.jpg" alt="Аурелиано де Беруэте — El río Isole (Quimperlé) (Река Изоль (Кемперле)), 1901" width="457" height="600" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="deberuete-reka-izol-kemperle-1901.html">Аурелиано де Беруэте</a></div>
         <div class="card-title">El río Isole (Quimperlé) (Река Изоль (Кемперле)), 1901</div>
@@ -242,7 +243,7 @@
     <div class="card-facts"><div><span>Год</span><b>1901</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>50 x 38 см</b></div></div>
     </article><article class="card" data-artist="альфред сислей" data-title="le pont de moret, effet du matin (мост в морэ, утренний эффект), 1891" data-year="2026" data-month="09" data-cyear="1891" data-museum="частная-коллекция" data-material="холст" data-techniques="масло" data-search="альфред сислей le pont de moret, effet du matin (мост в морэ, утренний эффект), 1891 частная коллекция холст масло pc sisley картина 2026-09-24" data-no="71" data-decade="1890–1899">
     <span class="card-no">071</span>
-    <div class="card-img"><img src="images/thumbs/sisley-most-v-more-utrennii-effekt-1891.jpg" alt="Альфред Сислей — Le pont de Moret, effet du matin (Мост в Морэ, утренний эффект), 1891" width="600" height="444" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="sisley-most-v-more-utrennii-effekt-1891.html" aria-label="Открыть картину: Альфред Сислей — Le pont de Moret, effet du matin (Мост в Морэ, утренний эффект), 1891"><img src="images/thumbs/sisley-most-v-more-utrennii-effekt-1891.jpg" alt="Альфред Сислей — Le pont de Moret, effet du matin (Мост в Морэ, утренний эффект), 1891" width="600" height="444" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="sisley-most-v-more-utrennii-effekt-1891.html">Альфред Сислей</a></div>
         <div class="card-title">Le pont de Moret, effet du matin (Мост в Морэ, утренний эффект), 1891</div>
@@ -252,7 +253,7 @@
     <div class="card-facts"><div><span>Год</span><b>1891</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>54,5 x 73,2 см</b></div></div>
     </article><article class="card" data-artist="максимилиан эмиль луи мофра" data-title="vue de village (вид на деревню), 1891-1897" data-year="2026" data-month="09" data-cyear="1891" data-museum="частная-коллекция" data-material="холст" data-techniques="масло" data-search="максимилиан эмиль луи мофра vue de village (вид на деревню), 1891-1897 частная коллекция холст масло maufra pc картина 2026-09-23" data-no="70" data-decade="1890–1899">
     <span class="card-no">070</span>
-    <div class="card-img"><img src="images/thumbs/maufra-vid-na-derevnyu-1891.jpg" alt="Максимилиан Эмиль Луи Мофра — Vue de village (Вид на деревню), 1891-1897" width="1200" height="819" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="maufra-vid-na-derevnyu-1891.html" aria-label="Открыть картину: Максимилиан Эмиль Луи Мофра — Vue de village (Вид на деревню), 1891-1897"><img src="images/thumbs/maufra-vid-na-derevnyu-1891.jpg" alt="Максимилиан Эмиль Луи Мофра — Vue de village (Вид на деревню), 1891-1897" width="1200" height="819" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="maufra-vid-na-derevnyu-1891.html">Максимилиан Эмиль Луи Мофра</a></div>
         <div class="card-title">Vue de village (Вид на деревню), 1891-1897</div>
@@ -262,7 +263,7 @@
     <div class="card-facts"><div><span>Год</span><b>1891</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>56,8 x 83 см</b></div></div>
     </article><article class="card" data-artist="уолтер ричард сикерт" data-title="maple street, london (улица мэйпл, лондон), 1915-1923" data-year="2026" data-month="09" data-cyear="1915" data-museum="метрополитен-музей-нью-йорк" data-material="холст" data-techniques="масло" data-search="уолтер ричард сикерт maple street, london (улица мэйпл, лондон), 1915-1923 метрополитен-музей, нью-йорк холст масло sickert themet картина 2026-09-22" data-no="102" data-decade="1910–1919">
     <span class="card-no">102</span>
-    <div class="card-img"><img src="images/thumbs/sickert-ulitsa-meipl-london-1915.jpg" alt="Уолтер Ричард Сикерт — Maple Street, London (Улица Мэйпл, Лондон), 1915-1923" width="399" height="600" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="sickert-ulitsa-meipl-london-1915.html" aria-label="Открыть картину: Уолтер Ричард Сикерт — Maple Street, London (Улица Мэйпл, Лондон), 1915-1923"><img src="images/thumbs/sickert-ulitsa-meipl-london-1915.jpg" alt="Уолтер Ричард Сикерт — Maple Street, London (Улица Мэйпл, Лондон), 1915-1923" width="399" height="600" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="sickert-ulitsa-meipl-london-1915.html">Уолтер Ричард Сикерт</a></div>
         <div class="card-title">Maple Street, London (Улица Мэйпл, Лондон), 1915-1923</div>
@@ -272,7 +273,7 @@
     <div class="card-facts"><div><span>Год</span><b>1915</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>76,8 x 51,1 см</b></div></div>
     </article><article class="card" data-artist="людовик пьетт-монфуко" data-title="без названия, 1876" data-year="2026" data-month="09" data-cyear="1876" data-museum="тегеранский-музей-современного-искусства-тегеран" data-material="картон" data-techniques="гуашь" data-search="людовик пьетт-монфуко без названия, 1876 тегеранский музей современного искусства, тегеран картон гуашь piette tmoca картина 2026-09-21" data-no="36" data-decade="1870–1879">
     <span class="card-no">036</span>
-    <div class="card-img"><img src="images/thumbs/pett-monfuko-bez-nazvaniya-1876.jpg" alt="Людовик Пьетт-Монфуко — Без названия, 1876" width="399" height="600" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="pett-monfuko-bez-nazvaniya-1876.html" aria-label="Открыть картину: Людовик Пьетт-Монфуко — Без названия, 1876"><img src="images/thumbs/pett-monfuko-bez-nazvaniya-1876.jpg" alt="Людовик Пьетт-Монфуко — Без названия, 1876" width="399" height="600" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="pett-monfuko-bez-nazvaniya-1876.html">Людовик Пьетт-Монфуко</a></div>
         <div class="card-title">Без названия, 1876</div>
@@ -282,7 +283,7 @@
     <div class="card-facts"><div><span>Год</span><b>1876</b></div><div><span>Материал</span><b>картон</b></div><div><span>Техника</span><b>гуашь</b></div><div><span>Размер</span><b>37,5 x 26 см</b></div></div>
     </article><article class="card" data-artist="анна розалия бош" data-title="kaai in mechelen (пристань в мехелене), 1906" data-year="2026" data-month="09" data-cyear="1906" data-museum="музей-изящных-искусств-гент" data-material="холст" data-techniques="масло" data-search="анна розалия бош kaai in mechelen (пристань в мехелене), 1906 музей изящных искусств, гент холст масло boch msk картина 2026-09-20" data-no="93" data-decade="1900–1909">
     <span class="card-no">093</span>
-    <div class="card-img"><img src="images/thumbs/boch-pristan-v-mehelene-1906.jpg" alt="Анна Розалия Бош — Kaai in Mechelen (Пристань в Мехелене), 1906" width="386" height="600" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="boch-pristan-v-mehelene-1906.html" aria-label="Открыть картину: Анна Розалия Бош — Kaai in Mechelen (Пристань в Мехелене), 1906"><img src="images/thumbs/boch-pristan-v-mehelene-1906.jpg" alt="Анна Розалия Бош — Kaai in Mechelen (Пристань в Мехелене), 1906" width="386" height="600" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="boch-pristan-v-mehelene-1906.html">Анна Розалия Бош</a></div>
         <div class="card-title">Kaai in Mechelen (Пристань в Мехелене), 1906</div>
@@ -292,7 +293,7 @@
     <div class="card-facts"><div><span>Год</span><b>1906</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>136,5 x 86,7 см</b></div></div>
     </article><article class="card" data-artist="федерико дзандоменеги" data-title="au théâtre (в театре), 1885-1895" data-year="2026" data-month="09" data-cyear="1885" data-museum="частная-коллекция" data-material="холст" data-techniques="масло" data-search="федерико дзандоменеги au théâtre (в театре), 1885-1895 частная коллекция холст масло pc zandomeneghi картина 2026-09-18" data-no="55" data-decade="1880–1889">
     <span class="card-no">055</span>
-    <div class="card-img"><img src="images/thumbs/zandomeneghi-v-teatre-1885.jpg" alt="Федерико Дзандоменеги — Au théâtre (В театре), 1885-1895" width="1200" height="942" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="zandomeneghi-v-teatre-1885.html" aria-label="Открыть картину: Федерико Дзандоменеги — Au théâtre (В театре), 1885-1895"><img src="images/thumbs/zandomeneghi-v-teatre-1885.jpg" alt="Федерико Дзандоменеги — Au théâtre (В театре), 1885-1895" width="1200" height="942" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="zandomeneghi-v-teatre-1885.html">Федерико Дзандоменеги</a></div>
         <div class="card-title">Au théâtre (В театре), 1885-1895</div>
@@ -302,7 +303,7 @@
     <div class="card-facts"><div><span>Год</span><b>1885</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>71 x 88 см</b></div></div>
     </article><article class="card" data-artist="константин алексеевич коровин" data-title="париж. бульвар капуцинок, 1906" data-year="2026" data-month="09" data-cyear="1906" data-museum="государственная-третьяковская-галерея-москва" data-material="холст" data-techniques="масло" data-search="константин алексеевич коровин париж. бульвар капуцинок, 1906 государственная третьяковская галерея, москва холст масло гтг картина коровин 2026-09-17" data-no="92" data-decade="1900–1909">
     <span class="card-no">092</span>
-    <div class="card-img"><img src="images/thumbs/korovin-parizh-bulvar-kaputsinok-1906.jpg" alt="Константин Алексеевич Коровин — Париж. Бульвар Капуцинок, 1906" width="962" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="korovin-parizh-bulvar-kaputsinok-1906.html" aria-label="Открыть картину: Константин Алексеевич Коровин — Париж. Бульвар Капуцинок, 1906"><img src="images/thumbs/korovin-parizh-bulvar-kaputsinok-1906.jpg" alt="Константин Алексеевич Коровин — Париж. Бульвар Капуцинок, 1906" width="962" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="korovin-parizh-bulvar-kaputsinok-1906.html">Константин Алексеевич Коровин</a></div>
         <div class="card-title">Париж. Бульвар Капуцинок, 1906</div>
@@ -312,7 +313,7 @@
     <div class="card-facts"><div><span>Год</span><b>1906</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>74 x 60,7 см</b></div></div>
     </article><article class="card" data-artist="шарль теофил ангран" data-title="le pont de pierre à rouen (каменный мост в руане), 1881" data-year="2026" data-month="09" data-cyear="1881" data-museum="ассоциация-живопись-в-нормандии-довиль" data-material="холст" data-techniques="масло" data-search="шарль теофил ангран le pont de pierre à rouen (каменный мост в руане), 1881 ассоциация &quot;живопись в нормандии&quot;, довиль холст масло angrand peindre_en_normandie картина 2026-09-10" data-no="48" data-decade="1880–1889">
     <span class="card-no">048</span>
-    <div class="card-img"><img src="images/thumbs/angrand-kamennyi-most-v-ruane-1881.jpg" alt="Шарль Теофил Ангран — Le Pont de pierre à Rouen (Каменный мост в Руане), 1881" width="1200" height="772" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="angrand-kamennyi-most-v-ruane-1881.html" aria-label="Открыть картину: Шарль Теофил Ангран — Le Pont de pierre à Rouen (Каменный мост в Руане), 1881"><img src="images/thumbs/angrand-kamennyi-most-v-ruane-1881.jpg" alt="Шарль Теофил Ангран — Le Pont de pierre à Rouen (Каменный мост в Руане), 1881" width="1200" height="772" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="angrand-kamennyi-most-v-ruane-1881.html">Шарль Теофил Ангран</a></div>
         <div class="card-title">Le Pont de pierre à Rouen (Каменный мост в Руане), 1881</div>
@@ -322,7 +323,7 @@
     <div class="card-facts"><div><span>Год</span><b>1881</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>80 x 124 см</b></div></div>
     </article><article class="card" data-artist="джон констебл" data-title="stonehenge (стоунхендж), 1835" data-year="2026" data-month="09" data-cyear="1835" data-museum="музей-виктории-и-альберта-лондон" data-material="бумага" data-techniques="акварель" data-search="джон констебл stonehenge (стоунхендж), 1835 музей виктории и альберта, лондон бумага акварель constable vam картина 2026-09-09" data-no="8" data-decade="1830–1839">
     <span class="card-no">008</span>
-    <div class="card-img"><img src="images/thumbs/constable-stounhendzh-1835.jpg" alt="Джон Констебл — Stonehenge (Стоунхендж), 1835" width="1200" height="900" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="constable-stounhendzh-1835.html" aria-label="Открыть картину: Джон Констебл — Stonehenge (Стоунхендж), 1835"><img src="images/thumbs/constable-stounhendzh-1835.jpg" alt="Джон Констебл — Stonehenge (Стоунхендж), 1835" width="1200" height="900" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="constable-stounhendzh-1835.html">Джон Констебл</a></div>
         <div class="card-title">Stonehenge (Стоунхендж), 1835</div>
@@ -332,7 +333,7 @@
     <div class="card-facts"><div><span>Год</span><b>1835</b></div><div><span>Материал</span><b>бумага</b></div><div><span>Техника</span><b>акварель</b></div><div><span>Размер</span><b>38,7 x 59,1 см</b></div></div>
     </article><article class="card" data-artist="каспар давид фридрих" data-title="das große gehege bei dresden (большой заповедник в дрездене), 1832" data-year="2026" data-month="09" data-cyear="1832" data-museum="государственные-художественные-собрания-дрездена-дрезден" data-material="холст" data-techniques="масло" data-search="каспар давид фридрих das große gehege bei dresden (большой заповедник в дрездене), 1832 государственные художественные собрания дрездена, дрезден холст масло friedrich skd картина 2026-09-07" data-no="5" data-decade="1830–1839">
     <span class="card-no">005</span>
-    <div class="card-img"><img src="images/thumbs/friedrich-bolshoi-zapovednik-v-drezdene-1832.jpg" alt="Каспар Давид Фридрих — Das Große Gehege bei Dresden (Большой заповедник в Дрездене), 1832" width="1200" height="856" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="friedrich-bolshoi-zapovednik-v-drezdene-1832.html" aria-label="Открыть картину: Каспар Давид Фридрих — Das Große Gehege bei Dresden (Большой заповедник в Дрездене), 1832"><img src="images/thumbs/friedrich-bolshoi-zapovednik-v-drezdene-1832.jpg" alt="Каспар Давид Фридрих — Das Große Gehege bei Dresden (Большой заповедник в Дрездене), 1832" width="1200" height="856" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="friedrich-bolshoi-zapovednik-v-drezdene-1832.html">Каспар Давид Фридрих</a></div>
         <div class="card-title">Das Große Gehege bei Dresden (Большой заповедник в Дрездене), 1832</div>
@@ -342,7 +343,7 @@
     <div class="card-facts"><div><span>Год</span><b>1832</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>73,5 x 103 см</b></div></div>
     </article><article class="card" data-artist="берта мари полин моризо" data-title="on the banks of the seine at bougival (на берегах сены в буживале), 1883" data-year="2026" data-month="09" data-cyear="1883" data-museum="национальный-музей-искусства-архитектуры-и-дизайна-осло" data-material="холст" data-techniques="масло" data-search="берта мари полин моризо on the banks of the seine at bougival (на берегах сены в буживале), 1883 национальный музей искусства, архитектуры и дизайна, осло холст масло morisot nasjonalmuseet картина 2026-09-04" data-no="52" data-decade="1880–1889">
     <span class="card-no">052</span>
-    <div class="card-img"><img src="images/thumbs/morisot-na-beregah-seny-v-buzhivale-1883.jpg" alt="Берта Мари Полин Моризо — On the Banks of the Seine at Bougival (На берегах Сены в Буживале), 1883" width="999" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="morisot-na-beregah-seny-v-buzhivale-1883.html" aria-label="Открыть картину: Берта Мари Полин Моризо — On the Banks of the Seine at Bougival (На берегах Сены в Буживале), 1883"><img src="images/thumbs/morisot-na-beregah-seny-v-buzhivale-1883.jpg" alt="Берта Мари Полин Моризо — On the Banks of the Seine at Bougival (На берегах Сены в Буживале), 1883" width="999" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="morisot-na-beregah-seny-v-buzhivale-1883.html">Берта Мари Полин Моризо</a></div>
         <div class="card-title">On the Banks of the Seine at Bougival (На берегах Сены в Буживале), 1883</div>
@@ -352,7 +353,7 @@
     <div class="card-facts"><div><span>Год</span><b>1883</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>55,6 x 46,1 см</b></div></div>
     </article><article class="card" data-artist="жакоб абраам камиль писсарро" data-title="charing cross bridge, london (мост чаринг-кросс, лондон), 1890" data-year="2026" data-month="09" data-cyear="1890" data-museum="национальная-галерея-искусства-вашингтон" data-material="холст" data-techniques="масло" data-search="жакоб абраам камиль писсарро charing cross bridge, london (мост чаринг-кросс, лондон), 1890 национальная галерея искусства, вашингтон холст масло nga pissarro картина 2026-09-03" data-no="65" data-decade="1890–1899">
     <span class="card-no">065</span>
-    <div class="card-img"><img src="images/thumbs/pissarro-most-charing-kross-london-1890.jpg" alt="Жакоб Абраам Камиль Писсарро — Charing Cross Bridge, London (Мост Чаринг-Кросс, Лондон), 1890" width="1200" height="778" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="pissarro-most-charing-kross-london-1890.html" aria-label="Открыть картину: Жакоб Абраам Камиль Писсарро — Charing Cross Bridge, London (Мост Чаринг-Кросс, Лондон), 1890"><img src="images/thumbs/pissarro-most-charing-kross-london-1890.jpg" alt="Жакоб Абраам Камиль Писсарро — Charing Cross Bridge, London (Мост Чаринг-Кросс, Лондон), 1890" width="1200" height="778" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="pissarro-most-charing-kross-london-1890.html">Жакоб Абраам Камиль Писсарро</a></div>
         <div class="card-title">Charing Cross Bridge, London (Мост Чаринг-Кросс, Лондон), 1890</div>
@@ -362,7 +363,7 @@
     <div class="card-facts"><div><span>Год</span><b>1890</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>60 x 90 см</b></div></div>
     </article><article class="card" data-artist="хелмер осслунд" data-title="hösten (осень), 1907" data-year="2026" data-month="08" data-cyear="1907" data-museum="национальный-музей-швеции-стокгольм" data-material="холст" data-techniques="масло" data-search="хелмер осслунд hösten (осень), 1907 национальный музей швеции, стокгольм холст масло nationalmuseum osslund картина 2026-08-31" data-no="95" data-decade="1900–1909">
     <span class="card-no">095</span>
-    <div class="card-img"><img src="images/thumbs/osslund-osen-1907.jpg" alt="Хелмер Осслунд — Hösten (Осень), 1907" width="1200" height="751" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="osslund-osen-1907.html" aria-label="Открыть картину: Хелмер Осслунд — Hösten (Осень), 1907"><img src="images/thumbs/osslund-osen-1907.jpg" alt="Хелмер Осслунд — Hösten (Осень), 1907" width="1200" height="751" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="osslund-osen-1907.html">Хелмер Осслунд</a></div>
         <div class="card-title">Hösten (Осень), 1907</div>
@@ -372,7 +373,7 @@
     <div class="card-facts"><div><span>Год</span><b>1907</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>116 x 202 см</b></div></div>
     </article><article class="card" data-artist="сантьяго рузиньол-и-пратс" data-title="la butte (холм), 1892" data-year="2026" data-month="08" data-cyear="1892" data-museum="национальный-музей-искусства-каталонии-барселона" data-material="холст" data-techniques="масло" data-search="сантьяго рузиньол-и-пратс la butte (холм), 1892 национальный музей искусства каталонии, барселона холст масло museunacionalcat rusiñol картина 2026-08-28" data-no="73" data-decade="1890–1899">
     <span class="card-no">073</span>
-    <div class="card-img"><img src="images/thumbs/rusinol-holm-1892.jpg" alt="Сантьяго Рузиньол-и-Пратс — La Butte (Холм), 1892" width="1200" height="871" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="rusinol-holm-1892.html" aria-label="Открыть картину: Сантьяго Рузиньол-и-Пратс — La Butte (Холм), 1892"><img src="images/thumbs/rusinol-holm-1892.jpg" alt="Сантьяго Рузиньол-и-Пратс — La Butte (Холм), 1892" width="1200" height="871" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="rusinol-holm-1892.html">Сантьяго Рузиньол-и-Пратс</a></div>
         <div class="card-title">La Butte (Холм), 1892</div>
@@ -382,7 +383,7 @@
     <div class="card-facts"><div><span>Год</span><b>1892</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>73,5 x 100,5 см</b></div></div>
     </article><article class="card" data-artist="роберт герман штерль" data-title="feuerwerk über dem kreml (фейерверк над кремлём), 1914" data-year="2026" data-month="08" data-cyear="1914" data-museum="частная-коллекция-швейцария" data-material="бумага" data-techniques="акварель пастель" data-search="роберт герман штерль feuerwerk über dem kreml (фейерверк над кремлём), 1914 частная коллекция, швейцария бумага акварель пастель pc sterl картина 2026-08-27" data-no="101" data-decade="1910–1919">
     <span class="card-no">101</span>
-    <div class="card-img"><img src="images/thumbs/sterl-feierverk-nad-kremlem-1914.jpg" alt="Роберт Герман Штерль — Feuerwerk über dem Kreml (Фейерверк над Кремлём), 1914" width="1200" height="1011" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="sterl-feierverk-nad-kremlem-1914.html" aria-label="Открыть картину: Роберт Герман Штерль — Feuerwerk über dem Kreml (Фейерверк над Кремлём), 1914"><img src="images/thumbs/sterl-feierverk-nad-kremlem-1914.jpg" alt="Роберт Герман Штерль — Feuerwerk über dem Kreml (Фейерверк над Кремлём), 1914" width="1200" height="1011" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="sterl-feierverk-nad-kremlem-1914.html">Роберт Герман Штерль</a></div>
         <div class="card-title">Feuerwerk über dem Kreml (Фейерверк над Кремлём), 1914</div>
@@ -392,7 +393,7 @@
     <div class="card-facts"><div><span>Год</span><b>1914</b></div><div><span>Материал</span><b>бумага</b></div><div><span>Техника</span><b>акварель, пастель</b></div><div><span>Размер</span><b>33 x 39 см</b></div></div>
     </article><article class="card" data-artist="илья ефимович репин" data-title="на дерновой скамье, 1876" data-year="2026" data-month="08" data-cyear="1876" data-museum="государственный-русский-музей-санкт-петербург" data-material="холст" data-techniques="масло" data-search="илья ефимович репин на дерновой скамье, 1876 государственный русский музей, санкт-петербург холст масло грм картина репин 2026-08-16" data-no="35" data-decade="1870–1879">
     <span class="card-no">035</span>
-    <div class="card-img"><img src="images/thumbs/repin-na-dernovoi-skame-1876.jpg" alt="Илья Ефимович Репин — На дерновой скамье, 1876" width="600" height="385" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="repin-na-dernovoi-skame-1876.html" aria-label="Открыть картину: Илья Ефимович Репин — На дерновой скамье, 1876"><img src="images/thumbs/repin-na-dernovoi-skame-1876.jpg" alt="Илья Ефимович Репин — На дерновой скамье, 1876" width="600" height="385" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="repin-na-dernovoi-skame-1876.html">Илья Ефимович Репин</a></div>
         <div class="card-title">На дерновой скамье, 1876</div>
@@ -402,7 +403,7 @@
     <div class="card-facts"><div><span>Год</span><b>1876</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>36 x 55,5 см</b></div></div>
     </article><article class="card" data-artist="альфред сислей" data-title="lisière de la forêt de fontainebleau (опушка леса фонтенбло), 1865" data-year="2026" data-month="08" data-cyear="1865" data-museum="малый-дворец-музей-изящных-искусств-города-парижа-париж" data-material="холст" data-techniques="масло" data-search="альфред сислей lisière de la forêt de fontainebleau (опушка леса фонтенбло), 1865 малый дворец, музей изящных искусств города парижа, париж холст масло nga sisley картина 2026-08-10" data-no="18" data-decade="1860–1869">
     <span class="card-no">018</span>
-    <div class="card-img"><img src="images/thumbs/sisley-opushka-lesa-fontenblo-1865.jpg" alt="Альфред Сислей — Lisière de la forêt de Fontainebleau (Опушка леса Фонтенбло), 1865" width="1200" height="800" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="sisley-opushka-lesa-fontenblo-1865.html" aria-label="Открыть картину: Альфред Сислей — Lisière de la forêt de Fontainebleau (Опушка леса Фонтенбло), 1865"><img src="images/thumbs/sisley-opushka-lesa-fontenblo-1865.jpg" alt="Альфред Сислей — Lisière de la forêt de Fontainebleau (Опушка леса Фонтенбло), 1865" width="1200" height="800" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="sisley-opushka-lesa-fontenblo-1865.html">Альфред Сислей</a></div>
         <div class="card-title">Lisière de la forêt de Fontainebleau (Опушка леса Фонтенбло), 1865</div>
@@ -412,7 +413,7 @@
     <div class="card-facts"><div><span>Год</span><b>1865</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>129 x 208 см</b></div></div>
     </article><article class="card" data-artist="элисео мейфрен-и-роч" data-title="plaza de parís (площадь парижа), 1887" data-year="2026" data-month="08" data-cyear="1887" data-museum="национальный-музей-прадо-мадрид" data-material="холст" data-techniques="масло" data-search="элисео мейфрен-и-роч plaza de parís (площадь парижа), 1887 национальный музей прадо, мадрид холст масло prado roig картина 2026-08-06" data-no="57" data-decade="1880–1889">
     <span class="card-no">057</span>
-    <div class="card-img"><img src="images/thumbs/meifren-i-roch-ploschad-parizha-1887.jpg" alt="Элисео Мейфрен-и-Роч — Plaza de París (Площадь Парижа), 1887" width="1200" height="748" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="meifren-i-roch-ploschad-parizha-1887.html" aria-label="Открыть картину: Элисео Мейфрен-и-Роч — Plaza de París (Площадь Парижа), 1887"><img src="images/thumbs/meifren-i-roch-ploschad-parizha-1887.jpg" alt="Элисео Мейфрен-и-Роч — Plaza de París (Площадь Парижа), 1887" width="1200" height="748" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="meifren-i-roch-ploschad-parizha-1887.html">Элисео Мейфрен-и-Роч</a></div>
         <div class="card-title">Plaza de París (Площадь Парижа), 1887</div>
@@ -422,7 +423,7 @@
     <div class="card-facts"><div><span>Год</span><b>1887</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>109,5 x 68,5 см</b></div></div>
     </article><article class="card" data-artist="владимир егорович маковский" data-title="освящение публичного дома (эскиз), 1900" data-year="2026" data-month="07" data-cyear="1900" data-museum="государственный-музей-истории-религии-санкт-петербург" data-material="холст" data-techniques="масло" data-search="владимир егорович маковский освящение публичного дома (эскиз), 1900 государственный музей истории религии, санкт-петербург холст масло гмир картина маковский 2026-07-29" data-no="83" data-decade="1900–1909">
     <span class="card-no">083</span>
-    <div class="card-img"><img src="images/thumbs/makovskii-eskiz-1900.jpg" alt="Владимир Егорович Маковский — Освящение публичного дома (эскиз), 1900" width="1200" height="1001" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="makovskii-eskiz-1900.html" aria-label="Открыть картину: Владимир Егорович Маковский — Освящение публичного дома (эскиз), 1900"><img src="images/thumbs/makovskii-eskiz-1900.jpg" alt="Владимир Егорович Маковский — Освящение публичного дома (эскиз), 1900" width="1200" height="1001" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="makovskii-eskiz-1900.html">Владимир Егорович Маковский</a></div>
         <div class="card-title">Освящение публичного дома (эскиз), 1900</div>
@@ -432,7 +433,7 @@
     <div class="card-facts"><div><span>Год</span><b>1900</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>41 x 54,5 см</b></div></div>
     </article><article class="card" data-artist="андерс леонард цорн" data-title="impressions de londres (впечатления от лондона), 1890" data-year="2026" data-month="07" data-cyear="1890" data-museum="гётеборгский-художественный-музей-гётеборг" data-material="бумага" data-techniques="акварель гуашь" data-search="андерс леонард цорн impressions de londres (впечатления от лондона), 1890 гётеборгский художественный музей, гётеборг бумага акварель гуашь goteborgskonstmuseum zorn картина 2026-07-04" data-no="64" data-decade="1890–1899">
     <span class="card-no">064</span>
-    <div class="card-img"><img src="images/thumbs/zorn-vpechatleniya-ot-londona-1890.jpg" alt="Андерс Леонард Цорн — Impressions de Londres (Впечатления от Лондона), 1890" width="915" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="zorn-vpechatleniya-ot-londona-1890.html" aria-label="Открыть картину: Андерс Леонард Цорн — Impressions de Londres (Впечатления от Лондона), 1890"><img src="images/thumbs/zorn-vpechatleniya-ot-londona-1890.jpg" alt="Андерс Леонард Цорн — Impressions de Londres (Впечатления от Лондона), 1890" width="915" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="zorn-vpechatleniya-ot-londona-1890.html">Андерс Леонард Цорн</a></div>
         <div class="card-title">Impressions de Londres (Впечатления от Лондона), 1890</div>
@@ -442,7 +443,7 @@
     <div class="card-facts"><div><span>Год</span><b>1890</b></div><div><span>Материал</span><b>бумага</b></div><div><span>Техника</span><b>акварель, гуашь</b></div><div><span>Размер</span><b>72,0 x 55,0 см</b></div></div>
     </article><article class="card" data-artist="рудольф фон альт" data-title="die alte fichte in bad gastein (старая ель в бад-гастайне), 1899" data-year="2026" data-month="06" data-cyear="1899" data-museum="музей-леопольда-вена" data-material="бумага" data-techniques="акварель гуашь" data-search="рудольф фон альт die alte fichte in bad gastein (старая ель в бад-гастайне), 1899 музей леопольда, вена бумага акварель гуашь leopoldmuseum vonalt картина 2026-06-04" data-no="82" data-decade="1890–1899">
     <span class="card-no">082</span>
-    <div class="card-img"><img src="images/thumbs/vonalt-staraya-el-v-bad-gastaine-1899.jpg" alt="Рудольф фон Альт — Die alte Fichte in Bad Gastein (Старая ель в Бад-Гастайне), 1899" width="1065" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="vonalt-staraya-el-v-bad-gastaine-1899.html" aria-label="Открыть картину: Рудольф фон Альт — Die alte Fichte in Bad Gastein (Старая ель в Бад-Гастайне), 1899"><img src="images/thumbs/vonalt-staraya-el-v-bad-gastaine-1899.jpg" alt="Рудольф фон Альт — Die alte Fichte in Bad Gastein (Старая ель в Бад-Гастайне), 1899" width="1065" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="vonalt-staraya-el-v-bad-gastaine-1899.html">Рудольф фон Альт</a></div>
         <div class="card-title">Die alte Fichte in Bad Gastein (Старая ель в Бад-Гастайне), 1899</div>
@@ -452,7 +453,7 @@
     <div class="card-facts"><div><span>Год</span><b>1899</b></div><div><span>Материал</span><b>бумага</b></div><div><span>Техника</span><b>акварель, гуашь</b></div><div><span>Размер</span><b>56,8 x 50,4 см</b></div></div>
     </article><article class="card" data-artist="эдуард мане" data-title="le chien minnay (собака минней), 1879" data-year="2026" data-month="05" data-cyear="1879" data-museum="частная-коллекция" data-material="холст" data-techniques="масло" data-search="эдуард мане le chien minnay (собака минней), 1879 частная коллекция холст масло manet pc картина 2026-05-22" data-no="43" data-decade="1870–1879">
     <span class="card-no">043</span>
-    <div class="card-img"><img src="images/thumbs/manet-sobaka-minnei-1879.jpg" alt="Эдуард Мане — Le Chien Minnay (Собака Минней), 1879" width="894" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="manet-sobaka-minnei-1879.html" aria-label="Открыть картину: Эдуард Мане — Le Chien Minnay (Собака Минней), 1879"><img src="images/thumbs/manet-sobaka-minnei-1879.jpg" alt="Эдуард Мане — Le Chien Minnay (Собака Минней), 1879" width="894" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="manet-sobaka-minnei-1879.html">Эдуард Мане</a></div>
         <div class="card-title">Le Chien Minnay (Собака Минней), 1879</div>
@@ -462,7 +463,7 @@
     <div class="card-facts"><div><span>Год</span><b>1879</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>32,5 x 24,5 см</b></div></div>
     </article><article class="card" data-artist="николай егорович сверчков" data-title="зимний пейзаж с санями, запряженными лошадьми, 1868" data-year="2026" data-month="05" data-cyear="1868" data-museum="музей-изящных-искусств-гент" data-material="холст" data-techniques="масло" data-search="николай егорович сверчков зимний пейзаж с санями, запряженными лошадьми, 1868 музей изящных искусств, гент холст масло msk картина сверчков 2026-05-15" data-no="22" data-decade="1860–1869">
     <span class="card-no">022</span>
-    <div class="card-img"><img src="images/thumbs/sverchkov-zimnii-peizazh-s-sanyami-zapryazhennymi-loshadmi-1868.jpg" alt="Николай Егорович Сверчков — Зимний пейзаж с санями, запряженными лошадьми, 1868" width="1001" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="sverchkov-zimnii-peizazh-s-sanyami-zapryazhennymi-loshadmi-1868.html" aria-label="Открыть картину: Николай Егорович Сверчков — Зимний пейзаж с санями, запряженными лошадьми, 1868"><img src="images/thumbs/sverchkov-zimnii-peizazh-s-sanyami-zapryazhennymi-loshadmi-1868.jpg" alt="Николай Егорович Сверчков — Зимний пейзаж с санями, запряженными лошадьми, 1868" width="1001" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="sverchkov-zimnii-peizazh-s-sanyami-zapryazhennymi-loshadmi-1868.html">Николай Егорович Сверчков</a></div>
         <div class="card-title">Зимний пейзаж с санями, запряженными лошадьми, 1868</div>
@@ -472,7 +473,7 @@
     <div class="card-facts"><div><span>Год</span><b>1868</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>101,4 x 84,5 см</b></div></div>
     </article><article class="card" data-artist="аксели галлен-каллела" data-title="ruovesi (озеро руовеси), 1896" data-year="2026" data-month="04" data-cyear="1896" data-museum="гмии-им-ас-пушкина-москва" data-material="холст" data-techniques="масло" data-search="аксели галлен-каллела ruovesi (озеро руовеси), 1896 гмии им. а.с. пушкина, москва холст масло gallen_kallela гмии картина 2026-04-30" data-no="79" data-decade="1890–1899">
     <span class="card-no">079</span>
-    <div class="card-img"><img src="images/thumbs/gallen-kallela-ozero-ruovesi-1896.jpg" alt="Аксели Галлен-Каллела — Ruovesi (Озеро Руовеси), 1896" width="1200" height="686" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="gallen-kallela-ozero-ruovesi-1896.html" aria-label="Открыть картину: Аксели Галлен-Каллела — Ruovesi (Озеро Руовеси), 1896"><img src="images/thumbs/gallen-kallela-ozero-ruovesi-1896.jpg" alt="Аксели Галлен-Каллела — Ruovesi (Озеро Руовеси), 1896" width="1200" height="686" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="gallen-kallela-ozero-ruovesi-1896.html">Аксели Галлен-Каллела</a></div>
         <div class="card-title">Ruovesi (Озеро Руовеси), 1896</div>
@@ -482,7 +483,7 @@
     <div class="card-facts"><div><span>Год</span><b>1896</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>49 x 83 см</b></div></div>
     </article><article class="card" data-artist="винсент виллем ван гог" data-title="bloembedden in holland (цветники в голландии), 1883" data-year="2026" data-month="04" data-cyear="1883" data-museum="национальная-галерея-искусства-вашингтон" data-material="холст" data-techniques="масло" data-search="винсент виллем ван гог bloembedden in holland (цветники в голландии), 1883 национальная галерея искусства, вашингтон холст масло gogh nga картина 2026-04-16" data-no="51" data-decade="1880–1889">
     <span class="card-no">051</span>
-    <div class="card-img"><img src="images/thumbs/gogh-tsvetniki-v-gollandii-1883.jpg" alt="Винсент Виллем ван Гог — Bloembedden in Holland (Цветники в Голландии), 1883" width="1200" height="880" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="gogh-tsvetniki-v-gollandii-1883.html" aria-label="Открыть картину: Винсент Виллем ван Гог — Bloembedden in Holland (Цветники в Голландии), 1883"><img src="images/thumbs/gogh-tsvetniki-v-gollandii-1883.jpg" alt="Винсент Виллем ван Гог — Bloembedden in Holland (Цветники в Голландии), 1883" width="1200" height="880" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="gogh-tsvetniki-v-gollandii-1883.html">Винсент Виллем ван Гог</a></div>
         <div class="card-title">Bloembedden in Holland (Цветники в Голландии), 1883</div>
@@ -492,7 +493,7 @@
     <div class="card-facts"><div><span>Год</span><b>1883</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>48,9 x 66 см</b></div></div>
     </article><article class="card" data-artist="жакоб абраам камиль писсарро" data-title="la maison rouge (красный дом), 1873" data-year="2026" data-month="04" data-cyear="1873" data-museum="портлендский-художественный-музей-портленд" data-material="холст" data-techniques="масло" data-search="жакоб абраам камиль писсарро la maison rouge (красный дом), 1873 портлендский художественный музей, портленд холст масло pam pissarro картина 2026-04-04" data-no="28" data-decade="1870–1879">
     <span class="card-no">028</span>
-    <div class="card-img"><img src="images/thumbs/pissarro-krasnyi-dom-1873.jpg" alt="Жакоб Абраам Камиль Писсарро — La Maison Rouge (Красный дом), 1873" width="1024" height="830" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="pissarro-krasnyi-dom-1873.html" aria-label="Открыть картину: Жакоб Абраам Камиль Писсарро — La Maison Rouge (Красный дом), 1873"><img src="images/thumbs/pissarro-krasnyi-dom-1873.jpg" alt="Жакоб Абраам Камиль Писсарро — La Maison Rouge (Красный дом), 1873" width="1024" height="830" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="pissarro-krasnyi-dom-1873.html">Жакоб Абраам Камиль Писсарро</a></div>
         <div class="card-title">La Maison Rouge (Красный дом), 1873</div>
@@ -502,7 +503,7 @@
     <div class="card-facts"><div><span>Год</span><b>1873</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>58,09 x 71,12 см</b></div></div>
     </article><article class="card" data-artist="альфред сислей" data-title="la prairie (луг), 1875" data-year="2026" data-month="03" data-cyear="1875" data-museum="национальная-галерея-искусства-вашингтон" data-material="холст" data-techniques="масло" data-search="альфред сислей la prairie (луг), 1875 национальная галерея искусства, вашингтон холст масло nga sisley картина 2026-03-26" data-no="31" data-decade="1870–1879">
     <span class="card-no">031</span>
-    <div class="card-img"><img src="images/thumbs/sisley-lug-1875.jpg" alt="Альфред Сислей — La Prairie (Луг), 1875" width="1200" height="893" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="sisley-lug-1875.html" aria-label="Открыть картину: Альфред Сислей — La Prairie (Луг), 1875"><img src="images/thumbs/sisley-lug-1875.jpg" alt="Альфред Сислей — La Prairie (Луг), 1875" width="1200" height="893" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="sisley-lug-1875.html">Альфред Сислей</a></div>
         <div class="card-title">La Prairie (Луг), 1875</div>
@@ -512,7 +513,7 @@
     <div class="card-facts"><div><span>Год</span><b>1875</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>54,9 x 73 см</b></div></div>
     </article><article class="card" data-artist="жан-батист арман гийомен" data-title="paysage de neige à crozant (снежный пейзаж в крозанте), 1895" data-year="2026" data-month="03" data-cyear="1895" data-museum="музей-современного-искусства-андре-мальро-гавр" data-material="холст" data-techniques="масло" data-search="жан-батист арман гийомен paysage de neige à crozant (снежный пейзаж в крозанте), 1895 музей современного искусства андре мальро, гавр холст масло guillaumin muma картина 2026-03-22" data-no="75" data-decade="1890–1899">
     <span class="card-no">075</span>
-    <div class="card-img"><img src="images/thumbs/guillaumin-snezhnyi-peizazh-v-krozante-1895.jpg" alt="Жан-Батист Арман Гийомен — Paysage de neige à Crozant (Снежный пейзаж в Крозанте), 1895" width="1200" height="990" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="guillaumin-snezhnyi-peizazh-v-krozante-1895.html" aria-label="Открыть картину: Жан-Батист Арман Гийомен — Paysage de neige à Crozant (Снежный пейзаж в Крозанте), 1895"><img src="images/thumbs/guillaumin-snezhnyi-peizazh-v-krozante-1895.jpg" alt="Жан-Батист Арман Гийомен — Paysage de neige à Crozant (Снежный пейзаж в Крозанте), 1895" width="1200" height="990" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="guillaumin-snezhnyi-peizazh-v-krozante-1895.html">Жан-Батист Арман Гийомен</a></div>
         <div class="card-title">Paysage de neige à Crozant (Снежный пейзаж в Крозанте), 1895</div>
@@ -522,7 +523,7 @@
     <div class="card-facts"><div><span>Год</span><b>1895</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>60 x 73 см</b></div></div>
     </article><article class="card" data-artist="анонимные художники, феликс огюстен милиус, александр-огюст розе, альфред адольф ленгле, огюст русслен, огюст александр хирш, эмиль-анри лапорт, огюст ренуар, поль милье, леонс-люсьен кордье, альбер дарье" data-title="quarante-trois portraits de peintres de l&#x27;atelier gleyre (сорок три портрета художников мастерской глейра), между 1856 и 1868 годами" data-year="2026" data-month="03" data-cyear="1856" data-museum="малый-дворец-музей-изящных-искусств-города-парижа-париж" data-material="холст" data-techniques="масло" data-search="анонимные художники, феликс огюстен милиус, александр-огюст розе, альфред адольф ленгле, огюст русслен, огюст александр хирш, эмиль-анри лапорт, огюст ренуар, поль милье, леонс-люсьен кордье, альбер дарье quarante-trois portraits de peintres de l&#x27;atelier gleyre (сорок три портрета художников мастерской глейра), между 1856 и 1868 годами малый дворец, музей изящных искусств города парижа, париж холст масло anonyme petit_palais картина 2026-03-16" data-no="14" data-decade="1850–1859">
     <span class="card-no">014</span>
-    <div class="card-img"><img src="images/thumbs/sorok-tri-portreta-hudozhnikov-masterskoi-gleira-1856.jpg" alt="Анонимные художники, Феликс Огюстен Милиус, Александр-Огюст Розе, Альфред Адольф Ленгле, Огюст Русслен, Огюст Александр Хирш, Эмиль-Анри Лапорт, Огюст Ренуар, Поль Милье, Леонс-Люсьен Кордье, Альбер Дарье — Quarante-trois portraits de peintres de l&#x27;atelier Gleyre (Сорок три портрета художников мастерской Глейра), между 1856 и 1868 годами" width="1200" height="935" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="sorok-tri-portreta-hudozhnikov-masterskoi-gleira-1856.html" aria-label="Открыть картину: Анонимные художники, Феликс Огюстен Милиус, Александр-Огюст Розе, Альфред Адольф Ленгле, Огюст Русслен, Огюст Александр Хирш, Эмиль-Анри Лапорт, Огюст Ренуар, Поль Милье, Леонс-Люсьен Кордье, Альбер Дарье — Quarante-trois portraits de peintres de l&#x27;atelier Gleyre (Сорок три портрета художников мастерской Глейра), между 1856 и 1868 годами"><img src="images/thumbs/sorok-tri-portreta-hudozhnikov-masterskoi-gleira-1856.jpg" alt="Анонимные художники, Феликс Огюстен Милиус, Александр-Огюст Розе, Альфред Адольф Ленгле, Огюст Русслен, Огюст Александр Хирш, Эмиль-Анри Лапорт, Огюст Ренуар, Поль Милье, Леонс-Люсьен Кордье, Альбер Дарье — Quarante-trois portraits de peintres de l&#x27;atelier Gleyre (Сорок три портрета художников мастерской Глейра), между 1856 и 1868 годами" width="1200" height="935" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="sorok-tri-portreta-hudozhnikov-masterskoi-gleira-1856.html">Анонимные художники, Феликс Огюстен Милиус, Александр-Огюст Розе, Альфред Адольф Ленгле, Огюст Русслен, Огюст Александр Хирш, Эмиль-Анри Лапорт, Огюст Ренуар, Поль Милье, Леонс-Люсьен Кордье, Альбер Дарье</a></div>
         <div class="card-title">Quarante-trois portraits de peintres de l&#x27;atelier Gleyre (Сорок три портрета художников мастерской Глейра), между 1856 и 1868 годами</div>
@@ -532,7 +533,7 @@
     <div class="card-facts"><div><span>Год</span><b>1856</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>114 x 146 см</b></div></div>
     </article><article class="card" data-artist="станислав юлианович жуковский" data-title="былое. комната старого дома, 1912" data-year="2026" data-month="03" data-cyear="1912" data-museum="национальный-художественный-музей-республики-беларусь-минск" data-material="холст" data-techniques="масло" data-search="станислав юлианович жуковский былое. комната старого дома, 1912 национальный художественный музей республики беларусь, минск холст масло жуковский картина нхмрб 2026-03-10" data-no="99" data-decade="1910–1919">
     <span class="card-no">099</span>
-    <div class="card-img"><img src="images/thumbs/zhukovskii-byloe-komnata-starogo-doma-1912.jpg" alt="Станислав Юлианович Жуковский — Былое. Комната старого дома, 1912" width="1200" height="1035" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="zhukovskii-byloe-komnata-starogo-doma-1912.html" aria-label="Открыть картину: Станислав Юлианович Жуковский — Былое. Комната старого дома, 1912"><img src="images/thumbs/zhukovskii-byloe-komnata-starogo-doma-1912.jpg" alt="Станислав Юлианович Жуковский — Былое. Комната старого дома, 1912" width="1200" height="1035" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="zhukovskii-byloe-komnata-starogo-doma-1912.html">Станислав Юлианович Жуковский</a></div>
         <div class="card-title">Былое. Комната старого дома, 1912</div>
@@ -542,7 +543,7 @@
     <div class="card-facts"><div><span>Год</span><b>1912</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>110 x 130,5 см</b></div></div>
     </article><article class="card" data-artist="аурелиано де беруэте" data-title="paisaje de torrelodones (пейзаж торрелодонес), 1891" data-year="2026" data-month="02" data-cyear="1891" data-museum="национальный-музей-прадо-мадрид" data-material="холст" data-techniques="масло" data-search="аурелиано де беруэте paisaje de torrelodones (пейзаж торрелодонес), 1891 национальный музей прадо, мадрид холст масло deberuete prado картина 2026-02-16" data-no="69" data-decade="1890–1899">
     <span class="card-no">069</span>
-    <div class="card-img"><img src="images/thumbs/deberuete-peizazh-torrelodones-1891.jpg" alt="Аурелиано де Беруэте — Paisaje de Torrelodones (Пейзаж Торрелодонес), 1891" width="1200" height="705" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="deberuete-peizazh-torrelodones-1891.html" aria-label="Открыть картину: Аурелиано де Беруэте — Paisaje de Torrelodones (Пейзаж Торрелодонес), 1891"><img src="images/thumbs/deberuete-peizazh-torrelodones-1891.jpg" alt="Аурелиано де Беруэте — Paisaje de Torrelodones (Пейзаж Торрелодонес), 1891" width="1200" height="705" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="deberuete-peizazh-torrelodones-1891.html">Аурелиано де Беруэте</a></div>
         <div class="card-title">Paisaje de Torrelodones (Пейзаж Торрелодонес), 1891</div>
@@ -552,7 +553,7 @@
     <div class="card-facts"><div><span>Год</span><b>1891</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>46,5 x 79,5 см</b></div></div>
     </article><article class="card" data-artist="альфред сислей" data-title="nature morte, pommes et raisins (натюрморт, яблоки и виноград), 1880-81" data-year="2026" data-month="02" data-cyear="1880" data-museum="институт-искусств-стерлинга-и-франсин-кларк-уильямстаун" data-material="холст" data-techniques="масло" data-search="альфред сислей nature morte, pommes et raisins (натюрморт, яблоки и виноград), 1880-81 институт искусств стерлинга и франсин кларк, уильямстаун холст масло clarkart sisley картина 2026-02-11" data-no="45" data-decade="1880–1889">
     <span class="card-no">045</span>
-    <div class="card-img"><img src="images/thumbs/sisley-natyurmort-yabloki-i-vinograd-1880.jpg" alt="Альфред Сислей — Nature morte, pommes et raisins (Натюрморт, яблоки и виноград), 1880-81" width="1200" height="908" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="sisley-natyurmort-yabloki-i-vinograd-1880.html" aria-label="Открыть картину: Альфред Сислей — Nature morte, pommes et raisins (Натюрморт, яблоки и виноград), 1880-81"><img src="images/thumbs/sisley-natyurmort-yabloki-i-vinograd-1880.jpg" alt="Альфред Сислей — Nature morte, pommes et raisins (Натюрморт, яблоки и виноград), 1880-81" width="1200" height="908" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="sisley-natyurmort-yabloki-i-vinograd-1880.html">Альфред Сислей</a></div>
         <div class="card-title">Nature morte, pommes et raisins (Натюрморт, яблоки и виноград), 1880-81</div>
@@ -562,7 +563,7 @@
     <div class="card-facts"><div><span>Год</span><b>1880</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>46 x 61 см</b></div></div>
     </article><article class="card" data-artist="жан батист эдуар детай" data-title="inauguration de l&#x27;opéra de paris, 5 janvier 1875 (открытие парижской оперы, 5 января 1875 года), 1878" data-year="2026" data-month="02" data-cyear="1878" data-museum="коллекции-версальского-дворца-версаль" data-material="холст" data-techniques="размывка-бистром китайская-тушь" data-search="жан батист эдуар детай inauguration de l&#x27;opéra de paris, 5 janvier 1875 (открытие парижской оперы, 5 января 1875 года), 1878 коллекции версальского дворца, версаль холст размывка бистром китайская тушь detaille versailles картина 2026-02-04" data-no="38" data-decade="1870–1879">
     <span class="card-no">038</span>
-    <div class="card-img"><img src="images/thumbs/detaille-otkrytie-parizhskoi-opery-5-yanvarya-1875-goda-1878.jpg" alt="Жан Батист Эдуар Детай — Inauguration de l&#x27;Opéra de Paris, 5 janvier 1875 (Открытие Парижской оперы, 5 января 1875 года), 1878" width="877" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="detaille-otkrytie-parizhskoi-opery-5-yanvarya-1875-goda-1878.html" aria-label="Открыть картину: Жан Батист Эдуар Детай — Inauguration de l&#x27;Opéra de Paris, 5 janvier 1875 (Открытие Парижской оперы, 5 января 1875 года), 1878"><img src="images/thumbs/detaille-otkrytie-parizhskoi-opery-5-yanvarya-1875-goda-1878.jpg" alt="Жан Батист Эдуар Детай — Inauguration de l&#x27;Opéra de Paris, 5 janvier 1875 (Открытие Парижской оперы, 5 января 1875 года), 1878" width="877" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="detaille-otkrytie-parizhskoi-opery-5-yanvarya-1875-goda-1878.html">Жан Батист Эдуар Детай</a></div>
         <div class="card-title">Inauguration de l&#x27;Opéra de Paris, 5 janvier 1875 (Открытие Парижской оперы, 5 января 1875 года), 1878</div>
@@ -572,7 +573,7 @@
     <div class="card-facts"><div><span>Год</span><b>1878</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>размывка бистром, китайская тушь</b></div><div><span>Размер</span><b>66,5 x 50,7 см</b></div></div>
     </article><article class="card" data-artist="эдуард мане" data-title="le suicidé (самоубийство), 1877" data-year="2026" data-month="01" data-cyear="1877" data-museum="собрание-фонда-эмиля-бюрле-цюрих" data-material="холст" data-techniques="масло" data-search="эдуард мане le suicidé (самоубийство), 1877 собрание фонда эмиля бюрле, цюрих холст масло egb manet картина 2026-01-16" data-no="37" data-decade="1870–1879">
     <span class="card-no">037</span>
-    <div class="card-img"><img src="images/thumbs/manet-samoubiistvo-1877.jpg" alt="Эдуард Мане — Le Suicidé (Самоубийство), 1877" width="1200" height="985" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="manet-samoubiistvo-1877.html" aria-label="Открыть картину: Эдуард Мане — Le Suicidé (Самоубийство), 1877"><img src="images/thumbs/manet-samoubiistvo-1877.jpg" alt="Эдуард Мане — Le Suicidé (Самоубийство), 1877" width="1200" height="985" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="manet-samoubiistvo-1877.html">Эдуард Мане</a></div>
         <div class="card-title">Le Suicidé (Самоубийство), 1877</div>
@@ -582,7 +583,7 @@
     <div class="card-facts"><div><span>Год</span><b>1877</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>38 x 46 см</b></div></div>
     </article><article class="card" data-artist="борис михайлович кустодиев" data-title="крещенское водосвятие, 1921" data-year="2026" data-month="01" data-cyear="1921" data-museum="частная-коллекция" data-material="холст" data-techniques="масло" data-search="борис михайлович кустодиев крещенское водосвятие, 1921 частная коллекция холст масло pc картина кустодиев 2026-01-07" data-no="104" data-decade="1920–1929">
     <span class="card-no">104</span>
-    <div class="card-img"><img src="images/thumbs/kustodiev-kreschenskoe-vodosvyatie-1921.jpg" alt="Борис Михайлович Кустодиев — Крещенское водосвятие, 1921" width="995" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="kustodiev-kreschenskoe-vodosvyatie-1921.html" aria-label="Открыть картину: Борис Михайлович Кустодиев — Крещенское водосвятие, 1921"><img src="images/thumbs/kustodiev-kreschenskoe-vodosvyatie-1921.jpg" alt="Борис Михайлович Кустодиев — Крещенское водосвятие, 1921" width="995" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="kustodiev-kreschenskoe-vodosvyatie-1921.html">Борис Михайлович Кустодиев</a></div>
         <div class="card-title">Крещенское водосвятие, 1921</div>
@@ -592,7 +593,7 @@
     <div class="card-facts"><div><span>Год</span><b>1921</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>89 x 74 см</b></div></div>
     </article><article class="card" data-artist="вигго юхансен" data-title="glade jul (счастливого рождества), 1891" data-year="2025" data-month="12" data-cyear="1891" data-museum="собрание-хиршпрунга-копенгаген" data-material="холст" data-techniques="масло" data-search="вигго юхансен glade jul (счастливого рождества), 1891 собрание хиршпрунга, копенгаген холст масло hirschsprung johansen картина 2025-12-31" data-no="68" data-decade="1890–1899">
     <span class="card-no">068</span>
-    <div class="card-img"><img src="images/thumbs/johansen-schastlivogo-rozhdestva-1891.jpg" alt="Вигго Юхансен — Glade jul (Счастливого Рождества), 1891" width="1200" height="960" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="johansen-schastlivogo-rozhdestva-1891.html" aria-label="Открыть картину: Вигго Юхансен — Glade jul (Счастливого Рождества), 1891"><img src="images/thumbs/johansen-schastlivogo-rozhdestva-1891.jpg" alt="Вигго Юхансен — Glade jul (Счастливого Рождества), 1891" width="1200" height="960" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="johansen-schastlivogo-rozhdestva-1891.html">Вигго Юхансен</a></div>
         <div class="card-title">Glade jul (Счастливого Рождества), 1891</div>
@@ -602,7 +603,7 @@
     <div class="card-facts"><div><span>Год</span><b>1891</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>127,2 x 158,5 см</b></div></div>
     </article><article class="card" data-artist="жан-франсуа милле" data-title="falaises de gréville (скалы гревиля), 1871" data-year="2025" data-month="12" data-cyear="1871" data-museum="музей-искусств-охара-курасики" data-material="бумага" data-techniques="пастель" data-search="жан-франсуа милле falaises de gréville (скалы гревиля), 1871 музей искусств охара, курасики бумага пастель millet ohara_museum_of_art картина 2025-12-24" data-no="25" data-decade="1870–1879">
     <span class="card-no">025</span>
-    <div class="card-img"><img src="images/thumbs/millet-skaly-grevilya-1871.jpg" alt="Жан-Франсуа Милле — Falaises de Gréville (Скалы Гревиля), 1871" width="1200" height="970" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="millet-skaly-grevilya-1871.html" aria-label="Открыть картину: Жан-Франсуа Милле — Falaises de Gréville (Скалы Гревиля), 1871"><img src="images/thumbs/millet-skaly-grevilya-1871.jpg" alt="Жан-Франсуа Милле — Falaises de Gréville (Скалы Гревиля), 1871" width="1200" height="970" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="millet-skaly-grevilya-1871.html">Жан-Франсуа Милле</a></div>
         <div class="card-title">Falaises de Gréville (Скалы Гревиля), 1871</div>
@@ -612,7 +613,7 @@
     <div class="card-facts"><div><span>Год</span><b>1871</b></div><div><span>Материал</span><b>бумага</b></div><div><span>Техника</span><b>пастель</b></div><div><span>Размер</span><b>43,7 x 54,1 см</b></div></div>
     </article><article class="card" data-artist="джон сингер сарджент" data-title="claude monet painting by the edge of a wood (картина клода моне «на опушке леса»), 1885" data-year="2025" data-month="12" data-cyear="1885" data-museum="британская-галерея-тейт-лондон" data-material="холст" data-techniques="масло" data-search="джон сингер сарджент claude monet painting by the edge of a wood (картина клода моне «на опушке леса»), 1885 британская галерея тейт, лондон холст масло sargent tate картина 2025-12-16" data-no="54" data-decade="1880–1889">
     <span class="card-no">054</span>
-    <div class="card-img"><img src="images/thumbs/sargent-kartina-kloda-mone-na-opushke-lesa-1885.jpg" alt="Джон Сингер Сарджент — Claude Monet Painting by the Edge of a Wood (Картина Клода Моне «На опушке леса»), 1885" width="1200" height="999" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="sargent-kartina-kloda-mone-na-opushke-lesa-1885.html" aria-label="Открыть картину: Джон Сингер Сарджент — Claude Monet Painting by the Edge of a Wood (Картина Клода Моне «На опушке леса»), 1885"><img src="images/thumbs/sargent-kartina-kloda-mone-na-opushke-lesa-1885.jpg" alt="Джон Сингер Сарджент — Claude Monet Painting by the Edge of a Wood (Картина Клода Моне «На опушке леса»), 1885" width="1200" height="999" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="sargent-kartina-kloda-mone-na-opushke-lesa-1885.html">Джон Сингер Сарджент</a></div>
         <div class="card-title">Claude Monet Painting by the Edge of a Wood (Картина Клода Моне «На опушке леса»), 1885</div>
@@ -622,7 +623,7 @@
     <div class="card-facts"><div><span>Год</span><b>1885</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>54 x 64,8 см</b></div></div>
     </article><article class="card" data-artist="ялмар эйлиф эммануэл петерссен" data-title="måneopgang over klitterne (восход луны над дюнами), 1883" data-year="2025" data-month="12" data-cyear="1883" data-museum="музей-скагена-скаген" data-material="холст" data-techniques="масло" data-search="ялмар эйлиф эммануэл петерссен måneopgang over klitterne (восход луны над дюнами), 1883 музей скагена, скаген холст масло peterssen skagens картина 2025-12-10" data-no="50" data-decade="1880–1889">
     <span class="card-no">050</span>
-    <div class="card-img"><img src="images/thumbs/peterssen-voshod-luny-nad-dyunami-1883.jpg" alt="Ялмар Эйлиф Эммануэл Петерссен — Måneopgang over klitterne (Восход луны над дюнами), 1883" width="1121" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="peterssen-voshod-luny-nad-dyunami-1883.html" aria-label="Открыть картину: Ялмар Эйлиф Эммануэл Петерссен — Måneopgang over klitterne (Восход луны над дюнами), 1883"><img src="images/thumbs/peterssen-voshod-luny-nad-dyunami-1883.jpg" alt="Ялмар Эйлиф Эммануэл Петерссен — Måneopgang over klitterne (Восход луны над дюнами), 1883" width="1121" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="peterssen-voshod-luny-nad-dyunami-1883.html">Ялмар Эйлиф Эммануэл Петерссен</a></div>
         <div class="card-title">Måneopgang over klitterne (Восход луны над дюнами), 1883</div>
@@ -632,7 +633,7 @@
     <div class="card-facts"><div><span>Год</span><b>1883</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>60,5 x 64 см</b></div></div>
     </article><article class="card" data-artist="карл павлович брюллов" data-title="вид форта пику на острове мадейра (неоконченная картина), 1849–1850" data-year="2025" data-month="12" data-cyear="1849" data-museum="государственная-третьяковская-галерея-москва" data-material="холст" data-techniques="масло" data-search="карл павлович брюллов вид форта пику на острове мадейра (неоконченная картина), 1849–1850 государственная третьяковская галерея, москва холст масло брюллов гтг картина 2025-12-06" data-no="10" data-decade="1840–1849">
     <span class="card-no">010</span>
-    <div class="card-img"><img src="images/thumbs/bryullov-neokonchennaya-kartina-1849.jpg" alt="Карл Павлович Брюллов — Вид форта Пику на острове Мадейра (Неоконченная картина), 1849–1850" width="1200" height="1030" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="bryullov-neokonchennaya-kartina-1849.html" aria-label="Открыть картину: Карл Павлович Брюллов — Вид форта Пику на острове Мадейра (Неоконченная картина), 1849–1850"><img src="images/thumbs/bryullov-neokonchennaya-kartina-1849.jpg" alt="Карл Павлович Брюллов — Вид форта Пику на острове Мадейра (Неоконченная картина), 1849–1850" width="1200" height="1030" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="bryullov-neokonchennaya-kartina-1849.html">Карл Павлович Брюллов</a></div>
         <div class="card-title">Вид форта Пику на острове Мадейра (Неоконченная картина), 1849–1850</div>
@@ -642,7 +643,7 @@
     <div class="card-facts"><div><span>Год</span><b>1849</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>64 x 76,5 см</b></div></div>
     </article><article class="card" data-artist="станислас анри руар" data-title="la terrasse au bord de la seine à melun (терраса на берегу сены в мелуне), 1874" data-year="2025" data-month="12" data-cyear="1874" data-museum="музей-дорсе-париж" data-material="холст" data-techniques="масло" data-search="станислас анри руар la terrasse au bord de la seine à melun (терраса на берегу сены в мелуне), 1874 музей д’орсе, париж холст масло dorsay rouart картина 2025-12-01" data-no="29" data-decade="1870–1879">
     <span class="card-no">029</span>
-    <div class="card-img"><img src="images/thumbs/rouart-terrasa-na-beregu-seny-v-melune-1874.jpg" alt="Станислас Анри Руар — La Terrasse au bord de la Seine à Melun (Терраса на берегу Сены в Мелуне), 1874" width="1200" height="674" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="rouart-terrasa-na-beregu-seny-v-melune-1874.html" aria-label="Открыть картину: Станислас Анри Руар — La Terrasse au bord de la Seine à Melun (Терраса на берегу Сены в Мелуне), 1874"><img src="images/thumbs/rouart-terrasa-na-beregu-seny-v-melune-1874.jpg" alt="Станислас Анри Руар — La Terrasse au bord de la Seine à Melun (Терраса на берегу Сены в Мелуне), 1874" width="1200" height="674" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="rouart-terrasa-na-beregu-seny-v-melune-1874.html">Станислас Анри Руар</a></div>
         <div class="card-title">La Terrasse au bord de la Seine à Melun (Терраса на берегу Сены в Мелуне), 1874</div>
@@ -652,7 +653,7 @@
     <div class="card-facts"><div><span>Год</span><b>1874</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>46 x 65 см</b></div></div>
     </article><article class="card" data-artist="исаак ильич левитан" data-title="иллюминация кремля, 1896" data-year="2025" data-month="11" data-cyear="1896" data-museum="частная-коллекция-сша" data-material="доска" data-techniques="масло" data-search="исаак ильич левитан иллюминация кремля, 1896 частная коллекция, сша доска масло pc картина левитан 2025-11-26" data-no="78" data-decade="1890–1899">
     <span class="card-no">078</span>
-    <div class="card-img"><img src="images/thumbs/levitan-illyuminatsiya-kremlya-1896.jpg" alt="Исаак Ильич Левитан — Иллюминация Кремля, 1896" width="1200" height="846" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="levitan-illyuminatsiya-kremlya-1896.html" aria-label="Открыть картину: Исаак Ильич Левитан — Иллюминация Кремля, 1896"><img src="images/thumbs/levitan-illyuminatsiya-kremlya-1896.jpg" alt="Исаак Ильич Левитан — Иллюминация Кремля, 1896" width="1200" height="846" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="levitan-illyuminatsiya-kremlya-1896.html">Исаак Ильич Левитан</a></div>
         <div class="card-title">Иллюминация Кремля, 1896</div>
@@ -662,7 +663,7 @@
     <div class="card-facts"><div><span>Год</span><b>1896</b></div><div><span>Материал</span><b>доска</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>62,2 x 85,7 см</b></div></div>
     </article><article class="card" data-artist="эжен луи буден" data-title="le clocher de sainte-catherine, honfleur (колокольня святой екатерины, онфлёр), 1897" data-year="2025" data-month="11" data-cyear="1897" data-museum="музей-эжена-будена-онфлёр" data-material="холст" data-techniques="масло" data-search="эжен луи буден le clocher de sainte-catherine, honfleur (колокольня святой екатерины, онфлёр), 1897 музей эжена будена, онфлёр холст масло boudin musees_honfleur картина 2025-11-22" data-no="80" data-decade="1890–1899">
     <span class="card-no">080</span>
-    <div class="card-img"><img src="images/thumbs/boudin-kolokolnya-svyatoi-ekateriny-onfler-1897.jpg" alt="Эжен Луи Буден — Le Clocher de Sainte-Catherine, Honfleur (Колокольня Святой Екатерины, Онфлёр), 1897" width="941" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="boudin-kolokolnya-svyatoi-ekateriny-onfler-1897.html" aria-label="Открыть картину: Эжен Луи Буден — Le Clocher de Sainte-Catherine, Honfleur (Колокольня Святой Екатерины, Онфлёр), 1897"><img src="images/thumbs/boudin-kolokolnya-svyatoi-ekateriny-onfler-1897.jpg" alt="Эжен Луи Буден — Le Clocher de Sainte-Catherine, Honfleur (Колокольня Святой Екатерины, Онфлёр), 1897" width="941" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="boudin-kolokolnya-svyatoi-ekateriny-onfler-1897.html">Эжен Луи Буден</a></div>
         <div class="card-title">Le Clocher de Sainte-Catherine, Honfleur (Колокольня Святой Екатерины, Онфлёр), 1897</div>
@@ -672,7 +673,7 @@
     <div class="card-facts"><div><span>Год</span><b>1897</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>55 x 43 см</b></div></div>
     </article><article class="card" data-artist="жан луи форен" data-title="aux courses à longchamp (на скачках в лоншане), 1891" data-year="2025" data-month="11" data-cyear="1891" data-museum="национальная-галерея-искусства-вашингтон" data-material="холст" data-techniques="масло" data-search="жан луи форен aux courses à longchamp (на скачках в лоншане), 1891 национальная галерея искусства, вашингтон холст масло forain nga картина 2025-11-17" data-no="67" data-decade="1890–1899">
     <span class="card-no">067</span>
-    <div class="card-img"><img src="images/thumbs/forain-na-skachkah-v-lonshane-1891.jpg" alt="Жан Луи Форен — Aux Courses à Longchamp (На скачках в Лоншане), 1891" width="1200" height="953" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="forain-na-skachkah-v-lonshane-1891.html" aria-label="Открыть картину: Жан Луи Форен — Aux Courses à Longchamp (На скачках в Лоншане), 1891"><img src="images/thumbs/forain-na-skachkah-v-lonshane-1891.jpg" alt="Жан Луи Форен — Aux Courses à Longchamp (На скачках в Лоншане), 1891" width="1200" height="953" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="forain-na-skachkah-v-lonshane-1891.html">Жан Луи Форен</a></div>
         <div class="card-title">Aux Courses à Longchamp (На скачках в Лоншане), 1891</div>
@@ -682,7 +683,7 @@
     <div class="card-facts"><div><span>Год</span><b>1891</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>73,66 x 92,71 см</b></div></div>
     </article><article class="card" data-artist="эмильен мюло-дюриваж" data-title="paysage du cotentin, près des bords de l&#x27;ouve (пейзаж в котантене на берегу реки уве), xix в." data-year="2025" data-month="11" data-cyear="" data-museum="частная-коллекция" data-material="холст" data-techniques="масло" data-search="эмильен мюло-дюриваж paysage du cotentin, près des bords de l&#x27;ouve (пейзаж в котантене на берегу реки уве), xix в. частная коллекция холст масло mulot_durivage pc картина 2025-11-09" data-no="110" >
     <span class="card-no">110</span>
-    <div class="card-img"><img src="images/thumbs/mulot-durivage-peizazh-v-kotantene-na-beregu-reki-uve.jpg" alt="Эмильен Мюло-Дюриваж — Paysage du Cotentin, près des bords de l&#x27;Ouve (Пейзаж в Котантене на берегу реки Уве), XIX в." width="986" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="mulot-durivage-peizazh-v-kotantene-na-beregu-reki-uve.html" aria-label="Открыть картину: Эмильен Мюло-Дюриваж — Paysage du Cotentin, près des bords de l&#x27;Ouve (Пейзаж в Котантене на берегу реки Уве), XIX в."><img src="images/thumbs/mulot-durivage-peizazh-v-kotantene-na-beregu-reki-uve.jpg" alt="Эмильен Мюло-Дюриваж — Paysage du Cotentin, près des bords de l&#x27;Ouve (Пейзаж в Котантене на берегу реки Уве), XIX в." width="986" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="mulot-durivage-peizazh-v-kotantene-na-beregu-reki-uve.html">Эмильен Мюло-Дюриваж</a></div>
         <div class="card-title">Paysage du Cotentin, près des bords de l&#x27;Ouve (Пейзаж в Котантене на берегу реки Уве), XIX в.</div>
@@ -692,7 +693,7 @@
     <div class="card-facts"><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div></div>
     </article><article class="card" data-artist="фрэнсис кэмпбелл буало каделл" data-title="florian&#x27;s café, venice (кафе флориан, венеция), 1910" data-year="2025" data-month="11" data-cyear="1910" data-museum="частная-коллекция" data-material="холст" data-techniques="масло" data-search="фрэнсис кэмпбелл буало каделл florian&#x27;s café, venice (кафе флориан, венеция), 1910 частная коллекция холст масло cadell pc картина 2025-11-07" data-no="97" data-decade="1910–1919">
     <span class="card-no">097</span>
-    <div class="card-img"><img src="images/thumbs/cadell-kafe-florian-venetsiya-1910.jpg" alt="Фрэнсис Кэмпбелл Буало Каделл — Florian&#x27;s café, Venice (Кафе Флориан, Венеция), 1910" width="936" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="cadell-kafe-florian-venetsiya-1910.html" aria-label="Открыть картину: Фрэнсис Кэмпбелл Буало Каделл — Florian&#x27;s café, Venice (Кафе Флориан, Венеция), 1910"><img src="images/thumbs/cadell-kafe-florian-venetsiya-1910.jpg" alt="Фрэнсис Кэмпбелл Буало Каделл — Florian&#x27;s café, Venice (Кафе Флориан, Венеция), 1910" width="936" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="cadell-kafe-florian-venetsiya-1910.html">Фрэнсис Кэмпбелл Буало Каделл</a></div>
         <div class="card-title">Florian&#x27;s café, Venice (Кафе Флориан, Венеция), 1910</div>
@@ -702,7 +703,7 @@
     <div class="card-facts"><div><span>Год</span><b>1910</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>45 x 38 см</b></div></div>
     </article><article class="card" data-artist="иньяс-анри-жан-теодор фантен-латур" data-title="la leçon de dessin dans l&#x27;atelier (урок рисования в мастерской), 1879" data-year="2025" data-month="11" data-cyear="1879" data-museum="королевский-музей-изящных-искусств-брюссель" data-material="холст" data-techniques="масло" data-search="иньяс-анри-жан-теодор фантен-латур la leçon de dessin dans l&#x27;atelier (урок рисования в мастерской), 1879 королевский музей изящных искусств, брюссель холст масло fantin_latour rmfab картина 2025-11-04" data-no="42" data-decade="1870–1879">
     <span class="card-no">042</span>
-    <div class="card-img"><img src="images/thumbs/fantin-latour-urok-risovaniya-v-masterskoi-1879.jpg" alt="Иньяс-Анри-Жан-Теодор Фантен-Латур — La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879" width="1200" height="1020" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="fantin-latour-urok-risovaniya-v-masterskoi-1879.html" aria-label="Открыть картину: Иньяс-Анри-Жан-Теодор Фантен-Латур — La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879"><img src="images/thumbs/fantin-latour-urok-risovaniya-v-masterskoi-1879.jpg" alt="Иньяс-Анри-Жан-Теодор Фантен-Латур — La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879" width="1200" height="1020" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="fantin-latour-urok-risovaniya-v-masterskoi-1879.html">Иньяс-Анри-Жан-Теодор Фантен-Латур</a></div>
         <div class="card-title">La leçon de dessin dans l&#x27;atelier (Урок рисования в мастерской), 1879</div>
@@ -712,7 +713,7 @@
     <div class="card-facts"><div><span>Год</span><b>1879</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>145 x 170 см</b></div></div>
     </article><article class="card" data-artist="гюстав кайботт" data-title="jeune homme à sa fenêtre (молодой человек у окна), 1876" data-year="2025" data-month="10" data-cyear="1876" data-museum="музей-гетти-лос-анджелес" data-material="холст" data-techniques="масло" data-search="гюстав кайботт jeune homme à sa fenêtre (молодой человек у окна), 1876 музей гетти, лос-анджелес холст масло caillebotte getty картина 2025-10-16" data-no="34" data-decade="1870–1879">
     <span class="card-no">034</span>
-    <div class="card-img"><img src="images/thumbs/caillebotte-molodoi-chelovek-u-okna-1876.jpg" alt="Гюстав Кайботт — Jeune homme à sa fenêtre (Молодой человек у окна), 1876" width="820" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="caillebotte-molodoi-chelovek-u-okna-1876.html" aria-label="Открыть картину: Гюстав Кайботт — Jeune homme à sa fenêtre (Молодой человек у окна), 1876"><img src="images/thumbs/caillebotte-molodoi-chelovek-u-okna-1876.jpg" alt="Гюстав Кайботт — Jeune homme à sa fenêtre (Молодой человек у окна), 1876" width="820" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="caillebotte-molodoi-chelovek-u-okna-1876.html">Гюстав Кайботт</a></div>
         <div class="card-title">Jeune homme à sa fenêtre (Молодой человек у окна), 1876</div>
@@ -722,7 +723,7 @@
     <div class="card-facts"><div><span>Год</span><b>1876</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>116 x 81 см</b></div></div>
     </article><article class="card" data-artist="рокуэлл кент" data-title="cranberrying, monhegan (сбор клюквы, монхиган),1907" data-year="2025" data-month="10" data-cyear="1907" data-museum="государственный-художественный-музей-платтсбурга-галерея-рок" data-material="холст" data-techniques="масло" data-search="рокуэлл кент cranberrying, monhegan (сбор клюквы, монхиган),1907 государственный художественный музей платтсбурга, галерея рокуэлла кента, платтсбург холст масло kent terra картина 2025-10-11" data-no="94" data-decade="1900–1909">
     <span class="card-no">094</span>
-    <div class="card-img"><img src="images/thumbs/kent-sbor-klyukvy-monhigan-1907.jpg" alt="Рокуэлл Кент — Cranberrying, Monhegan (Сбор клюквы, Монхиган),1907" width="1200" height="874" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="kent-sbor-klyukvy-monhigan-1907.html" aria-label="Открыть картину: Рокуэлл Кент — Cranberrying, Monhegan (Сбор клюквы, Монхиган),1907"><img src="images/thumbs/kent-sbor-klyukvy-monhigan-1907.jpg" alt="Рокуэлл Кент — Cranberrying, Monhegan (Сбор клюквы, Монхиган),1907" width="1200" height="874" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="kent-sbor-klyukvy-monhigan-1907.html">Рокуэлл Кент</a></div>
         <div class="card-title">Cranberrying, Monhegan (Сбор клюквы, Монхиган),1907</div>
@@ -732,7 +733,7 @@
     <div class="card-facts"><div><span>Год</span><b>1907</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>71,3 x 97,2 см</b></div></div>
     </article><article class="card" data-artist="поль сезар эллё" data-title="le grand pavois (гранд павуа), 1901" data-year="2025" data-month="10" data-cyear="1901" data-museum="частная-коллекция" data-material="холст" data-techniques="масло" data-search="поль сезар эллё le grand pavois (гранд павуа), 1901 частная коллекция холст масло helleu pc картина 2025-10-06" data-no="86" data-decade="1900–1909">
     <span class="card-no">086</span>
-    <div class="card-img"><img src="images/thumbs/helleu-grand-pavua-1901.jpg" alt="Поль Сезар Эллё — Le Grand Pavois (Гранд Павуа), 1901" width="1200" height="970" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="helleu-grand-pavua-1901.html" aria-label="Открыть картину: Поль Сезар Эллё — Le Grand Pavois (Гранд Павуа), 1901"><img src="images/thumbs/helleu-grand-pavua-1901.jpg" alt="Поль Сезар Эллё — Le Grand Pavois (Гранд Павуа), 1901" width="1200" height="970" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="helleu-grand-pavua-1901.html">Поль Сезар Эллё</a></div>
         <div class="card-title">Le Grand Pavois (Гранд Павуа), 1901</div>
@@ -742,7 +743,7 @@
     <div class="card-facts"><div><span>Год</span><b>1901</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>65,2 x 81,3 см</b></div></div>
     </article><article class="card" data-artist="жан-батист арман гийомен" data-title="vue du puy-de-dôme (вид на пюи-де-дом), 1899" data-year="2025" data-month="10" data-cyear="1899" data-museum="музей-барберини-потсдам" data-material="холст" data-techniques="масло" data-search="жан-батист арман гийомен vue du puy-de-dôme (вид на пюи-де-дом), 1899 музей барберини, потсдам холст масло barberini guillaumin картина 2025-10-02" data-no="81" data-decade="1890–1899">
     <span class="card-no">081</span>
-    <div class="card-img"><img src="images/thumbs/guillaumin-vid-na-pyui-de-dom-1899.jpg" alt="Жан-Батист Арман Гийомен — Vue du Puy-de-Dôme (Вид на Пюи-де-Дом), 1899" width="1200" height="960" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="guillaumin-vid-na-pyui-de-dom-1899.html" aria-label="Открыть картину: Жан-Батист Арман Гийомен — Vue du Puy-de-Dôme (Вид на Пюи-де-Дом), 1899"><img src="images/thumbs/guillaumin-vid-na-pyui-de-dom-1899.jpg" alt="Жан-Батист Арман Гийомен — Vue du Puy-de-Dôme (Вид на Пюи-де-Дом), 1899" width="1200" height="960" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="guillaumin-vid-na-pyui-de-dom-1899.html">Жан-Батист Арман Гийомен</a></div>
         <div class="card-title">Vue du Puy-de-Dôme (Вид на Пюи-де-Дом), 1899</div>
@@ -752,7 +753,7 @@
     <div class="card-facts"><div><span>Год</span><b>1899</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>65 x 81 см</b></div></div>
     </article><article class="card" data-artist="константин аполлонович савицкий" data-title="у мирового суда, xix век" data-year="2025" data-month="09" data-cyear="" data-museum="пермская-государственная-художественная-галерея-пермь" data-material="холст" data-techniques="масло" data-search="константин аполлонович савицкий у мирового суда, xix век пермская государственная художественная галерея, пермь холст масло картина пхг савицкий 2025-09-24" data-no="109" >
     <span class="card-no">109</span>
-    <div class="card-img"><img src="images/thumbs/savitskii-u-mirovogo-suda-xix-vek.jpg" alt="Константин Аполлонович Савицкий — У мирового суда, XIX век" width="1200" height="908" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="savitskii-u-mirovogo-suda-xix-vek.html" aria-label="Открыть картину: Константин Аполлонович Савицкий — У мирового суда, XIX век"><img src="images/thumbs/savitskii-u-mirovogo-suda-xix-vek.jpg" alt="Константин Аполлонович Савицкий — У мирового суда, XIX век" width="1200" height="908" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="savitskii-u-mirovogo-suda-xix-vek.html">Константин Аполлонович Савицкий</a></div>
         <div class="card-title">У мирового суда, XIX век</div>
@@ -762,7 +763,7 @@
     <div class="card-facts"><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>72 x 95 см</b></div></div>
     </article><article class="card" data-artist="анри мари раймон де тулуз-лотрек-монфа" data-title="les travailleurs de la gare routière (рабочие на автобусной станции), 1888" data-year="2025" data-month="09" data-cyear="1888" data-museum="частная-коллекция-монте-карло" data-material="холст" data-techniques="" data-search="анри мари раймон де тулуз-лотрек-монфа les travailleurs de la gare routière (рабочие на автобусной станции), 1888 частная коллекция, монте-карло холст pc toulouse_lautrec картина 2025-09-17" data-no="60" data-decade="1880–1889">
     <span class="card-no">060</span>
-    <div class="card-img"><img src="images/thumbs/toulouse-lautrec-rabochie-na-avtobusnoi-stantsii-1888.jpg" alt="Анри Мари Раймон де Тулуз-Лотрек-Монфа — Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888" width="375" height="600" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="toulouse-lautrec-rabochie-na-avtobusnoi-stantsii-1888.html" aria-label="Открыть картину: Анри Мари Раймон де Тулуз-Лотрек-Монфа — Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888"><img src="images/thumbs/toulouse-lautrec-rabochie-na-avtobusnoi-stantsii-1888.jpg" alt="Анри Мари Раймон де Тулуз-Лотрек-Монфа — Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888" width="375" height="600" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="toulouse-lautrec-rabochie-na-avtobusnoi-stantsii-1888.html">Анри Мари Раймон де Тулуз-Лотрек-Монфа</a></div>
         <div class="card-title">Les travailleurs de la gare routière (Рабочие на автобусной станции), 1888</div>
@@ -772,7 +773,7 @@
     <div class="card-facts"><div><span>Год</span><b>1888</b></div><div><span>Материал</span><b>холст</b></div><div><span>Размер</span><b>80 x 51 см</b></div></div>
     </article><article class="card" data-artist="жакоб абраам камиль писсарро" data-title="une crique a saint-thomas (antilles) (бухта на острове сент-томас (антильские острова)), 1856" data-year="2025" data-month="09" data-cyear="1856" data-museum="национальная-галерея-искусства-вашингтон" data-material="академическая-доска" data-techniques="масло" data-search="жакоб абраам камиль писсарро une crique a saint-thomas (antilles) (бухта на острове сент-томас (антильские острова)), 1856 национальная галерея искусства, вашингтон академическая доска масло nga pissarro картина 2025-09-02" data-no="13" data-decade="1850–1859">
     <span class="card-no">013</span>
-    <div class="card-img"><img src="images/thumbs/pissarro-buhta-na-ostrove-sent-tomas-antilskie-ostrova-1856.jpg" alt="Жакоб Абраам Камиль Писсарро — Une Crique a Saint-Thomas (Antilles) (Бухта на острове Сент-Томас (Антильские острова)), 1856" width="1200" height="898" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="pissarro-buhta-na-ostrove-sent-tomas-antilskie-ostrova-1856.html" aria-label="Открыть картину: Жакоб Абраам Камиль Писсарро — Une Crique a Saint-Thomas (Antilles) (Бухта на острове Сент-Томас (Антильские острова)), 1856"><img src="images/thumbs/pissarro-buhta-na-ostrove-sent-tomas-antilskie-ostrova-1856.jpg" alt="Жакоб Абраам Камиль Писсарро — Une Crique a Saint-Thomas (Antilles) (Бухта на острове Сент-Томас (Антильские острова)), 1856" width="1200" height="898" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="pissarro-buhta-na-ostrove-sent-tomas-antilskie-ostrova-1856.html">Жакоб Абраам Камиль Писсарро</a></div>
         <div class="card-title">Une Crique a Saint-Thomas (Antilles) (Бухта на острове Сент-Томас (Антильские острова)), 1856</div>
@@ -782,7 +783,7 @@
     <div class="card-facts"><div><span>Год</span><b>1856</b></div><div><span>Материал</span><b>академическая доска</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>24,5 x 32,2 см</b></div></div>
     </article><article class="card" data-artist="альфред сислей" data-title="landscape at louveciennes (пейзаж в лувесьене), 1873" data-year="2025" data-month="08" data-cyear="1873" data-museum="национальный-музей-западного-искусства-токио" data-material="холст" data-techniques="масло" data-search="альфред сислей landscape at louveciennes (пейзаж в лувесьене), 1873 национальный музей западного искусства, токио холст масло nmwa sisley картина 2025-08-21" data-no="27" data-decade="1870–1879">
     <span class="card-no">027</span>
-    <div class="card-img"><img src="images/thumbs/sisley-peizazh-v-luvesene-1873.jpg" alt="Альфред Сислей — Landscape at Louveciennes (Пейзаж в Лувесьене), 1873" width="1200" height="855" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="sisley-peizazh-v-luvesene-1873.html" aria-label="Открыть картину: Альфред Сислей — Landscape at Louveciennes (Пейзаж в Лувесьене), 1873"><img src="images/thumbs/sisley-peizazh-v-luvesene-1873.jpg" alt="Альфред Сислей — Landscape at Louveciennes (Пейзаж в Лувесьене), 1873" width="1200" height="855" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="sisley-peizazh-v-luvesene-1873.html">Альфред Сислей</a></div>
         <div class="card-title">Landscape at Louveciennes (Пейзаж в Лувесьене), 1873</div>
@@ -792,7 +793,7 @@
     <div class="card-facts"><div><span>Год</span><b>1873</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>54 x 73 см</b></div></div>
     </article><article class="card" data-artist="илер-жермен-эдгар де га (эдгар дега)" data-title="salle de billard au ménil-hubert (бильярдная в мениль-юбер), 1892" data-year="2025" data-month="08" data-cyear="1892" data-museum="музей-дорсе-париж" data-material="холст" data-techniques="масло" data-search="илер-жермен-эдгар де га (эдгар дега) salle de billard au ménil-hubert (бильярдная в мениль-юбер), 1892 музей д’орсе, париж холст масло degas dorsay картина 2025-08-07" data-no="72" data-decade="1890–1899">
     <span class="card-no">072</span>
-    <div class="card-img"><img src="images/thumbs/degas-bilyardnaya-v-menil-yuber-1892.jpg" alt="Илер-Жермен-Эдгар де Га (Эдгар Дега) — Salle de billard au Ménil-Hubert (Бильярдная в Мениль-Юбер), 1892" width="1200" height="902" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="degas-bilyardnaya-v-menil-yuber-1892.html" aria-label="Открыть картину: Илер-Жермен-Эдгар де Га (Эдгар Дега) — Salle de billard au Ménil-Hubert (Бильярдная в Мениль-Юбер), 1892"><img src="images/thumbs/degas-bilyardnaya-v-menil-yuber-1892.jpg" alt="Илер-Жермен-Эдгар де Га (Эдгар Дега) — Salle de billard au Ménil-Hubert (Бильярдная в Мениль-Юбер), 1892" width="1200" height="902" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="degas-bilyardnaya-v-menil-yuber-1892.html">Илер-Жермен-Эдгар де Га (Эдгар Дега)</a></div>
         <div class="card-title">Salle de billard au Ménil-Hubert (Бильярдная в Мениль-Юбер), 1892</div>
@@ -802,7 +803,7 @@
     <div class="card-facts"><div><span>Год</span><b>1892</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>50,7 x 65,5 см</b></div></div>
     </article><article class="card" data-artist="илер-жермен-эдгар де га (эдгар дега)" data-title="jockey blessé (раненый жокей), 1896-1898" data-year="2025" data-month="08" data-cyear="1896" data-museum="базельский-художественный-музей-базель" data-material="холст" data-techniques="масло" data-search="илер-жермен-эдгар де га (эдгар дега) jockey blessé (раненый жокей), 1896-1898 базельский художественный музей, базель холст масло degas kunstmuseumbasel картина 2025-08-01" data-no="77" data-decade="1890–1899">
     <span class="card-no">077</span>
-    <div class="card-img"><img src="images/thumbs/degas-ranenyi-zhokei-1896.jpg" alt="Илер-Жермен-Эдгар де Га (Эдгар Дега) — Jockey blessé (Раненый жокей), 1896-1898" width="1006" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="degas-ranenyi-zhokei-1896.html" aria-label="Открыть картину: Илер-Жермен-Эдгар де Га (Эдгар Дега) — Jockey blessé (Раненый жокей), 1896-1898"><img src="images/thumbs/degas-ranenyi-zhokei-1896.jpg" alt="Илер-Жермен-Эдгар де Га (Эдгар Дега) — Jockey blessé (Раненый жокей), 1896-1898" width="1006" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="degas-ranenyi-zhokei-1896.html">Илер-Жермен-Эдгар де Га (Эдгар Дега)</a></div>
         <div class="card-title">Jockey blessé (Раненый жокей), 1896-1898</div>
@@ -812,7 +813,7 @@
     <div class="card-facts"><div><span>Год</span><b>1896</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>180,6 x 150,9 см</b></div></div>
     </article><article class="card" data-artist="йохан фредерик фриц таулов" data-title="a stream in springtime (ручей в весеннее время), 1901" data-year="2025" data-month="07" data-cyear="1901" data-museum="частная-коллекция" data-material="холст" data-techniques="масло" data-search="йохан фредерик фриц таулов a stream in springtime (ручей в весеннее время), 1901 частная коллекция холст масло pc thaulow картина 2025-07-24" data-no="85" data-decade="1900–1909">
     <span class="card-no">085</span>
-    <div class="card-img"><img src="images/thumbs/thaulow-ruchei-v-vesennee-vremya-1901.jpg" alt="Йохан Фредерик Фриц Таулов — A Stream in Springtime (Ручей в весеннее время), 1901" width="1200" height="1015" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="thaulow-ruchei-v-vesennee-vremya-1901.html" aria-label="Открыть картину: Йохан Фредерик Фриц Таулов — A Stream in Springtime (Ручей в весеннее время), 1901"><img src="images/thumbs/thaulow-ruchei-v-vesennee-vremya-1901.jpg" alt="Йохан Фредерик Фриц Таулов — A Stream in Springtime (Ручей в весеннее время), 1901" width="1200" height="1015" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="thaulow-ruchei-v-vesennee-vremya-1901.html">Йохан Фредерик Фриц Таулов</a></div>
         <div class="card-title">A Stream in Springtime (Ручей в весеннее время), 1901</div>
@@ -822,7 +823,7 @@
     <div class="card-facts"><div><span>Год</span><b>1901</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>46,4 x 54,3 см</b></div></div>
     </article><article class="card" data-artist="жан фредерик базиль" data-title="paysage au bord du lez (пейзаж на берегу лез), 1870" data-year="2025" data-month="07" data-cyear="1870" data-museum="институт-искусств-миннеаполиса-миннеаполис" data-material="холст" data-techniques="масло" data-search="жан фредерик базиль paysage au bord du lez (пейзаж на берегу лез), 1870 институт искусств миннеаполиса, миннеаполис холст масло bazille mia картина 2025-07-21" data-no="24" data-decade="1870–1879">
     <span class="card-no">024</span>
-    <div class="card-img"><img src="images/thumbs/bazille-peizazh-na-beregu-lez-1870.jpg" alt="Жан Фредерик Базиль — Paysage au bord du Lez (Пейзаж на берегу Лез), 1870" width="1200" height="810" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="bazille-peizazh-na-beregu-lez-1870.html" aria-label="Открыть картину: Жан Фредерик Базиль — Paysage au bord du Lez (Пейзаж на берегу Лез), 1870"><img src="images/thumbs/bazille-peizazh-na-beregu-lez-1870.jpg" alt="Жан Фредерик Базиль — Paysage au bord du Lez (Пейзаж на берегу Лез), 1870" width="1200" height="810" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="bazille-peizazh-na-beregu-lez-1870.html">Жан Фредерик Базиль</a></div>
         <div class="card-title">Paysage au bord du Lez (Пейзаж на берегу Лез), 1870</div>
@@ -832,7 +833,7 @@
     <div class="card-facts"><div><span>Год</span><b>1870</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>137,16 x 200,66 см</b></div></div>
     </article><article class="card" data-artist="констан тройон" data-title="le marais (болото), 1840" data-year="2025" data-month="07" data-cyear="1840" data-museum="чикагский-институт-искусств-чикаго" data-material="холст" data-techniques="масло" data-search="констан тройон le marais (болото), 1840 чикагский институт искусств, чикаго холст масло aic troyon картина 2025-07-15" data-no="9" data-decade="1840–1849">
     <span class="card-no">009</span>
-    <div class="card-img"><img src="images/thumbs/troyon-boloto-1840.jpg" alt="Констан Тройон — Le Marais (Болото), 1840" width="1200" height="794" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="troyon-boloto-1840.html" aria-label="Открыть картину: Констан Тройон — Le Marais (Болото), 1840"><img src="images/thumbs/troyon-boloto-1840.jpg" alt="Констан Тройон — Le Marais (Болото), 1840" width="1200" height="794" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="troyon-boloto-1840.html">Констан Тройон</a></div>
         <div class="card-title">Le Marais (Болото), 1840</div>
@@ -842,7 +843,7 @@
     <div class="card-facts"><div><span>Год</span><b>1840</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>93 x 140 см</b></div></div>
     </article><article class="card" data-artist="фердинанд ходлер" data-title="die strasse nach evordes (дорога в эвордес), 1890" data-year="2025" data-month="07" data-cyear="1890" data-museum="винтертурский-художественный-музей-винтертур" data-material="холст" data-techniques="масло" data-search="фердинанд ходлер die strasse nach evordes (дорога в эвордес), 1890 винтертурский художественный музей, винтертур холст масло hodler kmw картина 2025-07-12" data-no="63" data-decade="1890–1899">
     <span class="card-no">063</span>
-    <div class="card-img"><img src="images/thumbs/hodler-doroga-v-evordes-1890.jpg" alt="Фердинанд Ходлер — Die Strasse nach Evordes (Дорога в Эвордес), 1890" width="847" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="hodler-doroga-v-evordes-1890.html" aria-label="Открыть картину: Фердинанд Ходлер — Die Strasse nach Evordes (Дорога в Эвордес), 1890"><img src="images/thumbs/hodler-doroga-v-evordes-1890.jpg" alt="Фердинанд Ходлер — Die Strasse nach Evordes (Дорога в Эвордес), 1890" width="847" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="hodler-doroga-v-evordes-1890.html">Фердинанд Ходлер</a></div>
         <div class="card-title">Die Strasse nach Evordes (Дорога в Эвордес), 1890</div>
@@ -852,7 +853,7 @@
     <div class="card-facts"><div><span>Год</span><b>1890</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>62,5 x 44,5 см</b></div></div>
     </article><article class="card" data-artist="каспар давид фридрих" data-title="ansicht der ostküste rügens mit einem schäfer (вид на восточный берег острова рюген с пастухом), 1805–06" data-year="2025" data-month="07" data-cyear="1805" data-museum="метрополитен-музей-нью-йорк" data-material="тонированная-рифлёная-бумага" data-techniques="тушь-сепия акварель-сепия белая-гуашь графит" data-search="каспар давид фридрих ansicht der ostküste rügens mit einem schäfer (вид на восточный берег острова рюген с пастухом), 1805–06 метрополитен-музей, нью-йорк тонированная рифлёная бумага тушь-сепия акварель-сепия белая гуашь графит friedrich themet картина 2025-07-09" data-no="3" data-decade="1800–1809">
     <span class="card-no">003</span>
-    <div class="card-img"><img src="images/thumbs/friedrich-vid-na-vostochnyi-bereg-ostrova-ryugen-s-pastuho-1805.jpg" alt="Каспар Давид Фридрих — Ansicht der Ostküste Rügens mit einem Schäfer (Вид на восточный берег острова Рюген с пастухом), 1805–06" width="1200" height="740" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="friedrich-vid-na-vostochnyi-bereg-ostrova-ryugen-s-pastuho-1805.html" aria-label="Открыть картину: Каспар Давид Фридрих — Ansicht der Ostküste Rügens mit einem Schäfer (Вид на восточный берег острова Рюген с пастухом), 1805–06"><img src="images/thumbs/friedrich-vid-na-vostochnyi-bereg-ostrova-ryugen-s-pastuho-1805.jpg" alt="Каспар Давид Фридрих — Ansicht der Ostküste Rügens mit einem Schäfer (Вид на восточный берег острова Рюген с пастухом), 1805–06" width="1200" height="740" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="friedrich-vid-na-vostochnyi-bereg-ostrova-ryugen-s-pastuho-1805.html">Каспар Давид Фридрих</a></div>
         <div class="card-title">Ansicht der Ostküste Rügens mit einem Schäfer (Вид на восточный берег острова Рюген с пастухом), 1805–06</div>
@@ -862,7 +863,7 @@
     <div class="card-facts"><div><span>Год</span><b>1805</b></div><div><span>Материал</span><b>тонированная рифлёная бумага</b></div><div><span>Техника</span><b>тушь-сепия, акварель-сепия, белая гуашь, графит</b></div><div><span>Размер</span><b>61,6 x 99 см</b></div></div>
     </article><article class="card" data-artist="альберт бирштадт" data-title="a river landscape, westphalia (речной пейзаж, вестфалия), 1855" data-year="2025" data-month="07" data-cyear="1855" data-museum="частная-коллекция" data-material="холст" data-techniques="масло" data-search="альберт бирштадт a river landscape, westphalia (речной пейзаж, вестфалия), 1855 частная коллекция холст масло bierstadt pc картина 2025-07-03" data-no="12" data-decade="1850–1859">
     <span class="card-no">012</span>
-    <div class="card-img"><img src="images/thumbs/bierstadt-rechnoi-peizazh-vestfaliya-1855.jpg" alt="Альберт Бирштадт — A River Landscape, Westphalia (Речной пейзаж, Вестфалия), 1855" width="1200" height="879" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="bierstadt-rechnoi-peizazh-vestfaliya-1855.html" aria-label="Открыть картину: Альберт Бирштадт — A River Landscape, Westphalia (Речной пейзаж, Вестфалия), 1855"><img src="images/thumbs/bierstadt-rechnoi-peizazh-vestfaliya-1855.jpg" alt="Альберт Бирштадт — A River Landscape, Westphalia (Речной пейзаж, Вестфалия), 1855" width="1200" height="879" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="bierstadt-rechnoi-peizazh-vestfaliya-1855.html">Альберт Бирштадт</a></div>
         <div class="card-title">A River Landscape, Westphalia (Речной пейзаж, Вестфалия), 1855</div>
@@ -872,7 +873,7 @@
     <div class="card-facts"><div><span>Год</span><b>1855</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>109,9 x 149,9 см</b></div></div>
     </article><article class="card" data-artist="альфред сислей" data-title="le pont de moret (мост в морэ), 1893" data-year="2025" data-month="06" data-cyear="1893" data-museum="музей-дорсе-париж" data-material="холст" data-techniques="масло" data-search="альфред сислей le pont de moret (мост в морэ), 1893 музей д’орсе, париж холст масло dorsay sisley картина 2025-06-27" data-no="74" data-decade="1890–1899">
     <span class="card-no">074</span>
-    <div class="card-img"><img src="images/thumbs/sisley-most-v-more-1893.jpg" alt="Альфред Сислей — Le Pont de Moret (Мост в Морэ), 1893" width="1200" height="939" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="sisley-most-v-more-1893.html" aria-label="Открыть картину: Альфред Сислей — Le Pont de Moret (Мост в Морэ), 1893"><img src="images/thumbs/sisley-most-v-more-1893.jpg" alt="Альфред Сислей — Le Pont de Moret (Мост в Морэ), 1893" width="1200" height="939" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="sisley-most-v-more-1893.html">Альфред Сислей</a></div>
         <div class="card-title">Le Pont de Moret (Мост в Морэ), 1893</div>
@@ -882,7 +883,7 @@
     <div class="card-facts"><div><span>Год</span><b>1893</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>73,5 x 92 см</b></div></div>
     </article><article class="card" data-artist="жан луи форен" data-title="les courses (скачки), 1888" data-year="2025" data-month="06" data-cyear="1888" data-museum="гмии-им-ас-пушкина-москва" data-material="холст" data-techniques="масло" data-search="жан луи форен les courses (скачки), 1888 гмии им. а.с. пушкина, москва холст масло forain гмии картина 2025-06-21" data-no="59" data-decade="1880–1889">
     <span class="card-no">059</span>
-    <div class="card-img"><img src="images/thumbs/forain-skachki-1888.jpg" alt="Жан Луи Форен — Les courses (Скачки), 1888" width="1173" height="954" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="forain-skachki-1888.html" aria-label="Открыть картину: Жан Луи Форен — Les courses (Скачки), 1888"><img src="images/thumbs/forain-skachki-1888.jpg" alt="Жан Луи Форен — Les courses (Скачки), 1888" width="1173" height="954" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="forain-skachki-1888.html">Жан Луи Форен</a></div>
         <div class="card-title">Les courses (Скачки), 1888</div>
@@ -892,7 +893,7 @@
     <div class="card-facts"><div><span>Год</span><b>1888</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>37,8 x 45,2 см</b></div></div>
     </article><article class="card" data-artist="фердинан виктор эжен делакруа" data-title="bouquet de fleurs (ваза с цветами), 1833" data-year="2025" data-month="06" data-cyear="1833" data-museum="национальная-галерея-шотландии-эдинбург" data-material="холст" data-techniques="масло" data-search="фердинан виктор эжен делакруа bouquet de fleurs (ваза с цветами), 1833 национальная галерея шотландии, эдинбург холст масло delacroix nationalgalleriesofscotland картина 2025-06-18" data-no="6" data-decade="1830–1839">
     <span class="card-no">006</span>
-    <div class="card-img"><img src="images/thumbs/delacroix-vaza-s-tsvetami-1833.jpg" alt="Фердинан Виктор Эжен Делакруа — Bouquet de fleurs (Ваза с цветами), 1833" width="1018" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="delacroix-vaza-s-tsvetami-1833.html" aria-label="Открыть картину: Фердинан Виктор Эжен Делакруа — Bouquet de fleurs (Ваза с цветами), 1833"><img src="images/thumbs/delacroix-vaza-s-tsvetami-1833.jpg" alt="Фердинан Виктор Эжен Делакруа — Bouquet de fleurs (Ваза с цветами), 1833" width="1018" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="delacroix-vaza-s-tsvetami-1833.html">Фердинан Виктор Эжен Делакруа</a></div>
         <div class="card-title">Bouquet de fleurs (Ваза с цветами), 1833</div>
@@ -902,7 +903,7 @@
     <div class="card-facts"><div><span>Год</span><b>1833</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>57,7 x 48,8 см</b></div></div>
     </article><article class="card" data-artist="валентин александрович серов" data-title="солдатушки, бравы ребятушки, где же ваша слава?, 1905" data-year="2025" data-month="06" data-cyear="1905" data-museum="государственный-русский-музей-санкт-петербург" data-material="картон" data-techniques="темпера графит гуашь уголь" data-search="валентин александрович серов солдатушки, бравы ребятушки, где же ваша слава?, 1905 государственный русский музей, санкт-петербург картон темпера графит гуашь уголь грм картина серов 2025-06-14" data-no="90" data-decade="1900–1909">
     <span class="card-no">090</span>
-    <div class="card-img"><img src="images/thumbs/serov-soldatushki-bravy-rebyatushki-gde-zhe-vasha-slav-1905.jpg" alt="Валентин Александрович Серов — Солдатушки, бравы ребятушки, где же ваша слава?, 1905" width="932" height="635" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="serov-soldatushki-bravy-rebyatushki-gde-zhe-vasha-slav-1905.html" aria-label="Открыть картину: Валентин Александрович Серов — Солдатушки, бравы ребятушки, где же ваша слава?, 1905"><img src="images/thumbs/serov-soldatushki-bravy-rebyatushki-gde-zhe-vasha-slav-1905.jpg" alt="Валентин Александрович Серов — Солдатушки, бравы ребятушки, где же ваша слава?, 1905" width="932" height="635" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="serov-soldatushki-bravy-rebyatushki-gde-zhe-vasha-slav-1905.html">Валентин Александрович Серов</a></div>
         <div class="card-title">Солдатушки, бравы ребятушки, где же ваша слава?, 1905</div>
@@ -912,7 +913,7 @@
     <div class="card-facts"><div><span>Год</span><b>1905</b></div><div><span>Материал</span><b>картон</b></div><div><span>Техника</span><b>темпера, графит, гуашь, уголь</b></div><div><span>Размер</span><b>47,5 х 71,5 см</b></div></div>
     </article><article class="card" data-artist="жан дезире гюстав курбе" data-title="la rencontre ou bonjour monsieur courbet (встреча или здравствуйте, мистер курбе), 1854" data-year="2025" data-month="06" data-cyear="1854" data-museum="музей-фабра-монпелье" data-material="холст" data-techniques="масло" data-search="жан дезире гюстав курбе la rencontre ou bonjour monsieur courbet (встреча или здравствуйте, мистер курбе), 1854 музей фабра, монпелье холст масло courbet muséefabre картина 2025-06-10" data-no="11" data-decade="1850–1859">
     <span class="card-no">011</span>
-    <div class="card-img"><img src="images/thumbs/courbet-vstrecha-ili-zdravstvuite-mister-kurbe-1854.jpg" alt="Жан Дезире Гюстав Курбе — La Rencontre ou Bonjour Monsieur Courbet (Встреча или Здравствуйте, мистер Курбе), 1854" width="1200" height="1039" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="courbet-vstrecha-ili-zdravstvuite-mister-kurbe-1854.html" aria-label="Открыть картину: Жан Дезире Гюстав Курбе — La Rencontre ou Bonjour Monsieur Courbet (Встреча или Здравствуйте, мистер Курбе), 1854"><img src="images/thumbs/courbet-vstrecha-ili-zdravstvuite-mister-kurbe-1854.jpg" alt="Жан Дезире Гюстав Курбе — La Rencontre ou Bonjour Monsieur Courbet (Встреча или Здравствуйте, мистер Курбе), 1854" width="1200" height="1039" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="courbet-vstrecha-ili-zdravstvuite-mister-kurbe-1854.html">Жан Дезире Гюстав Курбе</a></div>
         <div class="card-title">La Rencontre ou Bonjour Monsieur Courbet (Встреча или Здравствуйте, мистер Курбе), 1854</div>
@@ -922,7 +923,7 @@
     <div class="card-facts"><div><span>Год</span><b>1854</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>132 x 150,5 см</b></div></div>
     </article><article class="card" data-artist="альфред сислей" data-title="rue eugène moussoir à moret: l&#x27;hiver (улица эжена муссуара в море: зима), 1891" data-year="2025" data-month="06" data-cyear="1891" data-museum="метрополитен-музей-нью-йорк" data-material="холст" data-techniques="масло" data-search="альфред сислей rue eugène moussoir à moret: l&#x27;hiver (улица эжена муссуара в море: зима), 1891 метрополитен-музей, нью-йорк холст масло sisley themet картина 2025-06-07" data-no="66" data-decade="1890–1899">
     <span class="card-no">066</span>
-    <div class="card-img"><img src="images/thumbs/sisley-ulitsa-ezhena-mussuara-v-more-zima-1891.jpg" alt="Альфред Сислей — Rue Eugène Moussoir à Moret: L&#x27;hiver (Улица Эжена Муссуара в Море: Зима), 1891" width="1200" height="994" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="sisley-ulitsa-ezhena-mussuara-v-more-zima-1891.html" aria-label="Открыть картину: Альфред Сислей — Rue Eugène Moussoir à Moret: L&#x27;hiver (Улица Эжена Муссуара в Море: Зима), 1891"><img src="images/thumbs/sisley-ulitsa-ezhena-mussuara-v-more-zima-1891.jpg" alt="Альфред Сислей — Rue Eugène Moussoir à Moret: L&#x27;hiver (Улица Эжена Муссуара в Море: Зима), 1891" width="1200" height="994" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="sisley-ulitsa-ezhena-mussuara-v-more-zima-1891.html">Альфред Сислей</a></div>
         <div class="card-title">Rue Eugène Moussoir à Moret: L&#x27;hiver (Улица Эжена Муссуара в Море: Зима), 1891</div>
@@ -932,7 +933,7 @@
     <div class="card-facts"><div><span>Год</span><b>1891</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>46,7 x 56,5 см</b></div></div>
     </article><article class="card" data-artist="йохан фредерик фриц таулов" data-title="горная речка, между 1887 и 1890 годами" data-year="2025" data-month="06" data-cyear="1887" data-museum="гмии-им-ас-пушкина-москва" data-material="холст" data-techniques="пастель" data-search="йохан фредерик фриц таулов горная речка, между 1887 и 1890 годами гмии им. а.с. пушкина, москва холст пастель thaulow гмии картина 2025-06-05" data-no="56" data-decade="1880–1889">
     <span class="card-no">056</span>
-    <div class="card-img"><img src="images/thumbs/thaulow-gornaya-rechka-mezhdu-1887-i-1890-godami-1887.jpg" alt="Йохан Фредерик Фриц Таулов — Горная речка, между 1887 и 1890 годами" width="1200" height="879" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="thaulow-gornaya-rechka-mezhdu-1887-i-1890-godami-1887.html" aria-label="Открыть картину: Йохан Фредерик Фриц Таулов — Горная речка, между 1887 и 1890 годами"><img src="images/thumbs/thaulow-gornaya-rechka-mezhdu-1887-i-1890-godami-1887.jpg" alt="Йохан Фредерик Фриц Таулов — Горная речка, между 1887 и 1890 годами" width="1200" height="879" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="thaulow-gornaya-rechka-mezhdu-1887-i-1890-godami-1887.html">Йохан Фредерик Фриц Таулов</a></div>
         <div class="card-title">Горная речка, между 1887 и 1890 годами</div>
@@ -942,7 +943,7 @@
     <div class="card-facts"><div><span>Год</span><b>1887</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>пастель</b></div><div><span>Размер</span><b>59,5 x 80 см</b></div></div>
     </article><article class="card" data-artist="франц теодор макс слефогт" data-title="unter den linden (fahnen in berlin) (унтер-ден-линден (флаги в берлине)), 1913" data-year="2025" data-month="06" data-cyear="1913" data-museum="старая-национальная-галерея-берлин" data-material="холст" data-techniques="масло" data-search="франц теодор макс слефогт unter den linden (fahnen in berlin) (унтер-ден-линден (флаги в берлине)), 1913 старая национальная галерея, берлин холст масло altenationalgalerie slevogt картина 2025-06-02" data-no="100" data-decade="1910–1919">
     <span class="card-no">100</span>
-    <div class="card-img"><img src="images/thumbs/slevogt-unter-den-linden-1913.jpg" alt="Франц Теодор Макс Слефогт — Unter den Linden (Fahnen in Berlin) (Унтер-ден-Линден (Флаги в Берлине)), 1913" width="1200" height="990" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="slevogt-unter-den-linden-flagi-v-berline-1913.html" aria-label="Открыть картину: Франц Теодор Макс Слефогт — Unter den Linden (Fahnen in Berlin) (Унтер-ден-Линден (Флаги в Берлине)), 1913"><img src="images/thumbs/slevogt-unter-den-linden-1913.jpg" alt="Франц Теодор Макс Слефогт — Unter den Linden (Fahnen in Berlin) (Унтер-ден-Линден (Флаги в Берлине)), 1913" width="1200" height="990" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="slevogt-unter-den-linden-flagi-v-berline-1913.html">Франц Теодор Макс Слефогт</a></div>
         <div class="card-title">Unter den Linden (Fahnen in Berlin) (Унтер-ден-Линден (Флаги в Берлине)), 1913</div>
@@ -952,7 +953,7 @@
     <div class="card-facts"><div><span>Год</span><b>1913</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div></div>
     </article><article class="card" data-artist="ханс даль" data-title="норвежский фьорд с козами, 1910-е" data-year="2025" data-month="05" data-cyear="1910" data-museum="частная-коллекция" data-material="холст" data-techniques="масло" data-search="ханс даль норвежский фьорд с козами, 1910-е частная коллекция холст масло dahl pc картина 2025-05-31" data-no="96" data-decade="1910–1919">
     <span class="card-no">096</span>
-    <div class="card-img"><img src="images/thumbs/dahl-norvezhskii-ford-s-kozami-1910-e-1910.jpg" alt="Ханс Даль — Норвежский фьорд с козами, 1910-е" width="1200" height="907" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="dahl-norvezhskii-ford-s-kozami-1910-e-1910.html" aria-label="Открыть картину: Ханс Даль — Норвежский фьорд с козами, 1910-е"><img src="images/thumbs/dahl-norvezhskii-ford-s-kozami-1910-e-1910.jpg" alt="Ханс Даль — Норвежский фьорд с козами, 1910-е" width="1200" height="907" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="dahl-norvezhskii-ford-s-kozami-1910-e-1910.html">Ханс Даль</a></div>
         <div class="card-title">Норвежский фьорд с козами, 1910-е</div>
@@ -962,7 +963,7 @@
     <div class="card-facts"><div><span>Год</span><b>1910</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>38 x 50 см</b></div></div>
     </article><article class="card" data-artist="игорь эммануилович грабарь" data-title="весенний пейзаж. апрель, 1939" data-year="2025" data-month="05" data-cyear="1939" data-museum="частная-коллекция" data-material="холст" data-techniques="масло" data-search="игорь эммануилович грабарь весенний пейзаж. апрель, 1939 частная коллекция холст масло pc грабарь картина 2025-05-25" data-no="107" data-decade="1930–1939">
     <span class="card-no">107</span>
-    <div class="card-img"><img src="images/thumbs/grabar-vesennii-peizazh-aprel-1939.jpg" alt="Игорь Эммануилович Грабарь — Весенний пейзаж. Апрель, 1939" width="1200" height="859" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="grabar-vesennii-peizazh-aprel-1939.html" aria-label="Открыть картину: Игорь Эммануилович Грабарь — Весенний пейзаж. Апрель, 1939"><img src="images/thumbs/grabar-vesennii-peizazh-aprel-1939.jpg" alt="Игорь Эммануилович Грабарь — Весенний пейзаж. Апрель, 1939" width="1200" height="859" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="grabar-vesennii-peizazh-aprel-1939.html">Игорь Эммануилович Грабарь</a></div>
         <div class="card-title">Весенний пейзаж. Апрель, 1939</div>
@@ -972,7 +973,7 @@
     <div class="card-facts"><div><span>Год</span><b>1939</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>66 x 91 см</b></div></div>
     </article><article class="card" data-artist="геркулес сегерс" data-title="woodland path (лесная тропа), около 1618-20" data-year="2025" data-month="05" data-cyear="1618" data-museum="частная-коллекция" data-material="холст" data-techniques="масло" data-search="геркулес сегерс woodland path (лесная тропа), около 1618-20 частная коллекция холст масло pc segers картина 2025-05-23" data-no="1" data-decade="1610–1619">
     <span class="card-no">001</span>
-    <div class="card-img"><img src="images/thumbs/segers-lesnaya-tropa-1618.jpg" alt="Геркулес Сегерс — Woodland Path (Лесная тропа), около 1618-20" width="1200" height="840" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="segers-lesnaya-tropa-1618.html" aria-label="Открыть картину: Геркулес Сегерс — Woodland Path (Лесная тропа), около 1618-20"><img src="images/thumbs/segers-lesnaya-tropa-1618.jpg" alt="Геркулес Сегерс — Woodland Path (Лесная тропа), около 1618-20" width="1200" height="840" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="segers-lesnaya-tropa-1618.html">Геркулес Сегерс</a></div>
         <div class="card-title">Woodland Path (Лесная тропа), около 1618-20</div>
@@ -982,7 +983,7 @@
     <div class="card-facts"><div><span>Год</span><b>1618</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>16,1 x 22,7 см</b></div></div>
     </article><article class="card" data-artist="анри жан гийом мартен" data-title="le paysan et la bergère (крестьянин и пастушка), 1903" data-year="2025" data-month="05" data-cyear="1903" data-museum="частная-коллекция-франция" data-material="холст" data-techniques="масло" data-search="анри жан гийом мартен le paysan et la bergère (крестьянин и пастушка), 1903 частная коллекция, франция холст масло martin pc картина 2025-05-17" data-no="88" data-decade="1900–1909">
     <span class="card-no">088</span>
-    <div class="card-img"><img src="images/thumbs/martin-krestyanin-i-pastushka-1903.jpg" alt="Анри Жан Гийом Мартен — Le paysan et la bergère (Крестьянин и пастушка), 1903" width="844" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="martin-krestyanin-i-pastushka-1903.html" aria-label="Открыть картину: Анри Жан Гийом Мартен — Le paysan et la bergère (Крестьянин и пастушка), 1903"><img src="images/thumbs/martin-krestyanin-i-pastushka-1903.jpg" alt="Анри Жан Гийом Мартен — Le paysan et la bergère (Крестьянин и пастушка), 1903" width="844" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="martin-krestyanin-i-pastushka-1903.html">Анри Жан Гийом Мартен</a></div>
         <div class="card-title">Le paysan et la bergère (Крестьянин и пастушка), 1903</div>
@@ -992,7 +993,7 @@
     <div class="card-facts"><div><span>Год</span><b>1903</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>90 x 65 см</b></div></div>
     </article><article class="card" data-artist="константин фёдорович юон" data-title="парад на красной площади 7 ноября 1941 года, 1949" data-year="2025" data-month="05" data-cyear="1949" data-museum="гим-москва" data-material="холст" data-techniques="масло" data-search="константин фёдорович юон парад на красной площади 7 ноября 1941 года, 1949 гим, москва холст масло гим картина юон 2025-05-09" data-no="108" data-decade="1940–1949">
     <span class="card-no">108</span>
-    <div class="card-img"><img src="images/thumbs/yuon-parad-na-krasnoi-ploschadi-7-noyabrya-1941-goda-1949.jpg" alt="Константин Фёдорович Юон — Парад на Красной площади 7 ноября 1941 года, 1949" width="1200" height="877" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="yuon-parad-na-krasnoi-ploschadi-7-noyabrya-1941-goda-1949.html" aria-label="Открыть картину: Константин Фёдорович Юон — Парад на Красной площади 7 ноября 1941 года, 1949"><img src="images/thumbs/yuon-parad-na-krasnoi-ploschadi-7-noyabrya-1941-goda-1949.jpg" alt="Константин Фёдорович Юон — Парад на Красной площади 7 ноября 1941 года, 1949" width="1200" height="877" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="yuon-parad-na-krasnoi-ploschadi-7-noyabrya-1941-goda-1949.html">Константин Фёдорович Юон</a></div>
         <div class="card-title">Парад на Красной площади 7 ноября 1941 года, 1949</div>
@@ -1002,7 +1003,7 @@
     <div class="card-facts"><div><span>Год</span><b>1949</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>71,5 x 105 см</b></div></div>
     </article><article class="card" data-artist="джон гловер" data-title="a view of the artist&#x27;s house and garden, in mills plains, van diemen&#x27;s land (вид на дом и сад художника в миллс-плейнс, земля ван-димена), 1835" data-year="2025" data-month="05" data-cyear="1835" data-museum="художественная-галерея-южной-австралии-аделаида" data-material="холст" data-techniques="масло" data-search="джон гловер a view of the artist&#x27;s house and garden, in mills plains, van diemen&#x27;s land (вид на дом и сад художника в миллс-плейнс, земля ван-димена), 1835 художественная галерея южной австралии, аделаида холст масло agsa glover картина 2025-05-06" data-no="7" data-decade="1830–1839">
     <span class="card-no">007</span>
-    <div class="card-img"><img src="images/thumbs/glover-vid-na-dom-i-sad-hudozhnika-v-mills-pleins-zemly-1835.jpg" alt="Джон Гловер — A view of the artist&#x27;s house and garden, in Mills Plains, Van Diemen&#x27;s Land (Вид на дом и сад художника в Миллс-Плейнс, Земля Ван-Димена), 1835" width="1200" height="797" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="glover-vid-na-dom-i-sad-hudozhnika-v-mills-pleins-zemly-1835.html" aria-label="Открыть картину: Джон Гловер — A view of the artist&#x27;s house and garden, in Mills Plains, Van Diemen&#x27;s Land (Вид на дом и сад художника в Миллс-Плейнс, Земля Ван-Димена), 1835"><img src="images/thumbs/glover-vid-na-dom-i-sad-hudozhnika-v-mills-pleins-zemly-1835.jpg" alt="Джон Гловер — A view of the artist&#x27;s house and garden, in Mills Plains, Van Diemen&#x27;s Land (Вид на дом и сад художника в Миллс-Плейнс, Земля Ван-Димена), 1835" width="1200" height="797" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="glover-vid-na-dom-i-sad-hudozhnika-v-mills-pleins-zemly-1835.html">Джон Гловер</a></div>
         <div class="card-title">A view of the artist&#x27;s house and garden, in Mills Plains, Van Diemen&#x27;s Land (Вид на дом и сад художника в Миллс-Плейнс, Земля Ван-Димена), 1835</div>
@@ -1012,7 +1013,7 @@
     <div class="card-facts"><div><span>Год</span><b>1835</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>76,4 x 114,4 см</b></div></div>
     </article><article class="card" data-artist="макс либерман" data-title="die kartoffelernte (собирание картофеля), 1875" data-year="2025" data-month="05" data-cyear="1875" data-museum="музей-кунстпаласт-дюссельдорф" data-material="холст" data-techniques="масло" data-search="макс либерман die kartoffelernte (собирание картофеля), 1875 музей кунстпаласт, дюссельдорф холст масло liebermann museumkunstpalast картина 2025-05-04" data-no="30" data-decade="1870–1879">
     <span class="card-no">030</span>
-    <div class="card-img"><img src="images/thumbs/liebermann-sobiranie-kartofelya-1875.jpg" alt="Макс Либерман — Die Kartoffelernte (Собирание картофеля), 1875" width="1200" height="763" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="liebermann-sobiranie-kartofelya-1875.html" aria-label="Открыть картину: Макс Либерман — Die Kartoffelernte (Собирание картофеля), 1875"><img src="images/thumbs/liebermann-sobiranie-kartofelya-1875.jpg" alt="Макс Либерман — Die Kartoffelernte (Собирание картофеля), 1875" width="1200" height="763" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="liebermann-sobiranie-kartofelya-1875.html">Макс Либерман</a></div>
         <div class="card-title">Die Kartoffelernte (Собирание картофеля), 1875</div>
@@ -1022,7 +1023,7 @@
     <div class="card-facts"><div><span>Год</span><b>1875</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>108,5 x 172 см</b></div></div>
     </article><article class="card" data-artist="луиджи алоис-франсуа-жозеф луар" data-title="smoke on the paris circuit line (дым окружной парижской железной дороги), 1885" data-year="2025" data-month="04" data-cyear="1885" data-museum="гмии-им-ас-пушкина-москва" data-material="холст" data-techniques="масло" data-search="луиджи алоис-франсуа-жозеф луар smoke on the paris circuit line (дым окружной парижской железной дороги), 1885 гмии им. а.с. пушкина, москва холст масло loir гмии картина 2025-04-28" data-no="53" data-decade="1880–1889">
     <span class="card-no">053</span>
-    <div class="card-img"><img src="images/thumbs/loir-dym-okruzhnoi-parizhskoi-zheleznoi-dorogi-1885.jpg" alt="Луиджи Алоис-Франсуа-Жозеф Луар — Smoke on the Paris Circuit Line (Дым окружной парижской железной дороги), 1885" width="1200" height="678" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="loir-dym-okruzhnoi-parizhskoi-zheleznoi-dorogi-1885.html" aria-label="Открыть картину: Луиджи Алоис-Франсуа-Жозеф Луар — Smoke on the Paris Circuit Line (Дым окружной парижской железной дороги), 1885"><img src="images/thumbs/loir-dym-okruzhnoi-parizhskoi-zheleznoi-dorogi-1885.jpg" alt="Луиджи Алоис-Франсуа-Жозеф Луар — Smoke on the Paris Circuit Line (Дым окружной парижской железной дороги), 1885" width="1200" height="678" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="loir-dym-okruzhnoi-parizhskoi-zheleznoi-dorogi-1885.html">Луиджи Алоис-Франсуа-Жозеф Луар</a></div>
         <div class="card-title">Smoke on the Paris Circuit Line (Дым окружной парижской железной дороги), 1885</div>
@@ -1032,7 +1033,7 @@
     <div class="card-facts"><div><span>Год</span><b>1885</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>172 x 296 см</b></div></div>
     </article><article class="card" data-artist="илья ефимович репин" data-title="летний пейзаж (в.а.репина на мостике в абрамцеве), 1879" data-year="2025" data-month="04" data-cyear="1879" data-museum="отдел-личных-коллекций-гмии-им-ас-пушкина-москва" data-material="холст" data-techniques="масло" data-search="илья ефимович репин летний пейзаж (в.а.репина на мостике в абрамцеве), 1879 отдел личных коллекций, гмии им. а.с. пушкина, москва холст масло гмии картина репин 2025-04-24" data-no="41" data-decade="1870–1879">
     <span class="card-no">041</span>
-    <div class="card-img"><img src="images/thumbs/repin-v-a-repina-na-mostike-v-abramtseve-1879.jpg" alt="Илья Ефимович Репин — Летний пейзаж (В.А.Репина на мостике в Абрамцеве), 1879" width="1200" height="741" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="repin-v-a-repina-na-mostike-v-abramtseve-1879.html" aria-label="Открыть картину: Илья Ефимович Репин — Летний пейзаж (В.А.Репина на мостике в Абрамцеве), 1879"><img src="images/thumbs/repin-v-a-repina-na-mostike-v-abramtseve-1879.jpg" alt="Илья Ефимович Репин — Летний пейзаж (В.А.Репина на мостике в Абрамцеве), 1879" width="1200" height="741" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="repin-v-a-repina-na-mostike-v-abramtseve-1879.html">Илья Ефимович Репин</a></div>
         <div class="card-title">Летний пейзаж (В.А.Репина на мостике в Абрамцеве), 1879</div>
@@ -1042,7 +1043,7 @@
     <div class="card-facts"><div><span>Год</span><b>1879</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>37,5 x 61 см</b></div></div>
     </article><article class="card" data-artist="жан дезире гюстав курбе" data-title="dorfausgang im winter (окраина деревни зимой), 1868" data-year="2025" data-month="04" data-cyear="1868" data-museum="штеделевский-художественный-институт-франкфурт-на-майне" data-material="холст" data-techniques="масло" data-search="жан дезире гюстав курбе dorfausgang im winter (окраина деревни зимой), 1868 штеделевский художественный институт, франкфурт-на-майне холст масло courbet städelmuseum картина 2025-04-23" data-no="21" data-decade="1860–1869">
     <span class="card-no">021</span>
-    <div class="card-img"><img src="images/thumbs/courbet-okraina-derevni-zimoi-1868.jpg" alt="Жан Дезире Гюстав Курбе — Dorfausgang im Winter (Окраина деревни зимой), 1868" width="1200" height="970" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="courbet-okraina-derevni-zimoi-1868.html" aria-label="Открыть картину: Жан Дезире Гюстав Курбе — Dorfausgang im Winter (Окраина деревни зимой), 1868"><img src="images/thumbs/courbet-okraina-derevni-zimoi-1868.jpg" alt="Жан Дезире Гюстав Курбе — Dorfausgang im Winter (Окраина деревни зимой), 1868" width="1200" height="970" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="courbet-okraina-derevni-zimoi-1868.html">Жан Дезире Гюстав Курбе</a></div>
         <div class="card-title">Dorfausgang im Winter (Окраина деревни зимой), 1868</div>
@@ -1052,7 +1053,7 @@
     <div class="card-facts"><div><span>Год</span><b>1868</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>44,5 x 54 см</b></div></div>
     </article><article class="card" data-artist="франц фон штук" data-title="sternschnuppen (franz und mary stuck) (падающие звёзды), 1912" data-year="2025" data-month="04" data-cyear="1912" data-museum="частная-коллекция-швейцария" data-material="дерево" data-techniques="масло" data-search="франц фон штук sternschnuppen (franz und mary stuck) (падающие звёзды), 1912 частная коллекция, швейцария дерево масло pc stuck картина 2025-04-19" data-no="98" data-decade="1910–1919">
     <span class="card-no">098</span>
-    <div class="card-img"><img src="images/thumbs/stuck-padayuschie-zvezdy-1912.jpg" alt="Франц фон Штук — Sternschnuppen (Franz und Mary Stuck) (Падающие звёзды), 1912" width="1090" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="stuck-padayuschie-zvezdy-1912.html" aria-label="Открыть картину: Франц фон Штук — Sternschnuppen (Franz und Mary Stuck) (Падающие звёзды), 1912"><img src="images/thumbs/stuck-padayuschie-zvezdy-1912.jpg" alt="Франц фон Штук — Sternschnuppen (Franz und Mary Stuck) (Падающие звёзды), 1912" width="1090" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="stuck-padayuschie-zvezdy-1912.html">Франц фон Штук</a></div>
         <div class="card-title">Sternschnuppen (Franz und Mary Stuck) (Падающие звёзды), 1912</div>
@@ -1062,7 +1063,7 @@
     <div class="card-facts"><div><span>Год</span><b>1912</b></div><div><span>Материал</span><b>дерево</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>65 x 58,5 см</b></div></div>
     </article><article class="card" data-artist="илер-жермен-эдгар де га (эдгар дега)" data-title="paysage avec fumée de cheminées (пейзаж с дымовыми трубами), 1890-1893" data-year="2025" data-month="04" data-cyear="1890" data-museum="чикагский-институт-искусств-чикаго" data-material="текстурированная-кремовая-бумага" data-techniques="пастель монотипия" data-search="илер-жермен-эдгар де га (эдгар дега) paysage avec fumée de cheminées (пейзаж с дымовыми трубами), 1890-1893 чикагский институт искусств, чикаго текстурированная кремовая бумага пастель монотипия aic degas картина 2025-04-17" data-no="62" data-decade="1890–1899">
     <span class="card-no">062</span>
-    <div class="card-img"><img src="images/thumbs/degas-peizazh-s-dymovymi-trubami-1890.jpg" alt="Илер-Жермен-Эдгар де Га (Эдгар Дега) — Paysage Avec Fumée de Cheminées (Пейзаж с дымовыми трубами), 1890-1893" width="1200" height="800" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="degas-peizazh-s-dymovymi-trubami-1890.html" aria-label="Открыть картину: Илер-Жермен-Эдгар де Га (Эдгар Дега) — Paysage Avec Fumée de Cheminées (Пейзаж с дымовыми трубами), 1890-1893"><img src="images/thumbs/degas-peizazh-s-dymovymi-trubami-1890.jpg" alt="Илер-Жермен-Эдгар де Га (Эдгар Дега) — Paysage Avec Fumée de Cheminées (Пейзаж с дымовыми трубами), 1890-1893" width="1200" height="800" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="degas-peizazh-s-dymovymi-trubami-1890.html">Илер-Жермен-Эдгар де Га (Эдгар Дега)</a></div>
         <div class="card-title">Paysage Avec Fumée de Cheminées (Пейзаж с дымовыми трубами), 1890-1893</div>
@@ -1072,7 +1073,7 @@
     <div class="card-facts"><div><span>Год</span><b>1890</b></div><div><span>Материал</span><b>текстурированная кремовая бумага</b></div><div><span>Техника</span><b>пастель, монотипия</b></div><div><span>Размер</span><b>31,7 x 41,6 см</b></div></div>
     </article><article class="card" data-artist="жан фредерик базиль" data-title="l’atelier de la rue de furstenberg (мастерская художника на улице фюрстенберг), 1865" data-year="2025" data-month="04" data-cyear="1865" data-museum="музей-фабра-монпелье" data-material="холст" data-techniques="масло" data-search="жан фредерик базиль l’atelier de la rue de furstenberg (мастерская художника на улице фюрстенберг), 1865 музей фабра, монпелье холст масло bazille muséefabre картина 2025-04-15" data-no="17" data-decade="1860–1869">
     <span class="card-no">017</span>
-    <div class="card-img"><img src="images/thumbs/bazille-masterskaya-hudozhnika-na-ulitse-fyurstenberg-1865.jpg" alt="Жан Фредерик Базиль — L’atelier de la rue de Furstenberg (Мастерская художника на улице Фюрстенберг), 1865" width="938" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="bazille-masterskaya-hudozhnika-na-ulitse-fyurstenberg-1865.html" aria-label="Открыть картину: Жан Фредерик Базиль — L’atelier de la rue de Furstenberg (Мастерская художника на улице Фюрстенберг), 1865"><img src="images/thumbs/bazille-masterskaya-hudozhnika-na-ulitse-fyurstenberg-1865.jpg" alt="Жан Фредерик Базиль — L’atelier de la rue de Furstenberg (Мастерская художника на улице Фюрстенберг), 1865" width="938" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="bazille-masterskaya-hudozhnika-na-ulitse-fyurstenberg-1865.html">Жан Фредерик Базиль</a></div>
         <div class="card-title">L’atelier de la rue de Furstenberg (Мастерская художника на улице Фюрстенберг), 1865</div>
@@ -1082,7 +1083,7 @@
     <div class="card-facts"><div><span>Год</span><b>1865</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>80 x 65 см</b></div></div>
     </article><article class="card" data-artist="александр жан-батист брюн" data-title="vue du salon carré au louvre (вид на салон карре в лувре), 1880" data-year="2025" data-month="04" data-cyear="1880" data-museum="лувр-париж-в-запаснике" data-material="холст" data-techniques="масло" data-search="александр жан-батист брюн vue du salon carré au louvre (вид на салон карре в лувре), 1880 лувр, париж (в запаснике) холст масло brun картина 2025-04-13" data-no="44" data-decade="1880–1889">
     <span class="card-no">044</span>
-    <div class="card-img"><img src="images/thumbs/brun-vid-na-salon-karre-v-luvre-1880.jpg" alt="Александр Жан-Батист Брюн — Vue du Salon Carré au Louvre (Вид на Салон Карре в Лувре), 1880" width="1200" height="874" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="brun-vid-na-salon-karre-v-luvre-1880.html" aria-label="Открыть картину: Александр Жан-Батист Брюн — Vue du Salon Carré au Louvre (Вид на Салон Карре в Лувре), 1880"><img src="images/thumbs/brun-vid-na-salon-karre-v-luvre-1880.jpg" alt="Александр Жан-Батист Брюн — Vue du Salon Carré au Louvre (Вид на Салон Карре в Лувре), 1880" width="1200" height="874" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="brun-vid-na-salon-karre-v-luvre-1880.html">Александр Жан-Батист Брюн</a></div>
         <div class="card-title">Vue du Salon Carré au Louvre (Вид на Салон Карре в Лувре), 1880</div>
@@ -1092,7 +1093,7 @@
     <div class="card-facts"><div><span>Год</span><b>1880</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>24 x 32 см</b></div></div>
     </article><article class="card" data-artist="альфред сислей" data-title="la gelée à louvecienne (мороз в лувесьенне), 1873" data-year="2025" data-month="04" data-cyear="1873" data-museum="гмии-им-ас-пушкина-москва" data-material="холст" data-techniques="масло" data-search="альфред сислей la gelée à louvecienne (мороз в лувесьенне), 1873 гмии им. а.с. пушкина, москва холст масло sisley гмии картина 2025-04-11" data-no="26" data-decade="1870–1879">
     <span class="card-no">026</span>
-    <div class="card-img"><img src="images/thumbs/sisley-moroz-v-luvesenne-1873.jpg" alt="Альфред Сислей — La gelée à Louvecienne (Мороз в Лувесьенне), 1873" width="1200" height="890" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="sisley-moroz-v-luvesenne-1873.html" aria-label="Открыть картину: Альфред Сислей — La gelée à Louvecienne (Мороз в Лувесьенне), 1873"><img src="images/thumbs/sisley-moroz-v-luvesenne-1873.jpg" alt="Альфред Сислей — La gelée à Louvecienne (Мороз в Лувесьенне), 1873" width="1200" height="890" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="sisley-moroz-v-luvesenne-1873.html">Альфред Сислей</a></div>
         <div class="card-title">La gelée à Louvecienne (Мороз в Лувесьенне), 1873</div>
@@ -1102,7 +1103,7 @@
     <div class="card-facts"><div><span>Год</span><b>1873</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>46 x 61 см</b></div></div>
     </article><article class="card" data-artist="никола пуссен" data-title="paysage avec hercule et cacus (пейзаж с геркулесом и какусом), около 1660" data-year="2025" data-month="03" data-cyear="1660" data-museum="гмии-им-ас-пушкина-москва" data-material="холст" data-techniques="масло" data-search="никола пуссен paysage avec hercule et cacus (пейзаж с геркулесом и какусом), около 1660 гмии им. а.с. пушкина, москва холст масло poussin гмии картина 2025-03-29" data-no="2" data-decade="1660–1669">
     <span class="card-no">002</span>
-    <div class="card-img"><img src="images/thumbs/poussin-peizazh-s-gerkulesom-i-kakusom-1660.jpg" alt="Никола Пуссен — Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660" width="1200" height="929" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="poussin-peizazh-s-gerkulesom-i-kakusom-1660.html" aria-label="Открыть картину: Никола Пуссен — Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660"><img src="images/thumbs/poussin-peizazh-s-gerkulesom-i-kakusom-1660.jpg" alt="Никола Пуссен — Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660" width="1200" height="929" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="poussin-peizazh-s-gerkulesom-i-kakusom-1660.html">Никола Пуссен</a></div>
         <div class="card-title">Paysage avec Hercule et Cacus (Пейзаж с Геркулесом и Какусом), около 1660</div>
@@ -1112,7 +1113,7 @@
     <div class="card-facts"><div><span>Год</span><b>1660</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>156 x 202 см</b></div></div>
     </article><article class="card" data-artist="архип иванович куинджи" data-title="берёзовая роща, 1879" data-year="2025" data-month="03" data-cyear="1879" data-museum="государственная-третьяковская-галерея-москва" data-material="холст" data-techniques="масло" data-search="архип иванович куинджи берёзовая роща, 1879 государственная третьяковская галерея, москва холст масло гтг картина куинджи 2025-03-25" data-no="40" data-decade="1870–1879">
     <span class="card-no">040</span>
-    <div class="card-img"><img src="images/thumbs/kuindzhi-berezovaya-roscha-1879.jpg" alt="Архип Иванович Куинджи — Берёзовая роща, 1879" width="1200" height="625" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="kuindzhi-berezovaya-roscha-1879.html" aria-label="Открыть картину: Архип Иванович Куинджи — Берёзовая роща, 1879"><img src="images/thumbs/kuindzhi-berezovaya-roscha-1879.jpg" alt="Архип Иванович Куинджи — Берёзовая роща, 1879" width="1200" height="625" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="kuindzhi-berezovaya-roscha-1879.html">Архип Иванович Куинджи</a></div>
         <div class="card-title">Берёзовая роща, 1879</div>
@@ -1122,7 +1123,7 @@
     <div class="card-facts"><div><span>Год</span><b>1879</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>97 x 181 см</b></div></div>
     </article><article class="card" data-artist="гюстав кайботт" data-title="chemin montant (восходящая дорога), 1881" data-year="2025" data-month="03" data-cyear="1881" data-museum="частная-коллекция" data-material="холст" data-techniques="масло" data-search="гюстав кайботт chemin montant (восходящая дорога), 1881 частная коллекция холст масло caillebotte pc картина 2025-03-22" data-no="47" data-decade="1880–1889">
     <span class="card-no">047</span>
-    <div class="card-img"><img src="images/thumbs/caillebotte-voshodyaschaya-doroga-1881.jpg" alt="Гюстав Кайботт — Chemin montant (Восходящая дорога), 1881" width="1200" height="990" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="caillebotte-voshodyaschaya-doroga-1881.html" aria-label="Открыть картину: Гюстав Кайботт — Chemin montant (Восходящая дорога), 1881"><img src="images/thumbs/caillebotte-voshodyaschaya-doroga-1881.jpg" alt="Гюстав Кайботт — Chemin montant (Восходящая дорога), 1881" width="1200" height="990" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="caillebotte-voshodyaschaya-doroga-1881.html">Гюстав Кайботт</a></div>
         <div class="card-title">Chemin montant (Восходящая дорога), 1881</div>
@@ -1132,7 +1133,7 @@
     <div class="card-facts"><div><span>Год</span><b>1881</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>99,6 x 125,2 см</b></div></div>
     </article><article class="card" data-artist="фредерик чайльд гассам" data-title="union square in spring (юнион-сквер весной), 1896" data-year="2025" data-month="03" data-cyear="1896" data-museum="художественный-музей-колледжа-смит-нортхемптон" data-material="холст" data-techniques="масло" data-search="фредерик чайльд гассам union square in spring (юнион-сквер весной), 1896 художественный музей колледжа смит, нортхемптон холст масло hassam scma картина 2025-03-17" data-no="76" data-decade="1890–1899">
     <span class="card-no">076</span>
-    <div class="card-img"><img src="images/thumbs/hassam-yunion-skver-vesnoi-1896.jpg" alt="Фредерик Чайльд Гассам — Union Square in Spring (Юнион-сквер весной), 1896" width="848" height="865" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="hassam-yunion-skver-vesnoi-1896.html" aria-label="Открыть картину: Фредерик Чайльд Гассам — Union Square in Spring (Юнион-сквер весной), 1896"><img src="images/thumbs/hassam-yunion-skver-vesnoi-1896.jpg" alt="Фредерик Чайльд Гассам — Union Square in Spring (Юнион-сквер весной), 1896" width="848" height="865" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="hassam-yunion-skver-vesnoi-1896.html">Фредерик Чайльд Гассам</a></div>
         <div class="card-title">Union Square in Spring (Юнион-сквер весной), 1896</div>
@@ -1142,7 +1143,7 @@
     <div class="card-facts"><div><span>Год</span><b>1896</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>54,61 x 53,34 см</b></div></div>
     </article><article class="card" data-artist="николай дмитриевич кузнецов" data-title="в праздник, 1879" data-year="2025" data-month="03" data-cyear="1879" data-museum="государственная-третьяковская-галерея-москва" data-material="холст" data-techniques="масло" data-search="николай дмитриевич кузнецов в праздник, 1879 государственная третьяковская галерея, москва холст масло гтг картина кузнецов 2025-03-14" data-no="39" data-decade="1870–1879">
     <span class="card-no">039</span>
-    <div class="card-img"><img src="images/thumbs/kuznetsov-v-prazdnik-1879.jpg" alt="Николай Дмитриевич Кузнецов — В праздник, 1879" width="1200" height="678" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="kuznetsov-nikolai-dmitrievic-v-prazdnik-1879.html" aria-label="Открыть картину: Николай Дмитриевич Кузнецов — В праздник, 1879"><img src="images/thumbs/kuznetsov-v-prazdnik-1879.jpg" alt="Николай Дмитриевич Кузнецов — В праздник, 1879" width="1200" height="678" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="kuznetsov-nikolai-dmitrievic-v-prazdnik-1879.html">Николай Дмитриевич Кузнецов</a></div>
         <div class="card-title">В праздник, 1879</div>
@@ -1152,7 +1153,7 @@
     <div class="card-facts"><div><span>Год</span><b>1879</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>55,3 x 98 см</b></div></div>
     </article><article class="card" data-artist="александр иванович морозов" data-title="выход из церкви в пскове, 1864" data-year="2025" data-month="03" data-cyear="1864" data-museum="государственная-третьяковская-галерея-москва" data-material="холст" data-techniques="масло" data-search="александр иванович морозов выход из церкви в пскове, 1864 государственная третьяковская галерея, москва холст масло гтг картина морозов 2025-03-12" data-no="16" data-decade="1860–1869">
     <span class="card-no">016</span>
-    <div class="card-img"><img src="images/thumbs/morozov-vyhod-iz-tserkvi-v-pskove-1864.jpg" alt="Александр Иванович Морозов — Выход из церкви в Пскове, 1864" width="1200" height="937" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="morozov-vyhod-iz-tserkvi-v-pskove-1864.html" aria-label="Открыть картину: Александр Иванович Морозов — Выход из церкви в Пскове, 1864"><img src="images/thumbs/morozov-vyhod-iz-tserkvi-v-pskove-1864.jpg" alt="Александр Иванович Морозов — Выход из церкви в Пскове, 1864" width="1200" height="937" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="morozov-vyhod-iz-tserkvi-v-pskove-1864.html">Александр Иванович Морозов</a></div>
         <div class="card-title">Выход из церкви в Пскове, 1864</div>
@@ -1162,7 +1163,7 @@
     <div class="card-facts"><div><span>Год</span><b>1864</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>71 x 90,3 см</b></div></div>
     </article><article class="card" data-artist="николай александрович тархов" data-title="козы на солнце, 1904" data-year="2025" data-month="03" data-cyear="1904" data-museum="государственная-третьяковская-галерея-москва" data-material="холст" data-techniques="масло" data-search="николай александрович тархов козы на солнце, 1904 государственная третьяковская галерея, москва холст масло гтг картина тархов 2025-03-06" data-no="89" data-decade="1900–1909">
     <span class="card-no">089</span>
-    <div class="card-img"><img src="images/thumbs/tarhov-kozy-na-solntse-1904.jpg" alt="Николай Александрович Тархов — Козы на солнце, 1904" width="1200" height="915" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="tarhov-kozy-na-solntse-1904.html" aria-label="Открыть картину: Николай Александрович Тархов — Козы на солнце, 1904"><img src="images/thumbs/tarhov-kozy-na-solntse-1904.jpg" alt="Николай Александрович Тархов — Козы на солнце, 1904" width="1200" height="915" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="tarhov-kozy-na-solntse-1904.html">Николай Александрович Тархов</a></div>
         <div class="card-title">Козы на солнце, 1904</div>
@@ -1172,7 +1173,7 @@
     <div class="card-facts"><div><span>Год</span><b>1904</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>82 x 106,8 см</b></div></div>
     </article><article class="card" data-artist="каспар давид фридрих" data-title="morgennebel im gebirge (утренний туман в горах), 1808" data-year="2025" data-month="02" data-cyear="1808" data-museum="государственный-музей-тюрингии-хайдексбург" data-material="холст" data-techniques="масло" data-search="каспар давид фридрих morgennebel im gebirge (утренний туман в горах), 1808 государственный музей тюрингии, хайдексбург холст масло friedrich thüringerlandesmuseumheidecksburg картина 2025-02-18" data-no="4" data-decade="1800–1809">
     <span class="card-no">004</span>
-    <div class="card-img"><img src="images/thumbs/friedrich-utrennii-tuman-v-gorah-1808.jpg" alt="Каспар Давид Фридрих — Morgennebel im Gebirge (Утренний туман в горах), 1808" width="1200" height="787" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="friedrich-utrennii-tuman-v-gorah-1808.html" aria-label="Открыть картину: Каспар Давид Фридрих — Morgennebel im Gebirge (Утренний туман в горах), 1808"><img src="images/thumbs/friedrich-utrennii-tuman-v-gorah-1808.jpg" alt="Каспар Давид Фридрих — Morgennebel im Gebirge (Утренний туман в горах), 1808" width="1200" height="787" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="friedrich-utrennii-tuman-v-gorah-1808.html">Каспар Давид Фридрих</a></div>
         <div class="card-title">Morgennebel im Gebirge (Утренний туман в горах), 1808</div>
@@ -1182,7 +1183,7 @@
     <div class="card-facts"><div><span>Год</span><b>1808</b></div><div><span>Материал</span><b>холст</b></div><div><span>Техника</span><b>масло</b></div><div><span>Размер</span><b>104 x 71 см</b></div></div>
     </article><article class="card" data-artist="пьер огюст ренуар" data-title="les fiancés (пара), около 1868" data-year="2025" data-month="02" data-cyear="1868" data-museum="музей-вальрафа-рихарца-и-фонд-корбо-кёльн" data-material="холст" data-techniques="масло" data-search="пьер огюст ренуар les fiancés (пара), около 1868 музей вальрафа-рихарца и фонд корбо, кёльн холст масло renoir wallrafrichartzmuseum картина 2025-02-14" data-no="20" data-decade="1860–1869">
     <span class="card-no">020</span>
-    <div class="card-img"><img src="images/thumbs/renoir-para-1868.jpg" alt="Пьер Огюст Ренуар — Les Fiancés (Пара), около 1868" width="860" height="1200" loading="lazy" decoding="async"></div>
+    <a class="card-img" href="renoir-para-1868.html" aria-label="Открыть картину: Пьер Огюст Ренуар — Les Fiancés (Пара), около 1868"><img src="images/thumbs/renoir-para-1868.jpg" alt="Пьер Огюст Ренуар — Les Fiancés (Пара), около 1868" width="860" height="1200" loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="renoir-para-1868.html">Пьер Огюст Ренуар</a></div>
         <div class="card-title">Les Fiancés (Пара), около 1868</div>
@@ -2058,4 +2059,5 @@ if (CLOUD.on) cloudCall('top', {limit: 6}).then(function (j) {
   document.getElementById('popular-count').textContent = '(' + items.length + ')';
   document.getElementById('popular').hidden = false;
 }).catch(function () {});
-</script></body></html>
+</script><script src="opa-ui.js" defer></script>
+</body></html>

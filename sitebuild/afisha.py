@@ -496,8 +496,8 @@ def afisha_item(item, known, coords=None, works=None, visit=None):
         + (f'<p class="afisha-orig">{h(orig)}</p>' if orig and orig != item["title"] else "")
         + f'<p class="afisha-where"><span class="afisha-place">{h(where_line(item))}</span>'
         + ('<button type="button" class="afisha-pin">на карте</button>' if coords else '') + '</p>'
-        f'<p class="afisha-dates"><span class="afisha-range">{h(date_range(item))}</span>'
-        f'<span class="now-when afisha-when"></span></p>'
+        f'<p class="afisha-dates"><span class="afisha-range">Сроки: {h(date_range(item))}</span>'
+        f'<span class="now-when afisha-when" role="status"></span></p>'
         + (f'<p class="afisha-note">{h(note)}</p>' if note else "")
         + been
         + works_html(works or [])

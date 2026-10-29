@@ -343,7 +343,7 @@ def card_html(p, cat_no=None, cat_width=3, show_artist=True, show_museum=True):
     sub_line = f'<div class="card-title">{title_name}</div>' if show_artist else ''
     return (
         f'<article class="card">{no_html}'
-        f'<div class="card-img"><img src="{cv}" alt="{artist_name} — {title_name}"{size_attrs(cv)} loading="lazy" decoding="async"></div>'
+        f'<a class="card-img" href="{h(p["filename"])}" aria-label="Открыть картину: {artist_name} — {title_name}"><img src="{cv}" alt="{artist_name} — {title_name}"{size_attrs(cv)} loading="lazy" decoding="async"></a>'
         f'<div class="card-body">'
         f'<div class="card-artist"><a class="card-link" href="{h(p["filename"])}">{head_line}</a></div>'
         f'{sub_line}{museum_html}</div>'
@@ -470,7 +470,7 @@ def render_index(all_posts, visits=None):
 
         cards.append(f"""<article class="card" data-artist="{h(p['artist'].lower())}" data-title="{h(p['title'].lower())}" data-year="{y}" data-month="{m}" data-cyear="{creation_year or ''}" data-museum="{h(museum_slug)}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}" data-search="{h(search_blob)}" data-no="{cat_no[id(p)]}" {decade_attr}>
     <span class="card-no">{cat_no[id(p)]:0{cat_width}d}</span>
-    <div class="card-img"><img src="{cv}" alt="{artist_name} — {title_name}"{size_attrs(cv)} loading="lazy" decoding="async"></div>
+    <a class="card-img" href="{h(p['filename'])}" aria-label="Открыть картину: {artist_name} — {title_name}"><img src="{cv}" alt="{artist_name} — {title_name}"{size_attrs(cv)} loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="{h(p['filename'])}">{artist_name}</a></div>
         <div class="card-title">{title_name}</div>
@@ -654,11 +654,12 @@ def render_index(all_posts, visits=None):
     <option value="title">По названию</option>
   </select>
   <div class="view-switch" role="group" aria-label="Вид списка">
-    <button type="button" id="view-list" aria-pressed="true" onclick="setView('list')">Опись</button>
-    <button type="button" id="view-grid" aria-pressed="false" onclick="setView('grid')">Плитки</button>
+    <button type="button" id="view-list" aria-pressed="true" onclick="setView('list')">Подробный список</button>
+    <button type="button" id="view-grid" aria-pressed="false" onclick="setView('grid')">Карточки</button>
   </div>
   </div>
 </div>
+<div class="active-filter-chips" id="opa-active-filters" aria-label="Выбранные фильтры" hidden></div>
 <div class="grid list" id="cards">{''.join(cards)}</div>
 <p class="no-results" id="no-results" hidden>Ничего не найдено. Попробуйте изменить запрос или <button type="button" class="linklike" onclick="resetAllFilters()">сбросить фильтры</button>.</p>
 </main></div>
@@ -1031,7 +1032,8 @@ if (CLOUD.on) cloudCall('top', {{limit: 6}}).then(function (j) {{
   document.getElementById('popular-count').textContent = '(' + items.length + ')';
   document.getElementById('popular').hidden = false;
 }}).catch(function () {{}});
-</script></body></html>"""
+</script><script src="opa-ui.js" defer></script>
+</body></html>"""
 
 
 def similar_works(post, all_posts, limit=6):

@@ -102,7 +102,7 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
             '<p class="mini-map-links">'
             + ('<span class="mini-map-note">Расположение приблизительное — по городу.</span> '
                if info.get("approx") else "")
-            + f'<a href="{card_link}">Карта собраний</a> · '
+            + f'<a href="{card_link}" class="museum-map-link">Показать на карте собраний</a> · '
             f'<a href="{h(ya)}" target="_blank" rel="noopener">Яндекс Карты ↗</a></p>'
             '</div>')
     else:
@@ -217,7 +217,7 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
 </head><body class="tag-page artist-page museum-page">
 <div class="tag-topbar">
   <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
-  <a href="museums.html" class="back">Карта собраний</a>
+  <a href="{card_link}" class="back">Показать на карте</a>
   {theme_button('theme-toggle-inline')}
 </div>
 {scroll_top_button()}

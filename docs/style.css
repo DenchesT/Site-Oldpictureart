@@ -2845,3 +2845,29 @@ h1, h2, h3 { overflow-wrap: break-word; }
 }
 .consent-state { margin: 0 0 var(--s3); font-weight: 700; }
 
+
+/* OPA UX enhancements: inherited palette and typographic scale unchanged. */
+.card-img[href] { text-decoration:none; color:inherit; cursor:pointer; }
+.card-img[href]:focus-visible { outline:2px solid var(--active); outline-offset:3px; }
+.visit-shot-count { display:block; margin:.35rem 0 0; color:var(--muted); font-size:var(--fs-xs); font-family:var(--ff-data); }
+.grid:not(.list) .visit-card .visit-shot-count { padding:0 var(--s3) var(--s2); }
+.visit-view button { white-space:normal; }
+.visit-page .shots .shot:focus-visible { outline:2px solid var(--active); outline-offset:3px; }
+.active-filter-chips { display:flex; flex-wrap:wrap; gap:var(--s2); margin:0 0 var(--s3); }
+.active-filter-chips[hidden] { display:none; }
+.opa-chip { background:var(--accent-soft); color:var(--link); border:1px solid var(--border); border-radius:2px; font:inherit; font-size:var(--fs-xs); padding:.4rem .6rem; cursor:pointer; }
+.opa-chip:hover, .opa-chip:focus-visible { outline:1px solid var(--active); }
+.opa-filter-status { font:var(--fs-xs) var(--ff-data); color:var(--muted); margin:.4rem 0; }
+.visit-page .shots { align-items:start; }
+.visit-card .card-img:focus-visible, .card-img[href]:focus-visible { outline:2px solid var(--active); outline-offset:2px; }
+.afisha-item .afisha-dates { display:flex; align-items:baseline; flex-wrap:wrap; gap:.4rem; }
+.afisha-item .afisha-when:not(:empty) { font-weight:700; color:var(--active); }
+.museum-map-link { font-weight:700; }
+.post-topbar-right .topbar-btn { min-width:36px; min-height:36px; }
+@media(max-width:760px) {
+ .active-filter-chips { padding:0 var(--s2); }
+ .opa-filter-status { padding:0 var(--s2); }
+ .post-topbar-right .topbar-btn { min-width:42px; min-height:42px; }
+ .visit-view button { min-height:40px; }
+ .menu-toggle { min-height:42px; }
+}
