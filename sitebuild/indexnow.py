@@ -1,25 +1,12 @@
 # -*- coding: utf-8 -*-
-"""IndexNow — сообщить поисковикам, какие страницы появились или изменились.
+"""IndexNow: уведомление поисковиков о страницах, изменённых после публикации.
 
-Без него Яндекс узнаёт о новой картине, когда сам заглянет в карту сайта, —
-через дни, а то и недели. С IndexNow сборка после push говорит ему сразу:
-вот эти адреса новые или поменялись.
-
-Как устроено:
-  • ключ — INDEXNOW_KEY ниже; он не секрет, а подтверждение, что сайт
-    ваш: файл docs/<ключ>.txt с тем же ключом сборка кладёт в корень сайта;
-  • после push сборка берёт из коммита изменённые страницы и оставляет те,
-    что есть в карте сайта (служебные — 404, вход, перенаправления — туда
-    не входят), ждёт, пока GitHub Pages выложит новую версию, и отправляет
-    список Яндексу и в общий IndexNow (оттуда его берут Bing и другие);
-  • не получилось (нет сети, сервер не ответил) — адреса ждут в
-    indexnow_pending.json и уйдут со следующей сборкой.
-
-Вручную, например после push без build_site.py:
-    python build_site.py --indexnow           страницы из последнего коммита
-    python build_site.py --indexnow 3         из трёх последних коммитов
+Адреса направляются каждому endpoint в пачках не более MAX_URLS.
+При частичном отказе сохраняется весь набор для повторной попытки.
+Повторные заявки допустимы по протоколу IndexNow.
 """
 
+from html import unescape
 import json
 import logging
 import os
@@ -32,14 +19,15 @@ import urllib.request
 
 from site_common import BASE_URL
 from .config import OUTPUT_DIR
+from .safety import atomic_json
 
 logger = logging.getLogger("build_site")
 
 INDEXNOW_KEY = "607fce3d40984930b74b3e6e2ddd26cc"
 ENDPOINTS = ("https://yandex.com/indexnow", "https://api.indexnow.org/indexnow")
 PENDING_FILE = "indexnow_pending.json"
-MAX_URLS = 10000                 # больше за раз IndexNow не принимает
-DEPLOY_WAIT = 180                # сколько ждать, пока GitHub Pages выложит сайт, с
+MAX_URLS = 10000
+DEPLOY_WAIT = 180
 ANSWERS = {
     200: "приняты",
     202: "приняты, ключ ещё проверяется",
@@ -55,42 +43,43 @@ def key_file_name(key=INDEXNOW_KEY):
 
 
 def generate_key_file(out_dir=None, key=INDEXNOW_KEY):
-    """docs/<ключ>.txt — по нему поисковик проверяет, что сайт ваш."""
+    """Создать публичный ключ проверки владельца IndexNow."""
     path = os.path.join(out_dir or OUTPUT_DIR, key_file_name(key))
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     try:
-        with open(path, encoding="utf-8") as f:
-            if f.read() == key:
+        with open(path, encoding="utf-8") as stream:
+            if stream.read() == key:
                 return path
     except OSError:
         pass
-    with open(path, "w", encoding="utf-8", newline="") as f:
-        f.write(key)
+    with open(path, "w", encoding="utf-8", newline="") as stream:
+        stream.write(key)
     return path
 
 
 def sitemap_urls(out_dir=None):
-    """Адреса из docs/sitemap.xml — только их и есть смысл отправлять."""
+    """Адреса из локальной sitemap.xml; XML-сущности декодируются."""
     try:
-        with open(os.path.join(out_dir or OUTPUT_DIR, "sitemap.xml"), encoding="utf-8") as f:
-            return set(re.findall(r"<loc>([^<]+)</loc>", f.read()))
+        with open(os.path.join(out_dir or OUTPUT_DIR, "sitemap.xml"), encoding="utf-8") as stream:
+            return {unescape(value) for value in re.findall(r"<loc>([^<]+)</loc>", stream.read())}
     except OSError:
         return set()
 
 
 def page_url(path, out_dir=None, base=BASE_URL):
-    """docs/x.html → https://сайт/x.html; docs/index.html → https://сайт/."""
+    """docs/x.html -> https://сайт/x.html; docs/index.html -> / ."""
     out = (out_dir or OUTPUT_DIR).replace("\\", "/").rstrip("/") + "/"
     path = path.replace("\\", "/")
     if not path.startswith(out):
         return None
     rel = path[len(out):]
     if rel == "index.html":
-        return base + "/"
-    return base + "/" + urllib.parse.quote(rel, safe="/")
+        return base.rstrip("/") + "/"
+    return base.rstrip("/") + "/" + urllib.parse.quote(rel, safe="/")
 
 
 def changed_files(commits=1, run=subprocess.run):
-    """Файлы, добавленные или изменённые последними commits коммитами."""
+    """Добавленные/изменённые в последних N коммитах файлы."""
     r = run(["git", "-c", "core.quotepath=false", "diff", "--name-only", "--diff-filter=AMR",
              f"HEAD~{int(commits)}", "HEAD"],
             capture_output=True, text=True, encoding="utf-8")
@@ -100,32 +89,34 @@ def changed_files(commits=1, run=subprocess.run):
 
 
 def urls_to_send(files, out_dir=None, base=BASE_URL):
-    """Изменённые файлы → адреса, которые есть в карте сайта."""
+    """Адреса затронутых файлов, включённые в sitemap.xml."""
     known = sitemap_urls(out_dir)
     urls = []
-    for f in files:
-        u = page_url(f, out_dir, base)
-        if u and u in known and u not in urls:
-            urls.append(u)
+    seen = set()
+    for filename in files:
+        url = page_url(filename, out_dir, base)
+        if url and url in known and url not in seen:
+            seen.add(url)
+            urls.append(url)
     return urls
 
 
 def load_pending(path=PENDING_FILE):
     try:
-        with open(path, encoding="utf-8") as f:
-            data = json.load(f)
+        with open(path, encoding="utf-8") as stream:
+            data = json.load(stream)
         return [u for u in data if isinstance(u, str)] if isinstance(data, list) else []
-    except (OSError, ValueError):
+    except (OSError, ValueError, TypeError):
         return []
 
 
 def save_pending(urls, path=PENDING_FILE):
+    """Сохранить очередь атомарно, чтобы сбой процесса не обнулил файл."""
     if not urls:
         if os.path.exists(path):
             os.remove(path)
         return
-    with open(path, "w", encoding="utf-8", newline="\n") as f:
-        json.dump(urls, f, ensure_ascii=False, indent=1)
+    atomic_json(path, list(urls), backup=False)
 
 
 def _post(url, body, timeout=30):
@@ -133,51 +124,64 @@ def _post(url, body, timeout=30):
                                  headers={"Content-Type": "application/json; charset=utf-8",
                                           "User-Agent": "oldpictureart-build"})
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            return resp.status
-    except urllib.error.HTTPError as e:
-        return e.code
+        with urllib.request.urlopen(req, timeout=timeout) as response:
+            return response.status
+    except urllib.error.HTTPError as exc:
+        return exc.code
 
 
-def submit(urls, key=INDEXNOW_KEY, base=BASE_URL, endpoints=ENDPOINTS, post=_post, log=logger.info):
-    """Отправляет адреса. True — хоть один поисковик их принял."""
+def submit(urls, key=INDEXNOW_KEY, base=BASE_URL, endpoints=ENDPOINTS,
+           post=_post, log=logger.info):
+    """Отправить все URL в каждый endpoint; True только при полном успехе.
+
+    Более MAX_URLS делятся на отдельные HTTP-запросы, без потери хвоста.
+    Частичный отказ оставляет очередь на следующий запуск. Повторная
+    отправка адресов безопасна: IndexNow допускает повторные уведомления.
+    """
     if not urls:
         return True
+    if not endpoints:
+        return False
     host = urllib.parse.urlsplit(base).netloc
-    body = json.dumps({"host": host, "key": key,
-                       "keyLocation": f"{base}/{key_file_name(key)}",
-                       "urlList": urls[:MAX_URLS]}, ensure_ascii=False).encode("utf-8")
-    accepted = False
-    for ep in endpoints:
-        name = urllib.parse.urlsplit(ep).netloc
-        try:
-            code = post(ep, body)
-        except Exception as e:                          # нет сети, таймаут
-            log(f"IndexNow: {name} не ответил ({e.__class__.__name__})")
-            continue
-        log(f"IndexNow: {name} — {code}, {ANSWERS.get(code, 'неожиданный ответ')}")
-        accepted = accepted or code in (200, 202)
-    return accepted
+    success = True
+    for start in range(0, len(urls), MAX_URLS):
+        chunk = urls[start:start + MAX_URLS]
+        body = json.dumps({
+            "host": host, "key": key,
+            "keyLocation": f"{base.rstrip('/')}/{key_file_name(key)}",
+            "urlList": chunk,
+        }, ensure_ascii=False).encode("utf-8")
+        batch = (start // MAX_URLS) + 1
+        for endpoint in endpoints:
+            name = urllib.parse.urlsplit(endpoint).netloc
+            try:
+                code = post(endpoint, body)
+            except Exception as exc:
+                log(f"IndexNow: {name}, партия {batch} — нет ответа ({exc.__class__.__name__})")
+                success = False
+                continue
+            log(f"IndexNow: {name}, партия {batch} — {code}, {ANSWERS.get(code, 'неожиданный ответ')}")
+            if code not in (200, 202):
+                success = False
+    return success
 
 
-def wait_for_deploy(url, local_path, timeout=DEPLOY_WAIT, every=10, fetch=None, sleep=time.sleep, now=time.monotonic):
-    """Ждёт, пока GitHub Pages отдаст по url то же, что лежит в local_path.
-
-    Иначе поисковик мог бы прийти раньше выкладки и увидеть прежнюю версию.
-    True — дождались, False — вышло время (адреса всё равно отправляются).
-    """
+def wait_for_deploy(url, local_path, timeout=DEPLOY_WAIT, every=10,
+                    fetch=None, sleep=time.sleep, now=time.monotonic):
+    """Ожидать, пока публичная страница совпадёт с локальным файлом."""
     try:
-        with open(local_path, "rb") as f:
-            want = f.read()
+        with open(local_path, "rb") as stream:
+            want = stream.read()
     except OSError:
         return False
 
-    def default_fetch(u):
-        sep = "&" if "?" in u else "?"
-        req = urllib.request.Request(f"{u}{sep}nocache={int(time.time())}",
-                                     headers={"User-Agent": "oldpictureart-build", "Cache-Control": "no-cache"})
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            return resp.read()
+    def default_fetch(address):
+        sep = "&" if "?" in address else "?"
+        req = urllib.request.Request(
+            f"{address}{sep}nocache={int(time.time())}",
+            headers={"User-Agent": "oldpictureart-build", "Cache-Control": "no-cache"})
+        with urllib.request.urlopen(req, timeout=20) as response:
+            return response.read()
 
     fetch = fetch or default_fetch
     end = now() + timeout
@@ -193,34 +197,35 @@ def wait_for_deploy(url, local_path, timeout=DEPLOY_WAIT, every=10, fetch=None, 
 
 
 def notify(files, out_dir=None, wait=True, log=logger.info):
-    """Изменённые файлы (и ждавшие с прошлого раза) → поисковикам."""
+    """Отправить изменённые страницы плюс очередь предыдущих запусков."""
     out_dir = out_dir or OUTPUT_DIR
     fresh = urls_to_send(files, out_dir)
     pending = load_pending()
     urls = list(dict.fromkeys(fresh + pending))
     if not urls:
         return True
-    log(f"IndexNow: страниц — {len(urls)}" + (f" (из них ждали с прошлого раза — {len(pending)})" if pending else ""))
+    log(f"IndexNow: страниц — {len(urls)}" +
+        (f" (из них ждали с прошлого раза — {len(pending)})" if pending else ""))
     if wait and fresh:
-        # Проверяем по одной странице: выложилась она — выложилось всё.
-        probe = next((f for f in files if page_url(f, out_dir) == fresh[0]), None)
+        probe = next((filename for filename in files
+                      if page_url(filename, out_dir) == fresh[0]), None)
         if probe and not wait_for_deploy(fresh[0], probe):
-            log("IndexNow: GitHub Pages ещё выкладывает сайт — отправляю, поисковик придёт чуть позже")
+            log("IndexNow: GitHub Pages ещё выкладывает сайт — поисковик может прийти раньше")
     ok = submit(urls, log=log)
     save_pending([] if ok else urls)
     if not ok:
-        log(f"IndexNow: адреса сохранены в {PENDING_FILE} — уйдут со следующей сборкой")
+        log(f"IndexNow: неполная отправка, адреса сохранены в {PENDING_FILE}")
     return ok
 
 
 def notify_commits(commits=1, log=logger.info):
-    """python build_site.py --indexnow [N] — страницы из последних N коммитов."""
-    files = changed_files(commits)
-    return notify(files, wait=False, log=log)
+    """Отправить адреса из последних N коммитов без ожидания деплоя."""
+    return notify(changed_files(commits), wait=False, log=log)
 
 
 __all__ = [
-    'INDEXNOW_KEY', 'ENDPOINTS', 'PENDING_FILE', 'MAX_URLS', 'DEPLOY_WAIT', 'ANSWERS', 'key_file_name',
-    'generate_key_file', 'sitemap_urls', 'page_url', 'changed_files', 'urls_to_send', 'load_pending',
-    'save_pending', 'submit', 'wait_for_deploy', 'notify', 'notify_commits',
+    'INDEXNOW_KEY', 'ENDPOINTS', 'PENDING_FILE', 'MAX_URLS', 'DEPLOY_WAIT',
+    'ANSWERS', 'key_file_name', 'generate_key_file', 'sitemap_urls', 'page_url',
+    'changed_files', 'urls_to_send', 'load_pending', 'save_pending', 'submit',
+    'wait_for_deploy', 'notify', 'notify_commits',
 ]

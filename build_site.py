@@ -56,6 +56,23 @@ def push_to_github():
     logger.info("GitHub: автоматический commit и push. Тесты — только в GitHub Actions.")
     return publish_generated(root)
 
+async def _image_comments(client, message):
+    """Изображения из комментариев к картине или посещению."""
+    result = []
+    replies = getattr(message, "replies", None)
+    if not replies or not getattr(replies, "replies", 0):
+        return result
+    try:
+        async for reply in client.iter_messages(CHANNEL_URL, reply_to=message.id):
+            document = getattr(reply, "document", None)
+            mime = getattr(document, "mime_type", "") or ""
+            if mime.startswith("image/"):
+                result.append(reply)
+    except Exception as exc:
+        logger.warning("Комментарии: %s", exc)
+    return result
+
+
 async def main():
     if "--rebuild" in sys.argv: rebuild_reset()
     os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -90,30 +107,14 @@ async def main():
                 fn = f"{base}-{n}.html"
                 n += 1
             logger.info(f"[{i}/{len(accepted)}] {parsed['artist'][:40]} — {parsed['title'][:50]}")
-            comments = []
-            if getattr(mm, "replies", None) and mm.replies.replies > 0:
-                try:
-                    async for reply in client.iter_messages(CHANNEL_URL, reply_to=mm.id):
-                        if getattr(reply, "document", None) and reply.document.mime_type.startswith("image/"):
-                            comments.append(reply)
-                except Exception as e: logger.warning(f"Комментарии: {e}")
-            im, hi, th = await download_images(client, group, comments, fn[:-5])
+            im, hi, th = await download_images(
+                client, group, await _image_comments(client, mm), fn[:-5])
             post = {"id":mm.id,"date":date,"filename":fn,"images":im,"hires":hi,"thumbs":th,
                     "links":message_links(group),**parsed}
             all_posts.append(post)
             processed_ids.update(m.id for m in group)
             with open(os.path.join(OUTPUT_DIR, fn), "w", encoding="utf-8", newline="\n") as f:
                 f.write(render_post_page(post, all_posts))
-
-        async def visit_comments(anchor):
-            out = []
-            if getattr(anchor, "replies", None) and anchor.replies.replies > 0:
-                try:
-                    async for reply in client.iter_messages(CHANNEL_URL, reply_to=anchor.id):
-                        if getattr(reply, "document", None) and reply.document.mime_type.startswith("image/"):
-                            out.append(reply)
-                except Exception as e: logger.warning(f"Комментарии: {e}")
-            return out
 
         async def add_photos(visit, groups, slug):
             for g in groups:
@@ -134,7 +135,7 @@ async def main():
                 n += 1
             logger.info(f"[посещение {i}/{len(new_visits)}] {visit_heading(parsed)[:60]}"
                         + (f" (+{len(extra)} без подписи)" if extra else ""))
-            im, hi, th = await download_images(client, group, await visit_comments(vm), fn[:-5])
+            im, hi, th = await download_images(client, group, await _image_comments(client, vm), fn[:-5])
             visit = {"id":vm.id,"date":date,"filename":fn,"images":im,"hires":hi,"thumbs":th,
                      "extras_done":True, "links":message_links(group), **parsed}
             processed_ids.update(m.id for m in group)

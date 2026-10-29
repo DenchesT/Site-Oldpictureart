@@ -79,7 +79,9 @@ async def download_images(client, group, comments, slug, start=0):
             images.append(f"images/{fn}")
             t = make_thumbnail(fp, slug, idx)
             if t: thumbs.append(t)
-    docs = [m for m in group if getattr(m,"document",None) and m.document.mime_type.startswith("image/")]
+    docs = [m for m in group
+            if (getattr(getattr(m, "document", None), "mime_type", "") or "")
+            .startswith("image/")]
     docs.extend(comments)
     for i, msg in enumerate(docs, start + 1):
         ext = ".jpg"

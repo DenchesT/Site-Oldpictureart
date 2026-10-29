@@ -41,5 +41,7 @@ jobs:
         run: python rebuild_pages.py --offline
       - name: Проверки автоматической отправки
         run: python tests/test_safety.py
+      - name: Проверки безопасности ссылок, IndexNow и публикации
+        run: python tests/test_quality_update.py
       - name: Все проверки сайта
         run: node tests/run.js
