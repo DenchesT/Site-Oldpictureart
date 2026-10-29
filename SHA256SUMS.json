@@ -1,0 +1,8 @@
+{
+  "TEST_RESULTS.txt": "fe2e8f275fa3d5e0886ea4e2908f32eea3f3ba813e437f6f30da362fcc5ed14d",
+  "README_AUTO_PUSH_RU.txt": "feabfa2f9b0b58d47834a71c0c1f3f134ef9f55b93f4d9d7db4296721f6c08c0",
+  "build_site.py": "7767443641145454da18c004568461180cd7390ccbe011b8c79758273b074b0e",
+  "tests/test_safety.py": "21561f2fb8f3d63cee08cf7fcf567943f073afe5c74c922fef5db79a7a7bdfb3",
+  "sitebuild/safety.py": "d73dca6da864b1b9190fcb765cda50994bc7dca4966f7af9c75632b42999706a",
+  ".github/workflows/tests.yml": "6e9aac2105d99c9eb0326ea7c4763f1ba88acb4597b81c39ce29a36f636a1dfe"
+}

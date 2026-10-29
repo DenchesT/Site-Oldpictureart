@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Old Picture Art: local build and push; automated tests run in GitHub Actions."""
+"""Build and automatically publish Old Picture Art. Tests run in GitHub Actions."""
 import asyncio
 import os
 import sys
@@ -12,8 +12,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
     handlers=[logging.handlers.RotatingFileHandler('parser.log', maxBytes=2_000_000,
         backupCount=2, encoding='utf-8'), logging.StreamHandler()])
 logger = logging.getLogger(__name__)
-from html import escape as h
-from urllib.parse import quote
+from html import escape as h  # noqa: F401
+from urllib.parse import quote  # noqa: F401
 from site_common import (head_common, scroll_top_button, theme_button, site_footer,
     mark_svg, TELEGRAM_URL, TELEGRAM_NAME, SITE_DOMAIN, hires_url,
     COMMON_JS, SCROLL_TOP_JS, LUPA_JS, TOAST_JS, SHARE_JS, AUTH_JS, CLOUD_JS, BASE_URL,
@@ -21,24 +21,24 @@ from site_common import (head_common, scroll_top_button, theme_button, site_foot
     METRIKA_ID, SITE_OWNER, PRIVACY_CONTACT, PRIVACY_CONTACT_TEXT, PRIVACY_DATE,
     work_year, AUTH_API_URL, YANDEX_CLIENT_ID, VK_CLIENT_ID,
     TRANSLIT, translit, latin_slug, museum_page, visit_kind_label, MAP_LAYERS_JS)
-from sitebuild.config import *
-from sitebuild.text import *
-from sitebuild.slugs import *
-from sitebuild.links import *
-from sitebuild.html import *
-from sitebuild.images import *
-from sitebuild.places import *
-from sitebuild.visits import *
-from sitebuild.posts import *
-from sitebuild.artists import *
-from sitebuild.museums import *
-from sitebuild.static import *
-from sitebuild.telegram import *
-from sitebuild.refresh import *
-from sitebuild.artist_info import *
-from sitebuild.deps import *
-from sitebuild.indexnow import *
-from sitebuild.afisha import *
+from sitebuild.config import *  # noqa: F401,F403
+from sitebuild.text import *  # noqa: F401,F403
+from sitebuild.slugs import *  # noqa: F401,F403
+from sitebuild.links import *  # noqa: F401,F403
+from sitebuild.html import *  # noqa: F401,F403
+from sitebuild.images import *  # noqa: F401,F403
+from sitebuild.places import *  # noqa: F401,F403
+from sitebuild.visits import *  # noqa: F401,F403
+from sitebuild.posts import *  # noqa: F401,F403
+from sitebuild.artists import *  # noqa: F401,F403
+from sitebuild.museums import *  # noqa: F401,F403
+from sitebuild.static import *  # noqa: F401,F403
+from sitebuild.telegram import *  # noqa: F401,F403
+from sitebuild.refresh import *  # noqa: F401,F403
+from sitebuild.artist_info import *  # noqa: F401,F403
+from sitebuild.deps import *  # noqa: F401,F403
+from sitebuild.indexnow import *  # noqa: F401,F403
+from sitebuild.afisha import *  # noqa: F401,F403
 from sitebuild.indexnow import notify as notify_indexnow
 from sitebuild.safety import publish_generated
 
@@ -53,7 +53,7 @@ def push_to_github():
     root = Path(__file__).resolve().parent
     if Path.cwd().resolve() != root:
         raise RuntimeError("Запустите сборку из корня репозитория")
-    logger.info("GitHub: отправка изменений. Тесты выполняются в GitHub Actions, не на компьютере.")
+    logger.info("GitHub: автоматический commit и push. Тесты — только в GitHub Actions.")
     return publish_generated(root)
 
 async def main():
@@ -143,16 +143,14 @@ async def main():
         by_id = {v.get("id"): v for v in all_visits}
         for vid, groups in extras_for_known.items():
             visit = by_id.get(vid)
-            if not visit:
-                continue
+            if not visit: continue
             before = len(visit.get("images") or [])
             await add_photos(visit, groups, visit["filename"][:-5])
             added = len(visit.get("images") or []) - before
             if added:
                 logger.info(f"[посещение] {visit_heading(visit)[:50]}: +{added} снимков без подписи")
         if full_scan:
-            for v in all_visits:
-                v["extras_done"] = True
+            for v in all_visits: v["extras_done"] = True
     finally:
         await client.disconnect()
         logger.info("Отключено")
@@ -200,11 +198,14 @@ async def main():
     logger.info("Квиз сгенерирован")
     subprocess.run([sys.executable, "generate_timeline.py"], check=True)
     logger.info("Хронология сгенерирована")
-    for name, render in (("index.html", lambda: render_index(all_posts)),
-                         ("404.html", render_404), ("privacy.html", render_privacy),
-                         ("auth.html", render_auth_page)):
-        with open(os.path.join(OUTPUT_DIR, name), "w", encoding="utf-8", newline="\n") as f:
-            f.write(render())
+    with open(os.path.join(OUTPUT_DIR, "index.html"), "w", encoding="utf-8", newline="\n") as f:
+        f.write(render_index(all_posts))
+    with open(os.path.join(OUTPUT_DIR, "404.html"), "w", encoding="utf-8", newline="\n") as f:
+        f.write(render_404())
+    with open(os.path.join(OUTPUT_DIR, "privacy.html"), "w", encoding="utf-8", newline="\n") as f:
+        f.write(render_privacy())
+    with open(os.path.join(OUTPUT_DIR, "auth.html"), "w", encoding="utf-8", newline="\n") as f:
+        f.write(render_auth_page())
     save_image_sizes()
     logger.info(f"Новых постов: {len(accepted)}. Всего: {len(all_posts)}")
     map_reminder(all_posts, all_visits)
@@ -215,8 +216,7 @@ async def main():
     if pushed:
         try:
             notify_indexnow(pushed)
-        except Exception as e:
-            logger.warning(f"IndexNow: {e}")
+        except Exception as e: logger.warning(f"IndexNow: {e}")
 
 
 def indexnow_command():
@@ -230,8 +230,7 @@ if __name__ == "__main__":
         if "--indexnow" in sys.argv:
             indexnow_command()
         else:
-            if "--no-update" not in sys.argv:
-                auto_update_modules()
+            if "--no-update" not in sys.argv: auto_update_modules()
             asyncio.run(main())
     except KeyboardInterrupt:
         logger.info("Прервано")
