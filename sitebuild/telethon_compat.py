@@ -24,3 +24,5 @@ def patch_faketls_wait_closed():
 
     FakeTLSStreamWriter.wait_closed = wait_closed
     return True
+
+__all__ = ["patch_faketls_wait_closed"]
