@@ -1,13 +1,3 @@
-# Проверки сайта при каждом push и pull request.
-#
-# Ставит модули ровно тех версий, что закреплены в requirements-dev.txt и
-# package-lock.json, пересобирает страницы из posts_meta.json без Telegram и
-# без сети (python rebuild_pages.py --offline) и прогоняет все проверки
-# (node tests/run.js) — то же, что и дома.
-#
-# Ничего не коммитит и не публикует: сайт по-прежнему выкладывает GitHub
-# Pages из docs/. Если что-то упало — GitHub пришлёт письмо, а на вкладке
-# Actions видно, какая именно проверка не прошла.
 name: Проверки
 
 on:
@@ -15,7 +5,6 @@ on:
   pull_request:
   workflow_dispatch:
 
-# Новый push отменяет недоделанную проверку предыдущего.
 concurrency:
   group: tests-${{ github.ref }}
   cancel-in-progress: true
@@ -28,8 +17,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
-      TZ: Europe/Moscow        # как у сборки дома: «сегодня» то же самое
-      PYTHON: python           # каким питоном tests/run.js запускает проверки .py
+      TZ: Europe/Moscow
+      PYTHON: python
       PYTHONUTF8: "1"
     steps:
       - uses: actions/checkout@v6
@@ -45,10 +34,10 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Модули питона (версии из requirements-dev.txt)
+      - name: Модули питона
         run: python -m pip install -r requirements-dev.txt
 
-      - name: Playwright (версия из package-lock.json) и Chromium
+      - name: Playwright и Chromium
         run: |
           npm ci
           npx playwright install --with-deps chromium
@@ -56,8 +45,8 @@ jobs:
       - name: Пересборка страниц без сети
         run: python rebuild_pages.py --offline
 
-      - name: Что пересборка поменяла (для сведения, не ошибка)
-        run: git status --short | head -40
+      - name: Проверки безопасности сборки
+        run: python tests/test_safety.py
 
-      - name: Проверки
+      - name: Все проверки сайта
         run: node tests/run.js
