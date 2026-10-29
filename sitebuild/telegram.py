@@ -20,6 +20,8 @@ logger = logging.getLogger("build_site")
 try:
     from telethon import TelegramClient
     import TelethonFakeTLS
+    from .telethon_compat import patch_faketls_wait_closed
+    patch_faketls_wait_closed()
     TELETHON_AVAILABLE = True
 except ImportError:
     TelegramClient = None
@@ -33,7 +35,7 @@ def require_credentials():
         raise SystemExit("✕ Нужен .env с API_ID, API_HASH, PHONE")
     if not TELETHON_AVAILABLE:
         raise SystemExit("✕ Не установлены telethon / TelethonFakeTLS")
-    logger.info(f"Аккаунт: {PHONE}")
+    logger.info("Учётные данные Telegram найдены")
     return int(API_ID), API_HASH, PHONE
 
 # ===================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====================

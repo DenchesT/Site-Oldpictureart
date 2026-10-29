@@ -43,5 +43,7 @@ jobs:
         run: python tests/test_safety.py
       - name: Проверки безопасности ссылок, IndexNow и публикации
         run: python tests/test_quality_update.py
+      - name: Регрессии исправлений лога
+        run: python tests/test_log_fixes.py
       - name: Все проверки сайта
         run: node tests/run.js

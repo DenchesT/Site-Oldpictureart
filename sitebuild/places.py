@@ -99,10 +99,12 @@ def map_reminder(all_posts, visits):
     русскому названию ничего не нашёл и поставил метку по городу.
     Сеть не нужна: судим по кэшу координат, как generate_map.py.
     """
+    overrides = {}
     try:
         import generate_map as gm
+        overrides = gm.load_overrides(quiet=True)
         doubts = gm.map_warnings(museum_names(all_posts, visits),
-                                 gm.load_cache(), gm.load_overrides(quiet=True))
+                                 gm.load_cache(), overrides)
     except Exception as e:
         logger.warning(f"Проверить метки на карте не вышло: {e}")
         return []
@@ -118,7 +120,9 @@ def map_reminder(all_posts, visits):
     # находит не всегда — тогда на странице музея остаётся один город.
     try:
         directory = museum_directory()
-        bare = [n for n in museum_names(all_posts, visits) if not museum_info(n, directory)["address"]]
+        bare = [n for n in museum_names(all_posts, visits)
+                if not (overrides.get(n) or {}).get("skip")
+                and not museum_info(n, directory)["address"]]
     except Exception:
         bare = []
     if bare:
