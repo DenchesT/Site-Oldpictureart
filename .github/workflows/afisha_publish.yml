@@ -6,6 +6,7 @@ on:
     paths:
       - afisha.json
       - afisha_archive.json
+      - .github/workflows/afisha_publish.yml
   workflow_dispatch:
 
 permissions:
@@ -52,7 +53,29 @@ jobs:
             git -c user.name="github-actions[bot]" \
                 -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
                 commit -m "build: обновить опубликованные страницы афиши"
-            git push origin HEAD:main
+            # В репозитории могут одновременно появляться коммиты с афишей
+            # или документацией. Не публикуем HTML, собранный из устаревшего JSON.
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if ! git diff --quiet HEAD origin/main -- afisha.json afisha_archive.json; then
+                echo "::error::В main изменились данные афиши; новую сборку запустит их push"
+                exit 1
+              fi
+              if ! git rebase origin/main; then
+                git rebase --abort || true
+                echo "::error::Конфликт при обновлении HTML, нужна новая сборка"
+                exit 1
+              fi
+              if git push origin HEAD:main; then
+                echo "HTML опубликован в ветке main"
+                break
+              fi
+              if [ "$attempt" = 3 ]; then
+                echo "::error::Не удалось отправить HTML после трёх попыток"
+                exit 1
+              fi
+              sleep 3
+            done
           fi
       - name: Определить источник GitHub Pages
         id: pages_config
