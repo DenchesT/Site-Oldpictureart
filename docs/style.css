@@ -2960,3 +2960,49 @@ h1, h2, h3 { overflow-wrap: break-word; }
   .index-page .grid.list .card-img img { max-height: 88px; }
 }
 /* OPA MAIN PAGE POLISH 12 — END */
+
+/* OPA MOBILE & EXHIBITION FAVORITES 2026-10-31
+   Existing palette and typography stay unchanged. */
+.opa-favorites-groups { min-width: 0; }
+.opa-fav-subhead {
+  font: 600 var(--fs-xs) var(--ff-data); color: var(--text-2);
+  margin: .7rem 0 .3rem; border-bottom: 1px solid var(--rule-soft);
+  display: flex; align-items: baseline; gap: .5rem; justify-content: space-between;
+}
+.sidebar a.opa-fav-all {
+  display: inline; font: 400 .68rem var(--ff-data); text-transform: none;
+  padding: 0; border: 0; color: var(--link); text-decoration: underline;
+}
+#fav-afisha-list li { margin: .4rem 0; }
+#fav-afisha-list li > a { display: block; padding: 1px var(--s2); }
+.opa-fav-place {
+  display: block; padding: 0 var(--s2); font: var(--fs-xs) var(--ff-data);
+  line-height: 1.4; color: var(--muted); overflow-wrap: anywhere;
+}
+.opa-mobile-controls { display: none; }
+@media (max-width: 900px) {
+  /* All catalog controls live in the off-canvas menu. No sticky block over art. */
+  .index-page .opa-mobile-controls { display: block; border-bottom: 1px solid var(--border); margin: .25rem 0 .65rem; padding: .25rem 0 .65rem; }
+  .index-page .opa-mobile-controls .results-bar {
+    display: flex; position: static; top: auto; z-index: auto; background: transparent;
+    box-shadow: none; padding: .3rem 0; margin: 0; border-bottom: 0;
+    min-height: 0; gap: .45rem; width: 100%;
+  }
+  .index-page .opa-mobile-controls .bar-controls { width: 100%; gap: .5rem; align-items: center; }
+  .index-page .opa-mobile-controls .bar-label { display: block; width: 100%; }
+  .index-page .opa-mobile-controls .sort-select { flex: 1 1 100%; width: 100%; max-width: none; min-height: 38px; }
+  .index-page .opa-mobile-controls .view-switch { width: 100%; }
+  .index-page .opa-mobile-controls .view-switch button { flex: 1 1 0; padding: .45rem .2rem; font-size: .67rem; white-space: normal; }
+  .index-page .opa-mobile-controls .active-filter-chips { padding: .3rem 0 0; }
+  .index-page #cards { scroll-margin-top: 3.5rem; }
+  .index-page .grid.list .card-no { white-space: nowrap; }
+  /* Keep the catalog number on one line, not № on a line by itself. */
+  .index-page .grid.list .card-no { font-size: .66rem; letter-spacing: 0; }
+  .index-page .grid.list .card-no::before { content: '№'; }
+  /* Extra breathing room around row separators after navigating Back. */
+  .index-page .grid.list .card { padding: var(--s4) var(--s2) var(--s5); row-gap: var(--s3); }
+  .index-page .grid.list .card-facts { padding-bottom: .4rem; }
+  /* The restored keyboard focus outline surrounds the card, not its text. */
+  .index-page .card:focus-within { outline: none; }
+  .index-page .card-link:focus-visible::after { inset: -4px; outline-offset: 0; border-radius: 2px; }
+}

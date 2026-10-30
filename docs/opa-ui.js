@@ -26,11 +26,49 @@
         var menu=document.getElementById('menu-toggle');
         if(menu){menu.setAttribute('aria-label',chips.childElementCount?'Фильтры, выбрано '+chips.childElementCount:'Фильтры и разделы');}
       }
+      // OPA MAIN PAGE POLISH: visit details visibility and live chips
+      document.addEventListener('opa:filters-changed', update);
       sidebar.addEventListener('click',function(){setTimeout(update,0);});
       sidebar.addEventListener('change',function(){setTimeout(update,0);});
       var search=document.getElementById('search');if(search)search.addEventListener('input',update);
       var reset=document.getElementById('reset-filter');if(reset)reset.addEventListener('click',function(){setTimeout(update,0);});
       update();
+    }
+    // The full visits list remains in the DOM for dates/accessibility; avoid an empty teaser.
+    var nowBox = document.getElementById('now-on');
+    var nowWrap = document.querySelector('.opa-now-collapsible');
+    if (nowWrap && nowBox) nowWrap.hidden = nowBox.hidden;
+    // OPA MOBILE & EXHIBITION FAVORITES 2026-10-31
+    // Keep only the Menu control over artwork on phones. Sort/view/count
+    // remain available INSIDE the same menu (no duplicate controls).
+    var toolbar = document.querySelector('.index-page .results-bar');
+    if (sidebar && toolbar) {
+      var chipsForMobile = document.getElementById('opa-active-filters');
+      var main = toolbar.parentNode;
+      var barAnchor = document.createComment('OPA toolbar original position');
+      main.insertBefore(barAnchor, toolbar);
+      var chipsAnchor = document.createComment('OPA chips original position');
+      if (chipsForMobile && chipsForMobile.parentNode)
+        chipsForMobile.parentNode.insertBefore(chipsAnchor, chipsForMobile);
+      var mobileControls = document.createElement('div');
+      mobileControls.className = 'opa-mobile-controls';
+      var searchBlock = sidebar.querySelector('.sidebar-search');
+      if (searchBlock) searchBlock.insertAdjacentElement('afterend', mobileControls);
+      else sidebar.prepend(mobileControls);
+      var media = window.matchMedia('(max-width: 900px)');
+      function placeControls() {
+        if (media.matches) {
+          mobileControls.appendChild(toolbar);
+          if (chipsForMobile) mobileControls.appendChild(chipsForMobile);
+        } else {
+          if (barAnchor.parentNode) barAnchor.parentNode.insertBefore(toolbar, barAnchor);
+          if (chipsForMobile && chipsAnchor.parentNode)
+            chipsAnchor.parentNode.insertBefore(chipsForMobile, chipsAnchor);
+        }
+      }
+      placeControls();
+      if (media.addEventListener) media.addEventListener('change', placeControls);
+      else if (media.addListener) media.addListener(placeControls);
     }
     // Clearer action names for assistive technology, without changing toolbar structure.
     var actions = {'[data-share-btn]':'Поделиться ссылкой на картину',

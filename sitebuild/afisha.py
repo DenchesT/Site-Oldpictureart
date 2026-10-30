@@ -18,6 +18,7 @@
 """
 
 import json
+import hashlib
 import logging
 import os
 import re
@@ -26,7 +27,7 @@ from html import escape as h
 
 from site_common import (
     head_common, scroll_top_button, theme_button, site_footer, COMMON_JS, SCROLL_TOP_JS,
-    BASE_URL, latin_slug, museum_page, AFISHA_FILE, has_afisha, MAP_LAYERS_JS,
+    BASE_URL, latin_slug, museum_page, AFISHA_FILE, has_afisha, MAP_LAYERS_JS, AUTH_JS,
 )
 from .config import OUTPUT_DIR
 from .text import load_json, plural_ru, save_json
@@ -141,6 +142,24 @@ def load_afisha(path=AFISHA_FILE):
         seen.add(key)
         items.append(dict(item, id=afisha_id(item)))
     return items, errors, updated
+
+
+# OPA MOBILE & EXHIBITION FAVORITES 2026-10-31
+# Stable, namespaced 36-character ID: accepted by existing cloud/auth/index.py.
+# Never use an exhibition anchor directly as a cloud ID (it can be >40 chars).
+def _afisha_favorite_key(item_id):
+    return "exh_" + hashlib.sha256(item_id.encode("utf-8")).hexdigest()[:32]
+
+
+def _afisha_favorites_script(items):
+    catalog = {
+        it["id"]: {"key": _afisha_favorite_key(it["id"]), "title": it["title"],
+                   "venue": it["venue"], "city": it["city"], "end": it["end"]}
+        for it in items
+    }
+    # Safe even when a museum sends a title containing HTML or </script>.
+    payload = json.dumps(catalog, ensure_ascii=True).replace("<", "\\u003c").replace(">", "\\u003e")
+    return '<script>window.OPA_AFISHA_CATALOG=' + payload + ';</script>'
 
 
 def afisha_id(item):
@@ -727,9 +746,7 @@ AFISHA_JS = """<script>
   var state = {reg: 'russia', area: 'all', country: 'all', epoch: 'all', venue: 'all',
                archiveYear: 'all', status: 'current', closing: 'all', opening: 'all', sort: 'default',
                query: '', artist: '', favoritesOnly: false, near: null};
-  var favorites = {};
-  try { favorites = JSON.parse(localStorage.getItem('afishaFavorites') || '{}') || {}; } catch (e) {}
-  if (!favorites || typeof favorites !== 'object' || Array.isArray(favorites)) favorites = {};
+  var favorites = readAfishaFavorites();
   items.forEach(function (li) {
     li.setAttribute('data-title-sort', (li.querySelector('.afisha-title') || {}).textContent.trim().toLocaleLowerCase('ru'));
     li.setAttribute('data-venue-sort', (li.querySelector('.afisha-place') || {}).textContent.trim().toLocaleLowerCase('ru'));
@@ -750,12 +767,13 @@ AFISHA_JS = """<script>
     var b = li.querySelector('.afisha-favorite');
     if (!b) return;
     b.addEventListener('click', function () {
-      if (favorites[favoriteId(li)]) delete favorites[favoriteId(li)];
-      else favorites[favoriteId(li)] = true;
-      try { localStorage.setItem('afishaFavorites', JSON.stringify(favorites)); } catch (e) {}
-      paintFavorite(li);
-      show();
+      setAfishaFavorite(favoriteId(li), !favorites[favoriteId(li)]);
     });
+  });
+  window.addEventListener('opa:afisha-favorites', function () {
+    favorites = readAfishaFavorites();
+    items.forEach(paintFavorite);
+    show();
   });
   function tags(li) { return (' ' + (li.getAttribute('data-tags') || '') + ' '); }
   function fits(li, s, skip) {
@@ -987,6 +1005,13 @@ AFISHA_JS = """<script>
       });
     } catch (e) {}
   }
+  if (new URLSearchParams(location.search).get('favorites') === '1') {
+    state.favoritesOnly = true;
+    state.status = 'all';
+    state.area = state.country = state.epoch = state.venue = state.archiveYear = 'all';
+    state.closing = state.opening = 'all';
+    state.query = state.artist = '';
+  }
   if (state.reg !== 'world') state.reg = 'russia';
   if (['current','all','running','soon','archive'].indexOf(state.status) < 0) state.status = 'current';
   if (['all','7','30','90'].indexOf(state.closing) < 0) state.closing = 'all';
@@ -997,6 +1022,7 @@ AFISHA_JS = """<script>
     if (!sel[k] || !Array.prototype.some.call(sel[k].options, function (o) { return o.value === state[k]; })) state[k] = 'all';
   });
   show();
+  syncAfishaFavorites();
   function highlight(el) {
     Array.prototype.forEach.call(page.querySelectorAll('.afisha-target'), function (x) { x.classList.remove('afisha-target'); });
     el.classList.add('afisha-target');
@@ -1216,6 +1242,7 @@ def render_afisha_page(items, updated="", known=(), today=None, coords=None, ind
   <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
   <a href="museums.html" class="back">Карта собраний</a>
   {theme_button('theme-toggle-inline')}
+  <button type="button" id="auth-btn" class="topbar-btn" aria-label="Войти">Войти</button>
 </div>
 {scroll_top_button()}
 <header class="artist-head">
@@ -1276,6 +1303,8 @@ def render_afisha_page(items, updated="", known=(), today=None, coords=None, ind
 {site_footer()}
 {SCROLL_TOP_JS}
 {COMMON_JS}
+{_afisha_favorites_script(all_items)}
+{AUTH_JS}
 {AFISHA_JS}
 {map_js}
 </body></html>"""

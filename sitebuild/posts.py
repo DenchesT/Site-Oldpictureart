@@ -23,7 +23,7 @@ from .html import artwork_jsonld, download_name, page_title, site_og_image, tele
 from .images import size_attrs
 from .places import museum_href
 from .visits import NOW_ON_JS, now_on_block
-from .afisha import AFISHA_JS, afisha_block, load_afisha
+from .afisha import AFISHA_JS, afisha_block, load_afisha, _afisha_favorites_script
 
 logger = logging.getLogger("build_site")
 
@@ -555,7 +555,13 @@ def render_index(all_posts, visits=None):
     fav_html = ('<div class="sidebar-section"><button type="button" class="sidebar-title sidebar-icon icon-fav" '
                 'aria-expanded="false" onclick="toggleSection(this)">Избранное '
                 '<span id="fav-count" class="count"></span></button>'
-                f'<div class="sidebar-content collapsed"><ul id="fav-list">{empty_fav}</ul></div></div>')
+                '<div class="sidebar-content collapsed"><div class="opa-favorites-groups">'
+                '<p class="opa-fav-subhead">Картины</p>'
+                f'<ul id="fav-list">{empty_fav}</ul>'
+                '<p class="opa-fav-subhead">Выставки <a class="opa-fav-all" '
+                'href="afisha.html?favorites=1">Смотреть в афише</a></p>'
+                '<ul id="fav-afisha-list"><li class="fav-empty">Отметьте ☆ в афише</li></ul>'
+                '</div></div></div>')
     # «Популярное у посетителей» — рядом с «Избранным»: то же по сути,
     # только отметки чужие. Раздел появляется, когда список пришёл из
     # облака; пока отмеченных картин мало, в сайдбаре ничего не висит.
@@ -577,9 +583,11 @@ def render_index(all_posts, visits=None):
     # посты #выставка или #галерея — пустой раздел никому не нужен.
     visits_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-visits no-arrow" '
                         'href="visits.html">Посещения</a></div>') if has_visits() else ''
+    # OPA MOBILE & EXHIBITION FAVORITES 2026-10-31
     # Афиша — крупные выставки в России и в мире (sitebuild/afisha.py):
     # раздел в панели под фильтрами — ссылка и ближайшие к закрытию.
-    afisha_html = afisha_block(load_afisha()[0])
+    afisha_items = load_afisha()[0]
+    afisha_html = afisha_block(afisha_items)
     index_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-artists no-arrow" '
                        'href="ukazatel.html">Указатель</a></div>')
     stats_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-decades no-arrow" '
@@ -626,7 +634,7 @@ def render_index(all_posts, visits=None):
     <input type="search" class="search-box" placeholder="Художник, название, музей…" id="search" autocomplete="off" aria-describedby="opa-search-help">
     <button type="button" class="opa-search-clear" id="opa-clear-search" title="Очистить поиск" aria-label="Очистить поиск" hidden>×</button>
   </div>
-  <p class="opa-search-help" id="opa-search-help">Поиск по названию, автору и музею · клавиша /</p>
+  <p class="opa-search-help" id="opa-search-help">Поиск по названию, художнику или музею</p>
 </div>
 <button type="button" id="reset-filter" class="filter-reset">Сбросить все фильтры</button>
 <p class="opa-sidebar-heading">Фильтры картин</p>
@@ -720,7 +728,11 @@ function updateFavList() {{
     const favCount = document.getElementById('fav-count');
     if (!favList) return;
     const likedIds = Object.keys(likes).filter(id => likes[id]);
-    if (favCount) favCount.textContent = likedIds.length ? '(' + likedIds.length + ')' : '';
+    const afishaLikes = readAfishaFavorites();
+    const events = window.OPA_AFISHA_CATALOG || {{}};
+    const exhibitCount = Object.keys(afishaLikes).filter(id => afishaLikes[id] && events[id]).length;
+    const total = likedIds.length + exhibitCount;
+    if (favCount) favCount.textContent = total ? '(' + total + ')' : '';
     favList.textContent = '';
     if (!likedIds.length) {{
         const li = document.createElement('li');
@@ -742,6 +754,42 @@ function updateFavList() {{
         favList.appendChild(li);
     }});
 }}
+
+function updateAfishaFavList() {{
+    const list = document.getElementById('fav-afisha-list');
+    if (!list) return;
+    const favorites = readAfishaFavorites();
+    const catalog = window.OPA_AFISHA_CATALOG || {{}};
+    const ids = Object.keys(favorites).filter(id => favorites[id] && catalog[id]);
+    ids.sort((a, b) => (catalog[a].end || '').localeCompare(catalog[b].end || '') * -1);
+    list.replaceChildren();
+    if (!ids.length) {{
+        const li = document.createElement('li');
+        li.className = 'fav-empty';
+        li.textContent = 'Отметьте ☆ на странице афиши';
+        list.appendChild(li);
+        return;
+    }}
+    ids.forEach(function (id) {{
+        const item = catalog[id], li = document.createElement('li'), a = document.createElement('a');
+        a.href = 'afisha.html?favorites=1#' + encodeURIComponent(id);
+        a.textContent = item.title;
+        a.title = item.venue + (item.city ? ', ' + item.city : '');
+        li.appendChild(a);
+        const p = document.createElement('span');
+        p.className = 'opa-fav-place';
+        p.textContent = item.venue + (item.city ? ' · ' + item.city : '');
+        li.appendChild(p);
+        list.appendChild(li);
+    }});
+}}
+window.addEventListener('opa:afisha-favorites', function () {{
+    updateAfishaFavList();
+    updateFavList();
+}});
+window.addEventListener('storage', function (e) {{
+    if (e.key === 'afishaFavorites' || e.key === 'likes') {{ updateAfishaFavList(); updateFavList(); }}
+}});
 
 // Аккордеон сайдбара: класс open нужен, чтобы стрелка ▾ поворачивалась —
 // раньше он не ставился нигде и стрелка всегда смотрела вниз.
@@ -893,6 +941,7 @@ function plural(n, one, few, many) {{
 
 document.addEventListener('DOMContentLoaded', function() {{
     updateFavList();
+    updateAfishaFavList();
 
     // Исходный порядок запоминаем один раз — к нему возвращает «сначала новые»
     ORDER = Array.prototype.slice.call(document.querySelectorAll('#cards .card'));
@@ -1015,9 +1064,13 @@ document.addEventListener('DOMContentLoaded', function() {{
 }});
 </script>
 {CLOUD_JS}
+{_afisha_favorites_script(afisha_items)}
 <script>
 // Вошедшему в аккаунт — отметки из облака в список «Избранное».
 cloudSync().then(function (changed) {{ if (changed) updateFavList(); }});
+syncAfishaFavorites().then(function (changed) {{
+  if (changed) {{ updateAfishaFavList(); updateFavList(); }}
+}});
 
 // «Популярное у посетителей»: самые отмечаемые картины. Функция отдаёт
 // только номера картин и числа — кто отмечал, в ответе нет. Блок

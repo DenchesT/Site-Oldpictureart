@@ -25,7 +25,7 @@
 <link rel="alternate" type="application/rss+xml" title="Old Picture Art" href="feed.xml">
 <link rel="preload" as="font" type="font/woff2" href="fonts/old-standard-tt-cyrillic-400-normal.woff2" crossorigin>
 <link rel="stylesheet" href="fonts/fonts.css">
-<link rel="stylesheet" href="style.css?v=50522d9f">
+<link rel="stylesheet" href="style.css?v=b10d6a06">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"VisualArtwork","name":"Портрет императора Николая II, 1900","url":"https://oldpictureart.ru/serov-portret-imperatora-nikolaya-ii-1900.html","inLanguage":"ru","creator":{"@type":"Person","name":"Валентин Александрович Серов"},"dateCreated":"1900","artMedium":{"@value":"масло"},"artworkSurface":{"@value":"холст"},"image":"https://oldpictureart.ru/images/serov-portret-imperatora-nikolaya-ii-1900-1.jpg","isPartOf":{"@type":"Collection","name":"Государственная Третьяковская галерея, Москва"},"description":"История знакомства Серова с представителями царской фамилии начинается в 1893 году, когда ему был заказан групповой портрет Александра III с семьёй (не сохранился). Позже художник исполнит несколько посмертных портретов Царя-Миротворца и будет участвовать в создании коронационного альбома императора Николая II. Заказчиками Серова станут великие князья Павел Александрович и Михаил Николаевич. Слава Серова-портретиста привлечёт внимание и самого императора. В 1899 – 1900 годах он закажет художнику","sameAs":["https://my.tretyakov.ru/app/masterpiece/21517"],"height":{"@type":"QuantitativeValue","value":71.2,"unitCode":{"@value":"CMT"},"unitText":{"@value":"см"}},"width":{"@type":"QuantitativeValue","value":59.2,"unitCode":{"@value":"CMT"},"unitText":{"@value":"см"}}}</script>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head><body class="post-page">
@@ -819,6 +819,107 @@ function writeLocalLikes(map) {
   try { localStorage.setItem('likes', JSON.stringify(map)); } catch (e) {}
 }
 
+// OPA MOBILE & EXHIBITION FAVORITES 2026-10-31: cloud keys are independent
+// from painting IDs, but reuse the already deployed YDB likes table/API.
+function readAfishaFavorites() {
+  try {
+    var v = JSON.parse(localStorage.getItem('afishaFavorites') || '{}');
+    return v && typeof v === 'object' && !Array.isArray(v) ? v : {};
+  } catch (e) { return {}; }
+}
+function writeAfishaFavorites(v) {
+  try { localStorage.setItem('afishaFavorites', JSON.stringify(v)); } catch (e) {}
+}
+function readAfishaFavoritePending() {
+  try {
+    var v = JSON.parse(localStorage.getItem('afishaFavoritesPending') || '{}');
+    return v && typeof v === 'object' && !Array.isArray(v) ? v : {};
+  } catch (e) { return {}; }
+}
+function writeAfishaFavoritePending(v) {
+  try {
+    if (Object.keys(v).length) localStorage.setItem('afishaFavoritesPending', JSON.stringify(v));
+    else localStorage.removeItem('afishaFavoritesPending');
+  } catch (e) {}
+}
+function announceAfishaFavorites() {
+  window.dispatchEvent(new Event('opa:afisha-favorites'));
+}
+function afishaAccountKey() {
+  var s = getSession();
+  if (!s || !s.token) return '';
+  try {
+    var raw = s.token.split('.')[0].replace(/-/g, '+').replace(/_/g, '/');
+    var data = JSON.parse(atob(raw));
+    return typeof data.u === 'string' ? data.u : '';
+  } catch (e) { return ''; }
+}
+var _afishaFavQueue = Promise.resolve(), _afishaFavChanges = 0;
+function syncAfishaFavorites() {
+  if (!CLOUD.on || !getSession() || !window.OPA_AFISHA_CATALOG) return Promise.resolve(false);
+  // Serialize updates so two rapid star clicks cannot reorder requests.
+  var job = _afishaFavQueue.catch(function () { return false; }).then(function () {
+    if (!getSession()) return false;
+    var who = afishaAccountKey();
+    if (!who) return false;
+    var catalog = window.OPA_AFISHA_CATALOG;
+    var version = _afishaFavChanges;
+    var saved = readAfishaFavorites(), pending = readAfishaFavoritePending();
+    var former = '';
+    try { former = localStorage.getItem('afishaFavoritesAccount') || ''; } catch (e) {}
+    // Do not silently upload one signed-in user's favorites to a different account.
+    if (former && former !== who) {
+      saved = {}; pending = {};
+      writeAfishaFavorites(saved); writeAfishaFavoritePending(pending);
+      announceAfishaFavorites();
+    }
+    var merging = former !== who;
+    var up = [], down = [];
+    Object.keys(catalog).forEach(function (id) {
+      var cloudId = catalog[id].key;
+      if (!cloudId) return;
+      if (Object.prototype.hasOwnProperty.call(pending, id)) {
+        (pending[id] ? up : down).push(cloudId);
+      } else if (merging && saved[id]) {
+        up.push(cloudId);
+      }
+    });
+    return Promise.all(down.map(function (key) { return cloudCall('unlike', {post_id: key}); }))
+      .then(function () { return cloudCall('sync', {likes: up}); })
+      .then(function (answer) {
+        var remote = new Set(answer.likes || []), refreshed = {};
+        Object.keys(catalog).forEach(function (id) {
+          if (remote.has(catalog[id].key)) refreshed[id] = true;
+        });
+        try { localStorage.setItem('afishaFavoritesAccount', who); } catch (e) {}
+        // A click during the request remains pending for the next queued sync.
+        if (_afishaFavChanges === version) {
+          writeAfishaFavorites(refreshed);
+          writeAfishaFavoritePending({});
+          announceAfishaFavorites();
+        }
+        return true;
+      }).catch(function (e) {
+        console.warn('Избранные выставки: синхронизация недоступна:', e.message);
+        return false; // keep pending changes on network failures
+      });
+  });
+  _afishaFavQueue = job;
+  return job;
+}
+function setAfishaFavorite(id, liked) {
+  var catalog = window.OPA_AFISHA_CATALOG || {};
+  if (!Object.prototype.hasOwnProperty.call(catalog, id)) return;
+  var saved = readAfishaFavorites(), pending = readAfishaFavoritePending();
+  if (liked) saved[id] = true; else delete saved[id];
+  pending[id] = !!liked;
+  _afishaFavChanges++;
+  writeAfishaFavorites(saved);
+  writeAfishaFavoritePending(pending);
+  announceAfishaFavorites();
+  if (CLOUD.on && getSession()) syncAfishaFavorites();
+}
+
 // Пропуск от функции: {token, name, provider, exp}. Сам токен подписан
 // на сервере, подделать его в браузере нельзя; здесь он только хранится.
 function getSession() {
@@ -880,7 +981,7 @@ function cloudSync(mode) {
     .then(function () { return cloudCall('sync', {likes: up}); })
     .then(function (j) {
       var merged = {};
-      (j.likes || []).forEach(function (id) { merged[id] = true; });
+      (j.likes || []).forEach(function (id) { if (String(id).indexOf('exh_') !== 0) merged[id] = true; });
       writeLocalLikes(merged);
       writePending({});
       try { localStorage.setItem('likes-synced', String(Date.now())); } catch (e) {}
@@ -1003,7 +1104,7 @@ function actionButton(box, cls, text, onclick) {
 }
 
 function showAuthForm() {
-  openDialog('Вход', 'Чтобы отмеченные картины были и на телефоне, и на компьютере.',
+  openDialog('Вход', 'Чтобы избранные картины и выставки были доступны на телефоне и компьютере.',
     function (box) {
       if (CLOUD.yandex) {
         var y = actionButton(box, 'auth-provider auth-yandex', 'Войти с Яндекс ID', function () {
@@ -1020,7 +1121,7 @@ function showAccount() {
   var s = getSession();
   if (!s) { showAuthButton(); showAuthForm(); return; }
   openDialog(s.name || 'Аккаунт', 'Вы вошли через ' + (PROVIDERS[s.provider] || 'аккаунт') +
-             '. Отмеченные картины видны на всех ваших устройствах.',
+             '. Избранные картины и выставки видны на всех ваших устройствах.',
     function (box, close, say) {
       actionButton(box, 'auth-provider', 'Выйти', function () {
         setSession(null);
