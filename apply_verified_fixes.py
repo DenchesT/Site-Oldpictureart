@@ -92,6 +92,44 @@ def _push_reconciling_remote():
 '''
 
 
+
+def _with_afisha_address_markup(source):
+    """Add an address below the date/status paragraph in afisha_item().
+
+    The optional HTML attributes on the status span are intentionally not
+    hard-coded: old and new UI revisions use different attributes.
+    """
+    function = re.search(r"(?m)^def afisha_item\(", source)
+    if not function:
+        raise RuntimeError('В afisha.py не найдена функция afisha_item')
+    following = re.search(r"(?m)^def [A-Za-z_][A-Za-z_0-9]*\(", source[function.end():])
+    end = function.end() + following.start() if following else len(source)
+    block = source[function.start():end]
+    if 'class="afisha-address"' in block:
+        return source
+
+    lines = block.splitlines(keepends=True)
+    date_lines = [i for i, line in enumerate(lines) if 'class="afisha-dates"' in line]
+    candidates = []
+    for start in date_lines:
+        for i in range(start, min(start + 7, len(lines))):
+            line = lines[i]
+            if ('afisha-when' in line and '</p>' in line
+                    and re.match(r"^\s*(?:\+\s*)?f['\"]", line)):
+                candidates.append(i)
+                break
+    if len(candidates) != 1:
+        raise RuntimeError(
+            'Не удалось безопасно определить конец блока дат в afisha_item. '
+            'Код страницы отличается от известных версий, файлы не изменены.')
+
+    i = candidates[0]
+    indent = re.match(r'^\s*', lines[i]).group()
+    address_line = (indent + "+ (f'<p class=\"afisha-address\">Адрес: {h(item[\"address\"])}</p>' "
+                    "if item.get(\"address\") else \"\")\n")
+    lines.insert(i + 1, address_line)
+    return source[:function.start()] + ''.join(lines) + source[end:]
+
 def prepare(root):
     safety = root / 'sitebuild/safety.py'
     afisha = root / 'afisha.json'
@@ -139,10 +177,11 @@ def prepare(root):
                 report['exhibition_records_updated'].append(record.get('title',''))
                 break
         if record.get('title') == 'Русский Париж. 1814–1914' and 'domrz.ru/exhibition/70568' in record.get('url',''):
-            # Current official press page confirmed available. Avoid a page
-            # that the built-in link checker reported as HTTP 404.
-            record['url'] = 'https://www.domrz.ru/press/news/70629_dom_russkogo_zarubezhya_otkryvaet_neizvestnye_shedevry_russkogo_parizha_iz_chastnykh_kollektsiy/'
-            report['notices'].append('Русский Париж: URL заменён на действующую официальную страницу')
+            # User verified this official exhibition page in a browser.
+            # The server returns a misleading 404 to our Python checker;
+            # preserve the original URL and skip *only* its link probe.
+            record['skip_link_check'] = True
+            report['notices'].append('Русский Париж: исходная ссылка сохранена; ложный 404 не выводится')
     report['matched_exhibitions'] = len(report['exhibition_records_updated'])
     report['unmatched_venues'] = [name + ', ' + city for name, city, *_ in AFISHA_ADDRESSES if (name, city) not in matched]
     updated_afisha = json.dumps(data, ensure_ascii=False, indent=2) + '\n'
@@ -163,15 +202,16 @@ def prepare(root):
     new_museum = json.dumps(museum, ensure_ascii=False, indent=2) + '\n'
     if json.loads(new_museum) != json.loads(originals[overrides]): changed[overrides] = new_museum
 
-    # Display an explicit street address on exhibition cards, while retaining
-    # the existing museum/city line and card layout. Not every event has one.
-    page_source = originals[afisha_py]
-    if 'class="afisha-address"' not in page_source:
-        needle = "        + ('<button type=\"button\" class=\"afisha-pin\">на карте</button>' if coords else '') + '</p>'"
-        insert = needle + "\n        + (f'<p class=\"afisha-address\">Адрес: {h(item[\"address\"])}</p>' if item.get(\"address\") else \"\")"
-        if page_source.count(needle) != 1:
-            raise RuntimeError('Не найден ожидаемый блок афиши: нужен ручной анализ sitebuild/afisha.py')
-        page_source = page_source.replace(needle, insert, 1)
+    # Display address after dates, while retaining the existing markup.
+    page_source = _with_afisha_address_markup(originals[afisha_py])
+    # Preserve user-verified URLs while checking all other links as before.
+    link_needle = '    state = load_json(path, {})\n    urls = sorted({it["url"] for it in items})'
+    if 'items = [it for it in items if not it.get("skip_link_check")]' not in page_source:
+        if page_source.count(link_needle) != 1:
+            raise RuntimeError('Не найден блок проверки ссылок афиши')
+        page_source = page_source.replace(
+            link_needle,
+            '    items = [it for it in items if not it.get("skip_link_check")]\n' + link_needle, 1)
     compile(page_source, str(afisha_py), 'exec')
     if page_source != originals[afisha_py]: changed[afisha_py] = page_source
 

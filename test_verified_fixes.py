@@ -21,7 +21,25 @@ class InstallerTests(unittest.TestCase):
         self.safety.write_text('import logging\n\ndef publish_generated(root):\n'+installer.OLD_PUSH+'\n', encoding='utf-8')
         (self.root/'docs').mkdir()
         self.afisha_py = self.root/'sitebuild/afisha.py'
-        self.afisha_py.write_text('def afisha_item(item, coords):\n    return (\n        + (\'<button type="button" class="afisha-pin">на карте</button>\' if coords else \'\') + \'</p>\'\n    )\n',encoding="utf8")
+        # Realistic adjacent f-strings: reproduces SyntaxError from old ZIP.
+        self.afisha_py.write_text("""from html import escape as h
+
+def afisha_item(item, coords):
+    return (
+        f'<li class="afisha-item">'
+        + f'<p class="afisha-where"><span>{h(item["venue"])}</span>'
+        + ('<button type="button" class="afisha-pin">на карте</button>' if coords else '') + '</p>'
+        f'<p class="afisha-dates"><span class="afisha-range">Сроки: {h(item["start"])}</span>'
+        f'<span class="now-when afisha-when"></span></p>'
+        + ('<p class="afisha-note">Примечание</p>' if item.get("note") else '')
+        + '</li>'
+    )
+
+def check_afisha_links(items, today, offline=False, path=''):
+    state = load_json(path, {})
+    urls = sorted({it["url"] for it in items})
+    return urls
+""", encoding='utf8')
         self.css = self.root/'docs/style.css'
         self.css.write_text(':root { --ff-data: monospace; }\n',encoding='utf8')
         self.afisha = self.root/'afisha.json'
@@ -58,11 +76,51 @@ class InstallerTests(unittest.TestCase):
         self.assertTrue(list((self.root/'output'/'backups'/'sitebuild').glob('safety.py.bak_*')))
         d=json.loads(self.afisha.read_text(encoding='utf8'))
         self.assertEqual('2 rue Louis-Boilly, 75016 Paris, France',d['exhibitions'][0]['query'])
-        self.assertIn('press/news',d['exhibitions'][-1]['url'])
+        self.assertEqual('https://www.domrz.ru/exhibition/70568_russkiy_parizh_1814_1914/', d['exhibitions'][-1]['url'])
+        self.assertTrue(d['exhibitions'][-1]['skip_link_check'])
+        scope = {'load_json': lambda path, default: default}
+        exec(compile(self.afisha_py.read_text(encoding='utf8'), str(self.afisha_py), 'exec'), scope)
+        self.assertIn('Адрес: 2 rue Louis-Boilly', scope['afisha_item'](d['exhibitions'][0], False))
+        self.assertNotIn('domrz.ru', ' '.join(scope['check_afisha_links'](d['exhibitions'], None)))
         self.assertIn('afisha-address', self.afisha_py.read_text(encoding='utf8'))
         self.assertIn('.afisha-address', self.css.read_text(encoding='utf8'))
         o=json.loads(self.museum.read_text(encoding='utf8'))
         self.assertEqual('Кремль, 11, Великий Новгород, Россия',o['Новгородский музей заповедник']['address'])
+    def test_status_role_variant_from_current_github(self):
+        old = self.afisha_py.read_text(encoding='utf8')
+        modified = old.replace(
+            "f'<span class=\"now-when afisha-when\"></span></p>'",
+            "f'<span class=\"now-when afisha-when\" role=\"status\"></span></p>'")
+        self.assertNotEqual(old, modified)
+        self.afisha_py.write_text(modified, encoding='utf8')
+        changed, _ = installer.prepare(self.root)
+        self.assertIn(self.afisha_py, changed)
+        compile(changed[self.afisha_py], str(self.afisha_py), 'exec')
+        installer.write_safely(changed, self.root)
+        self.assertFalse(installer.prepare(self.root)[0])
+        scope = {'load_json': lambda path, default: default}
+        exec(compile(self.afisha_py.read_text(encoding='utf8'), str(self.afisha_py), 'exec'), scope)
+        record = json.loads(self.afisha.read_text(encoding='utf8'))['exhibitions'][0]
+        self.assertIn('Адрес:', scope['afisha_item'](record, False))
+
+    def test_extra_status_attributes(self):
+        old = self.afisha_py.read_text(encoding='utf8')
+        modified = old.replace('class="now-when afisha-when"',
+                               'class="now-when afisha-when" role="status" aria-live="polite"')
+        self.afisha_py.write_text(modified, encoding='utf8')
+        changed, _ = installer.prepare(self.root)
+        self.assertIn('afisha-address', changed[self.afisha_py])
+        compile(changed[self.afisha_py], str(self.afisha_py), 'exec')
+
+    def test_unknown_page_structure_keeps_all_files_intact(self):
+        old = self.afisha_py.read_text(encoding='utf8')
+        self.afisha_py.write_text(old.replace('afisha-when', 'changed-by-user'), encoding='utf8')
+        original = {p:p.read_bytes() for p in (self.safety, self.afisha,
+                                                self.museum, self.afisha_py, self.css)}
+        with self.assertRaisesRegex(RuntimeError, 'Не удалось безопасно'):
+            installer.prepare(self.root)
+        self.assertEqual(original, {p:p.read_bytes() for p in original})
+
     def test_refuse_unexpected_safety_version_without_writing(self):
         original='def publish_generated(root):\n    print("changed")\n'
         self.safety.write_text(original,encoding='utf8')

@@ -1,7 +1,10 @@
 test_apply_idempotent_and_backups (__main__.InstallerTests.test_apply_idempotent_and_backups) ... ok
 test_complete_address_audit (__main__.InstallerTests.test_complete_address_audit) ... ok
 test_dry_run_read_only (__main__.InstallerTests.test_dry_run_read_only) ... ok
+test_extra_status_attributes (__main__.InstallerTests.test_extra_status_attributes) ... ok
 test_refuse_unexpected_safety_version_without_writing (__main__.InstallerTests.test_refuse_unexpected_safety_version_without_writing) ... ok
+test_status_role_variant_from_current_github (__main__.InstallerTests.test_status_role_variant_from_current_github) ... ok
+test_unknown_page_structure_keeps_all_files_intact (__main__.InstallerTests.test_unknown_page_structure_keeps_all_files_intact) ... ok
 test_other_push_errors_not_retried (__main__.PushRecoveryTests.test_other_push_errors_not_retried) ... ok
 test_real_git_non_fast_forward (__main__.PushRecoveryTests.test_real_git_non_fast_forward) ... GitHub: main обновился на сервере; синхронизирую коммиты без force push
 ok
@@ -11,6 +14,6 @@ test_retries_only_non_fast_forward (__main__.PushRecoveryTests.test_retries_only
 ok
 
 ----------------------------------------------------------------------
-Ran 8 tests in 0.117s
+Ran 11 tests in 0.157s
 
 OK
