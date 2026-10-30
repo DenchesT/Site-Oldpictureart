@@ -2888,3 +2888,75 @@ h1, h2, h3 { overflow-wrap: break-word; }
   .afisha-filters .afisha-select { min-width: 135px; }
   .afisha-search-label input { width: 100%; }
 }
+
+/* OPA MAIN PAGE POLISH 12 — START */
+/* All overrides stay within the existing palette and only affect the homepage. */
+.index-page header { padding: 1.1rem 0 .85rem; margin-bottom: .85rem; gap: .85rem; }
+.index-page h1 { font-size: clamp(2.1rem, 3.25vw, 2.55rem); }
+.index-page .site-lede { margin-top: .45rem; line-height: 1.4; max-width: 77ch; }
+.index-page .subtitle { margin-top: .35rem; }
+.index-page .random-btn { padding: .5rem .9rem; }
+/* Visits are available on demand; the detailed exhibition list remains in the sidebar. */
+.opa-now-collapsible { margin: 0 0 .85rem; border: 1px solid var(--border); background: var(--card-bg); }
+.opa-now-collapsible[hidden] { display: none !important; }
+.opa-now-collapsible > summary { list-style-position: inside; padding: .45rem .8rem; cursor: pointer; color: var(--link); font: var(--fs-xs) var(--ff-data); letter-spacing: .04em; }
+.opa-now-collapsible > summary:hover, .opa-now-collapsible > summary:focus-visible { background: var(--panel); }
+.opa-now-collapsible > .now-on { margin: 0; border: 0; border-top: 1px solid var(--rule-soft); }
+/* One document scrollbar on desktop; the search field stays available in the sidebar. */
+@media (min-width: 901px) {
+  .index-page .sidebar { position: static; max-height: none; height: auto; overflow: visible; }
+  .index-page .sidebar-search { position: sticky; top: 0; z-index: 12; background: var(--sidebar-bg); padding-top: .5rem; }
+}
+.opa-sidebar-heading { margin: .8rem 0 .3rem; padding: .35rem 0 .25rem; border-bottom: 1px solid var(--border); color: var(--text-2); font: 600 var(--fs-xs) var(--ff-data); letter-spacing: .06em; text-transform: uppercase; }
+.index-page .sidebar .opa-search-label { display: block; margin-bottom: .3rem; color: var(--text-2); font: var(--fs-xs) var(--ff-data); }
+.opa-search-wrap { position: relative; }
+.index-page .search-box { width: 100%; padding-right: 2.2rem; background: var(--card-bg); border-color: var(--input-border); }
+.opa-search-clear { position: absolute; right: 2px; top: 2px; bottom: 2px; min-width: 2rem; border: 0; background: transparent; color: var(--text-2); font-size: 1.3rem; line-height: 1; cursor: pointer; }
+.opa-search-clear:hover { background: var(--panel); }
+.opa-search-clear[hidden] { display: none !important; }
+.index-page .search-box::-webkit-search-cancel-button { display: none; }
+.opa-search-help { color: var(--muted); font: .67rem var(--ff-data); line-height: 1.45; margin: .3rem 0 0; }
+/* Persistent count, reset action, and a compact floating sort/view toolbar. */
+.index-page .results-bar { position: sticky; top: 0; z-index: 40; background: var(--bg); padding: .7rem .25rem; border-bottom: 1px solid var(--border); min-height: 3.3rem; margin-bottom: .65rem; box-shadow: 0 3px 9px -9px var(--shadow-strong); }
+.opa-results-meta { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.index-page .results-count { color: var(--text-2); font-weight: 500; }
+.opa-reset-inline { border: 0; background: transparent; color: var(--link); font: var(--fs-xs) var(--ff-data); padding: .15rem; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.opa-reset-inline[hidden] { display: none !important; }
+.index-page #cards { scroll-margin-top: 4.8rem; }
+/* Original paintings are shown at natural aspect ratios, only a little larger. */
+@media (min-width: 1001px) {
+  .index-page .grid.list .card { grid-template-columns: 3.4rem 156px minmax(0, 1fr) minmax(0, 15rem); gap: 1.1rem; }
+  .index-page .grid.list .card-img img { max-height: 158px; }
+}
+.index-page .card-img { position: relative; z-index: 1; }
+.index-page .grid.list .card-img { border-radius: 2px; }
+.index-page .card-img img { transition: box-shadow .15s, border-color .15s; }
+.index-page .card-img:hover img, .index-page .card-img:focus-visible img { border-color: var(--active); box-shadow: 0 4px 15px -5px var(--shadow-strong); }
+.index-page .card:focus-within { outline: 1px solid var(--active); outline-offset: -1px; }
+.index-page .opa-card-title-link { position: relative; z-index: 1; text-decoration: none; color: inherit; }
+.index-page .opa-card-title-link:hover, .index-page .opa-card-title-link:focus-visible { text-decoration: underline; text-underline-offset: 3px; color: var(--link); }
+.index-page .grid.list .card-facts { font-size: .75rem; color: var(--text-2); }
+.index-page .grid.list .card-facts div { padding: 3px 0; }
+.index-page .grid.list .card-facts b { font-weight: 600; }
+.index-page .grid.list .card-no::before { content: '№ '; }
+@media (min-width: 621px) and (max-width: 1000px) {
+  .index-page .grid.list .card { grid-template-columns: 3rem 120px minmax(0,1fr); }
+  .index-page .grid.list .card-img img { max-height: 125px; }
+}
+@media (max-width: 900px) {
+  .index-page .sidebar { position: fixed; max-height: none; overflow-y: auto; }
+  .index-page .sidebar-search { position: static; }
+  .index-page .results-bar { top: 3rem; }
+}
+@media (max-width: 620px) {
+  .index-page .results-bar { align-items: flex-start; gap: .4rem; }
+  .index-page .results-bar .bar-controls { gap: .45rem; }
+  .index-page #cards { scroll-margin-top: 7rem; }
+  .index-page .grid.list .card { grid-template-columns: 2.4rem 92px minmax(0,1fr); }
+  .index-page .grid.list .card-img img { max-height: 100px; }
+}
+@media (max-width: 380px) {
+  .index-page .grid.list .card { grid-template-columns: 2rem 70px minmax(0,1fr); }
+  .index-page .grid.list .card-img img { max-height: 88px; }
+}
+/* OPA MAIN PAGE POLISH 12 — END */

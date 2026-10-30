@@ -26,12 +26,18 @@
         var menu=document.getElementById('menu-toggle');
         if(menu){menu.setAttribute('aria-label',chips.childElementCount?'Фильтры, выбрано '+chips.childElementCount:'Фильтры и разделы');}
       }
+      // OPA MAIN PAGE POLISH: visit details visibility and live chips
+      document.addEventListener('opa:filters-changed', update);
       sidebar.addEventListener('click',function(){setTimeout(update,0);});
       sidebar.addEventListener('change',function(){setTimeout(update,0);});
       var search=document.getElementById('search');if(search)search.addEventListener('input',update);
       var reset=document.getElementById('reset-filter');if(reset)reset.addEventListener('click',function(){setTimeout(update,0);});
       update();
     }
+    // The full visits list remains in the DOM for dates/accessibility; avoid an empty teaser.
+    var nowBox = document.getElementById('now-on');
+    var nowWrap = document.querySelector('.opa-now-collapsible');
+    if (nowWrap && nowBox) nowWrap.hidden = nowBox.hidden;
     // Clearer action names for assistive technology, without changing toolbar structure.
     var actions = {'[data-share-btn]':'Поделиться ссылкой на картину',
       '[aria-label="Случайная картина"]':'Открыть случайную картину',

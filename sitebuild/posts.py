@@ -469,11 +469,11 @@ def render_index(all_posts, visits=None):
                        f' title="Все картины этого собрания">{museum_name}</a></div>') if museum_name else ''
 
         cards.append(f"""<article class="card" data-artist="{h(p['artist'].lower())}" data-title="{h(p['title'].lower())}" data-year="{y}" data-month="{m}" data-cyear="{creation_year or ''}" data-museum="{h(museum_slug)}" data-material="{h(slugify(p.get('material','')))}" data-techniques="{h(' '.join(slugify(t) for t in p.get('techniques',[])))}" data-search="{h(search_blob)}" data-no="{cat_no[id(p)]}" {decade_attr}>
-    <span class="card-no">{cat_no[id(p)]:0{cat_width}d}</span>
+    <span class="card-no" title="Номер работы в каталоге">{cat_no[id(p)]:0{cat_width}d}</span>
     <a class="card-img" href="{h(p['filename'])}" aria-label="Открыть картину: {artist_name} — {title_name}"><img src="{cv}" alt="{artist_name} — {title_name}"{size_attrs(cv)} loading="lazy" decoding="async"></a>
     <div class="card-body">
         <div class="card-artist"><a class="card-link" href="{h(p['filename'])}">{artist_name}</a></div>
-        <div class="card-title">{title_name}</div>
+        <div class="card-title"><a class="opa-card-title-link" href="{h(p['filename'])}" aria-label="Открыть картину: {artist_name} — {title_name}">{title_name}</a></div>
         {museum_html}
         <div class="card-date">{pub_date}</div>
     </div>
@@ -597,6 +597,8 @@ def render_index(all_posts, visits=None):
         canonical=f"{BASE_URL}/",
     )
 
+    now_block = now_on_block(visits if visits is not None else load_json(VISITS_FILE, []), all_posts)
+
     def section(icon, label, content):
         return (f'<div class="sidebar-section"><button type="button" class="sidebar-title sidebar-icon {icon}" '
                 f'aria-expanded="false" onclick="toggleSection(this)">{label}</button>'
@@ -616,23 +618,29 @@ def render_index(all_posts, visits=None):
 <div class="subtitle">{len(ps)} {plural_ru(len(ps), 'картина', 'картины', 'картин')} · {len(authors)} {plural_ru(len(authors), 'художник', 'художника', 'художников')} · {len(museums)} {plural_ru(len(museums), 'музей', 'музея', 'музеев')} · {year_range}</div>
 </div>
 <button type="button" class="random-btn" onclick="goRandom()"><span class="icon-random-white" aria-hidden="true"></span> Случайная картина</button></header>
-{now_on_block(visits if visits is not None else load_json(VISITS_FILE, []), all_posts)}
+{('<details class="opa-now-collapsible"><summary>Мои посещения · текущие выставки</summary>' + now_block + '</details>') if now_block else ''}
 <div class="layout"><aside class="sidebar" id="sidebar" aria-label="Фильтры">
 <div class="sidebar-section sidebar-search">
-  <label class="visually-hidden" for="search">Поиск по галерее</label>
-  <input type="search" class="search-box" placeholder="Поиск по художнику, картине, музею…" id="search" autocomplete="off">
+  <label class="opa-search-label" for="search">Поиск картин</label>
+  <div class="opa-search-wrap">
+    <input type="search" class="search-box" placeholder="Художник, название, музей…" id="search" autocomplete="off" aria-describedby="opa-search-help">
+    <button type="button" class="opa-search-clear" id="opa-clear-search" title="Очистить поиск" aria-label="Очистить поиск" hidden>×</button>
+  </div>
+  <p class="opa-search-help" id="opa-search-help">Поиск по названию, автору и музею · клавиша /</p>
 </div>
 <button type="button" id="reset-filter" class="filter-reset">Сбросить все фильтры</button>
+<p class="opa-sidebar-heading">Фильтры картин</p>
 {section('icon-archive', 'Архив', arh)}
 <div class="sidebar-section"><button type="button" class="sidebar-title sidebar-icon icon-decades" aria-expanded="false" onclick="toggleSection(this)">Годы</button><div class="sidebar-content collapsed">{dech}</div></div>
 {section('icon-artists', 'Художники', ah)}
 {section('icon-museums', 'Музеи', mh)}
 {section('icon-material', 'Материал', mth)}
 {section('icon-technique', 'Техника', th)}
+<p class="opa-sidebar-heading">Выставки и подборки</p>
 {afisha_html}
 {fav_html}
 {popular_html}
-{theme_html}
+<p class="opa-sidebar-heading">Разделы сайта</p>
 {map_link_html}
 {visits_link_html}
 {index_link_html}
@@ -640,16 +648,20 @@ def render_index(all_posts, visits=None):
 {tg_link_html}
 {quiz_link_html}
 {timeline_link_html}
+{theme_html}
 </aside><main class="main-content">
 <div class="results-bar">
-  <span id="results-count" class="results-count" role="status" aria-live="polite"></span>
+  <div class="opa-results-meta">
+    <span id="results-count" class="results-count" role="status" aria-live="polite"></span>
+    <button type="button" id="opa-reset-inline" class="opa-reset-inline" onclick="resetAllFilters()" hidden>Сбросить фильтры</button>
+  </div>
   <div class="bar-controls">
-  <span class="bar-label" id="sort-label">Порядок</span>
-  <label class="visually-hidden" for="sort">Порядок записей</label>
+  <span class="bar-label" id="sort-label">Сортировка</span>
+  <label class="visually-hidden" for="sort">Сортировка картин</label>
   <select id="sort" class="sort-select" aria-labelledby="sort-label">
-    <option value="new">Сначала новые</option>
-    <option value="cyear">По году создания</option>
-    <option value="cyear-desc">По году создания, новые сверху</option>
+    <option value="new">Недавно добавленные</option>
+    <option value="cyear">По году картины: ранние</option>
+    <option value="cyear-desc">По году картины: поздние</option>
     <option value="artist">По художнику</option>
     <option value="title">По названию</option>
   </select>
@@ -761,6 +773,8 @@ function resetAllFilters() {{
     activeFilters = {{ search: '', type: null, val: null, year: null, from: null, to: null }};
     const searchBox = document.getElementById('search');
     if (searchBox) searchBox.value = '';
+    const searchClear = document.getElementById('opa-clear-search');
+    if (searchClear) searchClear.hidden = true;
     document.querySelectorAll('.filter-link.active').forEach(l => {{
         l.classList.remove('active');
         l.removeAttribute('aria-current');
@@ -861,10 +875,13 @@ function applyFilters() {{
     if (resetBtn) resetBtn.classList.toggle('visible', hasActive);
 
     const counter = document.getElementById('results-count');
-    if (counter) counter.textContent = hasActive ? (visible + ' ' + plural(visible, 'картина', 'картины', 'картин')) : '';
+    if (counter) counter.textContent = 'Найдено ' + visible + ' ' + plural(visible, 'картина', 'картины', 'картин');
+    const resetInline = document.getElementById('opa-reset-inline');
+    if (resetInline) resetInline.hidden = !hasActive;
 
     const empty = document.getElementById('no-results');
     if (empty) empty.hidden = visible !== 0;
+    document.dispatchEvent(new CustomEvent('opa:filters-changed'));
 }}
 
 function plural(n, one, few, many) {{
@@ -913,10 +930,20 @@ document.addEventListener('DOMContentLoaded', function() {{
     syncHistogram();
 
     const searchBox = document.getElementById('search');
+    const clearSearch = document.getElementById('opa-clear-search');
     if (searchBox) {{
+        if (clearSearch) {{
+            clearSearch.hidden = !searchBox.value.trim();
+            clearSearch.addEventListener('click', function () {{
+                searchBox.value = '';
+                searchBox.dispatchEvent(new Event('input', {{bubbles: true}}));
+                searchBox.focus();
+            }});
+        }}
         let t = null;
         searchBox.addEventListener('input', function(e) {{
             const v = e.target.value.toLowerCase().trim();
+            if (clearSearch) clearSearch.hidden = !e.target.value.trim();
             clearTimeout(t);
             // debounce: 195 карточек пересчитывать на каждую букву незачем
             t = setTimeout(function() {{ activeFilters.search = v; applyFilters(); }}, 120);

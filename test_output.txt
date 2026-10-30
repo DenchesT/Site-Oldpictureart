@@ -1,0 +1,11 @@
+test_apply_produces_six_valid_files_and_is_idempotent (__main__.MainPagePolishTests.test_apply_produces_six_valid_files_and_is_idempotent) ... ok
+test_check_is_read_only (__main__.MainPagePolishTests.test_check_is_read_only) ... ok
+test_io_error_restores_original_sources (__main__.MainPagePolishTests.test_io_error_restores_original_sources) ... ok
+test_js_syntax_from_generator_and_ui (__main__.MainPagePolishTests.test_js_syntax_from_generator_and_ui) ... ok
+test_mismatch_does_not_write (__main__.MainPagePolishTests.test_mismatch_does_not_write) ... ok
+test_no_secrets_or_git_calls (__main__.MainPagePolishTests.test_no_secrets_or_git_calls) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.065s
+
+OK

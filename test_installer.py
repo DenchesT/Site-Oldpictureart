@@ -3,7 +3,6 @@
 import ast
 import importlib.util
 import subprocess
-import tempfile
 from pathlib import Path
 from unittest import mock
 

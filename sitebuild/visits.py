@@ -289,7 +289,6 @@ def visit_cover_index(v):
     except (TypeError,ValueError):pass
     try:
         from PIL import Image,ImageStat,ImageFilter
-        from functools import lru_cache
     except ImportError:
         return 1 if len(pictures)>1 else 0
     def score(path):

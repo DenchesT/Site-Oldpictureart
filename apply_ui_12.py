@@ -3,7 +3,7 @@
 No Git operations or network requests. Run at repository root.
 """
 from pathlib import Path
-import shutil,sys,ast
+import shutil,sys
 
 ROOT=Path.cwd()
 
