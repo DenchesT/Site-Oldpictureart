@@ -1,0 +1,102 @@
+name: Обновление страниц афиши
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - afisha.json
+      - afisha_archive.json
+      - .github/workflows/afisha_publish.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: afisha-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: github-pages
+    env:
+      PYTHONUTF8: "1"
+      TZ: Europe/Moscow
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Установить зависимости
+        run: python -m pip install -r requirements.txt
+      - name: Пересобрать сайт из текущих данных
+        run: python rebuild_pages.py --offline
+      - name: Проверить безопасность публикации
+        run: |
+          python tests/test_safety.py
+          python tests/test_quality_update.py
+      - name: Сохранить обновлённые страницы
+        run: |
+          git add -A -- docs/afisha.html docs/index.html docs/sitemap.xml 'docs/museum-*.html' 'docs/visit-*.html'
+          if git diff --cached --quiet; then
+            echo "HTML афиши уже актуален"
+          else
+            git -c user.name="github-actions[bot]" \
+                -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+                commit -m "build: обновить опубликованные страницы афиши"
+            # Пересборка может менять кэши/метаданные, не входящие в этот коммит.
+            # Сбрасываем только НЕзакоммиченные изменения в рабочем дереве CI.
+            git reset --hard HEAD
+            # В репозитории могут одновременно появляться коммиты с афишей
+            # или документацией. Не публикуем HTML, собранный из устаревшего JSON.
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if ! git diff --quiet HEAD origin/main -- afisha.json afisha_archive.json; then
+                echo "::error::В main изменились данные афиши; новую сборку запустит их push"
+                exit 1
+              fi
+              if ! git rebase origin/main; then
+                git rebase --abort || true
+                echo "::error::Конфликт при обновлении HTML, нужна новая сборка"
+                exit 1
+              fi
+              if git push origin HEAD:main; then
+                echo "HTML опубликован в ветке main"
+                break
+              fi
+              if [ "$attempt" = 3 ]; then
+                echo "::error::Не удалось отправить HTML после трёх попыток"
+                exit 1
+              fi
+              sleep 3
+            done
+          fi
+      - name: Определить источник GitHub Pages
+        id: pages_config
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/${{ github.repository }}/pages" --jq '.build_type // "legacy"' > /tmp/pages_type
+          echo "type=$(cat /tmp/pages_type)" >> "$GITHUB_OUTPUT"
+      - name: Запросить публикацию из docs
+        if: steps.pages_config.outputs.type != 'workflow'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
+      - name: Подготовить Pages-артефакт
+        if: steps.pages_config.outputs.type == 'workflow'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: docs/
+      - name: Опубликовать через GitHub Actions
+        if: steps.pages_config.outputs.type == 'workflow'
+        uses: actions/deploy-pages@v4

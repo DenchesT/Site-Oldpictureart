@@ -50,7 +50,7 @@ def main():
         assert f'id="{control}"' in page, control
     assert page.count('class="afisha-favorite"') == len(rows)
     assert 'data-search=' in page
-    assert 'Клод Моне' in page
+    assert 'data-artists="клод моне"' in page
     assert 'afishaFavorites' in page
     assert 'localStorage' in page
     assert 'data-phase' in page

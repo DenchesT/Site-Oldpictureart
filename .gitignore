@@ -56,6 +56,7 @@ venv/
 *.log.[0-9]
 *.tmp
 *.bak
+*.bak-*
 *~
 *.orig
 *.rej
