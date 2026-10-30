@@ -2871,3 +2871,20 @@ h1, h2, h3 { overflow-wrap: break-word; }
  .visit-view button { min-height:40px; }
  .menu-toggle { min-height:42px; }
 }
+
+/* Afisha filters: same colors, fonts, spacing and control language as existing site. */
+.afisha-status-switch { display: inline-flex; margin: 0 0 var(--s4); flex-wrap: wrap; }
+.afisha-search-label input { background: var(--card-bg); color: var(--text); border: 1px solid var(--input-border); padding: .5rem .6rem; font: inherit; width: min(100%, 230px); min-height: 36px; }
+.afisha-search-label input:focus-visible, .afisha-favorite:focus-visible, .afisha-reset:focus-visible { outline: 2px solid var(--active); outline-offset: 2px; }
+.afisha-fav-only { display: inline-flex; align-items: center; gap: .45rem; font-family: var(--ff-data); font-size: var(--fs-xs); cursor: pointer; }
+.afisha-fav-only input { accent-color: var(--active); width: 17px; height: 17px; }
+.afisha-reset { border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font: var(--fs-xs) var(--ff-data); padding: .5rem .7rem; cursor: pointer; }
+.afisha-favorite { float: right; border: 1px solid var(--border); background: var(--card-bg); color: var(--link); border-radius: 2px; font-size: 1.2rem; min-width: 38px; min-height: 38px; margin-left: var(--s2); cursor: pointer; }
+.afisha-favorite[aria-pressed="true"] { color: var(--active); background: var(--accent-soft); }
+.afisha-status-switch [aria-pressed="true"] { font-weight: bold; }
+@media (max-width: 620px) {
+  .afisha-status-switch { width: 100%; }
+  .afisha-status-switch button { flex: 1 1 43%; min-height: 42px; }
+  .afisha-filters .afisha-select { min-width: 135px; }
+  .afisha-search-label input { width: 100%; }
+}

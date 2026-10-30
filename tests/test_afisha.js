@@ -44,7 +44,7 @@ const state = page => page.evaluate(() => {
   return {
     running: vis('#afisha-running .afisha-item').map(row),
     soon: vis('#afisha-soon .afisha-item').map(row),
-    all: [...document.querySelectorAll('.afisha-item')].map(row),
+    all: vis('.afisha-item').map(row),
     pressed: (document.querySelector('.afisha-switch [aria-pressed="true"]') || {}).dataset?.region,
     counts: [...document.querySelectorAll('.afisha-switch .visit-count')].map(e => +e.textContent),
     runningBox: !document.getElementById('afisha-running-box').hidden,
@@ -82,7 +82,7 @@ const state = page => page.evaluate(() => {
   ok('без ошибок скрипта', page.errors.length === 0, page.errors.join(' | '));
   ok('по умолчанию вкладка «Россия»', st.pressed === 'russia', st.pressed);
   ok('видно только Россию', st.running.length && st.running.concat(st.soon).every(r => r.region === 'russia'));
-  ok('ничего закончившегося', st.all.every(r => r.end >= DAY), st.all.filter(r => r.end < DAY).map(r => r.title).join(', '));
+  ok('архив скрыт по умолчанию', st.all.every(r => r.end >= DAY), st.all.filter(r => r.end < DAY).map(r => r.title).join(', '));
   ok('идущие — по дате закрытия', st.running.every((r, i, a) => !i || a[i - 1].end <= r.end), st.running.map(r => r.end).join(' '));
   ok('будущие — по дате открытия, с «откроется …»',
      st.soon.every((r, i, a) => (!i || a[i - 1].start <= r.start) && /^откроется \d+ /.test(r.when)), st.soon.map(r => r.when).join(' | '));
@@ -91,6 +91,60 @@ const state = page => page.evaluate(() => {
     (x.start <= DAY || (new Date(x.start) - new Date(DAY)) / 864e5 <= 92)).length;
   ok('счётчик на вкладке — сколько записей на ней', st.counts[0] === expectRu && st.running.length + st.soon.length === expectRu,
      `${st.counts[0]} / ${st.running.length + st.soon.length} / ждали ${expectRu}`);
+
+  // Дополнительные фильтры: используем реальные записи и подставленную дату.
+  const archivedRu = data.filter(x => x.country === 'Россия' && x.end < DAY).length;
+  await page.click('.afisha-status-switch [data-status="archive"]');
+  const archiveCount = await page.$$eval('#afisha-archive .afisha-item:not([hidden])', xs => xs.length);
+  ok('архив по России показывает завершившиеся выставки', archiveCount === archivedRu,
+     `${archiveCount} из ${archivedRu}`);
+  if (archiveCount) {
+    const archiveYears = [...new Set(data.filter(x => x.country === 'Россия' && x.end < DAY).map(x => x.end.slice(0, 4)))];
+    const year = archiveYears[0];
+    await page.selectOption('#afisha-archive-year', year);
+    const years = await page.$$eval('#afisha-archive .afisha-item:not([hidden])', xs => xs.map(x => x.dataset.end.slice(0, 4)));
+    ok('год архива оставляет только выставки выбранного года', years.length > 0 && years.every(y => y === year), years.join(', '));
+    await page.selectOption('#afisha-archive-year', 'all');
+  }
+  await page.click('.afisha-status-switch [data-status="current"]');
+
+  const first = await page.$eval('#afisha-running .afisha-item:not([hidden])', li => ({
+    id: li.id, title: li.querySelector('.afisha-title a').textContent.trim(),
+    venue: li.querySelector('.afisha-place').textContent.split(' · ')[0]
+  }));
+  await page.fill('#afisha-query', first.title.slice(0, Math.min(6, first.title.length)));
+  await page.waitForTimeout(200);
+  const queryHit = await page.$eval('#' + first.id, li => !li.hidden);
+  ok('поиск находит выставку по названию', queryHit);
+  await page.fill('#afisha-query', '');
+  await page.waitForTimeout(200);
+  await page.selectOption('#afisha-venue', first.venue);
+  const venues = await page.$$eval('.afisha-item:not([hidden])', xs => xs.map(x => x.querySelector('.afisha-place').textContent.split(' · ')[0]));
+  ok('музей ограничивает список одним местом', venues.length > 0 && venues.every(v => v === first.venue));
+  await page.selectOption('#afisha-venue', 'all');
+
+  await page.click('#' + first.id + ' .afisha-favorite');
+  await page.check('#afisha-only-favorites');
+  const liked = await page.$$eval('.afisha-item:not([hidden])', xs => xs.map(x => x.id));
+  ok('избранное оставляет отмеченную выставку', liked.length === 1 && liked[0] === first.id, liked.join(', '));
+  await page.reload();
+  await page.waitForTimeout(200);
+  ok('избранное сохраняется после перезагрузки', await page.$eval('#' + first.id + ' .afisha-favorite', b => b.getAttribute('aria-pressed') === 'true'));
+  await page.uncheck('#afisha-only-favorites');
+  await page.click('#' + first.id + ' .afisha-favorite');
+
+  await page.selectOption('#afisha-closing', '30');
+  const closings = await page.$$eval('.afisha-item:not([hidden])', xs => xs.map(x => x.dataset.end));
+  ok('закрытие за 30 дней показывает только действующие выставки', closings.every(d => d >= DAY && d <= plusDays(DAY, 30)));
+  await page.selectOption('#afisha-closing', 'all');
+  await page.selectOption('#afisha-opening', '90');
+  const openings = await page.$$eval('.afisha-item:not([hidden])', xs => xs.map(x => x.dataset.start));
+  ok('открытие за 90 дней показывает только будущие выставки', openings.every(d => d > DAY && d <= plusDays(DAY, 90)));
+  await page.click('#afisha-reset');
+  await page.selectOption('#afisha-sort', 'title');
+  const titles = await page.$$eval('#afisha-running .afisha-item:not([hidden])', xs => xs.map(x => x.querySelector('.afisha-title a').textContent.trim()));
+  ok('сортировка по названию', titles.every((t, i) => i === 0 || titles[i - 1].localeCompare(t, 'ru') <= 0));
+  await page.click('#afisha-reset');
 
   // Города России — выпадающий список.
   // Те же списки, что MOSCOW_AREA и SPB_AREA в sitebuild/afisha.py.
@@ -277,7 +331,7 @@ const state = page => page.evaluate(() => {
   st = await state(page);
   const closed = data.find(x => x.country === 'Россия' && x.end >= DAY && x.end < LATER);
   const opened = data.find(x => x.country === 'Россия' && x.start > DAY && x.start <= LATER && x.end >= LATER);
-  if (closed) ok(`закрылась к ${LATER} — пропала («${closed.title}»)`, !st.all.some(r => r.title === closed.title));
+  if (closed) ok(`закрылась к ${LATER} — переехала в архив («${closed.title}»)`, !st.all.some(r => r.title === closed.title) && await page.evaluate(t => [...document.querySelectorAll('#afisha-archive .afisha-item')].some(li => li.querySelector('.afisha-title a').textContent === t), closed.title));
   if (opened) ok(`открылась к ${LATER} — в «Идут сейчас» («${opened.title}»)`, st.running.some(r => r.title === opened.title));
   await page.close();
 
@@ -285,7 +339,7 @@ const state = page => page.evaluate(() => {
   page = await openAt(ctx, 'afisha.html', LAST + 'T12:00:00');
   st = await state(page);
   const empty = await page.$eval('#afisha-empty', e => !e.hidden);
-  ok('всё закончилось — «пусто», разделов нет', empty && !st.runningBox && !st.soonBox && st.all.length === 0);
+  ok('всё закончилось — текущая афиша пуста, архив остаётся', empty && !st.runningBox && !st.soonBox && st.all.length === 0 && await page.$eval('#afisha-archive', e => e.children.length > 0));
   await page.close();
 
   // Ссылка на запись открывает её вкладку и подсвечивает.

@@ -121,7 +121,10 @@ try:
     known = {"Государственный Русский музей, Санкт-Петербург"}
     page = af.render_afisha_page(items, updated, known, TODAY)
     ok("на странице идущие и будущие", "Идёт в Париже" in page and "Скоро откроется" in page and "Репин" in page)
-    ok("закончившихся на странице нет", "Закрылась" not in page and "Откроется нескоро" not in page)
+    ok("прошедшие выставки и дальние анонсы доступны на странице", "Закрылась" in page and "Откроется нескоро" in page)
+    ok("архив имеет отдельный список", 'id="afisha-archive"' in page and 'data-status="archive"' in page)
+    ok("все девять фильтров подключены", all('id="afisha-' + k + '"' in page for k in (
+        'closing', 'opening', 'venue', 'query', 'artist', 'archive-year', 'sort', 'only-favorites', 'reset')))
     ok("название ведёт на страницу выставки в новой вкладке",
        re.search(r'<h3 class="afisha-title"><a href="https://example\.org/\d+" target="_blank" rel="noopener">', page))
     ok("оригинальное название — под русским", '<p class="afisha-orig">En cours</p>' in page)
@@ -140,7 +143,7 @@ try:
     ok("страна — для «Мира», спрятана, пока выбрана Россия; чаще встречающиеся — выше",
        '<label class="afisha-select" id="afisha-country-box" hidden>' in page
        and page.find('<option value="Франция"') > 0)
-    ok("в списке эпох — только те, что есть у идущих", '<select id="afisha-epoch"><option value="all" data-label="Все эпохи">Все эпохи</option></select>' in page)
+    ok("эпохи доступны для всех периодов", '<select id="afisha-epoch"><option value="all" data-label="Все эпохи">Все эпохи</option></select>' in page)
     ok("«Успеть на этой неделе» — место под блок, заполняет скрипт",
        '<section class="afisha-week" id="afisha-week"' in page and 'id="afisha-week-list"' in page)
     ok("без точек на карте нет и «Рядом со мной»", 'id="afisha-near-btn"' not in page)
@@ -246,7 +249,7 @@ try:
     af.afisha_report(items, errors, updated, TODAY, log=log)
     text = " | ".join(m for _, m in log.lines)
     ok("ошибки записей — предупреждением", any(k == "warning" and "Ошибка в дате" in m for k, m in log.lines), text)
-    ok("давно закончившиеся — подсказка убрать", "Давно закрылась" in text and "Закрылась»" in text, text)
+    ok("давно закончившиеся — сохранены для архива", "Давно закрылась" in text and "оставьте их" in text, text)
     ok("мало идущих — напоминание пополнить", any(k == "warning" and "пора добавить" in m for k, m in log.lines), text)
     log = Log()
     af.afisha_report(items, [], "2026-01-01", TODAY, log=log)
