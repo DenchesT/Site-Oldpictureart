@@ -4771,5 +4771,58 @@
       "images/views/mescherin-lunnaya-noch-1905-1.jpg"
     ],
     "card": "images/cards/mescherin-lunnaya-noch-1905.jpg"
+  },
+  {
+    "id": 617,
+    "date": "2026-10-30",
+    "filename": "renoir-alfred-sislei-1876.html",
+    "images": [
+      "images/renoir-alfred-sislei-1876-1.jpg"
+    ],
+    "hires": [
+      "images/renoir-alfred-sislei-1876-hires-1.jpg"
+    ],
+    "thumbs": [
+      "images/thumbs/renoir-alfred-sislei-1876.jpg"
+    ],
+    "links": [],
+    "artist": "Пьер Огюст Ренуар",
+    "title": "Alfred Sisley (Альфред Сислей), 1876",
+    "medium": "Холст, масло, 66,2 x 54,8 см",
+    "material": "Холст",
+    "techniques": [
+      "масло"
+    ],
+    "size": "66,2 x 54,8 см",
+    "museum": "Чикагский институт искусств, Чикаго",
+    "history": [
+      "1) У художника",
+      "2) Продана Eugène Murer (Париж) в апреле 1883 г.",
+      "3) Передана на хранение Дюран-Рюэлю, Париж, 1883 г.",
+      "4) Возвращена Eugène Murer, Париж, 1883 г.",
+      "5) Возможно, в 1896 г. продана Eugène Murer галерее Дюран-Рюэля, Париж",
+      "6) Иван Щукин, Париж, март 1899 г.",
+      "7) Продана на аукционе коллекции Щукина, отель Друо, Париж, 24 марта 1900 г. Dr. George Viau (Париж) за 6100 франков",
+      "8) Dr. George Viau, Париж как минимум до 20 июня 1912 г.",
+      "9) Herman Beilbuth, 1921 г.",
+      "10) Howard Young, Нью-Йорк",
+      "11) Mrs. Lewis Larned (Annie Swan) Coburn, 1929 г.",
+      "12) Передана в дар Художественному институту Чикаго по завещанию в 1933 г."
+    ],
+    "description": "",
+    "urls": [
+      "https://www.artic.edu/artworks/14650/alfred-sisley"
+    ],
+    "tags": [
+      "aic",
+      "renoir",
+      "картина"
+    ],
+    "raw": "Пьер Огюст Ренуар\n⸻\nAlfred Sisley (Альфред Сислей), 1876 \n⸻\nХолст, масло, 66,2 x 54,8 см\n⸻\nЧикагский институт искусств, Чикаго\n⸻\n1) У художника\n2) Продана Eugène Murer (Париж) в апреле 1883 г.\n3) Передана на хранение Дюран-Рюэлю, Париж, 1883 г.\n4) Возвращена Eugène Murer, Париж, 1883 г.\n5) Возможно, в 1896 г. продана Eugène Murer галерее Дюран-Рюэля, Париж\n6) Иван Щукин, Париж, март 1899 г.\n7) Продана на аукционе коллекции Щукина, отель Друо, Париж, 24 марта 1900 г. Dr. George Viau (Париж) за 6100 франков\n8) Dr. George Viau, Париж как минимум до 20 июня 1912 г. \n9) Herman Beilbuth, 1921 г.\n10) Howard Young, Нью-Йорк\n11) Mrs. Lewis Larned (Annie Swan) Coburn, 1929 г.\n12) Передана в дар Художественному институту Чикаго по завещанию в 1933 г.\n⸻\nhttps://www.artic.edu/artworks/14650/alfred-sisley\n⸻\n#renoir@oldpictureart\n#aic@oldpictureart \n#картина@oldpictureart\n",
+    "creation_year": 1876,
+    "views": [
+      "images/views/renoir-alfred-sislei-1876-1.jpg"
+    ],
+    "card": "images/cards/renoir-alfred-sislei-1876.jpg"
   }
 ]
