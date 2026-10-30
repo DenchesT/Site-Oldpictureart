@@ -647,7 +647,7 @@ def render_index(all_posts, visits=None):
 {section('icon-museums', 'Музеи', mh)}
 {section('icon-material', 'Материал', mth)}
 {section('icon-technique', 'Техника', th)}
-<p class="opa-sidebar-heading">Подборки</p>
+<p class="opa-sidebar-heading">Избранное и популярное</p>
 {fav_html}
 {popular_html}
 <p class="opa-sidebar-heading">Разделы сайта</p>

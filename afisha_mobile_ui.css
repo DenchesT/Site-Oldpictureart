@@ -1,0 +1,127 @@
+/* OPA MOBILE AFISHA UI FIX 2026-10-31 — START
+   Layout-only adjustments for narrow screens. The exhibition description,
+   desktop layout, existing filtering, authentication and favorites are untouched.
+   Every status button has its OWN complete border: no disappearing outlines
+   at the boundary between wrapped flex rows. */
+@media (max-width: 700px) {
+  /* Keep navigation labels on one line: links form a compact left-hand column,
+     while theme and account actions sit beside them. */
+  .afisha-page .tag-topbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-rows: auto auto;
+    column-gap: .5rem;
+    row-gap: .1rem;
+    align-items: center;
+    padding: .55rem 0;
+  }
+  .afisha-page .tag-topbar > a.back {
+    grid-column: 1;
+    white-space: nowrap;
+    width: max-content;
+    max-width: 100%;
+    font-size: var(--fs-xs);
+    line-height: 1.3;
+    min-height: 30px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .afisha-page .tag-topbar > a.back:first-of-type { grid-row: 1; }
+  .afisha-page .tag-topbar > a.back:nth-of-type(2) { grid-row: 2; }
+  .afisha-page .tag-topbar > button:not(#auth-btn) {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: center;
+    margin: 0;
+  }
+  .afisha-page .tag-topbar > #auth-btn {
+    grid-column: 3;
+    grid-row: 1 / 3;
+    align-self: center;
+    min-width: 0;
+    max-width: 38vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Reduce empty vertical space, but preserve the FULL introductory text. */
+  .afisha-page .artist-head {
+    padding-top: 1rem;
+    padding-bottom: .7rem;
+    margin-bottom: .75rem;
+  }
+  .afisha-page .artist-head .eyebrow { margin-bottom: .35rem; }
+  .afisha-page .artist-head h1 { margin-bottom: .55rem; }
+  .afisha-page .afisha-lede {
+    margin-top: 0;
+    margin-bottom: .75rem;
+    line-height: 1.4;
+  }
+  .afisha-page .afisha-top-line { margin-bottom: .65rem; }
+  .afisha-page .afisha-switch button { min-height: 42px; }
+
+  /* No shared flex border: six independently outlined status buttons.
+     2 equal columns × 3 rows, with a visible gutter in both directions. */
+  .afisha-page .afisha-status-switch {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .45rem;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 .85rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .afisha-page .afisha-status-switch button,
+  .afisha-page .afisha-status-switch button + button {
+    box-sizing: border-box;
+    display: block;
+    flex: none;
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: .55rem .35rem;
+    line-height: 1.35;
+    font-size: var(--fs-xs);
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: normal;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: var(--card-bg);
+    color: var(--muted);
+  }
+  .afisha-page .afisha-status-switch button[aria-pressed="true"],
+  .afisha-page .afisha-status-switch button[aria-pressed="true"] + button[aria-pressed="true"] {
+    border-color: var(--text);
+    background: var(--text);
+    color: var(--bg);
+  }
+  .afisha-page .afisha-status-switch button:focus-visible {
+    outline: 2px solid var(--active);
+    outline-offset: 2px;
+  }
+
+  /* Shorter control paddings = exhibition list appears earlier. */
+  .afisha-page .afisha-filter-panel {
+    gap: .65rem;
+    padding: .7rem;
+    margin-bottom: .75rem;
+  }
+  .afisha-page .opa-afisha-unified-search input { min-height: 42px; }
+  .afisha-page .opa-afisha-mobile-toggle {
+    min-height: 42px;
+    padding: .45rem .7rem;
+    line-height: 1.35;
+  }
+  .afisha-page .opa-afisha-results-bar {
+    gap: .65rem;
+    padding: .6rem 0 .85rem;
+    margin-bottom: .8rem;
+  }
+  .afisha-page .opa-afisha-results-summary { flex-basis: 100%; }
+}
+/* OPA MOBILE AFISHA UI FIX 2026-10-31 — END */
