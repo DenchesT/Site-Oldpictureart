@@ -142,6 +142,8 @@ const state = page => page.evaluate(() => {
   await page.locator('#afisha-more-filters').evaluate(d => d.open = true);
     await page.selectOption('#afisha-closing', 'all');
   await page.locator('#afisha-more-filters').evaluate(d => d.open = true);
+    // OPA afisha UI: select the soon tab before testing the opening filter.
+    await page.click('.afisha-status-switch [data-status="soon"]');
     await page.selectOption('#afisha-opening', '90');
   const openings = await page.$$eval('.afisha-item:not([hidden])', xs => xs.map(x => x.dataset.start));
   ok('открытие за 90 дней показывает только будущие выставки', openings.every(d => d > DAY && d <= plusDays(DAY, 90)));
