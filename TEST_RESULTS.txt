@@ -1,24 +1,16 @@
-test_deleted_file_committed (__main__.AutoPublishTests.test_deleted_file_committed) ... ok
-test_filename_with_space (__main__.AutoPublishTests.test_filename_with_space) ... ok
-test_gitignore_honored (__main__.AutoPublishTests.test_gitignore_honored) ... ok
-test_new_source_and_workflow_are_included (__main__.AutoPublishTests.test_new_source_and_workflow_are_included) ... ok
-test_push_error_propagates (__main__.AutoPublishTests.test_push_error_propagates) ... ok
-test_push_retry_without_diff (__main__.AutoPublishTests.test_push_retry_without_diff) ... ok
-test_sensitive_and_temp_files_excluded (__main__.AutoPublishTests.test_sensitive_and_temp_files_excluded) ... Не добавлены временные/закрытые файлы: .env.local, a.session, archive.zip, data.json.bak, private.pem
+test_apply_idempotent_and_backups (__main__.InstallerTests.test_apply_idempotent_and_backups) ... ok
+test_complete_address_audit (__main__.InstallerTests.test_complete_address_audit) ... ok
+test_dry_run_read_only (__main__.InstallerTests.test_dry_run_read_only) ... ok
+test_refuse_unexpected_safety_version_without_writing (__main__.InstallerTests.test_refuse_unexpected_safety_version_without_writing) ... ok
+test_other_push_errors_not_retried (__main__.PushRecoveryTests.test_other_push_errors_not_retried) ... ok
+test_real_git_non_fast_forward (__main__.PushRecoveryTests.test_real_git_non_fast_forward) ... GitHub: main обновился на сервере; синхронизирую коммиты без force push
 ok
-test_source_and_content_committed_together (__main__.AutoPublishTests.test_source_and_content_committed_together) ... ok
-test_staged_secret_is_refused (__main__.AutoPublishTests.test_staged_secret_is_refused) ... ok
-test_staged_source_is_accepted (__main__.AutoPublishTests.test_staged_source_is_accepted) ... ok
-test_atomic_json_and_backup (__main__.StorageAndBuildTests.test_atomic_json_and_backup) ... ok
-test_newline_arguments (__main__.StorageAndBuildTests.test_newline_arguments) ... ok
-test_no_test_commands_in_builder (__main__.StorageAndBuildTests.test_no_test_commands_in_builder) ... ok
-test_push_function_only_delegates (__main__.StorageAndBuildTests.test_push_function_only_delegates) ... ok
-test_replace_failure_preserves_data (__main__.StorageAndBuildTests.test_replace_failure_preserves_data) ... ok
-test_safety_exports (__main__.StorageAndBuildTests.test_safety_exports) ... ok
+test_rebase_conflict_aborts_and_retains_commits (__main__.PushRecoveryTests.test_rebase_conflict_aborts_and_retains_commits) ... GitHub: main обновился на сервере; синхронизирую коммиты без force push
+ok
+test_retries_only_non_fast_forward (__main__.PushRecoveryTests.test_retries_only_non_fast_forward) ... GitHub: main обновился на сервере; синхронизирую коммиты без force push
+ok
 
 ----------------------------------------------------------------------
-Ran 16 tests in 0.234s
+Ran 8 tests in 0.117s
 
 OK
-
-Exit code: 0
