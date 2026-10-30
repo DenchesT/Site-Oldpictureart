@@ -1,5 +1,5 @@
 {
-  "_как": "Афиша сайта: крупные выставки искусства до 1940 года в России и в мире. Страница afisha.html и блок на главной собираются отсюда. Закончившиеся выставки сайт прячет сам (по сегодняшней дате), сборка подсказывает, какие можно убрать и когда пора добавить новые. Поля: title — название по-русски, title_orig — оригинальное (по желанию), venue — музей, city, country (\"Россия\" — вкладка «Россия», остальное — «Мир»), start и end — ГГГГ-ММ-ДД, url — страница выставки на сайте музея, note — одна строка о том, что показывают, museum — как музей называется на карте собраний, если он там есть (тогда будет ссылка на его страницу), source — где проверены даты, если не на странице url. Подробнее — README, раздел «Афиша».",
+  "_как": "Афиша сайта: крупные выставки искусства до 1940 года в России и в мире. Страница afisha.html и блок на главной собираются отсюда. Закончившиеся выставки сайт прячет сам (по сегодняшней дате), сборка подсказывает, какие можно убрать и когда пора добавить новые. Поля: title — название по-русски, title_orig — оригинальное (по желанию), venue — музей, city, country (\"Россия\" — вкладка «Россия», остальное — «Мир»), start и end — ГГГГ-ММ-ДД, url — страница выставки на сайте музея, note — одна строка о том, что показывают, museum — как музей называется на карте собраний, если он там есть (тогда будет ссылка на его страницу), source — где проверены даты, если не на странице url. Подробнее — README, раздел «Афиша». Дополнительные музеи для мониторинга перечислены в поле sources этого файла; отдельный afisha_sources.json не нужен.",
   "updated": "2026-10-30",
   "exhibitions": [
     {
@@ -2956,5 +2956,108 @@
         "old"
       ]
     }
-  ]
+  ],
+  "sources": [
+    {
+      "museum": "Музей Академии художеств",
+      "city": "Санкт-Петербург",
+      "country": "Россия",
+      "url": "https://artsacademymuseum.org/exhibitions/exhibitions/",
+      "priority": "high"
+    },
+    {
+      "museum": "Музей Фаберже",
+      "city": "Санкт-Петербург",
+      "country": "Россия",
+      "url": "https://fabergemuseum.ru/sobyitiya/vyistavki/",
+      "priority": "medium"
+    },
+    {
+      "museum": "Музей «Новый Иерусалим»",
+      "city": "Истра",
+      "country": "Россия",
+      "url": "https://njerusalem.ru/vystavki-i-ekspozicii/exhibit/",
+      "priority": "high"
+    },
+    {
+      "museum": "Курская картинная галерея имени А. А. Дейнеки",
+      "city": "Курск",
+      "country": "Россия",
+      "url": "https://deinekagallery.ru/",
+      "priority": "high"
+    },
+    {
+      "museum": "Вологодская областная картинная галерея",
+      "city": "Вологда",
+      "country": "Россия",
+      "url": "https://vologda-gallery.ru/exhibition/current-exhibitions/",
+      "priority": "medium",
+      "fallback_urls": [
+        "https://vologda-gallery.ru/"
+      ]
+    },
+    {
+      "museum": "Rijksmuseum",
+      "city": "Амстердам",
+      "country": "Нидерланды",
+      "url": "https://www.rijksmuseum.nl/en/whats-on?filter=exhibitions",
+      "priority": "high",
+      "fallback_urls": [
+        "https://www.rijksmuseum.nl/en/story/programme-2026"
+      ]
+    },
+    {
+      "museum": "Albertina",
+      "city": "Вена",
+      "country": "Австрия",
+      "url": "https://albertina.at/en/exhibitions/",
+      "priority": "high",
+      "fallback_urls": [
+        "https://albertina.at/en/exhibitions/"
+      ]
+    },
+    {
+      "museum": "Musée Marmottan Monet",
+      "city": "Париж",
+      "country": "Франция",
+      "url": "https://www.marmottan.fr/en/currently/",
+      "priority": "high"
+    },
+    {
+      "museum": "Lenbachhaus",
+      "city": "Мюнхен",
+      "country": "Германия",
+      "url": "https://www.lenbachhaus.de/en/program/exhibitions",
+      "priority": "high"
+    },
+    {
+      "museum": "Museum of Fine Arts Boston",
+      "city": "Бостон",
+      "country": "США",
+      "url": "https://www.mfa.org/exhibitions",
+      "priority": "high",
+      "fallback_urls": [
+        "https://www.mfa.org/news/advance-exhibition-schedule",
+        "https://www.mfa.org/exhibitions/upcoming"
+      ]
+    },
+    {
+      "museum": "National Gallery of Art",
+      "city": "Вашингтон",
+      "country": "США",
+      "url": "https://www.nga.gov/exhibitions",
+      "priority": "high"
+    },
+    {
+      "museum": "Gallerie degli Uffizi",
+      "city": "Флоренция",
+      "country": "Италия",
+      "url": "https://www.uffizi.it/en/event-category/exhibitions/years/2026",
+      "priority": "medium",
+      "fallback_urls": [
+        "https://www.uffizi.it/en/events/years/2026"
+      ]
+    }
+  ],
+  "source_selection_rule": "Только временные выставки со значимым участием произведений искусства, созданных до 1940 года. Не добавлять экскурсии, концерты, постоянные экспозиции или преимущественно современное искусство. Проверять дату окончания, официальный URL и площадку."
 }
