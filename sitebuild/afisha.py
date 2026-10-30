@@ -787,7 +787,8 @@ AFISHA_JS = """<script>
     var phase = li.getAttribute('data-phase');
     if (s.status === 'current' && (phase === 'archive' ||
         (phase === 'soon' && (day(li.getAttribute('data-start')) - today) / 864e5 > __SOON__))) return false;
-    if (s.status !== 'all' && s.status !== 'current' && phase !== s.status) return false;
+    if (s.status !== 'all' && s.status !== 'current' && s.status !== 'favorites' && phase !== s.status) return false;
+    if (s.status === 'favorites' && !favorites[favoriteId(li)]) return false;
     if (s.closing !== 'all' && phase !== 'running') return false;
     if (s.closing !== 'all' && (day(li.getAttribute('data-end')) - today) / 864e5 > +s.closing) return false;
     if (s.opening !== 'all' && phase !== 'soon') return false;
@@ -826,8 +827,9 @@ AFISHA_JS = """<script>
     var rows = items.filter(function (li) { return !li.hidden && li.classList.contains('now-last'); })
       .sort(function (a, b) { return a.getAttribute('data-end') < b.getAttribute('data-end') ? -1 : 1; });
     weekList.innerHTML = '';
-    rows.forEach(function (li) {
+    rows.forEach(function (li, index) {
       var a = li.querySelector('.afisha-title a'), r = document.createElement('li');
+      r.hidden = index >= 3;
       var link = document.createElement('a');
       link.href = '#' + li.id;
       link.textContent = a.textContent;
@@ -839,7 +841,61 @@ AFISHA_JS = """<script>
       weekList.appendChild(r);
     });
     week.hidden = !rows.length;
+    var more = document.getElementById('afisha-week-more');
+    if (more) {
+      more.hidden = rows.length <= 3;
+      more.textContent = 'Показать остальные (' + (rows.length - 3) + ')';
+    }
   }
+  var weekMore = document.getElementById('afisha-week-more');
+  if (weekMore) weekMore.addEventListener('click', function () {
+    Array.prototype.forEach.call(weekList.children, function (li) { li.hidden = false; });
+    weekMore.hidden = true;
+  });
+  // Count, active filters and quick removal above the exhibition list.
+  function updateAfishaSummary(shown) {
+    var n = shown.running + shown.soon + shown.archive;
+    var suffix = n % 100 >= 11 && n % 100 <= 14 ? 'выставок' : n % 10 === 1 ? 'выставка' : n % 10 >= 2 && n % 10 <= 4 ? 'выставки' : 'выставок';
+    document.getElementById('afisha-results-count').textContent = 'Найдено ' + n + ' ' + suffix;
+    var favTotal = document.getElementById('afisha-fav-total');
+    if (favTotal) {
+      var count = items.filter(function (li) { return favorites[favoriteId(li)]; }).length;
+      favTotal.textContent = count ? '(' + count + ')' : '';
+    }
+    var chips = document.getElementById('afisha-active-filters');
+    chips.replaceChildren();
+    function chip(text, clear) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'opa-chip'; b.textContent = text + ' ×';
+      b.title = 'Снять условие ' + text;
+      b.addEventListener('click', clear); chips.appendChild(b);
+    }
+    if (state.reg === 'world') chip('Мир', function () { state.reg = 'russia'; show(); });
+    var statusLabels = {running:'Идут', soon:'Скоро', archive:'Архив', favorites:'Избранное', all:'Все периоды'};
+    if (statusLabels[state.status]) chip(statusLabels[state.status], function () { state.status = 'current'; state.favoritesOnly = false; state.archiveYear = 'all'; show(); });
+    ['area','country','epoch','venue','archiveYear'].forEach(function (k) {
+      if (state[k] === 'all' || !sel[k]) return;
+      var option = Array.prototype.find.call(sel[k].options, function (o) { return o.value === state[k]; });
+      var label = option ? option.getAttribute('data-label') || option.textContent : state[k];
+      chip(label, function () { state[k] = 'all'; show(); });
+    });
+    if (state.closing !== 'all') chip('Закрытие: ' + state.closing + ' дн.', function () { state.closing = 'all'; show(); });
+    if (state.opening !== 'all') chip('Открытие: ' + state.opening + ' дн.', function () { state.opening = 'all'; show(); });
+    if (state.query) chip('Поиск: ' + state.query.slice(0, 30), function () { state.query = ''; show(); });
+    var reset = document.getElementById('afisha-reset-inline');
+    reset.hidden = chips.childElementCount === 0;
+    var filterToggle = document.getElementById('afisha-mobile-filter-toggle');
+    if (filterToggle) filterToggle.textContent = 'Фильтры' + (chips.childElementCount ? ' (' + chips.childElementCount + ')' : '');
+  }
+  document.getElementById('afisha-reset-inline').addEventListener('click', function () {
+    document.getElementById('afisha-reset').click();
+  });
+  var mobileFilterToggle = document.getElementById('afisha-mobile-filter-toggle');
+  if (mobileFilterToggle) mobileFilterToggle.addEventListener('click', function () {
+    var panel = document.querySelector('.afisha-filter-panel');
+    var expanded = panel.classList.toggle('expanded');
+    this.setAttribute('aria-expanded', String(expanded));
+  });
   function show() {
     var shown = {running: 0, soon: 0, archive: 0};
     items.forEach(function (li) {
@@ -852,6 +908,8 @@ AFISHA_JS = """<script>
     document.getElementById('afisha-archive-box').hidden = !shown.archive;
     document.getElementById('afisha-empty').hidden = !!(shown.running || shown.soon || shown.archive);
     document.getElementById('afisha-archive-year-box').hidden = state.status !== 'archive';
+    document.getElementById('afisha-closing-box').hidden = (state.status === 'soon' || state.status === 'archive' || state.status === 'favorites');
+    document.getElementById('afisha-opening-box').hidden = (state.status === 'running' || state.status === 'archive' || state.status === 'favorites');
     statusBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-status') === state.status)); });
     applySort();
     regionBtns.forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-region') === state.reg ? 'true' : 'false'); });
@@ -860,6 +918,7 @@ AFISHA_JS = """<script>
     Object.keys(sel).forEach(function (k) { if (sel[k]) sel[k].value = state[k]; });
     closing.value = state.closing; opening.value = state.opening; sorter.value = state.sort;
     q.value = state.query; artist.value = state.artist; favoritesOnly.checked = state.favoritesOnly;
+    updateAfishaSummary(shown);
     recount();
     updateWeek();
     try {
@@ -883,6 +942,8 @@ AFISHA_JS = """<script>
   statusBtns.forEach(function (b) {
     b.addEventListener('click', function () {
       state.status = b.getAttribute('data-status');
+      state.favoritesOnly = false;
+      if (state.status === 'favorites') { state.closing = state.opening = 'all'; state.archiveYear = 'all'; }
       if (state.status !== 'archive') state.archiveYear = 'all';
       if (state.status === 'archive') state.closing = state.opening = 'all';
       if (state.status === 'running') state.opening = 'all';
@@ -1006,14 +1067,14 @@ AFISHA_JS = """<script>
     } catch (e) {}
   }
   if (new URLSearchParams(location.search).get('favorites') === '1') {
-    state.favoritesOnly = true;
-    state.status = 'all';
+    state.favoritesOnly = false;
+    state.status = 'favorites';
     state.area = state.country = state.epoch = state.venue = state.archiveYear = 'all';
     state.closing = state.opening = 'all';
     state.query = state.artist = '';
   }
   if (state.reg !== 'world') state.reg = 'russia';
-  if (['current','all','running','soon','archive'].indexOf(state.status) < 0) state.status = 'current';
+  if (['current','all','running','soon','archive','favorites'].indexOf(state.status) < 0) state.status = 'current';
   if (['all','7','30','90'].indexOf(state.closing) < 0) state.closing = 'all';
   if (['all','7','30','90'].indexOf(state.opening) < 0) state.opening = 'all';
   if (['default','start','end','title','venue'].indexOf(state.sort) < 0) state.sort = 'default';
@@ -1188,6 +1249,7 @@ def render_afisha_page(items, updated="", known=(), today=None, coords=None, ind
     parts = split(items, today)
     running = sorted(parts["russia"]["running"] + parts["world"]["running"], key=lambda x: x["end"])
     soon = sorted(parts["russia"]["soon"] + parts["world"]["soon"], key=lambda x: x["start"])
+    # OPA AFISHA UI 2026-10-31
     # The main page now includes ended events (archive) and distant future
     # events. Structured data, map and sidebar still use the existing live set.
     archive = sorted((it for it in items if _iso(it["end"]) < today),
@@ -1247,42 +1309,65 @@ def render_afisha_page(items, updated="", known=(), today=None, coords=None, ind
 {scroll_top_button()}
 <header class="artist-head">
   <p class="eyebrow">Афиша</p>
-  <h1>Выставки сейчас</h1>
-  <p class="idx-lede afisha-lede">Крупные выставки искусства до 1940 года — от старых мастеров до модерна и авангарда — в музеях России и мира: что идёт сегодня, скоро откроется и уже завершилось. Прошедшие выставки доступны в архиве.</p>
-  <div class="visit-bar afisha-bar">
-    <div class="view-switch afisha-switch" role="group" aria-label="Где">
-      <button type="button" data-region="russia" aria-pressed="true">Россия<span class="visit-count">{n_ru}</span></button>
-      <button type="button" data-region="world" aria-pressed="false">Мир<span class="visit-count">{n_world}</span></button>
-    </div>
-    <div class="afisha-filters">
-      <label class="afisha-select" id="afisha-area-box"><span>Город</span><select id="afisha-area">{area_select}</select></label>
-      <label class="afisha-select" id="afisha-country-box" hidden><span>Страна</span><select id="afisha-country">{country_select}</select></label>
-      <label class="afisha-select"><span>Эпоха</span><select id="afisha-epoch">{epoch_select}</select></label>
-      <label class="afisha-select"><span>Музей</span><select id="afisha-venue">{venue_select}</select></label>
-      <label class="afisha-select"><span>Закрытие</span><select id="afisha-closing"><option value="all">Любая дата</option><option value="7">В ближайшие 7 дней</option><option value="30">В ближайшие 30 дней</option><option value="90">В ближайшие 90 дней</option></select></label>
-      <label class="afisha-select"><span>Открытие</span><select id="afisha-opening"><option value="all">Любая дата</option><option value="7">В ближайшие 7 дней</option><option value="30">В ближайшие 30 дней</option><option value="90">В ближайшие 90 дней</option></select></label>
-      <label class="afisha-select" id="afisha-archive-year-box" hidden><span>Год архива</span><select id="afisha-archive-year">{archive_year_select}</select></label>
-      <label class="afisha-select"><span>Сортировка</span><select id="afisha-sort"><option value="default">По дате события</option><option value="start">По открытию</option><option value="end">По закрытию</option><option value="title">По названию</option><option value="venue">По музею</option></select></label>
-      <label class="afisha-select afisha-search-label"><span>Поиск по названию</span><input id="afisha-query" type="search" placeholder="Выставка, музей, город…" autocomplete="off"></label>
-      <label class="afisha-select afisha-search-label"><span>Художник</span><input id="afisha-artist" type="search" placeholder="Имя или фамилия…" autocomplete="off"></label>
-      <label class="afisha-fav-only"><input id="afisha-only-favorites" type="checkbox"> Только избранные</label>
-      <button type="button" class="afisha-reset" id="afisha-reset">Сбросить фильтры</button>
-      {near_btn}
+  <h1>Выставки</h1>
+  <p class="idx-lede afisha-lede">Актуальные и предстоящие выставки в музеях России и мира. Завершившиеся события сохраняются в архиве.</p>
+  <div class="afisha-top-line">
+    <div class="view-switch afisha-switch" role="group" aria-label="География выставок">
+      <button type="button" data-region="russia" aria-pressed="true">Россия <span class="visit-count">{n_ru}</span></button>
+      <button type="button" data-region="world" aria-pressed="false">Мир <span class="visit-count">{n_world}</span></button>
     </div>
   </div>
-  <div class="view-switch afisha-status-switch" role="group" aria-label="Статус выставки">
+  <div class="view-switch afisha-status-switch" role="group" aria-label="Статус выставок">
     <button type="button" data-status="current" aria-pressed="true">Сейчас и скоро</button>
-    <button type="button" data-status="all" aria-pressed="false">Все периоды</button>
-    <button type="button" data-status="running" aria-pressed="false">Идут сейчас</button>
-    <button type="button" data-status="soon" aria-pressed="false">Скоро откроются</button>
+    <button type="button" data-status="running" aria-pressed="false">Идут</button>
+    <button type="button" data-status="soon" aria-pressed="false">Скоро</button>
     <button type="button" data-status="archive" aria-pressed="false">Архив</button>
+    <button type="button" data-status="favorites" aria-pressed="false">★ Избранное <span id="afisha-fav-total"></span></button>
+    <button type="button" data-status="all" aria-pressed="false">Все периоды</button>
+  </div>
+  <div class="afisha-filter-panel">
+    <label class="afisha-select afisha-search-label opa-afisha-unified-search">
+      <span>Поиск выставок</span>
+      <input id="afisha-query" type="search" placeholder="Выставка, художник, музей, город…" autocomplete="off">
+    </label>
+    <button type="button" id="afisha-mobile-filter-toggle" class="opa-afisha-mobile-toggle" aria-expanded="false" aria-controls="afisha-primary-filters afisha-filter-actions">Фильтры</button>
+    <div class="afisha-primary-filters" id="afisha-primary-filters">
+      <label class="afisha-select" id="afisha-area-box"><span>Город</span><select id="afisha-area">{area_select}</select></label>
+      <label class="afisha-select" id="afisha-country-box" hidden><span>Страна</span><select id="afisha-country">{country_select}</select></label>
+      <label class="afisha-select"><span>Музей</span><select id="afisha-venue">{venue_select}</select></label>
+      <label class="afisha-select"><span>Эпоха</span><select id="afisha-epoch">{epoch_select}</select></label>
+    </div>
+    <div class="afisha-filter-actions" id="afisha-filter-actions">
+      <details class="opa-afisha-more" id="afisha-more-filters">
+        <summary>Дополнительные фильтры</summary>
+        <div class="afisha-secondary-filters">
+          <label class="afisha-select" id="afisha-closing-box"><span>Когда закрывается</span><select id="afisha-closing"><option value="all">Любая дата</option><option value="7">В ближайшие 7 дней</option><option value="30">В ближайшие 30 дней</option><option value="90">В ближайшие 90 дней</option></select></label>
+          <label class="afisha-select" id="afisha-opening-box"><span>Когда открывается</span><select id="afisha-opening"><option value="all">Любая дата</option><option value="7">В ближайшие 7 дней</option><option value="30">В ближайшие 30 дней</option><option value="90">В ближайшие 90 дней</option></select></label>
+          <label class="afisha-select" id="afisha-archive-year-box" hidden><span>Год архива</span><select id="afisha-archive-year">{archive_year_select}</select></label>
+          {near_btn}
+        </div>
+      </details>
+      <button type="button" class="afisha-reset" id="afisha-reset">Очистить фильтры</button>
+    </div>
+    <!-- Legacy controls remain hidden to preserve saved-filter compatibility. -->
+    <input id="afisha-artist" type="hidden" value="">
+    <input id="afisha-only-favorites" type="checkbox" hidden>
   </div>
   <p class="afisha-near-note" id="afisha-near" role="status" hidden></p>
 </header>
 <main id="afisha" class="afisha">
+<div class="opa-afisha-results-bar">
+  <div class="opa-afisha-results-summary">
+    <span id="afisha-results-count" class="results-count" role="status" aria-live="polite"></span>
+    <div id="afisha-active-filters" class="active-filter-chips" aria-label="Активные условия"></div>
+    <button type="button" id="afisha-reset-inline" class="opa-reset-inline" hidden>Сбросить фильтры</button>
+  </div>
+  <label class="afisha-select opa-afisha-sort"><span>Сортировка</span><select id="afisha-sort"><option value="default">По дате события</option><option value="start">По открытию</option><option value="end">По закрытию</option><option value="title">По названию</option><option value="venue">По музею</option></select></label>
+</div>
 <section class="afisha-week" id="afisha-week" aria-labelledby="afisha-week-title" hidden>
 <h2 class="now-title" id="afisha-week-title">Успеть на этой неделе</h2>
 <ul class="afisha-week-list" id="afisha-week-list"></ul>
+<button type="button" id="afisha-week-more" class="opa-afisha-week-more" hidden>Показать остальные</button>
 </section>
 {map_html}
 <section class="afisha-section" id="afisha-running-box" aria-labelledby="afisha-running-title">

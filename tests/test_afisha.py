@@ -430,10 +430,12 @@ finally:
 ok("ссылка «Афиша» в подвале", 'href="afisha.html">Афиша</a>' in sc.site_footer())
 if os.path.exists("docs/afisha.html"):
     idx = open("docs/index.html", encoding="utf-8").read()
-    ok("на главной афиша — в левой панели, под фильтрами",
-       idx.find('id="sidebar"') < idx.find('id="afisha-block"') < idx.find('</aside>')
-       and idx.find("'Техника'") < 0 and idx.find('icon-technique') < idx.find('id="afisha-block"'))
-    ok("…и над галереей её больше нет", idx.find('id="afisha-block"') > idx.find('<div class="layout">'))
+    # OPA AFISHA UI TESTS 2026-10-31
+    ok("на главной в разделе сайта — одна ссылка «Выставки»",
+       idx.find('id="sidebar"') < idx.find('href="afisha.html">Выставки</a>') < idx.find('</aside>')
+       and 'id="afisha-block"' not in idx)
+    ok("на главной нет повторных анонсов над картинами",
+       'opa-now-collapsible' not in idx)
     ok("афиша в карте сайта", "/afisha.html</loc>" in open("docs/sitemap.xml", encoding="utf-8").read())
 
 # ---------- сам afisha.json ----------

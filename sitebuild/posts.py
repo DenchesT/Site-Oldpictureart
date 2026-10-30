@@ -23,7 +23,7 @@ from .html import artwork_jsonld, download_name, page_title, site_og_image, tele
 from .images import size_attrs
 from .places import museum_href
 from .visits import NOW_ON_JS, now_on_block
-from .afisha import AFISHA_JS, afisha_block, load_afisha, _afisha_favorites_script
+from .afisha import AFISHA_JS, load_afisha, _afisha_favorites_script
 
 logger = logging.getLogger("build_site")
 
@@ -584,10 +584,13 @@ def render_index(all_posts, visits=None):
     visits_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-visits no-arrow" '
                         'href="visits.html">Посещения</a></div>') if has_visits() else ''
     # OPA MOBILE & EXHIBITION FAVORITES 2026-10-31
+    # OPA AFISHA UI 2026-10-31
+    # В меню одна ссылка на афишу, без анонсов в боковой колонке.
     # Афиша — крупные выставки в России и в мире (sitebuild/afisha.py):
     # раздел в панели под фильтрами — ссылка и ближайшие к закрытию.
     afisha_items = load_afisha()[0]
-    afisha_html = afisha_block(afisha_items)
+    afisha_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-afisha no-arrow" '
+                   'href="afisha.html">Выставки</a></div>')
     index_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-artists no-arrow" '
                        'href="ukazatel.html">Указатель</a></div>')
     stats_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-decades no-arrow" '
@@ -626,7 +629,7 @@ def render_index(all_posts, visits=None):
 <div class="subtitle">{len(ps)} {plural_ru(len(ps), 'картина', 'картины', 'картин')} · {len(authors)} {plural_ru(len(authors), 'художник', 'художника', 'художников')} · {len(museums)} {plural_ru(len(museums), 'музей', 'музея', 'музеев')} · {year_range}</div>
 </div>
 <button type="button" class="random-btn" onclick="goRandom()"><span class="icon-random-white" aria-hidden="true"></span> Случайная картина</button></header>
-{('<details class="opa-now-collapsible"><summary>Мои посещения · текущие выставки</summary>' + now_block + '</details>') if now_block else ''}
+
 <div class="layout"><aside class="sidebar" id="sidebar" aria-label="Фильтры">
 <div class="sidebar-section sidebar-search">
   <label class="opa-search-label" for="search">Поиск картин</label>
@@ -644,11 +647,11 @@ def render_index(all_posts, visits=None):
 {section('icon-museums', 'Музеи', mh)}
 {section('icon-material', 'Материал', mth)}
 {section('icon-technique', 'Техника', th)}
-<p class="opa-sidebar-heading">Выставки и подборки</p>
-{afisha_html}
+<p class="opa-sidebar-heading">Подборки</p>
 {fav_html}
 {popular_html}
 <p class="opa-sidebar-heading">Разделы сайта</p>
+{afisha_html}
 {map_link_html}
 {visits_link_html}
 {index_link_html}

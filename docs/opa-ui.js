@@ -38,38 +38,7 @@
     var nowBox = document.getElementById('now-on');
     var nowWrap = document.querySelector('.opa-now-collapsible');
     if (nowWrap && nowBox) nowWrap.hidden = nowBox.hidden;
-    // OPA MOBILE & EXHIBITION FAVORITES 2026-10-31
-    // Keep only the Menu control over artwork on phones. Sort/view/count
-    // remain available INSIDE the same menu (no duplicate controls).
-    var toolbar = document.querySelector('.index-page .results-bar');
-    if (sidebar && toolbar) {
-      var chipsForMobile = document.getElementById('opa-active-filters');
-      var main = toolbar.parentNode;
-      var barAnchor = document.createComment('OPA toolbar original position');
-      main.insertBefore(barAnchor, toolbar);
-      var chipsAnchor = document.createComment('OPA chips original position');
-      if (chipsForMobile && chipsForMobile.parentNode)
-        chipsForMobile.parentNode.insertBefore(chipsAnchor, chipsForMobile);
-      var mobileControls = document.createElement('div');
-      mobileControls.className = 'opa-mobile-controls';
-      var searchBlock = sidebar.querySelector('.sidebar-search');
-      if (searchBlock) searchBlock.insertAdjacentElement('afterend', mobileControls);
-      else sidebar.prepend(mobileControls);
-      var media = window.matchMedia('(max-width: 900px)');
-      function placeControls() {
-        if (media.matches) {
-          mobileControls.appendChild(toolbar);
-          if (chipsForMobile) mobileControls.appendChild(chipsForMobile);
-        } else {
-          if (barAnchor.parentNode) barAnchor.parentNode.insertBefore(toolbar, barAnchor);
-          if (chipsForMobile && chipsAnchor.parentNode)
-            chipsAnchor.parentNode.insertBefore(chipsForMobile, chipsAnchor);
-        }
-      }
-      placeControls();
-      if (media.addEventListener) media.addEventListener('change', placeControls);
-      else if (media.addListener) media.addListener(placeControls);
-    }
+    // OPA AFISHA UI 2026-10-31: sorting stays above artwork on phones.
     // Clearer action names for assistive technology, without changing toolbar structure.
     var actions = {'[data-share-btn]':'Поделиться ссылкой на картину',
       '[aria-label="Случайная картина"]':'Открыть случайную картину',

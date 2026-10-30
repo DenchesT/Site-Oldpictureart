@@ -3006,3 +3006,53 @@ h1, h2, h3 { overflow-wrap: break-word; }
   .index-page .card:focus-within { outline: none; }
   .index-page .card-link:focus-visible::after { inset: -4px; outline-offset: 0; border-radius: 2px; }
 }
+
+
+
+/* OPA AFISHA UI 2026-10-31: preserve existing Old Picture Art colors and fonts. */
+.afisha-page .artist-head { padding-bottom: var(--s3); margin-bottom: var(--s4); }
+.afisha-page .afisha-lede { max-width: 75ch; line-height: 1.45; margin-bottom: var(--s3); }
+.afisha-top-line { display: flex; align-items: center; gap: var(--s3); margin-bottom: var(--s3); }
+.afisha-page .afisha-status-switch { display: flex; width: fit-content; max-width: 100%; margin-bottom: var(--s4); flex-wrap: wrap; }
+.afisha-page .afisha-status-switch button { white-space: nowrap; }
+.afisha-filter-panel { border: 1px solid var(--border); background: var(--card-bg); padding: var(--s4); display: grid; gap: var(--s3); margin-bottom: var(--s3); }
+.opa-afisha-unified-search { display: flex; max-width: none; }
+.opa-afisha-unified-search input { width: 100%; max-width: none; min-height: 42px; font-family: var(--ff-data); font-size: var(--fs-sm); }
+.afisha-primary-filters, .afisha-secondary-filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s3); align-items: end; }
+.afisha-primary-filters .afisha-select, .afisha-secondary-filters .afisha-select { min-width: 0; width: 100%; }
+.afisha-primary-filters select, .afisha-secondary-filters select { width: 100%; min-width: 0; max-width: 100%; min-height: 39px; }
+.afisha-filter-actions { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s4); flex-wrap: wrap; }
+.opa-afisha-more { min-width: min(100%, 20rem); flex: 1 1 20rem; }
+.opa-afisha-more > summary { cursor: pointer; list-style-position: inside; color: var(--link); font: var(--fs-xs) var(--ff-data); padding: .55rem 0; }
+.opa-afisha-more > summary:hover { text-decoration: underline; }
+.opa-afisha-more .afisha-secondary-filters { padding: var(--s3) 0; }
+.afisha-filter-panel .afisha-reset { align-self: start; margin-top: .25rem; }
+.opa-afisha-mobile-toggle { display: none; }
+.opa-afisha-results-bar { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s4); flex-wrap: wrap; padding: var(--s2) 0 var(--s4); margin-bottom: var(--s4); border-bottom: 1px solid var(--border); }
+.opa-afisha-results-summary { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--s2); flex: 1 1 20rem; }
+.opa-afisha-results-summary .active-filter-chips { margin: 0; }
+.opa-afisha-sort { flex: 0 1 14rem; }
+.opa-afisha-sort select { width: 100%; min-width: 0; }
+.opa-afisha-results-summary .opa-reset-inline { display: inline-block; }
+.opa-afisha-results-summary .opa-reset-inline[hidden] { display: none; }
+.opa-afisha-week-more { margin-top: .5rem; background: none; border: 0; padding: .3rem 0; font: var(--fs-xs) var(--ff-data); color: var(--link); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.opa-afisha-week-more[hidden] { display: none; }
+@media (max-width: 900px) {
+  .index-page .results-bar { position: static; top: auto; z-index: auto; display: flex; background: var(--bg); box-shadow: none; }
+  .index-page .bar-controls { display: flex; }
+  .index-page .opa-mobile-controls { display: none; }
+  .index-page #cards { scroll-margin-top: 3.5rem; }
+}
+@media (max-width: 700px) {
+  .afisha-primary-filters, .afisha-secondary-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .afisha-filter-panel { padding: var(--s3); }
+  .opa-afisha-mobile-toggle { display: block; width: 100%; padding: var(--s2) var(--s3); border: 1px solid var(--border); background: var(--card-bg); color: var(--link); font: var(--fs-xs) var(--ff-data); text-align: center; cursor: pointer; min-height: 42px; }
+  .afisha-filter-panel:not(.expanded) .afisha-primary-filters, .afisha-filter-panel:not(.expanded) .afisha-filter-actions { display: none; }
+  .afisha-page .afisha-status-switch { width: 100%; }
+  .afisha-page .afisha-status-switch button { flex: 1 1 auto; }
+  .opa-afisha-sort { flex: 1 1 100%; }
+  .opa-afisha-results-summary { flex-basis: 100%; }
+}
+@media (max-width: 420px) {
+  .afisha-primary-filters, .afisha-secondary-filters { grid-template-columns: 1fr; }
+}
