@@ -21,7 +21,7 @@
       "museum": "Музей «Новый Иерусалим»",
       "city": "Истра",
       "country": "Россия",
-      "url": "https://njerusalem.ru/",
+      "url": "https://njerusalem.ru/vystavki-i-ekspozicii/exhibit/",
       "priority": "high"
     },
     {
@@ -36,21 +36,30 @@
       "city": "Вологда",
       "country": "Россия",
       "url": "https://vologda-gallery.ru/exhibition/current-exhibitions/",
-      "priority": "medium"
+      "priority": "medium",
+      "fallback_urls": [
+        "https://vologda-gallery.ru/"
+      ]
     },
     {
       "museum": "Rijksmuseum",
       "city": "Амстердам",
       "country": "Нидерланды",
       "url": "https://www.rijksmuseum.nl/en/whats-on?filter=exhibitions",
-      "priority": "high"
+      "priority": "high",
+      "fallback_urls": [
+        "https://www.rijksmuseum.nl/en/story/programme-2026"
+      ]
     },
     {
       "museum": "Albertina",
       "city": "Вена",
       "country": "Австрия",
       "url": "https://albertina.at/en/exhibitions/",
-      "priority": "high"
+      "priority": "high",
+      "fallback_urls": [
+        "https://albertina.at/en/exhibitions/"
+      ]
     },
     {
       "museum": "Musée Marmottan Monet",
@@ -71,7 +80,11 @@
       "city": "Бостон",
       "country": "США",
       "url": "https://www.mfa.org/exhibitions",
-      "priority": "high"
+      "priority": "high",
+      "fallback_urls": [
+        "https://www.mfa.org/news/advance-exhibition-schedule",
+        "https://www.mfa.org/exhibitions/upcoming"
+      ]
     },
     {
       "museum": "National Gallery of Art",
@@ -84,8 +97,11 @@
       "museum": "Gallerie degli Uffizi",
       "city": "Флоренция",
       "country": "Италия",
-      "url": "https://www.uffizi.it/en/events",
-      "priority": "medium"
+      "url": "https://www.uffizi.it/en/event-category/exhibitions/years/2026",
+      "priority": "medium",
+      "fallback_urls": [
+        "https://www.uffizi.it/en/events/years/2026"
+      ]
     }
   ]
 }
