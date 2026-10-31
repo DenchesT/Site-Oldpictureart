@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Самопроверка мобильного CSS и безопасного установщика. Запуск из корня проекта."""
 import ast
-import re
 import tempfile
 import unittest
 from pathlib import Path
