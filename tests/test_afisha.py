@@ -133,8 +133,8 @@ try:
     ok("у записи даты для браузера и вкладка",
        'data-start="2026-10-16" data-end="2027-05-10" data-region="russia"' in page)
     ok("вкладки Россия и Мир со счётчиками",
-       'data-region="russia" aria-pressed="true">Россия<span class="visit-count">2</span>' in page
-       and 'data-region="world" aria-pressed="false">Мир<span class="visit-count">3</span>' in page)
+       re.search(r'data-region="russia" aria-pressed="true">Россия\s*<span class="visit-count">2</span>', page)
+       and re.search(r'data-region="world" aria-pressed="false">Мир\s*<span class="visit-count">3</span>', page))
     ok("дата обновления списка", "Список обновлён 19 октября 2026" in page)
     ok("город России — выпадающий список (числа ставит скрипт)",
        '<select id="afisha-area"><option value="all" data-label="Все города">Все города</option>' in page
