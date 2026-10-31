@@ -3184,3 +3184,34 @@ h1, h2, h3 { overflow-wrap: break-word; }
   .afisha-page .opa-afisha-results-summary { flex-basis: 100%; }
 }
 /* OPA MOBILE AFISHA UI FIX 2026-10-31 — END */
+
+/* OPA SINGLE-LEVEL MOBILE AFISHA — CSS START
+   Phone: only the outer 'Фильтры' accordion. The secondary controls are
+   rendered with the primary ones, not hidden behind another summary.
+   The status tabs, search and sorting stay outside and visible. */
+@media screen and (max-width: 700px) {
+  .afisha-page #afisha-more-filters > summary {
+    display: none !important;
+  }
+  .afisha-page .afisha-filter-panel.expanded #afisha-filter-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: .65rem;
+    align-items: start;
+    width: 100%;
+  }
+  .afisha-page #afisha-more-filters {
+    flex: none;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+  }
+  .afisha-page #afisha-more-filters .afisha-secondary-filters {
+    padding: .3rem 0 0;
+  }
+  .afisha-page .afisha-filter-panel.expanded #afisha-reset {
+    justify-self: start;
+    margin-top: .25rem;
+  }
+}
+/* OPA SINGLE-LEVEL MOBILE AFISHA — CSS END */

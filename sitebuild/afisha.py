@@ -910,6 +910,34 @@ AFISHA_JS = """<script>
     var expanded = panel.classList.toggle('expanded');
     this.setAttribute('aria-expanded', String(expanded));
   });
+  // OPA SINGLE-LEVEL MOBILE AFISHA — START
+  // On phones there is ONE accordion: the outer 'Фильтры' button.
+  // Keep the nested <details> open, hide only its summary via mobile CSS.
+  // Restore the previous desktop <details> state when crossing 700px.
+  var opaMoreFilters = document.getElementById('afisha-more-filters');
+  if (opaMoreFilters && mobileFilterToggle && window.matchMedia) {
+    var opaMobileMedia = window.matchMedia('(max-width: 700px)');
+    var opaDesktopDetailsOpen = opaMoreFilters.open;
+    function opaSyncSingleLevelFilters() {
+      if (opaMobileMedia.matches) {
+        if (!opaMoreFilters.hasAttribute('data-opa-mobile-detail')) {
+          opaDesktopDetailsOpen = opaMoreFilters.open;
+        }
+        opaMoreFilters.setAttribute('data-opa-mobile-detail', '');
+        opaMoreFilters.open = true;
+      } else if (opaMoreFilters.hasAttribute('data-opa-mobile-detail')) {
+        opaMoreFilters.removeAttribute('data-opa-mobile-detail');
+        opaMoreFilters.open = opaDesktopDetailsOpen;
+      }
+    }
+    if (opaMobileMedia.addEventListener) {
+      opaMobileMedia.addEventListener('change', opaSyncSingleLevelFilters);
+    } else if (opaMobileMedia.addListener) {
+      opaMobileMedia.addListener(opaSyncSingleLevelFilters);
+    }
+    opaSyncSingleLevelFilters();
+  }
+  // OPA SINGLE-LEVEL MOBILE AFISHA — END
   function show() {
     var shown = {running: 0, soon: 0, archive: 0};
     items.forEach(function (li) {
