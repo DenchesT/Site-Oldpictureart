@@ -46,13 +46,14 @@ jobs:
           python tests/test_quality_update.py
       - name: Сохранить обновлённые страницы
         run: |
+          # Commit, rebase and any cherry-pick must all have a valid identity.
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A -- docs/afisha.html docs/index.html docs/sitemap.xml 'docs/museum-*.html' 'docs/visit-*.html'
           if git diff --cached --quiet; then
             echo "HTML афиши уже актуален"
           else
-            git -c user.name="github-actions[bot]" \
-                -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
-                commit -m "build: обновить опубликованные страницы афиши"
+            git commit -m "build: обновить опубликованные страницы афиши"
             # Пересборка может менять кэши/метаданные, не входящие в этот коммит.
             # Сбрасываем только НЕзакоммиченные изменения в рабочем дереве CI.
             git reset --hard HEAD
