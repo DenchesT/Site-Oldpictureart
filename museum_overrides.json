@@ -440,12 +440,16 @@
     "site": "https://novgorodmuseum.ru",
     "address": "Ярославово дворище, Великий Новгород"
   },
+  
   "Лондонская национальная галерея, Лондон": {
     "query": "The National Gallery, London",
     "site": "https://www.nationalgallery.org.uk",
     "address": "Trafalgar Square, London WC2N 5DN",
-    "country": "Великобритания"
+    "country": "Великобритания",
+    "lat": 51.5089,
+    "lon": -0.1283
   },
+  
   "Вятский художественный музей имени В. М. и А. М. Васнецовых": {
     "query": "Вятский художественный музей имени В. М. и А. М. Васнецовых",
     "site": "https://kirov-artmuzeum.ru",

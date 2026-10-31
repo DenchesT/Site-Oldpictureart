@@ -626,13 +626,10 @@
     "precision": "exact"
   },
   "Лондонская национальная галерея, Лондон": {
-    "lat": 51.5074204,
-    "lon": -0.1283555,
-    "display_name": "Trafalgar Square, Westminster, Covent Garden, Вестминстер, Большой Лондон, Англия, WC2N 5DX, Соединённое Королевство",
-    "source": "nominatim",
-    "precision": "exact",
-    "kind": "highway=primary",
-    "query": "Trafalgar Square, London WC2N 5DN",
-    "hint": "Trafalgar Square, London WC2N 5DN\nThe National Gallery, London"
+    "lat": 51.5089,
+    "lon": -0.1283,
+    "display_name": "Лондонская национальная галерея, Лондон",
+    "source": "override",
+    "precision": "exact"
   }
 }
