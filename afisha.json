@@ -3063,28 +3063,40 @@
       "priority": "high",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%B9_%D0%B0%D0%BA%D0%B0%D0%B4%D0%B5%D0%BC%D0%B8%D0%B8_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "нужно проверить официальный сайт",
+      "site": "https://artsacademymuseum.org/",
+      "address": "Университетская набережная, 17, Санкт-Петербург, Россия",
+      "address_source": "https://artsacademymuseum.org/posetitelyam/contacts/"
     },
     {
       "museum": "Музей Фаберже",
       "city": "Санкт-Петербург",
       "country": "Россия",
       "url": "https://fabergemuseum.ru/sobyitiya/vyistavki/",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://fabergemuseum.ru/",
+      "address": "Набережная реки Фонтанки, 21, Санкт-Петербург, Россия",
+      "address_source": "https://fabergemuseum.ru/news/kontaktyi"
     },
     {
       "museum": "Музей «Новый Иерусалим»",
       "city": "Истра",
       "country": "Россия",
       "url": "https://njerusalem.ru/vystavki-i-ekspozicii/exhibit/",
-      "priority": "high"
+      "priority": "high",
+      "site": "https://njerusalem.ru/",
+      "address": "Ново-Иерусалимская набережная, 1, Истра, Московская область, Россия",
+      "address_source": "https://njerusalem.ru/kontakty/kontaktnaya-informaciya/"
     },
     {
       "museum": "Курская картинная галерея имени А. А. Дейнеки",
       "city": "Курск",
       "country": "Россия",
       "url": "https://deinekagallery.ru/",
-      "priority": "high"
+      "priority": "high",
+      "site": "https://deinekagallery.ru/",
+      "address": "Улица Радищева, 85, Курск, Россия",
+      "address_source": "https://deinekagallery.ru/contacts/"
     },
     {
       "museum": "Вологодская областная картинная галерея",
@@ -3094,7 +3106,10 @@
       "priority": "medium",
       "fallback_urls": [
         "https://vologda-gallery.ru/"
-      ]
+      ],
+      "site": "https://vologda-gallery.ru/",
+      "address": "Улица Мира, 34, Вологда, Россия",
+      "address_source": "https://vologda-gallery.ru/kontakty/"
     },
     {
       "museum": "Rijksmuseum",
@@ -3104,7 +3119,10 @@
       "priority": "high",
       "fallback_urls": [
         "https://www.rijksmuseum.nl/en/story/programme-2026"
-      ]
+      ],
+      "site": "https://www.rijksmuseum.nl/en",
+      "address": "Museumstraat 1, 1071 XX Amsterdam, Netherlands",
+      "address_source": "https://www.rijksmuseum.nl/en/visit/practical-info/address-and-directions"
     },
     {
       "museum": "Albertina",
@@ -3114,21 +3132,30 @@
       "priority": "high",
       "fallback_urls": [
         "https://albertina.at/en/exhibitions/"
-      ]
+      ],
+      "site": "https://albertina.at/en/",
+      "address": "Albertinaplatz 1, 1010 Vienna, Austria",
+      "address_source": "https://albertina.at/en/contact-us/"
     },
     {
       "museum": "Musée Marmottan Monet",
       "city": "Париж",
       "country": "Франция",
       "url": "https://www.marmottan.fr/en/currently/",
-      "priority": "high"
+      "priority": "high",
+      "site": "https://www.marmottan.fr/en/",
+      "address": "2 rue Louis-Boilly, 75016 Paris, France",
+      "address_source": "https://www.marmottan.fr/en/prepare-your-visit/practical-information/"
     },
     {
       "museum": "Lenbachhaus",
       "city": "Мюнхен",
       "country": "Германия",
       "url": "https://www.lenbachhaus.de/en/program/exhibitions",
-      "priority": "high"
+      "priority": "high",
+      "site": "https://www.lenbachhaus.de/en/",
+      "address": "Luisenstraße 33, 80333 München, Germany",
+      "address_source": "https://www.lenbachhaus.de/en/visit/plan-your-visit"
     },
     {
       "museum": "Museum of Fine Arts Boston",
@@ -3139,14 +3166,20 @@
       "fallback_urls": [
         "https://www.mfa.org/news/advance-exhibition-schedule",
         "https://www.mfa.org/exhibitions/upcoming"
-      ]
+      ],
+      "site": "https://www.mfa.org/",
+      "address": "465 Huntington Avenue, Boston, MA 02115, USA",
+      "address_source": "https://www.mfa.org/about/contact-us"
     },
     {
       "museum": "National Gallery of Art",
       "city": "Вашингтон",
       "country": "США",
       "url": "https://www.nga.gov/exhibitions",
-      "priority": "high"
+      "priority": "high",
+      "site": "https://www.nga.gov/",
+      "address": "6th Street and Constitution Avenue NW, Washington, DC 20565, USA (West Building)",
+      "address_source": "https://www.nga.gov/visit"
     },
     {
       "museum": "Gallerie degli Uffizi",
@@ -3156,7 +3189,10 @@
       "priority": "medium",
       "fallback_urls": [
         "https://www.uffizi.it/en/events/years/2026"
-      ]
+      ],
+      "site": "https://www.uffizi.it/en/",
+      "address": "Piazzale degli Uffizi 6, 50122 Firenze, Italy",
+      "address_source": "https://www.uffizi.it/en/contacts"
     },
     {
       "museum": "Государственный художественный музей Алтайского края",
@@ -3170,7 +3206,8 @@
       "address": "Барнаул, ул. Максима Горького, 16",
       "address_source": "https://ghmak.ru/o-muzee",
       "notes": "Основное здание на реконструкции; действующие выставки на ул. Максима Горького, 16",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://ghmak.ru/"
     },
     {
       "museum": "Башкирский государственный художественный музей имени М. В. Нестерова",
@@ -3189,7 +3226,8 @@
       "url": "https://belghm.ru/category/vystavki-i-sobytiya/vystavki/",
       "address": "Белгород, ул. Победы, 77",
       "address_source": "https://belghm.ru/skhema-proezda/",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://belghm.ru/"
     },
     {
       "museum": "Велижский районный историко-краеведческий музей",
@@ -3239,7 +3277,8 @@
       "address": "Киров, ул. Владимирская, 70",
       "address_source": "https://kirov-artmuzeum.ru/museum/contacts/",
       "notes": "Есть отдельные филиалы и выставочные площадки со своими адресами",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://kirov-artmuzeum.ru/"
     },
     {
       "museum": "Государственный музей истории литературы, искусства и культуры Алтая",
@@ -3289,7 +3328,8 @@
       "address": "Екатеринбург, ул. Воеводина, 5 (главное здание)",
       "address_source": "https://i-z-o.art/about/kontakty/",
       "notes": "Эрмитаж-Урал: Вайнера, 11; музей наива: Розы Люксембург, 18",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://i-z-o.art/"
     },
     {
       "museum": "Зарайский кремль (музей)",
@@ -3326,7 +3366,8 @@
       "url": "https://museum.irk.ru/",
       "address": "Иркутск, ул. Ленина, 5 (главное здание)",
       "address_source": "https://old.iokm.ru/map/",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://museum.irk.ru/"
     },
     {
       "museum": "Искусство Омска (музей)",
@@ -3412,7 +3453,8 @@
       "address": "Красноярск, проспект Мира, 12 (одна из площадок)",
       "address_source": "https://surikov-museum.ru/visit-en",
       "notes": "Другой действующий выставочный зал: пр. Красноярский рабочий, 68; здание на ул. Парижской Коммуны, 20 временно закрыто",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://surikov-museum.ru/"
     },
     {
       "museum": "Художественный музей (Кунгур)",
@@ -3492,7 +3534,8 @@
       "address": "Киров, Копанский переулок, 4",
       "address_source": "https://kirov-artmuzeum.ru/museum/afisha/vyistavki/",
       "notes": "Филиал Вятского художественного музея",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://kirov-artmuzeum.ru/"
     },
     {
       "museum": "Мурманский областной художественный музей",
@@ -3530,7 +3573,8 @@
       "address": "Нижний Новгород, Кремль, корпус 3",
       "address_source": "https://artmuseumnn.ru/kontakty",
       "notes": "У музея несколько корпусов",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://artmuseumnn.ru/"
     },
     {
       "museum": "Нижнетагильский музей изобразительных искусств",
@@ -3580,7 +3624,8 @@
       "address": "Омск, ул. Ленина, 23 (Генерал-губернаторский дворец)",
       "address_source": "https://special.omskportal.ru/oiv/mkt/otrasl/mnogodetn/vrubel.html",
       "notes": "Врубелевский корпус: ул. Ленина, 3",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://vrubel.ru/"
     },
     {
       "museum": "Орловский музей изобразительных искусств",
@@ -3624,7 +3669,8 @@
       "address": "Ростов-на-Дону, проспект Чехова, 60 (действующий корпус)",
       "address_source": "https://romii.ru/about/contacts.php",
       "notes": "Корпус на ул. Пушкинской, 115 закрыт на реставрацию: не направлять туда посетителей",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://romii.ru/"
     },
     {
       "museum": "Сосновоборский художественный музей современного искусства",
@@ -3650,7 +3696,8 @@
       "address": "Рязань, ул. Свободы, 57",
       "address_source": "https://www.ukrzn.ru/?id=11&institution=35&mod=institutions",
       "notes": "Выставочный зал музея — ул. Есенина, 112 (другой адрес)",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://artmuseum62.ru/"
     },
     {
       "museum": "Сальский музей имени народного художника В. К. Нечитайло",
@@ -3676,7 +3723,8 @@
       "address": "Саратов, ул. Радищева, 39 (главное здание)",
       "address_source": "https://radmuseumart.ru/",
       "notes": "Другие корпуса: Радищева, 41; Первомайская, 75",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://radmuseumart.ru/"
     },
     {
       "museum": "Сахалинский областной государственный художественный музей",
@@ -3743,7 +3791,8 @@
       "url": "https://museum-tula.ru/muzei/tmii/",
       "address": "Тула, ул. Фридриха Энгельса, 64",
       "address_source": "https://museum-tula.ru/muzei/tmii/fond-iskusstv/",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://museum-tula.ru/"
     },
     {
       "museum": "Удмуртский республиканский музей изобразительных искусств",
@@ -3793,7 +3842,8 @@
       "address": "Чебоксары, ул. Калинина, 60",
       "address_source": "https://artmuseum.ru/contacts/",
       "notes": "Филиалы имеют другие адреса",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://artmuseum.ru/"
     },
     {
       "museum": "Шебекинский историко-художественный музей",
@@ -3813,7 +3863,8 @@
       "address": "Ярославль, Богоявленская площадь, 25",
       "address_source": "https://yarkremlin.ru/museum/contacts/",
       "notes": "Историко-архитектурный музей-заповедник: в афишу только временные выставки подходящего искусства",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://yarkremlin.ru/"
     },
     {
       "museum": "Ярославский художественный музей",
@@ -3827,7 +3878,8 @@
       "address": "Ярославль, Волжская набережная, 23 (Губернаторский дом)",
       "address_source": "https://new.yarartmuseum.ru/exhibitions/lichnaya-istoriya/",
       "notes": "Другие площадки: Митрополичьи палаты — Волжская набережная, 1; Музей зарубежного искусства — Советская площадь, 2",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://new.yarartmuseum.ru/"
     },
     {
       "museum": "Ясногорский художественно-краеведческий музей",
@@ -3965,7 +4017,8 @@
       "address": "Москва, Лаврушинский переулок, 10 (историческое здание)",
       "address_source": "https://tretyakov.ru/for-visitors/museums/istoricheskoe-zdanie/",
       "notes": "Корпуса на Кадашёвской набережной и Крымском Валу имеют другие адреса",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://tretyakov.ru/"
     },
     {
       "museum": "Государственный Русский музей",
@@ -3977,7 +4030,8 @@
       "address": "Санкт-Петербург, Инженерная ул., 4 (Михайловский дворец)",
       "address_source": "https://rusmuseum.ru/museums/mikhailovsky-palace/",
       "notes": "Другие здания Русского музея имеют отдельные адреса",
-      "priority": "medium"
+      "priority": "medium",
+      "site": "https://rusmuseum.ru/"
     }
   ],
   "source_selection_rule": "Только временные выставки со значимым участием произведений искусства, созданных до 1940 года. Не добавлять экскурсии, концерты, постоянные экспозиции или преимущественно современное искусство. Проверять дату окончания, официальный URL и площадку.",
