@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 import ast
-import re
 import shutil
 import subprocess
 import sys
