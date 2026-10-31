@@ -3996,19 +3996,28 @@
       "museum": "Галерея старых мастеров Штросмайера",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%93%D0%B0%D0%BB%D0%B5%D1%80%D0%B5%D1%8F_%D1%81%D1%82%D0%B0%D1%80%D1%8B%D1%85_%D0%BC%D0%B0%D1%81%D1%82%D0%B5%D1%80%D0%BE%D0%B2_%D0%A8%D1%82%D1%80%D0%BE%D1%81%D0%BC%D0%B0%D0%B9%D0%B5%D1%80%D0%B0",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://sgallery.hazu.hr/",
+      "address": "Zrinski trg 11, 10000 Zagreb, Croatia (временно закрыта после землетрясения)",
+      "address_source": "https://sgallery.hazu.hr/en/kontakt/"
     },
     {
       "museum": "Музей Кармен Тиссен (Андорра)",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%9A%D0%B0%D1%80%D0%BC%D0%B5%D0%BD_%D0%A2%D0%B8%D1%81%D1%81%D0%B5%D0%BD_(%D0%90%D0%BD%D0%B4%D0%BE%D1%80%D1%80%D0%B0)",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://museucarmenthyssenandorra.ad/",
+      "address": "Av. Carlemany 37, AD700 Escaldes-Engordany, Andorra",
+      "address_source": "https://museucarmenthyssenandorra.ad/en/visit/"
     },
     {
       "museum": "Лувр Абу-Даби",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9B%D1%83%D0%B2%D1%80_%D0%90%D0%B1%D1%83-%D0%94%D0%B0%D0%B1%D0%B8",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://www.louvreabudhabi.ae/",
+      "address": "Saadiyat Cultural District, Saadiyat Island, Abu Dhabi, United Arab Emirates",
+      "address_source": "https://www.louvreabudhabi.ae/en/about-us/contact-us"
     },
     {
       "museum": "Музей африканского искусства имени Теодора Моно",
@@ -4038,7 +4047,10 @@
       "museum": "Музей Сакыпа Сабанджи",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%A1%D0%B0%D0%BA%D1%8B%D0%BF%D0%B0_%D0%A1%D0%B0%D0%B1%D0%B0%D0%BD%D0%B4%D0%B6%D0%B8",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://sakipsabancimuzesi.org/en",
+      "address": "Sakıp Sabancı Cad. No:42, Emirgan, 34467 Sarıyer, Istanbul, Türkiye",
+      "address_source": "https://sakipsabancimuzesi.org/en/about-ssm/contact"
     },
     {
       "museum": "Национальная галерея искусств (Гондурас)",
@@ -4056,7 +4068,10 @@
       "museum": "Национальный музей изобразительного искусства Республики Молдова",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9D%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D0%B3%D0%BE_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B0_%D0%A0%D0%B5%D1%81%D0%BF%D1%83%D0%B1%D0%BB%D0%B8%D0%BA%D0%B8_%D0%9C%D0%BE%D0%BB%D0%B4%D0%BE%D0%B2%D0%B0",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://mnam.md/",
+      "address": "str. 31 August 1989, 115, Chișinău, Republic of Moldova",
+      "address_source": "https://mnam.md/en/contacts"
     },
     {
       "museum": "Национальный музей изящных искусств (Гавана)",
@@ -4074,7 +4089,10 @@
       "museum": "Национальный музей Мьянмы",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9D%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%9C%D1%8C%D1%8F%D0%BD%D0%BC%D1%8B",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://portal.museummyanmar.gov.mm/museums/national-museum-yangon",
+      "address": "No. 66/74, Pyay Road, Dagon Township, Yangon, Myanmar",
+      "address_source": "https://portal.museummyanmar.gov.mm/museums/national-museum-yangon"
     },
     {
       "museum": "Художественный музей Национального университета Колумбии",
