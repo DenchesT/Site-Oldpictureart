@@ -11,9 +11,8 @@ import re
 import shutil
 import subprocess
 import sys
-import tempfile
 
-from apply_mobile_favorites import FILES, MARKER, SHARED_FAVORITES_JS, patch_css, patch_ui
+from apply_mobile_favorites import FILES, MARKER, patch_css, patch_ui
 
 ROOT = Path(__file__).resolve().parent
 
