@@ -3213,7 +3213,10 @@
       "museum": "Башкирский государственный художественный музей имени М. В. Нестерова",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%91%D0%B0%D1%88%D0%BA%D0%B8%D1%80%D1%81%D0%BA%D0%B8%D0%B9_%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%9C._%D0%92._%D0%9D%D0%B5%D1%81%D1%82%D0%B5%D1%80%D0%BE%D0%B2%D0%B0",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://museum-nesterov.ru/",
+      "address": "Уфа, ул. Гоголя, 27",
+      "address_source": "https://museum-nesterov.ru/contact/"
     },
     {
       "museum": "Белгородский государственный художественный музей",
@@ -3245,7 +3248,10 @@
       "museum": "Волгоградский музей изобразительных искусств имени И. И. Машкова",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%92%D0%BE%D0%BB%D0%B3%D0%BE%D0%B3%D1%80%D0%B0%D0%B4%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%98._%D0%98._%D0%9C%D0%B0%D1%88%D0%BA%D0%BE%D0%B2%D0%B0",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://mashkovmuseum.ru/",
+      "address": "Волгоград, проспект им. В. И. Ленина, 21 (основное здание)",
+      "address_source": "https://mashkovmuseum.ru/kontakty-i-adresa"
     },
     {
       "museum": "Волгодонский художественный музей",
@@ -3263,7 +3269,10 @@
       "museum": "Воронежский областной художественный музей имени И. Н. Крамского",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%92%D0%BE%D1%80%D0%BE%D0%BD%D0%B5%D0%B6%D1%81%D0%BA%D0%B8%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%BD%D0%BE%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%98._%D0%9D._%D0%9A%D1%80%D0%B0%D0%BC%D1%81%D0%BA%D0%BE%D0%B3%D0%BE",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://mkram.ru/",
+      "address": "Воронеж, пр. Революции, 18",
+      "address_source": "https://mkram.ru/ru/muzej/rekvizit/"
     },
     {
       "museum": "Вятский художественный музей имени В. М. и А. М. Васнецовых",
@@ -3302,7 +3311,10 @@
       "museum": "Дальневосточный художественный музей",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%94%D0%B0%D0%BB%D1%8C%D0%BD%D0%B5%D0%B2%D0%BE%D1%81%D1%82%D0%BE%D1%87%D0%BD%D1%8B%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://artmuseum27.ru/",
+      "address": "Хабаровск, ул. Шевченко, 7",
+      "address_source": "https://artmuseum27.ru/"
     },
     {
       "museum": "Дербентский музей-заповедник",
@@ -3347,7 +3359,10 @@
       "museum": "Ивановский областной художественный музей",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%98%D0%B2%D0%B0%D0%BD%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%BD%D0%BE%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальный сайт и адрес по реестру департамента культуры; сайт недоступен при проверке 2026-10-31",
+      "site": "https://ivartmuseum.ru/",
+      "address": "Иваново, проспект Ленина, 33",
+      "address_source": "https://dkt.ivanovoobl.ru/deyatelnost/podvedomstvennye-uchrezhdeniya/"
     },
     {
       "museum": "Ирбитский государственный музей изобразительных искусств",
@@ -3385,13 +3400,19 @@
       "museum": "Калининградский областной музей изобразительных искусств",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D0%BB%D0%B8%D0%BD%D0%B8%D0%BD%D0%B3%D1%80%D0%B0%D0%B4%D1%81%D0%BA%D0%B8%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%BD%D0%BE%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://kaliningradartmuseum.ru/",
+      "address": "Калининград, Ленинский проспект, 83",
+      "address_source": "https://www.kaliningradartmuseum.ru/contacts/"
     },
     {
       "museum": "Калужский музей изобразительных искусств",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D0%BB%D1%83%D0%B6%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://kmii.ru/",
+      "address": "Калуга, ул. Ленина, 104 (основное здание)",
+      "address_source": "https://kmii.ru/contacts"
     },
     {
       "museum": "Каргопольский государственный историко-архитектурный и художественный музей",
@@ -3439,7 +3460,10 @@
       "museum": "Краснодарский краевой художественный музей имени Ф. А. Коваленко",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9A%D1%80%D0%B0%D1%81%D0%BD%D0%BE%D0%B4%D0%B0%D1%80%D1%81%D0%BA%D0%B8%D0%B9_%D0%BA%D1%80%D0%B0%D0%B5%D0%B2%D0%BE%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%A4._%D0%90._%D0%9A%D0%BE%D0%B2%D0%B0%D0%BB%D0%B5%D0%BD%D0%BA%D0%BE",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://kovalenkomuseum.ru/",
+      "address": "Краснодар, ул. Красная, 13",
+      "address_source": "https://kovalenkomuseum.ru/"
     },
     {
       "museum": "Красноярский государственный художественный музей имени В. И. Сурикова",
@@ -3580,7 +3604,10 @@
       "museum": "Нижнетагильский музей изобразительных искусств",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9D%D0%B8%D0%B6%D0%BD%D0%B5%D1%82%D0%B0%D0%B3%D0%B8%D0%BB%D1%8C%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://www.artmnt.ru/",
+      "address": "Нижний Тагил, ул. Уральская, 7 (выставочный корпус)",
+      "address_source": "https://www.artmnt.ru/"
     },
     {
       "museum": "Новокузнецкий художественный музей",
@@ -3637,7 +3664,10 @@
       "museum": "Государственный музей палехского искусства",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%93%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%BF%D0%B0%D0%BB%D0%B5%D1%85%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B0",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальный сайт и адрес по реестру департамента культуры; сайт недоступен при проверке 2026-10-31",
+      "site": "https://muzei-paleh.ru/",
+      "address": "Ивановская область, посёлок Палех, ул. Ленина, 6",
+      "address_source": "https://dkt.ivanovoobl.ru/deyatelnost/podvedomstvennye-uchrezhdeniya/"
     },
     {
       "museum": "Мемориальная мастерская А. В. Пантелеева",
@@ -3709,7 +3739,10 @@
       "museum": "Самарский областной художественный музей",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%B0%D0%BC%D0%B0%D1%80%D1%81%D0%BA%D0%B8%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%BD%D0%BE%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://artmus.ru/",
+      "address": "Самара, ул. Куйбышева, 92 (главное здание)",
+      "address_source": "https://artmus.ru/information/contacts/"
     },
     {
       "museum": "Саратовский художественный музей имени А. Н. Радищева",
@@ -3828,7 +3861,10 @@
       "museum": "Челябинский государственный музей изобразительных искусств",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A7%D0%B5%D0%BB%D1%8F%D0%B1%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://chelmusart.ru/",
+      "address": "Челябинск, площадь Революции, 1",
+      "address_source": "https://chelmusart.ru/node/18050?language=en"
     },
     {
       "museum": "Чувашский государственный художественный музей",
