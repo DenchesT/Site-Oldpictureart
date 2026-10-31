@@ -198,6 +198,13 @@ ok("если выставка шла в том же городе — «Выст�
 real_visits = json.load(open("visits_meta.json", encoding="utf-8")) if os.path.exists("visits_meta.json") else []
 real_posts = json.load(open("posts_meta.json", encoding="utf-8")) if os.path.exists("posts_meta.json") else []
 real_map = bs.visit_map_names(real_visits, real_posts)
+# All public museum pages must have an official museum URL and a usable address.
+# Private collections are intentionally absent from museum_names().
+public_museums = bs.museum_names(real_posts, real_visits)
+missing_details = [n for n in public_museums
+                   if not (bs.museum_info(n).get("site") and bs.museum_info(n).get("address"))]
+ok("у всех музеев на карте есть адрес и официальный сайт",
+   not missing_details, ", ".join(missing_details))
 for title, city in [("Митрополичье варенье", "Ростов Великий"), ("Сказка рядом", "Великий Новгород")]:
     v = next((x for x in real_visits if x.get("title") == title), None)
     if v:
