@@ -3604,7 +3604,10 @@
       "museum": "Мурманский областной художественный музей",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D1%80%D0%BC%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%BD%D0%BE%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://artmmuseum.ru/",
+      "address": "Мурманск, ул. Коминтерна, 13 (главное здание)",
+      "address_source": "https://artmmuseum.ru/contacts/"
     },
     {
       "museum": "Музей современного изобразительного искусства на Дмитровской",
@@ -3622,7 +3625,10 @@
       "museum": "Национальный художественный музей Республики Саха (Якутия)",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9D%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%A0%D0%B5%D1%81%D0%BF%D1%83%D0%B1%D0%BB%D0%B8%D0%BA%D0%B8_%D0%A1%D0%B0%D1%85%D0%B0_(%D0%AF%D0%BA%D1%83%D1%82%D0%B8%D1%8F)",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://sakhamuseum.ru/",
+      "address": "Якутск, ул. Кирова, 9",
+      "address_source": "https://www.sakhamuseum.ru/"
     },
     {
       "museum": "Нижегородский государственный художественный музей",
@@ -3652,13 +3658,19 @@
       "museum": "Новокузнецкий художественный музей",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9D%D0%BE%D0%B2%D0%BE%D0%BA%D1%83%D0%B7%D0%BD%D0%B5%D1%86%D0%BA%D0%B8%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "адрес и сайт по официальному каталогу города; музейный сайт возвращает 403 при проверке 2026-10-31",
+      "site": "https://artkuznetsk.ru/",
+      "address": "Новокузнецк, ул. Кирова, 62",
+      "address_source": "https://kultura-novokuznetsk.ru/mesta/muzei/municipalnoe-byudzhetnoe-uchrezhdenie-kultury-novokuzneckij-hudozhestvennyj-muzej.html"
     },
     {
       "museum": "Новосибирский государственный художественный музей",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9D%D0%BE%D0%B2%D0%BE%D1%81%D0%B8%D0%B1%D0%B8%D1%80%D1%81%D0%BA%D0%B8%D0%B9_%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://nsartmuseum.ru/",
+      "address": "Новосибирск, Красный проспект, 5 (главное здание); выставочные залы: ул. Свердлова, 10",
+      "address_source": "https://nsartmuseum.ru/"
     },
     {
       "museum": "Новочебоксарский художественный музей",
@@ -3697,7 +3709,10 @@
       "museum": "Орловский музей изобразительных искусств",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9E%D1%80%D0%BB%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://orelmusizo.ru/",
+      "address": "Орёл, ул. Октябрьская, 29",
+      "address_source": "https://orelmusizo.ru/"
     },
     {
       "museum": "Государственный музей палехского искусства",
@@ -3751,7 +3766,10 @@
       "museum": "Рыбинский музей-заповедник",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A0%D1%8B%D0%B1%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9-%D0%B7%D0%B0%D0%BF%D0%BE%D0%B2%D0%B5%D0%B4%D0%BD%D0%B8%D0%BA",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "официальные данные проверены 2026-10-31",
+      "site": "https://rybmuseum.ru/",
+      "address": "Рыбинск, Волжская набережная, 2 (Новая хлебная биржа)",
+      "address_source": "https://rybmuseum.ru/"
     },
     {
       "museum": "Рязанский государственный областной художественный музей имени И. П. Пожалостина",
