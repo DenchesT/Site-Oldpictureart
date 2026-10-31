@@ -1,0 +1,161 @@
+{
+  "Государственный художественный музей Алтайского края": {
+    "city": "Барнаул",
+    "country": "Россия",
+    "website": "https://ghmak.ru/",
+    "url": "https://ghmak.ru/",
+    "address": "Барнаул, ул. Максима Горького, 16",
+    "address_source": "https://ghmak.ru/o-muzee",
+    "notes": "Основное здание на реконструкции; действующие выставки на ул. Максима Горького, 16"
+  },
+  "Белгородский государственный художественный музей": {
+    "city": "Белгород",
+    "country": "Россия",
+    "website": "https://belghm.ru/",
+    "url": "https://belghm.ru/category/vystavki-i-sobytiya/vystavki/",
+    "address": "Белгород, ул. Победы, 77",
+    "address_source": "https://belghm.ru/skhema-proezda/"
+  },
+  "Вятский художественный музей имени В. М. и А. М. Васнецовых": {
+    "city": "Киров",
+    "country": "Россия",
+    "website": "https://kirov-artmuzeum.ru/",
+    "url": "https://kirov-artmuzeum.ru/museum/afisha/vyistavki/",
+    "address": "Киров, ул. Владимирская, 70",
+    "address_source": "https://kirov-artmuzeum.ru/museum/contacts/",
+    "notes": "Есть отдельные филиалы и выставочные площадки со своими адресами"
+  },
+  "Чувашский государственный художественный музей": {
+    "city": "Чебоксары",
+    "country": "Россия",
+    "website": "https://artmuseum.ru/",
+    "url": "https://artmuseum.ru/afisha/",
+    "address": "Чебоксары, ул. Калинина, 60",
+    "address_source": "https://artmuseum.ru/contacts/",
+    "notes": "Филиалы имеют другие адреса"
+  },
+  "Красноярский государственный художественный музей имени В. И. Сурикова": {
+    "city": "Красноярск",
+    "country": "Россия",
+    "website": "https://surikov-museum.ru/",
+    "url": "https://surikov-museum.ru/show",
+    "address": "Красноярск, проспект Мира, 12 (одна из площадок)",
+    "address_source": "https://surikov-museum.ru/visit-en",
+    "notes": "Другой действующий выставочный зал: пр. Красноярский рабочий, 68; здание на ул. Парижской Коммуны, 20 временно закрыто"
+  },
+  "Нижегородский государственный художественный музей": {
+    "city": "Нижний Новгород",
+    "country": "Россия",
+    "website": "https://artmuseumnn.ru/",
+    "url": "https://artmuseumnn.ru/",
+    "address": "Нижний Новгород, Кремль, корпус 3",
+    "address_source": "https://artmuseumnn.ru/kontakty",
+    "notes": "У музея несколько корпусов"
+  },
+  "Музей-усадьба Н. Н. Хохрякова": {
+    "city": "Киров",
+    "country": "Россия",
+    "website": "https://kirov-artmuzeum.ru/",
+    "url": "https://kirov-artmuzeum.ru/museum/afisha/vyistavki/",
+    "address": "Киров, Копанский переулок, 4",
+    "address_source": "https://kirov-artmuzeum.ru/museum/afisha/vyistavki/",
+    "notes": "Филиал Вятского художественного музея"
+  },
+  "Государственная Третьяковская галерея": {
+    "city": "Москва",
+    "country": "Россия",
+    "website": "https://tretyakov.ru/",
+    "url": "https://tretyakov.ru/",
+    "address": "Москва, Лаврушинский переулок, 10 (историческое здание)",
+    "address_source": "https://tretyakov.ru/for-visitors/museums/istoricheskoe-zdanie/",
+    "notes": "Корпуса на Кадашёвской набережной и Крымском Валу имеют другие адреса"
+  },
+  "Государственный Русский музей": {
+    "city": "Санкт-Петербург",
+    "country": "Россия",
+    "website": "https://rusmuseum.ru/",
+    "url": "https://rusmuseum.ru/exhibitions/current/",
+    "address": "Санкт-Петербург, Инженерная ул., 4 (Михайловский дворец)",
+    "address_source": "https://rusmuseum.ru/museums/mikhailovsky-palace/",
+    "notes": "Другие здания Русского музея имеют отдельные адреса"
+  },
+  "Екатеринбургский музей изобразительных искусств": {
+    "city": "Екатеринбург",
+    "country": "Россия",
+    "website": "https://i-z-o.art/",
+    "url": "https://i-z-o.art/",
+    "address": "Екатеринбург, ул. Воеводина, 5 (главное здание)",
+    "address_source": "https://i-z-o.art/about/kontakty/",
+    "notes": "Эрмитаж-Урал: Вайнера, 11; музей наива: Розы Люксембург, 18"
+  },
+  "Иркутский областной художественный музей": {
+    "city": "Иркутск",
+    "country": "Россия",
+    "website": "https://museum.irk.ru/",
+    "url": "https://museum.irk.ru/",
+    "address": "Иркутск, ул. Ленина, 5 (главное здание)",
+    "address_source": "https://old.iokm.ru/map/"
+  },
+  "Омский областной музей изобразительных искусств имени М. А. Врубеля": {
+    "city": "Омск",
+    "country": "Россия",
+    "website": "https://vrubel.ru/",
+    "url": "https://vrubel.ru/",
+    "address": "Омск, ул. Ленина, 23 (Генерал-губернаторский дворец)",
+    "address_source": "https://special.omskportal.ru/oiv/mkt/otrasl/mnogodetn/vrubel.html",
+    "notes": "Врубелевский корпус: ул. Ленина, 3"
+  },
+  "Саратовский художественный музей имени А. Н. Радищева": {
+    "city": "Саратов",
+    "country": "Россия",
+    "website": "https://radmuseumart.ru/",
+    "url": "https://radmuseumart.ru/",
+    "address": "Саратов, ул. Радищева, 39 (главное здание)",
+    "address_source": "https://radmuseumart.ru/",
+    "notes": "Другие корпуса: Радищева, 41; Первомайская, 75"
+  },
+  "Ярославский художественный музей": {
+    "city": "Ярославль",
+    "country": "Россия",
+    "website": "https://new.yarartmuseum.ru/",
+    "url": "https://new.yarartmuseum.ru/exhibitions/",
+    "address": "Ярославль, Волжская набережная, 23 (Губернаторский дом)",
+    "address_source": "https://new.yarartmuseum.ru/exhibitions/lichnaya-istoriya/",
+    "notes": "Другие площадки: Митрополичьи палаты — Волжская набережная, 1; Музей зарубежного искусства — Советская площадь, 2"
+  },
+  "Рязанский государственный областной художественный музей имени И. П. Пожалостина": {
+    "city": "Рязань",
+    "country": "Россия",
+    "website": "https://artmuseum62.ru/",
+    "url": "https://artmuseum62.ru/",
+    "address": "Рязань, ул. Свободы, 57",
+    "address_source": "https://www.ukrzn.ru/?id=11&institution=35&mod=institutions",
+    "notes": "Выставочный зал музея — ул. Есенина, 112 (другой адрес)"
+  },
+  "Тульский областной художественный музей": {
+    "city": "Тула",
+    "country": "Россия",
+    "website": "https://museum-tula.ru/",
+    "url": "https://museum-tula.ru/muzei/tmii/",
+    "address": "Тула, ул. Фридриха Энгельса, 64",
+    "address_source": "https://museum-tula.ru/muzei/tmii/fond-iskusstv/"
+  },
+  "Ростовский областной музей изобразительных искусств": {
+    "city": "Ростов-на-Дону",
+    "country": "Россия",
+    "website": "https://romii.ru/",
+    "url": "https://romii.ru/",
+    "address": "Ростов-на-Дону, проспект Чехова, 60 (действующий корпус)",
+    "address_source": "https://romii.ru/about/contacts.php",
+    "notes": "Корпус на ул. Пушкинской, 115 закрыт на реставрацию: не направлять туда посетителей"
+  },
+  "Ярославский музей-заповедник": {
+    "city": "Ярославль",
+    "country": "Россия",
+    "website": "https://yarkremlin.ru/",
+    "url": "https://yarkremlin.ru/",
+    "address": "Ярославль, Богоявленская площадь, 25",
+    "address_source": "https://yarkremlin.ru/museum/contacts/",
+    "notes": "Историко-архитектурный музей-заповедник: в афишу только временные выставки подходящего искусства"
+  }
+}

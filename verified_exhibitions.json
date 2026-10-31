@@ -1,0 +1,97 @@
+[
+  {
+    "title": "Вечный Рим: гравюры династии Пиранези",
+    "venue": "Вятский художественный музей, особняк купца И. С. Репина",
+    "museum": "Вятский художественный музей имени В. М. и А. М. Васнецовых",
+    "city": "Киров",
+    "country": "Россия",
+    "start": "2026-07-29",
+    "end": "2027-01-31",
+    "url": "https://kirov-artmuzeum.ru/museum/osobnyak-kupcza-is-repina/events-repina/vechnyij-rim-gravyuryi-dinastii-piranezi",
+    "source": "https://kirov-artmuzeum.ru/museum/osobnyak-kupcza-is-repina/events-repina/vechnyij-rim-gravyuryi-dinastii-piranezi",
+    "address": "Киров, ул. Владимирская, 70",
+    "note": "Гравюры Джованни Баттисты и Франческо Пиранези XVIII века из собрания Вятского художественного музея",
+    "tags": [
+      "old"
+    ],
+    "artists": [],
+    "query": "Киров, ул. Владимирская, 70"
+  },
+  {
+    "title": "Николай Хохряков. Поэзия природы",
+    "venue": "Дом-музей художника Н. Н. Хохрякова",
+    "museum": "Вятский художественный музей имени В. М. и А. М. Васнецовых",
+    "city": "Киров",
+    "country": "Россия",
+    "start": "2026-05-29",
+    "end": "2026-11-07",
+    "url": "https://kirov-artmuzeum.ru/museum/dom-muzej-xudozhnika-n-n-xoxryakova/events-dom-muzej-xoxryakova/2910-nikolaj-xoxryakov-poeziya-prirodyi",
+    "source": "https://kirov-artmuzeum.ru/museum/dom-muzej-xudozhnika-n-n-xoxryakova/events-dom-muzej-xoxryakova/2910-nikolaj-xoxryakov-poeziya-prirodyi",
+    "address": "Киров, Копанский переулок, 4",
+    "note": "Около 30 живописных работ вятского пейзажиста Николая Хохрякова (1857–1928) из фондов музея",
+    "tags": [
+      "russian",
+      "xix"
+    ],
+    "artists": [],
+    "query": "Киров, Копанский переулок, 4"
+  },
+  {
+    "title": "Окрестности Санкт-Петербурга в гравюрах и литографиях XIX века",
+    "venue": "Русский музей, Михайловский дворец",
+    "city": "Санкт-Петербург",
+    "country": "Россия",
+    "start": "2026-08-05",
+    "end": "2026-11-02",
+    "url": "https://rusmuseum.ru/museums/mikhailovsky-palace/",
+    "source": "https://rusmuseum.ru/museums/mikhailovsky-palace/",
+    "address": "Санкт-Петербург, Инженерная ул., 4",
+    "note": "Около 100 гравюр и литографий XIX века из собрания Русского музея, посвящённых окрестностям Петербурга",
+    "tags": [
+      "russian",
+      "xix"
+    ],
+    "artists": [],
+    "query": "Санкт-Петербург, Инженерная ул., 4"
+  },
+  {
+    "title": "Личная история. Роберт Фальк и Андрей Юмашев",
+    "venue": "Ярославский художественный музей, Губернаторский дом",
+    "museum": "Ярославский художественный музей",
+    "city": "Ярославль",
+    "country": "Россия",
+    "start": "2026-09-25",
+    "end": "2027-01-17",
+    "url": "https://new.yarartmuseum.ru/exhibitions/lichnaya-istoriya/",
+    "source": "https://new.yarartmuseum.ru/exhibitions/lichnaya-istoriya/",
+    "address": "Ярославль, Волжская набережная, 23",
+    "note": "Работы Роберта Фалька 1920–1940 годов и Андрея Юмашева; у Юмашева представлены также произведения 1950–1960-х",
+    "tags": [
+      "russian",
+      "modern"
+    ],
+    "artists": [
+      "Роберт Фальк"
+    ],
+    "query": "Ярославль, Волжская набережная, 23"
+  },
+  {
+    "title": "Ярославский культурный код",
+    "venue": "Ярославский художественный музей, Митрополичьи палаты",
+    "museum": "Ярославский художественный музей",
+    "city": "Ярославль",
+    "country": "Россия",
+    "start": "2026-03-21",
+    "end": "2027-02-07",
+    "url": "https://new.yarartmuseum.ru/exhibitions/yaroslavskiy-kulturnyy-kod/",
+    "source": "https://new.yarartmuseum.ru/exhibitions/yaroslavskiy-kulturnyy-kod/",
+    "address": "Ярославль, Волжская набережная, 1",
+    "note": "Картины ярославских художников и старинные иконы; посещение только для организованных групп по предварительной заявке",
+    "tags": [
+      "russian",
+      "old"
+    ],
+    "artists": [],
+    "query": "Ярославль, Волжская набережная, 1"
+  }
+]
