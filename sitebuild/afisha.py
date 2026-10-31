@@ -424,8 +424,12 @@ def afisha_jsonld(items, coords):
     """Разметка ExhibitionEvent: поисковики показывают выставки как мероприятия."""
     events = []
     for it in items:
-        loc = {"@type": "Museum", "name": it["venue"],
-               "address": {"@type": "PostalAddress", "addressLocality": it["city"], "addressCountry": it["country"]}}
+        postal = {"@type": "PostalAddress", "addressLocality": it["city"], "addressCountry": it["country"]}
+        if it.get("address"):
+            postal["streetAddress"] = it["address"]
+        loc = {"@type": "Museum", "name": it["venue"], "address": postal}
+        if it.get("museum_site"):
+            loc["url"] = it["museum_site"]
         c = (coords or {}).get(it["id"])
         if c and not c[2]:
             loc["geo"] = {"@type": "GeoCoordinates", "latitude": round(c[0], 5), "longitude": round(c[1], 5)}
@@ -499,6 +503,15 @@ def afisha_item(item, known, coords=None, works=None, visit=None):
     orig = item.get("title_orig") or ""
     note = item.get("note") or ""
     link = museum_link(item, known)
+    # Exhibition venues may not have a page on the collections map.
+    # Their official website and address come from verified afisha.json fields.
+    museum_site = str(item.get("museum_site") or "").strip()
+    external = (f'<a class="afisha-venue-site" href="{h(museum_site)}" target="_blank" rel="noopener">'
+                'Официальный сайт музея ↗</a>'
+                if re.match(r"^https://[^/]+", museum_site) else "")
+    links = " · ".join(x for x in (link, external) if x)
+    address = (f'<p class="afisha-address">Адрес: {h(item["address"])}</p>'
+               if item.get("address") else "")
     attrs = f' data-country="{h(item["country"])}"'
     if item.get("tags"):
         attrs += f' data-tags="{h(" ".join(item["tags"]))}"'
@@ -524,12 +537,13 @@ def afisha_item(item, known, coords=None, works=None, visit=None):
         + (f'<p class="afisha-orig">{h(orig)}</p>' if orig and orig != item["title"] else "")
         + f'<p class="afisha-where"><span class="afisha-place">{h(where_line(item))}</span>'
         + ('<button type="button" class="afisha-pin">на карте</button>' if coords else '') + '</p>'
-        f'<p class="afisha-dates"><span class="afisha-range">Сроки: {h(date_range(item))}</span>'
+        + address
+        + f'<p class="afisha-dates"><span class="afisha-range">Сроки: {h(date_range(item))}</span>'
         f'<span class="now-when afisha-when" role="status"></span></p>'
         + (f'<p class="afisha-note">{h(note)}</p>' if note else "")
         + been
         + works_html(works or [])
-        + (f'<p class="afisha-links">{link}</p>' if link else "")
+        + (f'<p class="afisha-links">{links}</p>' if links else "")
         + '</li>')
 
 
