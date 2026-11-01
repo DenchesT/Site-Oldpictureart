@@ -1516,10 +1516,28 @@ function toggleTheme(){
       setAfishaFavorite(favoriteId(li), !favorites[favoriteId(li)]);
     });
   });
+  // OPA AFISHA FAVORITES SCROLL FIX 2026-11-01
+  // The new favorite changes only the star and the favorites counter.
+  // Rebuilding / re-appending all cards in show() unexpectedly moves
+  // the scroll position on both desktop and mobile browsers.
   window.addEventListener('opa:afisha-favorites', function () {
     favorites = readAfishaFavorites();
     items.forEach(paintFavorite);
-    show();
+    if (state.status !== 'favorites' && !state.favoritesOnly) {
+      // No entry enters or leaves the visible list in normal modes.
+      // Do not move a single DOM node or change the current scroll position.
+      var total = items.filter(function (li) { return !!favorites[favoriteId(li)]; }).length;
+      var badge = document.getElementById('afisha-fav-total');
+      if (badge) badge.textContent = total ? '(' + total + ')' : '';
+      return;
+    }
+    // In the Favorites view removing an entry really changes the list.
+    // Skip unnecessary re-sorting and keep the user's reading position.
+    var beforeY = window.scrollY;
+    show(true);
+    if (Math.abs(window.scrollY - beforeY) > 1) {
+      window.scrollTo({top: beforeY, behavior: 'instant'});
+    }
   });
   function tags(li) { return (' ' + (li.getAttribute('data-tags') || '') + ' '); }
   function fits(li, s, skip) {
@@ -1670,7 +1688,7 @@ function toggleTheme(){
     opaSyncSingleLevelFilters();
   }
   // OPA SINGLE-LEVEL MOBILE AFISHA — END
-  function show() {
+  function show(skipSort) {
     var shown = {running: 0, soon: 0, archive: 0};
     items.forEach(function (li) {
       var ok = fits(li, state);
@@ -1685,7 +1703,7 @@ function toggleTheme(){
     document.getElementById('afisha-closing-box').hidden = (state.status === 'soon' || state.status === 'archive' || state.status === 'favorites');
     document.getElementById('afisha-opening-box').hidden = (state.status === 'running' || state.status === 'archive' || state.status === 'favorites');
     statusBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-status') === state.status)); });
-    applySort();
+    if (!skipSort) applySort();
     regionBtns.forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-region') === state.reg ? 'true' : 'false'); });
     if (box.area) box.area.hidden = state.reg !== 'russia';
     if (box.country) box.country.hidden = state.reg !== 'world';
