@@ -1,0 +1,98 @@
+{
+  "repository": "DenchesT/Site-Oldpictureart",
+  "branch": "main",
+  "read_only_review_date": "2026-11-02",
+  "base_afisha_git_blob_sha": "90c5b577d5204831137854a9e74082376bf83bdb",
+  "base_archive_git_blob_sha": "6f96b626803e49cd2652f2d88c738a81d3fc9602",
+  "expected_before": {
+    "afisha_exhibitions": 191,
+    "archive_exhibitions": 0,
+    "sources": 126
+  },
+  "expected_after": {
+    "afisha_exhibitions": 188,
+    "archive_exhibitions": 3,
+    "sources": 126
+  },
+  "new_exhibitions": [],
+  "changed_exhibitions": [],
+  "archive_exhibitions": [
+    {
+      "title": "Хрупкое искусство. Пастель из фондов графики XVIII — начала XX века",
+      "venue": "Третьяковская галерея, Лаврушинский переулок",
+      "city": "Москва",
+      "country": "Россия",
+      "start": "2026-03-27",
+      "end": "2026-11-01",
+      "url": "https://www.tretyakovgallery.ru/exhibitions/o/khrupkoe-iskusstvo-pastel-iz-fondov-grafiki-xviii-nachala-xx-veka/",
+      "note": "150+ пастелей: Левитан, Серов, Врубель, Бенуа, Сомов, Серебрякова, Гончарова",
+      "tags": [
+        "xix",
+        "russian",
+        "modern"
+      ],
+      "museum": "Государственная Третьяковская галерея, Москва",
+      "source": "https://www.tretyakovgallery.ru/tickets/exhibitions/"
+    },
+    {
+      "title": "Елизаветинская Библия",
+      "venue": "Музей имени Андрея Рублёва",
+      "city": "Москва",
+      "lat": 55.74927,
+      "lon": 37.6701,
+      "country": "Россия",
+      "start": "2026-08-13",
+      "end": "2026-11-01",
+      "url": "https://www.rublev-museum.ru/poster/exhibition/5466/",
+      "note": "Библии 1756–1784 годов с гравюрами, иконы и западноевропейская графика XVII–XVIII веков",
+      "tags": [
+        "old",
+        "russian"
+      ]
+    },
+    {
+      "title": "Алмазная колесница. Буддийское искусство России",
+      "venue": "ГМИИ им. А. С. Пушкина, Главное здание",
+      "city": "Москва",
+      "country": "Россия",
+      "start": "2026-08-04",
+      "end": "2026-11-01",
+      "url": "https://pushkinmuseum.art/events/archive/2026/exhibitions/almaznaya_kolesnica._buddiyskoe_iskusstvo_rossii/index.php",
+      "note": "Более 700 предметов буддийского искусства Тибета, Монголии, Китая, Непала, Бурятии, Калмыкии и Тувы; вместе с Музеем Востока",
+      "tags": [
+        "east"
+      ],
+      "museum": "ГМИИ им. А.С. Пушкина, Москва"
+    }
+  ],
+  "unconfirmed_not_added": [
+    {
+      "title": "Пикассо — Бэкон. Что значит быть человеком",
+      "title_orig": "PICASSO – BACON: What It Feels Like to Be Human",
+      "venue": "Albertina",
+      "city": "Вена",
+      "country": "Австрия",
+      "start": "2026-09-18",
+      "end": "2027-01-31",
+      "url": "https://albertina.at/en/exhibitions/picasso-bacon/",
+      "reason": "Смешанная экспозиция с существенной частью произведений после 1940 года: соответствие критерию сайта не подтверждено."
+    }
+  ],
+  "official_confirmations": [
+    {
+      "title": "Хрупкое искусство. Пастель из фондов графики XVIII — начала XX века",
+      "url": "https://www.tretyakovgallery.ru/exhibitions/o/khrupkoe-iskusstvo-pastel-iz-fondov-grafiki-xviii-nachala-xx-veka/",
+      "confirmed_end": "2026-11-01"
+    },
+    {
+      "title": "Елизаветинская Библия",
+      "url": "https://www.rublev-museum.ru/poster/exhibition/5466/",
+      "confirmed_end": "2026-11-01"
+    },
+    {
+      "title": "Алмазная колесница. Буддийское искусство России",
+      "url": "https://www.pushkinmuseum.art/news/archive/2026/07_/postupili_v_prodazhu_bileti_na_vistavku_almaznaya_kolesnica..._/index.php?lang=en",
+      "confirmed_end": "2026-11-01"
+    }
+  ]
+}

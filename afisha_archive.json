@@ -1,5 +1,53 @@
 {
   "_как": "Архив завершившихся выставок Old Picture Art. Записи сохраняются целиком и не публикуются в текущей афише.",
-  "updated": "2026-10-30",
-  "exhibitions": []
+  "updated": "2026-11-02",
+  "exhibitions": [
+    {
+      "title": "Хрупкое искусство. Пастель из фондов графики XVIII — начала XX века",
+      "venue": "Третьяковская галерея, Лаврушинский переулок",
+      "city": "Москва",
+      "country": "Россия",
+      "start": "2026-03-27",
+      "end": "2026-11-01",
+      "url": "https://www.tretyakovgallery.ru/exhibitions/o/khrupkoe-iskusstvo-pastel-iz-fondov-grafiki-xviii-nachala-xx-veka/",
+      "note": "150+ пастелей: Левитан, Серов, Врубель, Бенуа, Сомов, Серебрякова, Гончарова",
+      "tags": [
+        "xix",
+        "russian",
+        "modern"
+      ],
+      "museum": "Государственная Третьяковская галерея, Москва",
+      "source": "https://www.tretyakovgallery.ru/tickets/exhibitions/"
+    },
+    {
+      "title": "Елизаветинская Библия",
+      "venue": "Музей имени Андрея Рублёва",
+      "city": "Москва",
+      "lat": 55.74927,
+      "lon": 37.6701,
+      "country": "Россия",
+      "start": "2026-08-13",
+      "end": "2026-11-01",
+      "url": "https://www.rublev-museum.ru/poster/exhibition/5466/",
+      "note": "Библии 1756–1784 годов с гравюрами, иконы и западноевропейская графика XVII–XVIII веков",
+      "tags": [
+        "old",
+        "russian"
+      ]
+    },
+    {
+      "title": "Алмазная колесница. Буддийское искусство России",
+      "venue": "ГМИИ им. А. С. Пушкина, Главное здание",
+      "city": "Москва",
+      "country": "Россия",
+      "start": "2026-08-04",
+      "end": "2026-11-01",
+      "url": "https://pushkinmuseum.art/events/archive/2026/exhibitions/almaznaya_kolesnica._buddiyskoe_iskusstvo_rossii/index.php",
+      "note": "Более 700 предметов буддийского искусства Тибета, Монголии, Китая, Непала, Бурятии, Калмыкии и Тувы; вместе с Музеем Востока",
+      "tags": [
+        "east"
+      ],
+      "museum": "ГМИИ им. А.С. Пушкина, Москва"
+    }
+  ]
 }
