@@ -4864,5 +4864,43 @@
       "images/views/monet-vid-na-ryuel-le-gavr-1858-1.jpg"
     ],
     "card": "images/cards/monet-vid-na-ryuel-le-gavr-1858.jpg"
+  },
+  {
+    "id": 619,
+    "date": "2026-11-02",
+    "filename": "polenov-soldat-s-vyazankoi-drov-1883.html",
+    "images": [
+      "images/polenov-soldat-s-vyazankoi-drov-1883-1.jpg"
+    ],
+    "hires": [
+      "images/polenov-soldat-s-vyazankoi-drov-1883-hires-1.jpg"
+    ],
+    "thumbs": [
+      "images/thumbs/polenov-soldat-s-vyazankoi-drov-1883.jpg"
+    ],
+    "links": [],
+    "artist": "Василий Дмитриевич Поленов",
+    "title": "Солдат с вязанкой дров, 1883",
+    "medium": "Холст, масло, 21 x 33 см",
+    "material": "Холст",
+    "techniques": [
+      "масло"
+    ],
+    "size": "21 x 33 см",
+    "museum": "Государственный Русский музей, Санкт-Петербург",
+    "history": [],
+    "description": "",
+    "urls": [],
+    "tags": [
+      "грм",
+      "картина",
+      "поленов"
+    ],
+    "raw": "Василий Дмитриевич Поленов\n⸻\nСолдат с вязанкой дров, 1883\n⸻\nХолст, масло, 21 x 33 см\n⸻\nГосударственный Русский музей, Санкт-Петербург\n⸻\n#поленов@oldpictureart\n#грм@oldpictureart \n#картина@oldpictureart\n",
+    "creation_year": 1883,
+    "views": [
+      "images/views/polenov-soldat-s-vyazankoi-drov-1883-1.jpg"
+    ],
+    "card": "images/cards/polenov-soldat-s-vyazankoi-drov-1883.jpg"
   }
 ]
