@@ -8,7 +8,7 @@ import json
 import os
 from collections import defaultdict
 
-from site_common import head_common, theme_button, site_footer, COMMON_JS, BASE_URL
+from site_common import head_common, theme_button, site_footer, COMMON_JS, BASE_URL, script_json
 
 META_FILE = "posts_meta.json"
 OUTPUT_DIR = "docs"
@@ -131,7 +131,7 @@ def generate_timeline_page():
 {site_footer()}
 {COMMON_JS}
 <script>
-const timelineData = {json.dumps(timeline_data, ensure_ascii=False)};
+const timelineData = {script_json(timeline_data, ensure_ascii=False)};
 const DEFAULT_YEAR = {getdecade_mid};
 
 function getDecade(year) {{

@@ -6,7 +6,7 @@ import subprocess
 import tempfile
 from fix_afisha_favorite_scroll import (
     make_patch, MARKER, OLD_LISTENER, NEW_LISTENER, OLD_SORT,
-    NEW_SORT, OLD_SHOW, NEW_SHOW,
+    NEW_SORT, OLD_SHOW,
 )
 
 ROOT = Path(__file__).resolve().parent

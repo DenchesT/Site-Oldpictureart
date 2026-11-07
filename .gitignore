@@ -27,6 +27,8 @@ __pycache__/
 *.pyc
 *.pyo
 .DS_Store
+__MACOSX/
+._*
 Thumbs.db
 .idea/
 .vscode/
@@ -60,6 +62,9 @@ venv/
 *~
 *.orig
 *.rej
+_backup_*/
+test_output.txt
+TEST_RESULTS.txt
 
 # Адреса, которые не удалось отправить в IndexNow, — уйдут со следующей
 # сборкой. Это заметка для себя, на сайте ей делать нечего.

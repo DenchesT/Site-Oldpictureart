@@ -95,7 +95,10 @@ class PublicationSafetyTests(unittest.TestCase):
                      '.ssh/id_rsa', '.aws/credentials', 'credentials.json',
                      'secrets.json', 'private.p12', 'auth.sqlite3',
                      'docs/image.jpg.zip', 'node_modules/a.js', 'output/x.html',
-                     '../outside', '/tmp/private', 'docs//x.html'):
+                     '../outside', '/tmp/private', 'docs//x.html',
+                     '_backup_afisha_ui_20261031/sitebuild/posts.py',
+                     'docs/vendor/__MACOSX/._logo.png', 'docs/._index.html',
+                     'afisha.json.bak-2026-11-02', 'data.json.bak_20261108'):
             with self.subTest(name=name):
                 self.assertFalse(safety.publishable(name))
         for name in ('docs/index.html', 'docs/.nojekyll',

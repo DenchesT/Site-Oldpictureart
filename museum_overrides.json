@@ -440,7 +440,6 @@
     "site": "https://novgorodmuseum.ru",
     "address": "Ярославово дворище, Великий Новгород"
   },
-  
   "Лондонская национальная галерея, Лондон": {
     "query": "The National Gallery, London",
     "site": "https://www.nationalgallery.org.uk",
@@ -449,7 +448,6 @@
     "lat": 51.5089,
     "lon": -0.1283
   },
-  
   "Вятский художественный музей имени В. М. и А. М. Васнецовых": {
     "query": "Вятский художественный музей имени В. М. и А. М. Васнецовых",
     "site": "https://kirov-artmuzeum.ru",
@@ -467,5 +465,27 @@
     "site": "https://www.domrz.ru",
     "address": "ул. Нижняя Радищевская, 2, Москва",
     "country": "Россия"
+  },
+  "Собрание Филлипса, Вашингтон": {
+    "lat": 38.91139,
+    "lon": -77.04681,
+    "city": "Вашингтон",
+    "country": "США",
+    "query": "The Phillips Collection, 1600 21st Street NW, Washington DC",
+    "address": "1600 21st Street NW, Washington, DC 20009, USA",
+    "site": "https://www.phillipscollection.org/",
+    "source_url": "https://www.phillipscollection.org/visit/plan-your-visit",
+    "coordinates_source": "https://en.wikipedia.org/wiki/The_Phillips_Collection"
+  },
+  "Художественный парк Марунума, Асакуса": {
+    "lat": 35.828575,
+    "lon": 139.605387,
+    "city": "Асака",
+    "country": "Япония",
+    "query": "丸沼芸術の森, 埼玉県朝霞市上内間木493-1",
+    "address": "493-1 Kamiuchimagi, Asaka, Saitama 351-0001, Japan",
+    "site": "https://www.marunuma-artpark.co.jp/",
+    "source_url": "https://www.marunuma-artpark.co.jp/information/",
+    "note": "Город — Асака (朝霞市), не Асакуса. Ключ сохраняет название из исходного поста; координаты — карта на официальной странице."
   }
 }

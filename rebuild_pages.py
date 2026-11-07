@@ -137,11 +137,10 @@ def main():
             args = ["--offline"] if offline else []
         else:
             args = []
-        try:
-            subprocess.run([sys.executable, script] + args, check=True)
-            print(f"✓ {script}")
-        except Exception as e:
-            print(f"✕ {script}: {e}")
+        # Ошибка обязательного генератора должна остановить сборку и CI,
+        # иначе можно опубликовать смесь новых и старых страниц.
+        subprocess.run([sys.executable, script] + args, check=True)
+        print(f"✓ {script}")
 
     # Страницы музеев — после карты: координаты берутся из её кэша.
     bs.generate_museum_pages(meta, visits)

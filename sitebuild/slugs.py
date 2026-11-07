@@ -6,12 +6,11 @@
 
 import os
 import re
-import json
 import difflib
 import unicodedata
 import urllib.parse
 from html import escape as h
-from site_common import (BASE_URL, work_year, latin_slug)
+from site_common import (BASE_URL, work_year, latin_slug, script_json)
 import logging
 from .config import OUTPUT_DIR
 from .text import slugify
@@ -316,7 +315,7 @@ def write_redirect(old_name, new_name):
 <title>Страница переехала</title>
 </head><body>
 <p>Страница переехала: <a href="{target}">{h(new_name)}</a></p>
-<script>location.replace({json.dumps(target)});</script>
+<script>location.replace({script_json(target)});</script>
 </body></html>""")
 
 

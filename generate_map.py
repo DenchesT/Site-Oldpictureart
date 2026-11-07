@@ -20,7 +20,7 @@ import logging
 
 from site_common import (head_common, theme_button, scroll_top_button, site_footer,
                          COMMON_JS, SCROLL_TOP_JS, BASE_URL, VISITS_FILE, visit_places, visit_organizers,
-                         museum_page, visit_kind_label, MAP_LAYERS_JS, typo_ru)
+                         museum_page, visit_kind_label, MAP_LAYERS_JS, typo_ru, script_json)
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -2192,7 +2192,7 @@ def generate_museums_page(retry_failed=False, offline=False):
 {SCROLL_TOP_JS}
 {COMMON_JS}
 <script>
-const MUSEUMS = {json.dumps(map_data, ensure_ascii=False)};
+const MUSEUMS = {script_json(map_data, ensure_ascii=False)};
 {MAP_LAYERS_JS}
 {MUSEUMS_JS}
 </script>

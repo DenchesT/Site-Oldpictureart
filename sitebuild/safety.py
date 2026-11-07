@@ -55,7 +55,7 @@ GENERATED_FILES = frozenset({
 _BLOCKED_DIRS = frozenset({
     ".git", "node_modules", "__pycache__", ".venv", "venv", ".conda",
     ".idea", ".vscode", "hires", "output", ".aws", ".ssh", ".secrets",
-    ".terraform", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".tox",
+    ".terraform", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".tox", "__macosx",
 })
 _BLOCKED_NAMES = frozenset({
     ".npmrc", ".pypirc", ".netrc", ".htpasswd", ".envrc", ".ds_store",
@@ -83,6 +83,8 @@ def publishable(path):
         return False
     for part in parts:
         low = part.lower()
+        if low.startswith(("_backup_", "._")) or ".bak-" in low or ".bak_" in low:
+            return False
         if low == ".env" or low.startswith(".env."):
             return False
         if low in _BLOCKED_NAMES or low.endswith(_BLOCKED_ENDINGS):

@@ -289,11 +289,8 @@ def generate_museum_pages(all_posts, visits):
 def generate_museums_page(all_posts):
     """Генерирует карту музеев через отдельный скрипт."""
     logger.info("Генерация карты музеев...")
-    try:
-        subprocess.run([sys.executable, "generate_map.py"], check=True)
-        logger.info("Карта собраний сгенерирована")
-    except Exception as e:
-        logger.error(f"Ошибка генерации карты: {e}")
+    subprocess.run([sys.executable, "generate_map.py"], check=True)
+    logger.info("Карта собраний сгенерирована")
 
 __all__ = [
     'render_museum_page',

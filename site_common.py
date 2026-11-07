@@ -17,6 +17,14 @@ import os
 import re
 import unicodedata
 
+
+def script_json(data, **kwargs):
+    """JSON для inline-скриптов: текст не может закрыть HTML-тег script."""
+    return (json.dumps(data, **kwargs).replace("<", "\\u003c")
+            .replace(">", "\\u003e").replace("&", "\\u0026")
+            .replace("\u2028", "\\u2028").replace("\u2029", "\\u2029"))
+
+
 SITE_NAME = "Old Picture Art"
 
 # Посещения — выставки и музеи из постов #выставка и #галерея.
