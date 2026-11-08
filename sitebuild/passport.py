@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Личный арт-паспорт: статическая страница поверх существующего каталога.
 
-В приватные данные посетителей генератор не заглядывает: на сервере нет их
-маршрутов или коллекций. Пользователь управляет своим паспортом в браузере.
+Генератор использует только публичные метаданные. Личные данные пользователей
+хранятся отдельно в YDB, через авторизованную облачную функцию.
 """
 import logging
 import os
@@ -78,7 +78,7 @@ def render_passport_page(posts, visits, exhibitions=None):
     </div>
     <div class="passport-emblem" aria-hidden="true"><span>OPA</span><small>ART PASS</small></div>
   </header>
-  <p class="passport-info" id="passport-save-info">Личные отметки и подборки сохраняются в этом браузере. Лайки картин и выставок, как и прежде, синхронизируются при входе. Для переноса остальных данных используйте экспорт и импорт.</p>
+  <p class="passport-info" id="passport-save-info">Гостевой режим сохраняет данные в браузере. После входа личные отметки, коллекции, лайки картин и выставок синхронизируются с аккаунтом. Экспорт JSON остаётся резервной копией.</p>
   <section class="passport-stats" id="passport-stats" aria-label="Личная статистика" aria-live="polite"></section>
   <div class="passport-tabs" role="group" aria-label="Разделы арт-паспорта">
     <button type="button" data-tab="overview" aria-pressed="true">Обзор</button>

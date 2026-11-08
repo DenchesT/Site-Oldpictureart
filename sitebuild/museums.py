@@ -1,3 +1,4 @@
+# OPA PASSPORT CLOUD SYNC 2026-11-08
 # OPA PERSONAL ART PASSPORT 2026-11-08
 # -*- coding: utf-8 -*-
 """Страницы музеев и вызов карты собраний.
@@ -14,7 +15,7 @@ from urllib.parse import quote
 from collections import defaultdict
 from html import escape as h
 from site_common import (
-    head_common, scroll_top_button, theme_button, site_footer, COMMON_JS, SCROLL_TOP_JS,
+    head_common, scroll_top_button, theme_button, site_footer, COMMON_JS, CLOUD_JS, SCROLL_TOP_JS,
     BASE_URL, visit_organizers, museum_page, MAP_LAYERS_JS,
 )
 import logging
@@ -237,6 +238,7 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
 {RUN_STATUS_JS if been else ""}
 {MUSEUM_AFISHA_JS if now_html else ""}
 {map_js}
+{CLOUD_JS}
 <script src="passport-actions.js" defer></script>
 </body></html>"""
 

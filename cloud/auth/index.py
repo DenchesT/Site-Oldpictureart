@@ -1,3 +1,4 @@
+# OPA PASSPORT CLOUD SYNC 2026-11-08
 # -*- coding: utf-8 -*-
 """
 Вход через Яндекс ID и VK ID и избранное — функция для Yandex Cloud Functions.
@@ -208,6 +209,33 @@ class YdbStore:
     def clear(self, user):
         self._run([("DECLARE $u AS Utf8; DELETE FROM likes WHERE user_id = $u;", {"$u": user})])
 
+    # Private passport data uses a separate table, not the public likes counts.
+    def passport_list(self, user):
+        res = self._run([("DECLARE $u AS Utf8; "
+                          "SELECT entry_key, payload FROM passport WHERE user_id = $u;",
+                          {"$u": user})])
+        rows = res[0][0].rows if res and res[0] else []
+        return [[r.entry_key, r.payload] for r in rows]
+
+    def passport_apply(self, user, changes):
+        upsert = ("DECLARE $u AS Utf8; DECLARE $k AS Utf8; DECLARE $v AS Utf8; "
+                  "UPSERT INTO passport (user_id, entry_key, payload, updated_at) "
+                  "VALUES ($u, $k, $v, CurrentUtcTimestamp());")
+        remove = ("DECLARE $u AS Utf8; DECLARE $k AS Utf8; "
+                  "DELETE FROM passport WHERE user_id = $u AND entry_key = $k;")
+        statements = []
+        for key, value in changes:
+            if value is None:
+                statements.append((remove, {"$u": user, "$k": key}))
+            else:
+                statements.append((upsert, {"$u": user, "$k": key, "$v": value}))
+        if statements:
+            self._run(statements)
+
+    def passport_clear(self, user):
+        self._run([("DECLARE $u AS Utf8; DELETE FROM passport WHERE user_id = $u;",
+                    {"$u": user})])
+
     def counts(self):
         """{номер картины: сколько человек её отметили}."""
         res = self._run([("SELECT post_id, COUNT(*) AS n FROM likes GROUP BY post_id "
@@ -240,6 +268,50 @@ def store():
 
 
 # ------------------------------------------------------------ действия
+
+# Passport records are private to the authenticated account. No user-supplied
+# SQL identifiers or table names are accepted. A null payload removes a record.
+def validate_passport_changes(changes):
+    if not isinstance(changes, list) or len(changes) > 40:
+        raise Fail(400, "Паспорт: слишком много изменений")
+    result = []
+    for item in changes:
+        if not isinstance(item, dict):
+            raise Fail(400, "Паспорт: неверная запись")
+        key, value = item.get("key"), item.get("value")
+        if not isinstance(key, str) or "|" not in key or len(key.encode("utf-8")) > 700:
+            raise Fail(400, "Паспорт: неверный ключ")
+        kind, ident = key.split("|", 1)
+        if kind in ("artists", "museums"):
+            if not ident or len(ident) > 300 or value not in ("1", None):
+                raise Fail(400, "Паспорт: неверная отметка")
+        elif kind == "originals":
+            if not POST_ID_RE.fullmatch(ident) or value not in ("1", None):
+                raise Fail(400, "Паспорт: неверная картина")
+        elif kind == "collections":
+            if not re.fullmatch(r"[A-Za-z0-9_-]{1,70}", ident):
+                raise Fail(400, "Паспорт: неверная коллекция")
+            if value is not None:
+                if not isinstance(value, str) or len(value.encode("utf-8")) > 150000:
+                    raise Fail(400, "Паспорт: коллекция слишком велика")
+                try:
+                    doc = json.loads(value)
+                except (ValueError, TypeError):
+                    raise Fail(400, "Паспорт: неверное содержимое коллекции")
+                if (not isinstance(doc, dict) or not isinstance(doc.get("name"), str)
+                        or not 1 <= len(doc["name"].strip()) <= 60
+                        or not isinstance(doc.get("works"), list)
+                        or len(doc["works"]) > 3000
+                        or any(not isinstance(p, str) or not POST_ID_RE.fullmatch(p)
+                               for p in doc["works"])):
+                    raise Fail(400, "Паспорт: неверные картины коллекции")
+        else:
+            raise Fail(400, "Паспорт: неизвестный тип записи")
+        if value is not None and not isinstance(value, str):
+            raise Fail(400, "Паспорт: неверное значение")
+        result.append((key, value))
+    return result
+
 def clean_ids(values, limit=MAX_LIKES):
     out = []
     for v in values if isinstance(values, list) else []:
@@ -287,12 +359,16 @@ def act(req):
         best = sorted(data.items(), key=lambda kv: (-kv[1], kv[0]))[:limit]
         return {"top": [[k, v] for k, v in best if v > 0]}
 
-    if action not in ("sync", "like", "unlike", "delete"):
+    if action not in ("sync", "like", "unlike", "delete", "passport_sync"):
         raise Fail(400, "Неизвестное действие")
 
     who = read_token(req.get("token"))["u"]
     db = store()
     forget_counts()          # отметки меняются — общий счёт пересчитается
+    if action == "passport_sync":
+        changes = validate_passport_changes(req.get("changes", []))
+        db.passport_apply(who, changes)
+        return {"entries": db.passport_list(who)}
     if action == "sync":
         cloud = db.list(who)
         local = clean_ids(req.get("likes"))
@@ -312,6 +388,8 @@ def act(req):
         db.remove(who, post)
         return {"ok": True}
     db.clear(who)            # delete
+    if hasattr(db, "passport_clear"):
+        db.passport_clear(who)
     return {"ok": True}
 
 

@@ -1,4 +1,4 @@
-/* Old Picture Art — art passport. No external dependencies, no remote personal data. */
+/* Old Picture Art — art passport. Personal records sync to the account cloud; offline edits remain local. */
 (function () {
   'use strict';
   var API = window.OPAArtPassport, catalog = window.OPA_PASSPORT_DATA || {};
@@ -344,16 +344,31 @@
       Object.assign(oldFavPending,favPending);localStorage.setItem('afishaFavoritesPending',JSON.stringify(oldFavPending));
       // Mark imported data as intentionally belonging to the active account.
       if(typeof afishaAccountKey==='function' && afishaAccountKey())localStorage.setItem('afishaFavoritesAccount',afishaAccountKey());
-      feedback('Паспорт импортирован. Лайки отправятся в облако при следующей успешной синхронизации.');
+      feedback('Паспорт импортирован. Новые отметки и коллекции отправятся в облако при подключении.');
+      if (API.sync) API.sync().then(render);
       render();
       if(typeof cloudSync==='function')cloudSync('force').then(render);
       if(typeof syncAfishaFavorites==='function')syncAfishaFavorites().then(render);
     }).catch(function(err){feedback('Не удалось импортировать: '+err.message);}).finally(function(){input.value='';});
   });
+  var info = document.getElementById('passport-save-info');
+  function syncStatus() {
+    if (!info || !API) return;
+    var messages = {
+      local: 'Гостевой режим: данные хранятся только в этом браузере. Войдите, чтобы синхронизировать арт-паспорт между устройствами.',
+      syncing: 'Синхронизация арт-паспорта с аккаунтом…',
+      saved: 'Арт-паспорт синхронизирован с аккаунтом. Изменения на других устройствах появятся при открытии или возврате к странице.',
+      error: 'Нет связи с облаком или сервер не обновлён. Изменения сохранены локально и будут отправлены при следующем подключении.'
+    };
+    info.textContent = messages[API.status] || messages.local;
+  }
+  window.addEventListener('opa:passport-sync', syncStatus);
   window.addEventListener('opa:passport-change', render);
   window.addEventListener('opa:afisha-favorites', render);
   window.addEventListener('storage', function(e){if(e.key && (/^(opaPassport:v1:|likes$|afishaFavorites$|session$)/).test(e.key))render();});
   render();
+  syncStatus();
+  if (API.sync) API.sync().then(function(){render();syncStatus();});
   if (typeof cloudSync === 'function') cloudSync('force').then(function(){render();});
   if (typeof syncAfishaFavorites === 'function') syncAfishaFavorites().then(function(){render();});
 })();

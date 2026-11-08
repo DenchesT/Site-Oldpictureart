@@ -1110,7 +1110,7 @@ function actionButton(box, cls, text, onclick) {
 }
 
 function showAuthForm() {
-  openDialog('Вход', 'Чтобы избранные картины и выставки были доступны на телефоне и компьютере.',
+  openDialog('Вход', 'Чтобы избранное и личный арт-паспорт были доступны на телефоне и компьютере.',
     function (box) {
       if (CLOUD.yandex) {
         var y = actionButton(box, 'auth-provider auth-yandex', 'Войти с Яндекс ID', function () {
@@ -1127,8 +1127,11 @@ function showAccount() {
   var s = getSession();
   if (!s) { showAuthButton(); showAuthForm(); return; }
   openDialog(s.name || 'Аккаунт', 'Вы вошли через ' + (PROVIDERS[s.provider] || 'аккаунт') +
-             '. Избранные картины и выставки видны на всех ваших устройствах.',
+             '. Избранное и арт-паспорт синхронизируются между устройствами.',
     function (box, close, say) {
+      actionButton(box, 'auth-provider', 'Мой арт-паспорт', function () {
+        location.href = 'passport.html';
+      });
       actionButton(box, 'auth-provider', 'Выйти', function () {
         setSession(null);
         close(true);
@@ -1137,14 +1140,14 @@ function showAccount() {
       });
       // Удаление — в два нажатия: первое спрашивает, второе удаляет.
       var sure = false;
-      var del = actionButton(box, 'auth-link auth-danger', 'Удалить мои отметки из облака', function () {
+      var del = actionButton(box, 'auth-link auth-danger', 'Удалить мои данные из облака', function () {
         if (!sure) { sure = true; del.textContent = 'Точно удалить? Нажмите ещё раз'; return; }
         del.disabled = true;
         cloudCall('delete').then(function () {
           setSession(null);
           close(true);
           showAuthButton();
-          toast('Отметки удалены из облака; в этом браузере они остались');
+          toast('Облачные отметки и паспорт удалены; локальная копия осталась');
         }).catch(function (e) { del.disabled = false; say(e.message); });
       });
     });

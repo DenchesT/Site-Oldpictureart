@@ -1,3 +1,4 @@
+# OPA PASSPORT CLOUD SYNC 2026-11-08
 # OPA PERSONAL ART PASSPORT 2026-11-08
 # -*- coding: utf-8 -*-
 """Страницы художников, указатель и статистика.
@@ -9,7 +10,7 @@ import os
 from collections import defaultdict, Counter
 from html import escape as h
 from site_common import (
-    head_common, scroll_top_button, theme_button, site_footer, COMMON_JS, SCROLL_TOP_JS,
+    head_common, scroll_top_button, theme_button, site_footer, COMMON_JS, CLOUD_JS, SCROLL_TOP_JS,
     BASE_URL,
 )
 import logging
@@ -131,6 +132,7 @@ def render_artist_page(artist, posts, all_posts, cat_no, cat_width, info=None):
 {site_footer()}
 {SCROLL_TOP_JS}
 {COMMON_JS}
+{CLOUD_JS}
 <script src="passport-actions.js" defer></script>
 </body></html>"""
 
