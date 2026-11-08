@@ -1,3 +1,4 @@
+# OPA PASSPORT V3 2026-11-08
 # OPA PASSPORT CLOUD SYNC 2026-11-08
 # OPA PERSONAL ART PASSPORT 2026-11-08
 # -*- coding: utf-8 -*-
@@ -29,6 +30,7 @@ from .places import (
 )
 from .visits import RUN_STATUS_JS, visit_card, visit_sort_key
 from .posts import card_html
+from .passport_ids import get_passport_id
 from .afisha import MUSEUM_AFISHA_JS, load_afisha, museum_afisha_block
 
 logger = logging.getLogger("build_site")
@@ -227,7 +229,7 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
 <header class="artist-head museum-head">
   <p class="eyebrow">{"Собрание" if works else "Место"}</p>
   <h1>{h(shown)}</h1>
-  <div class="opa-passport-actionbar"><button type="button" data-opa-passport="museums" data-passport-key="{h(name)}" data-label-off="+ Я был в этом музее" data-label-on="✓ Я был в этом музее" aria-pressed="false">+ Я был в этом музее</button><a href="passport.html#museums">Мой арт-паспорт</a></div>
+  <div class="opa-passport-actionbar"><button type="button" data-opa-passport="museums" data-passport-key="{get_passport_id('museums', name)}" data-label-off="+ Я был в этом музее" data-label-on="✓ Я был в этом музее" aria-pressed="false">+ Я был в этом музее</button><a href="passport.html#museums">Мой арт-паспорт</a><a href="passport.html#visits">Дневник</a></div>
   {hero}
 </header>
 {grid}

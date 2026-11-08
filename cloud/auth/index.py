@@ -1,3 +1,4 @@
+# OPA PASSPORT V3 2026-11-08
 # OPA PASSPORT CLOUD SYNC 2026-11-08
 # -*- coding: utf-8 -*-
 """
@@ -272,6 +273,11 @@ def store():
 # Passport records are private to the authenticated account. No user-supplied
 # SQL identifiers or table names are accepted. A null payload removes a record.
 def validate_passport_changes(changes):
+    """Validate every key/payload before it reaches YDB.
+
+    Collections use per-artwork keys, so editing distinct artworks on two
+    devices no longer overwrites a whole collection JSON document.
+    """
     if not isinstance(changes, list) or len(changes) > 40:
         raise Fail(400, "Паспорт: слишком много изменений")
     result = []
@@ -281,6 +287,8 @@ def validate_passport_changes(changes):
         key, value = item.get("key"), item.get("value")
         if not isinstance(key, str) or "|" not in key or len(key.encode("utf-8")) > 700:
             raise Fail(400, "Паспорт: неверный ключ")
+        if value is not None and (not isinstance(value, str) or len(value.encode("utf-8")) > 180000):
+            raise Fail(400, "Паспорт: неверное значение")
         kind, ident = key.split("|", 1)
         if kind in ("artists", "museums"):
             if not ident or len(ident) > 300 or value not in ("1", None):
@@ -292,25 +300,66 @@ def validate_passport_changes(changes):
             if not re.fullmatch(r"[A-Za-z0-9_-]{1,70}", ident):
                 raise Fail(400, "Паспорт: неверная коллекция")
             if value is not None:
-                if not isinstance(value, str) or len(value.encode("utf-8")) > 150000:
-                    raise Fail(400, "Паспорт: коллекция слишком велика")
                 try:
-                    doc = json.loads(value)
-                except (ValueError, TypeError):
-                    raise Fail(400, "Паспорт: неверное содержимое коллекции")
-                if (not isinstance(doc, dict) or not isinstance(doc.get("name"), str)
-                        or not 1 <= len(doc["name"].strip()) <= 60
-                        or not isinstance(doc.get("works"), list)
-                        or len(doc["works"]) > 3000
-                        or any(not isinstance(p, str) or not POST_ID_RE.fullmatch(p)
-                               for p in doc["works"])):
-                    raise Fail(400, "Паспорт: неверные картины коллекции")
+                    d = json.loads(value)
+                except (TypeError, ValueError):
+                    raise Fail(400, "Паспорт: неверный JSON коллекции")
+                works = d.get("works", []) if isinstance(d, dict) else None
+                if (not isinstance(d, dict) or not isinstance(d.get("name"), str)
+                    or not 1 <= len(d["name"].strip()) <= 60
+                    or not isinstance(d.get("description", ""), str)
+                    or len(d.get("description", "")) > 500
+                    or not isinstance(d.get("cover", ""), str)
+                    or (d.get("cover") and not POST_ID_RE.fullmatch(d["cover"]))
+                    or not isinstance(works, list) or len(works) > 3000
+                    or any(not isinstance(w, str) or not POST_ID_RE.fullmatch(w) for w in works)):
+                    raise Fail(400, "Паспорт: неверная коллекция")
+        elif kind == "collection_work":
+            if not re.fullmatch(r"[A-Za-z0-9_-]{1,70}\|[A-Za-z0-9_-]{1,40}", ident):
+                raise Fail(400, "Паспорт: неверная связь картины и коллекции")
+            if value is not None and (not re.fullmatch(r"[1-9][0-9]{0,4}", value)
+                                      or int(value) > 3000):
+                raise Fail(400, "Паспорт: неверный порядок картины")
+        elif kind in ("visits", "sightings", "exhibitions"):
+            if not re.fullmatch(r"[A-Za-z0-9_-]{1,70}", ident):
+                raise Fail(400, "Паспорт: неверный идентификатор события")
+            if value is not None:
+                if len(value.encode("utf-8")) > 10000:
+                    raise Fail(400, "Паспорт: заметка слишком длинная")
+                try:
+                    d = json.loads(value)
+                except (TypeError, ValueError):
+                    raise Fail(400, "Паспорт: неверный JSON события")
+                if not isinstance(d, dict):
+                    raise Fail(400, "Паспорт: неверное событие")
+                date = d.get("date", "")
+                if not isinstance(date, str) or (date and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date)):
+                    raise Fail(400, "Паспорт: неверная дата")
+                if kind == "visits":
+                    if (not isinstance(d.get("museum"), str) or len(d["museum"]) > 300
+                        or not isinstance(d.get("exhibition", ""), str)
+                        or len(d.get("exhibition", "")) > 160
+                        or not isinstance(d.get("note", ""), str)
+                        or len(d.get("note", "")) > 2000):
+                        raise Fail(400, "Паспорт: неверное посещение")
+                elif kind == "sightings":
+                    if (not isinstance(d.get("work"), str) or not POST_ID_RE.fullmatch(d["work"])
+                        or not isinstance(d.get("museum", ""), str)
+                        or len(d.get("museum", "")) > 300
+                        or not isinstance(d.get("note", ""), str)
+                        or len(d.get("note", "")) > 2000):
+                        raise Fail(400, "Паспорт: неверный оригинал")
+                else:
+                    if (not isinstance(d.get("status"), str)
+                        or d["status"] not in ("want", "visited")
+                        or not isinstance(d.get("note", ""), str)
+                        or len(d.get("note", "")) > 1000):
+                        raise Fail(400, "Паспорт: неверный статус выставки")
         else:
             raise Fail(400, "Паспорт: неизвестный тип записи")
-        if value is not None and not isinstance(value, str):
-            raise Fail(400, "Паспорт: неверное значение")
         result.append((key, value))
     return result
+
 
 def clean_ids(values, limit=MAX_LIKES):
     out = []

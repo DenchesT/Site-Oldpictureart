@@ -1,3 +1,4 @@
+# OPA PASSPORT V3 2026-11-08
 # OPA PERSONAL ART PASSPORT 2026-11-08
 # -*- coding: utf-8 -*-
 """Страницы картин, подборки по тегам и главная страница.
@@ -177,7 +178,7 @@ def render_post_page(post, all_posts=None):
       <h2>{title}</h2>
       <div class="opa-passport-actionbar">
         <button type="button" data-opa-passport="originals" data-passport-key="{h(post_id)}" data-label-off="Отметить: видел оригинал" data-label-on="✓ Видел оригинал" aria-pressed="false">Отметить: видел оригинал</button>
-        <a href="passport.html?add={h(post_id)}#collections">В мою коллекцию</a>
+        <button type="button" data-passport-add-work="{h(post_id)}" data-work-title="{h(post.get('title') or '')}">В мою коллекцию</button>
         <a href="passport.html">Арт-паспорт</a>
       </div>
     </header>

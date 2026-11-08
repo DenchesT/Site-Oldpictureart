@@ -1,3 +1,4 @@
+# OPA PASSPORT V3 2026-11-08
 # OPA PASSPORT CLOUD SYNC 2026-11-08
 # OPA PERSONAL ART PASSPORT 2026-11-08
 # -*- coding: utf-8 -*-
@@ -20,6 +21,7 @@ from .slugs import artist_slug, retire_pages, surname_key
 from .html import catalogue_numbers, jsonld_script, site_og_image, tidy, year_span
 from .places import museum_href
 from .posts import card_html
+from .passport_ids import get_passport_id
 
 from .artist_info import artists_years, life_years, resolve as resolve_artist_info, wiki_host
 
@@ -121,7 +123,7 @@ def render_artist_page(artist, posts, all_posts, cat_no, cat_width, info=None):
 <header class="artist-head">
   <p class="eyebrow">Художник</p>
   <h1>{h(artist)}</h1>
-  <div class="opa-passport-actionbar"><button type="button" data-opa-passport="artists" data-passport-key="{h(artist)}" data-label-off="+ Любимый художник" data-label-on="✓ Любимый художник" aria-pressed="false">+ Любимый художник</button><a href="passport.html#artists">Мой арт-паспорт</a></div>
+  <div class="opa-passport-actionbar"><button type="button" data-opa-passport="artists" data-passport-key="{get_passport_id('artists', artist)}" data-label-off="+ Любимый художник" data-label-on="✓ Любимый художник" aria-pressed="false">+ Любимый художник</button><a href="passport.html#artists">Мой арт-паспорт</a></div>
   <div class="spec-table artist-facts">{facts_html}</div>
 </header>
 <div class="artist-layout">
