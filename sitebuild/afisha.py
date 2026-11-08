@@ -1206,10 +1206,12 @@ AFISHA_MAP_JS = """
       var ll = [+li.getAttribute('data-lat'), +li.getAttribute('data-lon')];
       var cls = li.classList.contains('now-last') ? ' afisha-dot-last' : li.classList.contains('now-soon') ? ' afisha-dot-soon' : '';
       var a = li.querySelector('.afisha-title a'), dist = li.querySelector('.afisha-dist');
+      var address = li.querySelector('.afisha-address');
       var m = L.marker(ll, {title: a.textContent, icon: L.divIcon({className: 'afisha-dot' + cls, iconSize: [16, 16]})});
       m.bindPopup('<b><a href="#' + li.id + '">' + esc(a.textContent) + '</a></b>' +
         '<span class="popup-place">' + esc(li.querySelector('.afisha-place').textContent) +
         (dist ? ' · ' + esc(dist.textContent) : '') + '</span>' +
+        (address ? '<span class="popup-place">' + esc(address.textContent) + '</span>' : '') +
         '<span class="popup-when">' + esc(li.querySelector('.now-when').textContent || li.querySelector('.afisha-range').textContent) + '</span>' +
         (li.hasAttribute('data-approx') ? '<span class="popup-approx">место на карте приблизительное</span>' : '') +
         '<a class="popup-site" href="' + esc(a.getAttribute('href')) + '" target="_blank" rel="noopener">Сайт выставки ↗</a>', opts);
