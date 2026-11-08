@@ -6,23 +6,22 @@
 
 import os
 import re
-import json
 from collections import defaultdict
 from html import escape as h
 from site_common import (
     head_common, scroll_top_button, theme_button, site_footer, TELEGRAM_URL, TELEGRAM_NAME,
     hires_url, COMMON_JS, SCROLL_TOP_JS, LUPA_JS, TOAST_JS, SHARE_JS, AUTH_JS, CLOUD_JS,
-    BASE_URL, has_visits, VISITS_FILE,
+    BASE_URL, has_visits, script_json,
 )
 import logging
 from .config import OUTPUT_DIR
-from .text import load_json, lower_first, plural_ru, slugify, typo_ru
+from .text import lower_first, plural_ru, slugify, typo_ru
 from .slugs import artist_slug, retire_pages, surname_key, tag_slug
 from .links import clean_links, source_block, source_items
 from .html import artwork_jsonld, download_name, page_title, site_og_image, telegram_post_link, tidy
 from .images import size_attrs
 from .places import museum_href
-from .visits import NOW_ON_JS, now_on_block
+from .visits import NOW_ON_JS
 from .afisha import AFISHA_JS, load_afisha, _afisha_favorites_script
 
 logger = logging.getLogger("build_site")
@@ -539,14 +538,14 @@ def render_index(all_posts, visits=None):
         for mn in ms_list: arh += f'<li><a href="#" class="filter-link" data-type="month" data-year="{y}" data-val="{mn}">{MONTHS.get(mn,mn)}</a></li>'
         arh += '</ul></li>'
     
-    af = json.dumps([p["filename"] for p in ps])
+    af = script_json([p["filename"] for p in ps])
     post_map_data = {
         str(p.get("id", "")): {"file": p["filename"], "title": p.get("title", f"Картина #{p.get('id', '')}"),
                                "artist": p.get("artist", ""),
                                "thumb": (p.get("thumbs") or p.get("images") or [""])[0]}
         for p in ps if p.get("id")
     }
-    pm_js = json.dumps(post_map_data, ensure_ascii=False)
+    pm_js = script_json(post_map_data, ensure_ascii=False)
     
     # Разделы сайдбара. Заголовки-«аккордеоны» теперь настоящие <button>:
     # раньше это были <div onclick>, недоступные с клавиатуры и для скринридеров.
@@ -607,8 +606,6 @@ def render_index(all_posts, visits=None):
                      "Поиск по художникам, музеям, технике и десятилетиям."),
         canonical=f"{BASE_URL}/",
     )
-
-    now_block = now_on_block(visits if visits is not None else load_json(VISITS_FILE, []), all_posts)
 
     def section(icon, label, content):
         return (f'<div class="sidebar-section"><button type="button" class="sidebar-title sidebar-icon {icon}" '

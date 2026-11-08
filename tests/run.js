@@ -1,48 +1,43 @@
 #!/usr/bin/env node
-// Прогоняет все проверки по очереди и печатает итог.
-// Запуск из корня проекта:  node tests/run.js
-const { execFileSync } = require('child_process');
+// Все проверки из корня и tests/, независимо от текущей рабочей папки.
+const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-// Берём и .js, и .py: проверки на питоне появились вместе с разбором
-// кэша координат, и раньше запускающий их файл о них не знал — они
-// просто не выполнялись, а итог всё равно был зелёным.
-const FILES = fs.readdirSync(__dirname)
-  .filter(f => f.startsWith('test_') && (f.endsWith('.js') || f.endsWith('.py')))
-  .sort();
-
-// Какой командой запускать проверку: node для .js, питон для .py.
-// Имя питона на Windows и на Linux разное, поэтому берём из переменной
-// PYTHON, если она задана, иначе пробуем обычные.
-function runner(file) {
-  if (file.endsWith('.js')) return [process.execPath, []];
-  const py = process.env.PYTHON
-    || (process.platform === 'win32' ? 'python' : 'python3');
-  return [py, []];
+function discover(root) {
+  return ['', 'tests'].flatMap(dir => fs.readdirSync(path.join(root, dir))
+    .filter(f => /^test_.*\.(js|py)$/.test(f) && fs.statSync(path.join(root, dir, f)).isFile())
+    .map(f => path.join(dir, f))).sort();
 }
 
-const results = [];
-for (const f of FILES) {
-  process.stdout.write(`\n──────── ${f} ────────\n`);
-  const [cmd, pre] = runner(f);
-  try {
-    const out = execFileSync(cmd, [...pre, path.join(__dirname, f)], {
-      encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 5 * 60 * 1000,
-    });
-    process.stdout.write(out);
-    results.push([f, true, (out.match(/Всего: (\d+)/) || [])[1] || '?']);
-  } catch (e) {
-    process.stdout.write((e.stdout || '') + (e.stderr || ''));
-    results.push([f, false, (String(e.stdout).match(/провалено: (\d+)/) || [])[1] || '?']);
+function runFile(root, file) {
+  const command = file.endsWith('.js') ? process.execPath
+    : (process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3'));
+  const result = spawnSync(command, [path.join(root, file)], {
+    cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
+    timeout: 5 * 60 * 1000, maxBuffer: 10 * 1024 * 1024,
+  });
+  // unittest пишет результат в stderr даже при успехе; его тоже показываем.
+  const output = (result.stdout || '') + (result.stderr || '')
+    + (result.error ? `\n${result.error.message}\n` : '');
+  return { ok: !result.error && result.status === 0, output };
+}
+
+function main() {
+  const root = path.resolve(__dirname, '..');
+  const results = [];
+  for (const file of discover(root)) {
+    process.stdout.write(`\n──────── ${file} ────────\n`);
+    const result = runFile(root, file);
+    process.stdout.write(result.output);
+    results.push([file, result.ok]);
   }
+  console.log('\n════════════ ИТОГ ════════════');
+  for (const [file, ok] of results) console.log(`${ok ? 'OK  ' : 'FAIL'}  ${file}`);
+  const bad = results.filter(([, ok]) => !ok).length;
+  console.log(`\nФайлов: ${results.length}, с ошибками: ${bad}`);
+  process.exitCode = bad ? 1 : 0;
 }
 
-console.log('\n════════════ ИТОГ ════════════');
-let bad = 0;
-for (const [f, ok, n] of results) {
-  console.log(`${ok ? 'OK  ' : 'FAIL'}  ${f.padEnd(22)} ${ok ? n + ' проверок' : 'провалено ' + n}`);
-  if (!ok) bad++;
-}
-console.log(bad ? `\n✕ файлов с ошибками: ${bad}` : '\n✓ всё зелёное');
-process.exit(bad ? 1 : 0);
+module.exports = { discover, runFile };
+if (require.main === module) main();

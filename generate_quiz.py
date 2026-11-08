@@ -17,7 +17,7 @@ import urllib.parse
 import urllib.request
 
 from site_common import (head_common, theme_button, site_footer, COMMON_JS, BASE_URL,
-                         split_title_date, date_years)
+                         split_title_date, date_years, script_json)
 
 META_FILE = "posts_meta.json"
 OUTPUT_DIR = "docs"
@@ -760,10 +760,10 @@ def generate_quiz_page():
 {site_footer()}
 {COMMON_JS}
 <script>
-const ALL_POSTS = {json.dumps(valid_posts, ensure_ascii=False)};
+const ALL_POSTS = {script_json(valid_posts, ensure_ascii=False)};
 // художник → [школа, год середины его работ на сайте]
-const ARTISTS = {json.dumps(artists, ensure_ascii=False)};
-const NEAR = {json.dumps(NEAR)};
+const ARTISTS = {script_json(artists, ensure_ascii=False)};
+const NEAR = {script_json(NEAR)};
 
 // Два вопроса: «кто написал» и «когда написано». Счёт у каждого свой;
 // выбранный запоминается, а адрес quiz.html#year открывает сразу второй.

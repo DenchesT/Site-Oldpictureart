@@ -1,10 +1,10 @@
 'use strict';
 // Browser-independent behavior tests with an in-memory stand-in for the existing cloud API.
-const fs = require('fs'), vm = require('vm'), path = require('path');
+const vm = require('vm');
 const { execFileSync } = require('child_process');
-const base = path.join(__dirname, 'apply_mobile_favorites.py');
 // The Python installer stores the exact shared JS to avoid code drift in tests.
-const src = execFileSync('python', ['-c',
+const python = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
+const src = execFileSync(python, ['-c',
   "import sys;sys.path.insert(0,sys.argv[1]);import apply_mobile_favorites as x;print(x.SHARED_FAVORITES_JS)",
   __dirname], {encoding:'utf8'});
 const assert = require('assert');

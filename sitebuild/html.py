@@ -6,9 +6,8 @@
 
 import os
 import re
-import json
 import functools
-from site_common import (BASE_URL, TELEGRAM_URL)
+from site_common import (BASE_URL, TELEGRAM_URL, script_json)
 from .text import lower_first
 
 # ===================== HTML-ФУНКЦИИ =====================
@@ -154,7 +153,7 @@ def artwork_jsonld(post):
         data["height"], data["width"] = cm(m.group(1)), cm(m.group(2))
 
     return ('<script type="application/ld+json">'
-            + json.dumps(data, ensure_ascii=False, separators=(",", ":"))
+            + script_json(data, ensure_ascii=False, separators=(",", ":"))
             + "</script>")
 
 
@@ -197,7 +196,7 @@ def year_span(posts):
 
 def jsonld_script(data):
     return ('<script type="application/ld+json">'
-            + json.dumps(data, ensure_ascii=False, separators=(",", ":"))
+            + script_json(data, ensure_ascii=False, separators=(",", ":"))
             + "</script>")
 
 def telegram_post_link(record):
