@@ -280,36 +280,13 @@ RUN_STATUS_JS = """<script>
 
 
 def visit_cover_index(v):
-    # Offline score; use cover_index (zero-based) for manual override.
-    pictures = v.get('images') or []
-    if not pictures:return 0
-    try:
-        override=int(v.get('cover_index'))
-        if 0 <= override < len(pictures):return override
-    except (TypeError,ValueError):pass
-    try:
-        from PIL import Image,ImageStat,ImageFilter
-    except ImportError:
-        return 1 if len(pictures)>1 else 0
-    def score(path):
-        try:
-            with Image.open(path) as im:
-                im.thumbnail((180,180)); im=im.convert('RGB')
-                stat=ImageStat.Stat(im)
-                colour=sum(stat.stddev)/3
-                hist=im.convert('L').histogram(); total=sum(hist)
-                import math
-                entropy=-sum((n/total)*math.log2(n/total) for n in hist if n) if total else 0
-                edges=ImageStat.Stat(im.filter(ImageFilter.FIND_EDGES)).mean[0]
-                # Many wall labels are nearly monochrome and low in texture.
-                return colour*0.5 + entropy*4 + min(edges,35)*0.4
-        except (OSError,ValueError):return -1
-    candidates=[]
-    for idx,rel in enumerate(pictures[:8]):
-        path=__import__('os').path.join(OUTPUT_DIR,rel)
-        candidates.append((score(path),idx))
-    if max(s for s,_ in candidates)<0:return 1 if len(pictures)>1 else 0
-    return max(candidates)[1]
+    """Обложка посещения — строго первый снимок оригинального поста.
+
+    Первая миниатюра (если создана) и первая исходная фотография
+    соответствуют одному и тому же кадру. Ранее обложка выбиралась
+    автоматически по цветности/детализации; это нарушало порядок поста.
+    """
+    return 0
 
 
 def visit_cover(v):
