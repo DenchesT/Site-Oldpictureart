@@ -4,7 +4,6 @@ import ast
 import importlib.util
 import json
 import re
-import tempfile
 import unittest
 from pathlib import Path
 

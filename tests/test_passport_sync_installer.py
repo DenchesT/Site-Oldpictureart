@@ -2,6 +2,11 @@
 """Smoke test that patches are syntactically valid without touching the repository."""
 import ast
 import unittest
+# The repository runner executes this file by path, not as a package.
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from apply_passport_cloud_sync import patch_backend,patch_pages,patch_privacy,patch_account_dialog
 
 class InstallerTests(unittest.TestCase):

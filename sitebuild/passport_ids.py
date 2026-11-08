@@ -57,3 +57,6 @@ def save_passport_registry():
     tmp.write_text(json.dumps(_load(), ensure_ascii=False, indent=2, sort_keys=True) + '\n', 'utf-8')
     os.replace(tmp, PATH)
     _dirty = False
+
+
+__all__ = ['PATH', 'get_passport_id', 'registry_aliases', 'save_passport_registry']

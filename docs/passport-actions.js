@@ -250,6 +250,28 @@
     dialog.addEventListener('click',function(e){if(e.target===dialog)dismiss();});
     dialog.addEventListener('close',function(){dialog.remove();});
     if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','');
+    var vv=root.visualViewport;
+    function resizeDialog(){
+      if(!dialog.isConnected)return;
+      var h=vv?vv.height:root.innerHeight;
+      var top=vv?vv.offsetTop:0;
+      dialog.style.setProperty('--passport-dialog-height',Math.max(200,h-16)+'px');
+      dialog.style.setProperty('--passport-dialog-top',Math.max(8,top+8)+'px');
+      var active=root.document.activeElement;
+      if(active&&dialog.contains(active)&&/INPUT|TEXTAREA|SELECT/.test(active.tagName)){
+        root.setTimeout(function(){if(!dialog.isConnected)return;
+          var r=active.getBoundingClientRect(),b=dialog.getBoundingClientRect();
+          if(r.bottom>b.bottom-90)dialog.scrollTop+=r.bottom-(b.bottom-90);
+          else if(r.top<b.top+85)dialog.scrollTop-=b.top+85-r.top;
+        },65);
+      }
+    }
+    function cleanup(){if(vv){vv.removeEventListener('resize',resizeDialog);vv.removeEventListener('scroll',resizeDialog);}dialog.removeEventListener('focusin',onFocus);}
+    function onFocus(){root.setTimeout(resizeDialog,80);root.setTimeout(resizeDialog,350);}
+    if(vv){vv.addEventListener('resize',resizeDialog);vv.addEventListener('scroll',resizeDialog);}
+    dialog.addEventListener('focusin',onFocus);
+    dialog.addEventListener('close',cleanup,{once:true});
+    resizeDialog();
     return {dialog:dialog,close:dismiss};
   }
   function collectionPicker(work,title){

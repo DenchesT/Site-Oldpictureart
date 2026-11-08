@@ -2,10 +2,9 @@
 """Personal art passport: static public catalog only; private records in YDB."""
 import logging
 import os
-from html import escape as h
 
 from site_common import (AUTH_JS, BASE_URL, COMMON_JS, SCROLL_TOP_JS, TOAST_JS,
-                         head_common, script_json, scroll_top_button,
+                         head_common, script_json, scroll_top_button, MAP_LAYERS_JS,
                          site_footer, theme_button, museum_page)
 from .afisha import load_afisha, _afisha_favorites_script, _afisha_favorite_key
 from .config import OUTPUT_DIR
@@ -120,6 +119,9 @@ def render_passport_page(posts, visits, exhibitions=None):
 {COMMON_JS}
 {TOAST_JS}
 {LEAFLET_JS}
+<script src="vendor/leaflet.markercluster/leaflet.markercluster.js"></script>
+<script src="map-config.js"></script>
+<script>{MAP_LAYERS_JS}</script>
 <script>window.OPA_PASSPORT_DATA={payload};</script>
 {_afisha_favorites_script(events)}
 {AUTH_JS}
