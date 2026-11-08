@@ -78,7 +78,7 @@ def render_passport_page(posts, visits, exhibitions=None):
     return f'''<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 {head}
 {LEAFLET_CSS}
-<link rel="stylesheet" href="passport.css">
+<link rel="stylesheet" href="passport.css?v=20261109-2">
 </head><body class="tag-page passport-page">
 <a href="#passport-main" class="skip-link">К паспорту</a>
 <div class="tag-topbar">
@@ -126,7 +126,7 @@ def render_passport_page(posts, visits, exhibitions=None):
 {_afisha_favorites_script(events)}
 {AUTH_JS}
 <script src="passport-actions.js" defer></script>
-<script src="passport.js" defer></script>
+<script src="passport.js?v=20261109-2" defer></script>
 </body></html>'''
 
 

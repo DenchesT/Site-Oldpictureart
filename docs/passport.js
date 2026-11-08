@@ -58,13 +58,31 @@
     var display=input('text',value?displayDate(value):'');
     display.classList.add('passport-date-input');display.inputMode='numeric';
     display.placeholder='ДД.ММ.ГГГГ';display.autocomplete='off';
-    var trigger=btn('▦',function(){if(pop.hidden){pop.hidden=false;draw();}else pop.hidden=true;},'passport-date-trigger');
+    var trigger=btn('▦',function(){if(pop.hidden)openCalendar();else closeCalendar();},'passport-date-trigger');
     trigger.setAttribute('aria-label','Открыть календарь');trigger.setAttribute('aria-expanded','false');
     var pop=el('div','passport-date-popup');pop.hidden=true;
+    pop.setAttribute('role','group');pop.setAttribute('aria-label','Выбор даты');
     var now=new Date(),initial=isoDate(value),selected=initial?new Date(initial+'T12:00:00'):now;
     var month=selected.getMonth(),year=selected.getFullYear();
+    function closeCalendar(){pop.hidden=true;trigger.setAttribute('aria-expanded','false');}
+    function openCalendar(){
+      // Inline calendar expands the form (not an absolutely positioned clipped overlay).
+      // Dismiss mobile keyboard before measuring available space.
+      display.blur();pop.hidden=false;draw();
+      requestAnimationFrame(function(){
+        if(pop.hidden)return;
+        var dialog=wrap.closest('.passport-modal');
+        if(!dialog)return;
+        var box=dialog.getBoundingClientRect(),calendar=pop.getBoundingClientRect();
+        // Scroll INSIDE the dialog, never jump the main document behind it.
+        var bottom=box.bottom-18,top=box.top+70;
+        if(calendar.bottom>bottom)dialog.scrollTop+=calendar.bottom-bottom;
+        // On very short viewports the dialog remains scrollable; no day is cut off.
+        else if(calendar.top<top)dialog.scrollTop-=top-calendar.top;
+      });
+    }
     function choose(day){var d=new Date(year,month,day);display.value=displayDate(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));
-      display.setCustomValidity('');pop.hidden=true;trigger.setAttribute('aria-expanded','false');display.dispatchEvent(new Event('change',{bubbles:true}));}
+      display.setCustomValidity('');closeCalendar();display.dispatchEvent(new Event('change',{bubbles:true}));}
     function draw(){
       trigger.setAttribute('aria-expanded',pop.hidden?'false':'true');pop.replaceChildren();
       var head=el('div','passport-date-nav');
@@ -80,14 +98,14 @@
         if(current===today())b.classList.add('is-today');grid.append(b);
       })(d);}pop.append(grid);
       var footer=el('div','passport-date-footer');append(footer,btn('Сегодня',function(){var d=new Date();year=d.getFullYear();month=d.getMonth();choose(d.getDate());}),
-        btn('Очистить',function(){display.value='';display.setCustomValidity('');pop.hidden=true;trigger.setAttribute('aria-expanded','false');}));pop.append(footer);
+        btn('Очистить',function(){display.value='';display.setCustomValidity('');closeCalendar();}));pop.append(footer);
     }
     display.addEventListener('input',function(){display.setCustomValidity('');});
     display.addEventListener('blur',function(){if(!display.value.trim())return;
       var normalized=isoDate(display.value);if(normalized)display.value=displayDate(normalized);
     });
-    display.addEventListener('keydown',function(e){if(e.key==='ArrowDown'){e.preventDefault();pop.hidden=false;draw();}
-      if(e.key==='Escape')pop.hidden=true;});
+    display.addEventListener('keydown',function(e){if(e.key==='ArrowDown'){e.preventDefault();openCalendar();}
+      if(e.key==='Escape')closeCalendar();});
     append(wrap,display,trigger,pop);return {node:wrap,control:display};
   }
   // Search narrows large native select menus, especially for paintings and museums.
@@ -200,7 +218,7 @@
   function overview(d){
     var recent=recentRows(d);
     append(panel,heading('Моя история искусства'));
-    var actions=el('div','passport-shortcuts');
+    var actions=el('div','passport-shortcuts passport-overview-actions');
     append(actions,btn('+ Посещение',function(){visitDialog();},'passport-primary'),
       btn('+ Увиденный оригинал',function(){sightingDialog();}),
       btn('+ Коллекция',function(){collectionDialog();}),
@@ -502,7 +520,7 @@
       });
       append(toolbar,toggle);panel.append(toolbar);
       var mapEl=el('div','passport-map');mapEl.setAttribute('aria-label','Карта отмеченных музеев');panel.append(mapEl);
-      map=L.map(mapEl,{scrollWheelZoom:false,worldCopyJump:true,zoomControl:true});
+      map=L.map(mapEl,{scrollWheelZoom:true,worldCopyJump:true,zoomControl:true});
       if(typeof OPA_MAP!=='undefined'){
         OPA_MAP.attach(map,mapEl);
       }else{

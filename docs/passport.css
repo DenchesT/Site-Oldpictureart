@@ -307,3 +307,21 @@ body.passport-map-is-fullscreen{overflow:hidden;}
  .passport-work-body{padding:.48rem;}
  .passport-dir-row>.passport-inline-actions{gap:6px;}
 }
+
+/* Art Passport v3.2: overview controls match across mobile and desktop. */
+.passport-overview-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:1fr;align-items:stretch;gap:.65rem;}
+.passport-overview-actions>button{display:flex;align-items:center;justify-content:center;min-width:0;width:100%;min-height:66px;height:100%;margin:0;box-sizing:border-box;padding:.8rem .55rem;text-align:center;line-height:1.35;white-space:normal;overflow-wrap:anywhere;}
+@media(max-width:900px){.passport-overview-actions{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:360px){.passport-overview-actions{grid-template-columns:repeat(2,minmax(0,1fr));}.passport-overview-actions>button{min-height:72px;padding:.6rem .3rem;}}
+/* Calendar is part of the scrollable form, so it cannot be cropped by the dialog. */
+.passport-date-widget{min-width:0;}
+.passport-page .passport-date-popup{position:relative;top:auto;left:auto;grid-column:1/-1;width:min(100%,390px);max-width:100%;justify-self:start;margin-top:.4rem;box-shadow:none;overflow:visible;}
+.passport-page .passport-date-popup[hidden]{display:none;}
+.passport-date-popup{scroll-margin-top:85px;scroll-margin-bottom:70px;}
+.passport-page .passport-calendar-day{min-height:36px;height:36px;}
+.passport-page .passport-modal{overflow-y:auto;overscroll-behavior:contain;}
+@media(max-width:650px){
+  .passport-overview-actions>button{min-height:76px;font-size:clamp(.77rem,3.1vw,1rem);}
+  .passport-page .passport-calendar-day{min-height:40px;height:40px;}
+  .passport-page .passport-date-popup{padding:.55rem;width:100%;}
+}
