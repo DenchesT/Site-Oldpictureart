@@ -1,3 +1,4 @@
+# OPA PERSONAL ART PASSPORT 2026-11-08
 # -*- coding: utf-8 -*-
 """Страницы картин, подборки по тегам и главная страница.
 
@@ -154,6 +155,7 @@ def render_post_page(post, all_posts=None):
 
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 {head}
+<link rel="stylesheet" href="passport.css">
 </head><body class="post-page">
 <a href="#main" class="skip-link">К содержанию</a>
 <div class="post-topbar">
@@ -173,6 +175,11 @@ def render_post_page(post, all_posts=None):
     <header class="post-head">
       <h1>{artist_link}</h1>
       <h2>{title}</h2>
+      <div class="opa-passport-actionbar">
+        <button type="button" data-opa-passport="originals" data-passport-key="{h(post_id)}" data-label-off="Отметить: видел оригинал" data-label-on="✓ Видел оригинал" aria-pressed="false">Отметить: видел оригинал</button>
+        <a href="passport.html?add={h(post_id)}#collections">В мою коллекцию</a>
+        <a href="passport.html">Арт-паспорт</a>
+      </div>
     </header>
     {img_html}
     <div class="color-palette" id="color-palette"></div>
@@ -309,6 +316,7 @@ document.addEventListener('keydown', function(e) {{
 }});
 </script>
 {AUTH_JS}
+<script src="passport-actions.js" defer></script>
 </body></html>"""
 
 def card_html(p, cat_no=None, cat_width=3, show_artist=True, show_museum=True):
@@ -596,6 +604,7 @@ def render_index(all_posts, visits=None):
                        'href="stats.html">Статистика</a></div>')
     # Канал — источник всего собрания, поэтому он в том же ряду, что карта
     # и указатель, а не мелкой строкой где-то внизу.
+    passport_link_html = ('<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-fav no-arrow" href="passport.html">Мой арт-паспорт</a></div>')
     tg_link_html = (f'<div class="sidebar-section"><a class="sidebar-title sidebar-icon icon-tg no-arrow" '
                     f'href="{TELEGRAM_URL}" target="_blank" rel="noopener">Канал</a></div>')
     
@@ -651,6 +660,7 @@ def render_index(all_posts, visits=None):
 {afisha_html}
 {map_link_html}
 {visits_link_html}
+{passport_link_html}
 {index_link_html}
 {stats_link_html}
 {tg_link_html}

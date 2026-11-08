@@ -1,3 +1,4 @@
+# OPA PERSONAL ART PASSPORT 2026-11-08
 # -*- coding: utf-8 -*-
 """Build and automatically publish Old Picture Art. Tests run in GitHub Actions."""
 import asyncio
@@ -39,6 +40,7 @@ from sitebuild.artist_info import *  # noqa: F401,F403
 from sitebuild.deps import *  # noqa: F401,F403
 from sitebuild.indexnow import *  # noqa: F401,F403
 from sitebuild.afisha import *  # noqa: F401,F403
+from sitebuild.passport import *  # noqa: F401,F403
 from sitebuild.indexnow import notify as notify_indexnow
 from sitebuild.safety import publish_generated
 
@@ -195,6 +197,7 @@ async def main():
     generate_museums_page(all_posts)
     generate_museum_pages(all_posts, all_visits)
     generate_afisha(museum_names(all_posts, all_visits), all_posts=all_posts, visits=all_visits)
+    generate_passport(all_posts, all_visits)
     subprocess.run([sys.executable, "generate_quiz.py"], check=True)
     logger.info("Квиз сгенерирован")
     subprocess.run([sys.executable, "generate_timeline.py"], check=True)

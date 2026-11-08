@@ -1,3 +1,4 @@
+# OPA PERSONAL ART PASSPORT 2026-11-08
 # -*- coding: utf-8 -*-
 """Посещения (#выставка, #галерея): разбор постов, сроки выставок, страницы походов.
 
@@ -359,6 +360,7 @@ def render_visits_page(visits, all_posts=None):
 <div class="tag-topbar">
   <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
   <a href="museums.html" class="back">Карта собраний</a>
+  <a href="passport.html" class="back">Мой арт-паспорт</a>
   {theme_button('theme-toggle-inline')}
 </div>
 {scroll_top_button()}

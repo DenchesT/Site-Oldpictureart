@@ -1,3 +1,4 @@
+# OPA PERSONAL ART PASSPORT 2026-11-08
 # -*- coding: utf-8 -*-
 """
 Пересборка всех страниц сайта из posts_meta.json — без Telegram.
@@ -107,6 +108,8 @@ def main():
     with open(os.path.join(bs.OUTPUT_DIR, "index.html"), "w", encoding="utf-8", newline="\n") as f:
         f.write(bs.render_index(meta))
     print("✓ index.html")
+    bs.generate_passport(meta, visits)
+    print("✓ passport.html")
 
     with open(os.path.join(bs.OUTPUT_DIR, "404.html"), "w", encoding="utf-8", newline="\n") as f:
         f.write(bs.render_404())

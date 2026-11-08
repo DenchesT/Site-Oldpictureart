@@ -1,3 +1,4 @@
+# OPA PERSONAL ART PASSPORT 2026-11-08
 # -*- coding: utf-8 -*-
 """Страницы музеев и вызов карты собраний.
 
@@ -214,6 +215,7 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
 </script>"""
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 {head}
+<link rel="stylesheet" href="passport.css">
 </head><body class="tag-page artist-page museum-page">
 <div class="tag-topbar">
   <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
@@ -224,6 +226,7 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
 <header class="artist-head museum-head">
   <p class="eyebrow">{"Собрание" if works else "Место"}</p>
   <h1>{h(shown)}</h1>
+  <div class="opa-passport-actionbar"><button type="button" data-opa-passport="museums" data-passport-key="{h(name)}" data-label-off="+ Я был в этом музее" data-label-on="✓ Я был в этом музее" aria-pressed="false">+ Я был в этом музее</button><a href="passport.html#museums">Мой арт-паспорт</a></div>
   {hero}
 </header>
 {grid}
@@ -234,6 +237,7 @@ def render_museum_page(name, works, been, info, all_posts, cat_no, cat_width, ne
 {RUN_STATUS_JS if been else ""}
 {MUSEUM_AFISHA_JS if now_html else ""}
 {map_js}
+<script src="passport-actions.js" defer></script>
 </body></html>"""
 
 

@@ -1,3 +1,4 @@
+# OPA PERSONAL ART PASSPORT 2026-11-08
 # -*- coding: utf-8 -*-
 """Страницы художников, указатель и статистика.
 
@@ -108,6 +109,7 @@ def render_artist_page(artist, posts, all_posts, cat_no, cat_width, info=None):
     )
     return f"""<!DOCTYPE html><html lang="ru" data-theme="light"><head>
 {head}
+<link rel="stylesheet" href="passport.css">
 </head><body class="tag-page artist-page">
 <div class="tag-topbar">
   <a href="./" class="back"><span class="icon-back" aria-hidden="true"></span> На главную</a>
@@ -118,6 +120,7 @@ def render_artist_page(artist, posts, all_posts, cat_no, cat_width, info=None):
 <header class="artist-head">
   <p class="eyebrow">Художник</p>
   <h1>{h(artist)}</h1>
+  <div class="opa-passport-actionbar"><button type="button" data-opa-passport="artists" data-passport-key="{h(artist)}" data-label-off="+ Любимый художник" data-label-on="✓ Любимый художник" aria-pressed="false">+ Любимый художник</button><a href="passport.html#artists">Мой арт-паспорт</a></div>
   <div class="spec-table artist-facts">{facts_html}</div>
 </header>
 <div class="artist-layout">
@@ -128,6 +131,7 @@ def render_artist_page(artist, posts, all_posts, cat_no, cat_width, info=None):
 {site_footer()}
 {SCROLL_TOP_JS}
 {COMMON_JS}
+<script src="passport-actions.js" defer></script>
 </body></html>"""
 
 
