@@ -116,6 +116,7 @@
   <url><loc>https://oldpictureart.ru/polenov-soldat-s-vyazankoi-drov-1883.html</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://oldpictureart.ru/sisley-sneg-v-luvesene-1874.html</loc><lastmod>2026-11-03</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://oldpictureart.ru/vereschagin-v-gorah-alatau-1869.html</loc><lastmod>2026-11-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://oldpictureart.ru/kramskoi-na-dache-siverskaya-1883.html</loc><lastmod>2026-11-08</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://oldpictureart.ru/feed.xml</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museums.html</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
   <url><loc>https://oldpictureart.ru/quiz.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
@@ -185,6 +186,7 @@
   <url><loc>https://oldpictureart.ru/artist-guillaumin.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-millet.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-astruc.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://oldpictureart.ru/artist-kramskoi.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-grabar.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-degas.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-repin.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -349,6 +351,7 @@
   <url><loc>https://oldpictureart.ru/tag-zorn.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-bryullov.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-vereschagin.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://oldpictureart.ru/tag-vohm.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-gim.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-gmii.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-gmir.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
@@ -358,6 +361,7 @@
   <url><loc>https://oldpictureart.ru/tag-zhukovskii.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-kartina.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-korovin.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://oldpictureart.ru/tag-kramskoi.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-kuznetsov.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-kuindzhi.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-kustodiev.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
@@ -380,6 +384,7 @@
   <url><loc>https://oldpictureart.ru/museum-britanskaya-galereya-teit-london.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-vinterturskii-hudozhestvennyi-muzei-vintertur.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-volgo-vyatskii-filial-gmii-im-a-s-pushkina-arsenal.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://oldpictureart.ru/museum-voronezhskii-oblastnoi-hudozhestvennyi-muzei-im-i-n-kramskogo.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-gim-moskva.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-gmii-im-a-s-pushkina-moskva.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-gosudarstvennaya-tretyakovskaya-galereya-moskva.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
