@@ -1,0 +1,15 @@
+﻿index,museum,new_values_json,official_evidence_url,note
+39,Каргопольский государственный историко-архитектурный и художественный музей,"{""site"": ""https://karmuseum.ru/""}",https://karmuseum.ru/,
+41,Керченская картинная галерея имени Н. Я. Бута,"{""site"": ""https://www.kerchmuseum.ru/""}",https://www.kerchmuseum.ru/ru/kartinnaja-galereja.html,
+54,Музей А. А. Пластова,"{""site"": ""https://uohm.art/plastov/""}",https://uohm.art/plastov/,
+57,Музей органической культуры,"{""site"": ""https://museumart.ru/""}",https://museumart.ru/,
+58,Музей пейзажа,"{""site"": ""https://www.ples-museum.ru/""}",https://www.ples-museum.ru/,
+74,Мемориальная мастерская А. В. Пантелеева,"{""site"": ""https://vologda-gallery.ru/""}",https://vologda-gallery.ru/exhibition/current-exhibitions/,
+78,Сосновоборский художественный музей современного искусства,"{""site"": ""https://www.lenoblmus.ru/""}",https://www.lenoblmus.ru/museums/sosnovoborskiy-khudozhestvennyy-muzey-sovremennogo-iskusstva,
+86,Симферопольский художественный музей,"{""site"": ""https://simhm.ru/""}",https://simhm.ru/,
+87,Сочинский художественный музей имени Дмитрия Жилинского,"{""site"": ""https://www.sochiartmuseum.art/""}",https://www.sochiartmuseum.art/,
+89,Таганрогский художественный музей,"{""site"": ""https://artmuseumtgn.ru/""}",https://artmuseumtgn.ru/,"Музей на реконструкции, требуется учитывать актуальный режим работы."
+103,Ярославский художественный музей,"{""url"": ""https://yarartmuseum.ru/exhibitions/""}",https://yarartmuseum.ru/exhibitions/,Старый URL new.yarartmuseum.ru/exhibitions/ давал 502 при прямом обходе; альтернативный официальный доступен.
+112,Музей Мимара,"{""site"": ""https://www.mimara.hr/""}",https://www.mimara.hr/izlozbe/nadolazece,
+123,Castellani House (Гайана),"{""site"": ""https://ntg.gov.gy/monument/castellani-house-national-gallery-of-art/""}",https://ntg.gov.gy/monument/castellani-house-national-gallery-of-art/,"Официальная государственная карточка учреждения, не афиша."
+125,Государственная Третьяковская галерея,"{""site"": ""https://www.tretyakovgallery.ru/"", ""url"": ""https://www.tretyakovgallery.ru/tickets/exhibitions/""}",https://www.tretyakovgallery.ru/tickets/exhibitions/,
