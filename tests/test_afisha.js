@@ -226,21 +226,31 @@ const state = page => page.evaluate(() => {
   const mapState = () => page.evaluate(() => {
     const el = document.getElementById('afisha-map');
     if (!el || !el.afishaCluster) return null;
-    const want = [...document.querySelectorAll('.afisha-item[data-lat]')].filter(li => !li.hidden).length;
-    return { shown: !el.hidden, markers: el.afishaCluster.getLayers().length, want };
+    const visibleIds = [...document.querySelectorAll('.afisha-item[data-lat]')]
+      .filter(li => !li.hidden).map(li => li.id).sort();
+    const layers = el.afishaCluster.getLayers();
+    const markerIds = layers.map(marker => {
+      const popup = marker.getPopup().getContent();
+      return (popup.match(/href="#([^"]+)"/) || [])[1] || '';
+    }).sort();
+    return { shown: !el.hidden, markers: layers.length, want: visibleIds.length, markerIds, visibleIds };
   });
+  const mapMatchesList = s => s && s.markers === s.want
+    && JSON.stringify(s.markerIds) === JSON.stringify(s.visibleIds);
   let ms = await mapState();
   const hasCoords = /data-lat=/.test(fs.readFileSync(path.join(DOCS, 'afisha.html'), 'utf8'));
   if (hasCoords) {
     ok('на странице — карта выставок', ms && ms.shown, JSON.stringify(ms));
-    ok('…метки — ровно те выставки, что сейчас в списке', ms && ms.markers === ms.want && ms.want > 0, JSON.stringify(ms));
+    ok('…метки — ровно те выставки, что сейчас в списке', mapMatchesList(ms) && ms.want > 0, JSON.stringify(ms));
     await page.click('.afisha-switch [data-region="russia"]');
     await page.waitForTimeout(150);
     const ru = await mapState();
     await page.click('.afisha-switch [data-region="world"]');
     await page.waitForTimeout(150);
     const wo = await mapState();
-    ok('…вкладка меняет и метки', ru && wo && ru.markers === ru.want && wo.markers === wo.want && ru.want !== wo.want,
+    // Число выставок в двух вкладках может совпадать. Проверяем их состав.
+    ok('…вкладка меняет и метки', mapMatchesList(ru) && mapMatchesList(wo)
+       && JSON.stringify(ru.visibleIds) !== JSON.stringify(wo.visibleIds),
        JSON.stringify({ ru, wo }));
     // Приближение к метке — анимация, а ей нужны идущие часы: на странице
     // с подставленной датой время стоит. Поэтому здесь — настоящее «сегодня».
