@@ -349,13 +349,13 @@
       "country": "Россия",
       "start": "2026-11-28",
       "end": "2027-03-14",
-      "url": "https://www.rusimp.su/exhibitions/otlichniki-vystavka-v-tveri",
+      "url": "https://www.rusimp.su/news/vystavka-otlichniki-v-tveri",
       "note": "С Музеем русского импрессионизма: пенсионерские поездки выпускников Академии и МУЖВЗ в Европу",
       "tags": [
         "xix",
         "russian"
       ],
-      "source": "https://rusimp.su/ru/exhibitions",
+      "source": "https://www.rusimp.su/news/vystavka-otlichniki-v-tveri",
       "address": "Советская улица, 3, Тверской императорский путевой дворец, Тверь",
       "address_source": "https://www.openstreetmap.org/way/44950632",
       "coordinates_source": "https://www.openstreetmap.org/way/44950632"
@@ -774,7 +774,7 @@
       "country": "Германия",
       "start": "2026-09-19",
       "end": "2027-01-10",
-      "url": "https://gemaeldegalerie.skd.museum/en/exhibitions/correggio/",
+      "url": "https://gemaeldegalerie.skd.museum/en/exhibitions/correggio-movingly-human/",
       "note": "Первая за пределами Италии полная ретроспектива Корреджо: «Святая ночь», «Мадонна св. Себастьяна»",
       "tags": [
         "old"
@@ -1696,14 +1696,17 @@
       "country": "Россия",
       "start": "2026-10-16",
       "end": "2027-03-14",
-      "url": "https://nsartmuseum.ru/exhibitions/id/679",
+      "url": "https://nsartmuseum.ru/events/exhibitions/detail/rafael-versii/",
       "note": "70+ работ из музея Академии художеств: академические повторения Рафаэля XVIII–XIX веков, гравюры, слепки",
       "tags": [
         "old"
       ],
       "museum": "Новосибирский государственный художественный музей",
-      "address": "Красный проспект, 5, Новосибирск",
-      "address_source": "https://nsartmuseum.ru"
+      "address": "Улица Свердлова, 10, Новосибирск",
+      "address_source": "https://nsartmuseum.ru/events/exhibitions/detail/rafael-versii/",
+      "lat": 55.021978,
+      "lon": 82.920816,
+      "coordinates_source": "https://nsartmuseum.ru/events/exhibitions/detail/rafael-versii/"
     },
     {
       "title": "Искусство впечатления. Импрессионизм",
