@@ -118,6 +118,7 @@
   <url><loc>https://oldpictureart.ru/vereschagin-v-gorah-alatau-1869.html</loc><lastmod>2026-11-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://oldpictureart.ru/kramskoi-na-dache-siverskaya-1883.html</loc><lastmod>2026-11-08</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://oldpictureart.ru/byalynitskii-birulya-zimnii-son-1911.html</loc><lastmod>2026-11-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://oldpictureart.ru/zagorskii-chaepitie-1890.html</loc><lastmod>2026-11-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://oldpictureart.ru/feed.xml</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museums.html</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
   <url><loc>https://oldpictureart.ru/quiz.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
@@ -211,6 +212,7 @@
   <url><loc>https://oldpictureart.ru/artist-mescherin.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-kuznetsov-nikolai-dmitrievic.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-sverchkov.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://oldpictureart.ru/artist-zagorskii.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-monet.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-gabriel.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-helleu.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -303,6 +305,7 @@
   <url><loc>https://oldpictureart.ru/tag-museumkunstpalast.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-museunacionalcat.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-museefabre.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://oldpictureart.ru/tag-muzeyrb.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-nasjonalmuseet.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-nationalgalleriesofscotland.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-nationalgallery.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
@@ -362,6 +365,7 @@
   <url><loc>https://oldpictureart.ru/tag-grm.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-gtg.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-zhukovskii.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://oldpictureart.ru/tag-zagorskii.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-kartina.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-korovin.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-kramskoi.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
@@ -430,6 +434,7 @@
   <url><loc>https://oldpictureart.ru/museum-natsionalnaya-galereya-shotlandii-edinburg.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-natsionalnaya-galereya-iskusstva-vashington.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-natsionalnyi-muzei-prado-madrid.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://oldpictureart.ru/museum-natsionalnyi-muzei-respubliki-buryatiya-ulan-ude.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-natsionalnyi-muzei-shvetsii-stokgolm.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-natsionalnyi-muzei-zapadnogo-iskusstva-tokio.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-natsionalnyi-muzei-iskusstva-katalonii-barselona.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
