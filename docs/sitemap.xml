@@ -119,6 +119,7 @@
   <url><loc>https://oldpictureart.ru/kramskoi-na-dache-siverskaya-1883.html</loc><lastmod>2026-11-08</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://oldpictureart.ru/byalynitskii-birulya-zimnii-son-1911.html</loc><lastmod>2026-11-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://oldpictureart.ru/zagorskii-chaepitie-1890.html</loc><lastmod>2026-11-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://oldpictureart.ru/edelfelt-ostrov-syarkkya-1894.html</loc><lastmod>2026-11-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://oldpictureart.ru/feed.xml</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museums.html</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
   <url><loc>https://oldpictureart.ru/quiz.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
@@ -157,6 +158,7 @@
   <url><loc>https://oldpictureart.ru/artist-brun.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-morozov.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-bierstadt.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://oldpictureart.ru/artist-edelfelt.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-sisley.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-zorn.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://oldpictureart.ru/artist-boch.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -267,8 +269,10 @@
   <url><loc>https://oldpictureart.ru/tag-denittis.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-detaille.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-dorsay.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://oldpictureart.ru/tag-edelfelt.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-egb.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-fantin_latour.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://oldpictureart.ru/tag-fng.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-forain.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-friedrich.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://oldpictureart.ru/tag-gabriel.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
@@ -454,6 +458,7 @@
   <url><loc>https://oldpictureart.ru/museum-sobranie-hirshprunga-kopengagen.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-staraya-natsionalnaya-galereya-berlin.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-tegeranskii-muzei-sovremennogo-iskusstva-tegeran.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://oldpictureart.ru/museum-finskaya-natsionalnaya-galereya-helsinki.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-hudozhestvennaya-galereya-yuzhnoi-avstralii-adelaida.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-hudozhestvennyi-muzei-kolledzha-smit-northempton.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://oldpictureart.ru/museum-hudozhestvennyi-park-marunuma-asakusa.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>

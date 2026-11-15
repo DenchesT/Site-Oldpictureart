@@ -5109,5 +5109,47 @@
       "images/views/zagorskii-chaepitie-1890-1.jpg"
     ],
     "card": "images/cards/zagorskii-chaepitie-1890.jpg"
+  },
+  {
+    "id": 640,
+    "date": "2026-11-15",
+    "filename": "edelfelt-ostrov-syarkkya-1894.html",
+    "images": [
+      "images/edelfelt-ostrov-syarkkya-1894-1.jpg"
+    ],
+    "hires": [
+      "images/edelfelt-ostrov-syarkkya-1894-hires-1.jpg"
+    ],
+    "thumbs": [
+      "images/thumbs/edelfelt-ostrov-syarkkya-1894.jpg"
+    ],
+    "links": [],
+    "artist": "Альберт Густав Аристид Эдельфельт",
+    "title": "Särkkä (Остров Сярккя), 1894",
+    "medium": "Холст, масло, 63 x 91 см",
+    "material": "Холст",
+    "techniques": [
+      "масло"
+    ],
+    "size": "63 x 91 см",
+    "museum": "Финская национальная галерея, Хельсинки",
+    "history": [
+      "1) Передана в дар по завещанию в 1935 г."
+    ],
+    "description": "",
+    "urls": [
+      "https://kokoelma.kansallisgalleria.fi/en/object/429113"
+    ],
+    "tags": [
+      "edelfelt",
+      "fng",
+      "картина"
+    ],
+    "raw": "Альберт Густав Аристид Эдельфельт\n⸻\nSärkkä (Остров Сярккя), 1894\n⸻\nХолст, масло, 63 x 91 см\n⸻\nФинская национальная галерея, Хельсинки \n⸻\n1) Передана в дар по завещанию в 1935 г.\n⸻\nhttps://kokoelma.kansallisgalleria.fi/en/object/429113\n⸻\n#edelfelt@oldpictureart\n#fng@oldpictureart\n#картина@oldpictureart\n",
+    "creation_year": 1894,
+    "views": [
+      "images/views/edelfelt-ostrov-syarkkya-1894-1.jpg"
+    ],
+    "card": "images/cards/edelfelt-ostrov-syarkkya-1894.jpg"
   }
 ]
