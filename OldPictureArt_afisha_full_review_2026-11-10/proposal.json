@@ -1,0 +1,430 @@
+{
+  "as_of": "2026-11-10",
+  "repository": "DenchesT/Site-Oldpictureart",
+  "branch": "main",
+  "base_afisha_git_blob_sha": "0577cebfe7e8a05a088c42722572b3651347e259",
+  "base_archive_git_blob_sha": "079fb0ff4cb81860c143ae5a5a09edb8a40c29a8",
+  "before": {
+    "current": 191,
+    "archived": 3,
+    "sources": 126
+  },
+  "new_exhibitions": [
+    {
+      "title": "Императорский Китай. Династия Цин (1644–1911)",
+      "venue": "Государственный Эрмитаж, Зимний дворец, Гербовый зал (№ 195)",
+      "city": "Санкт-Петербург",
+      "country": "Россия",
+      "start": "2026-06-24",
+      "end": "2026-11-22",
+      "url": "https://www.hermitagemuseum.org/what-s-on/china26",
+      "note": "Около 60 произведений китайского дворцового искусства эпохи Цин из собрания Эрмитажа.",
+      "tags": [
+        "east",
+        "old"
+      ],
+      "museum": "Государственный Эрмитаж"
+    },
+    {
+      "title": "Полис — это люди, а не стены и пустые корабли",
+      "venue": "Екатеринбургский музей изобразительных искусств, центр «Эрмитаж-Урал»",
+      "city": "Екатеринбург",
+      "country": "Россия",
+      "start": "2026-10-23",
+      "end": "2027-03-08",
+      "url": "https://i-z-o.art/exhibitions/polis-eto-lyudi-a-ne-steny-i-pustye-korabli-event-3884.html",
+      "note": "Выставка одного античного произведения: мраморный бюст Афины из Эрмитажа, римская копия II века н. э.",
+      "tags": [
+        "old"
+      ],
+      "address": "улица Вайнера, 11, Екатеринбург"
+    },
+    {
+      "title": "Лев Бакст",
+      "venue": "Третьяковская галерея, Инженерный корпус",
+      "city": "Москва",
+      "country": "Россия",
+      "start": "2026-11-10",
+      "end": "2027-04-18",
+      "url": "https://www.tretyakovgallery.ru/exhibitions/o/vystavka-lev-bakst/",
+      "note": "Выставка к 160-летию художника Льва Бакста (1866–1924): графика, театр и живопись начала XX века.",
+      "tags": [
+        "russian",
+        "modern"
+      ],
+      "museum": "Государственная Третьяковская галерея, Москва",
+      "address": "Лаврушинский переулок, 12, Москва"
+    },
+    {
+      "title": "Стили и направления. От иконы до символизма",
+      "venue": "Третьяковская галерея, корпус на Кадашёвской набережной",
+      "city": "Москва",
+      "country": "Россия",
+      "start": "2026-11-18",
+      "end": "2027-05-16",
+      "url": "https://www.tretyakovgallery.ru/exhibitions/o/stili-i-napravleniya-ot-ikony-do-simvolizma/",
+      "note": "Русское изобразительное искусство XI — начала XX века: от древнерусской иконы до импрессионизма и символизма.",
+      "tags": [
+        "old",
+        "xix",
+        "russian",
+        "modern"
+      ],
+      "museum": "Государственная Третьяковская галерея, Москва",
+      "address": "Кадашёвская набережная, 12, Москва"
+    }
+  ],
+  "existing_exhibition_fixes": [
+    {
+      "title": "Малевич. Простые фигуры",
+      "set": {
+        "url": "https://zvenmuseum.ru/exhibition/malevich-prostyye-figury/"
+      },
+      "evidence": "https://zvenmuseum.ru/exhibition/malevich-prostyye-figury/"
+    },
+    {
+      "title": "Путешествие Арканума. Немецкий фарфор XVIII века",
+      "set": {
+        "url": "https://hermitagemuseum.org/what-s-on/arcanum",
+        "venue": "Государственный Эрмитаж, Зимний дворец, Синяя спальня (зал № 307)"
+      },
+      "evidence": "https://hermitagemuseum.org/what-s-on/arcanum"
+    },
+    {
+      "title": "Екатерина II и век Просвещения: русский проект",
+      "set": {
+        "url": "https://www.mgomz.ru/ru/exhibition/ekaterina-ii-i-vek-prosvescheniya"
+      },
+      "evidence": "https://www.mgomz.ru/ru/exhibition/ekaterina-ii-i-vek-prosvescheniya"
+    },
+    {
+      "title": "Александр Иванов. Библейские эскизы. Чудеса и проповеди Христа",
+      "set": {
+        "start": "2026-11-12"
+      },
+      "evidence": "https://www.tretyakovgallery.ru/exhibitions/?places=new",
+      "note": "Официальный музей пометил «Сроки проведения изменены» (ранее 06.11)."
+    },
+    {
+      "title": "Русский импрессионизм",
+      "set": {
+        "url": "https://rusmuseum.ru/exhibitions/traveling-expo/russkiy-impressionizm/"
+      },
+      "evidence": "https://rusmuseum.ru/exhibitions/traveling-expo/russkiy-impressionizm/"
+    }
+  ],
+  "archive_candidates": [
+    {
+      "title": "Иван Шишкин. Русский лес",
+      "verified": true,
+      "evidence": "https://rusmuseum.ru/exhibitions/current/ivan-shishkin-russkiy-les/"
+    },
+    {
+      "title": "Виктор Борисов-Мусатов. Гармония образа",
+      "verified": true,
+      "evidence": "https://www.tretyakovgallery.ru/exhibitions/o/viktor-borisov-musatov-garmoniya-obraza/"
+    },
+    {
+      "title": "Хрупкое искусство. Пастель из фондов графики XVIII — начала XX века",
+      "verified": true,
+      "already_in_archive": true,
+      "evidence": "https://www.tretyakovgallery.ru/tickets/exhibitions/"
+    },
+    {
+      "title": "Елизаветинская Библия",
+      "verified": true,
+      "already_in_archive": true,
+      "evidence": "https://www.rublev-museum.ru/poster/exhibition/5466/"
+    },
+    {
+      "title": "Семь историй сотворения мира. К 50-летию реставрации Гатчинского дворца",
+      "verified": true,
+      "set": {
+        "start": "2026-06-07"
+      },
+      "evidence": "https://gatchinapalace.ru/events/exhibitions/4752/"
+    },
+    {
+      "title": "Сказка рядом",
+      "verified": false,
+      "evidence": "https://novgorod.rusimp.su/",
+      "reason": "Ссылка на общий портал, окончание 08.11 подтверждено только из JSON; продление не исключено."
+    },
+    {
+      "title": "От Возрождения до Модерна. Шедевры художественного серебра из собрания Исторического музея",
+      "verified": true,
+      "evidence": "https://yarartmuseum.ru/exhibitions/"
+    },
+    {
+      "title": "Алмазная колесница. Буддийское искусство России",
+      "verified": true,
+      "already_in_archive": true,
+      "evidence": "https://pushkinmuseum.art/events/archive/2026/exhibitions/almaznaya_kolesnica._buddiyskoe_iskusstvo_rossii/index.php"
+    },
+    {
+      "title": "Я, Гюстав Курбе. Художник и бунтарь",
+      "verified": true,
+      "evidence": "https://www.museum-folkwang.de/en/exhibition/i-gustave-courbet"
+    },
+    {
+      "title": "78-я выставка сокровищ Сёсоина",
+      "verified": true,
+      "evidence": "https://shosoin-ten.jp/"
+    },
+    {
+      "title": "Николай Хохряков. Поэзия природы",
+      "verified": false,
+      "evidence": "https://kirov-artmuzeum.ru/museum/dom-muzej-xudozhnika-n-n-xoxryakova/events-dom-muzej-xoxryakova/2910-nikolaj-xoxryakov-poeziya-prirodyi",
+      "reason": "Официальный музейный сайт недоступен при обходе; дата из JSON."
+    },
+    {
+      "title": "Окрестности Санкт-Петербурга в гравюрах и литографиях XIX века",
+      "verified": false,
+      "evidence": "https://rusmuseum.ru/museums/mikhailovsky-palace/",
+      "reason": "Ссылка на страницу здания, а не выставки; дата окончания только из JSON."
+    }
+  ],
+  "source_fixes": [
+    {
+      "index": 39,
+      "museum": "Каргопольский государственный историко-архитектурный и художественный музей",
+      "set": {
+        "site": "https://karmuseum.ru/"
+      },
+      "evidence": "https://karmuseum.ru/"
+    },
+    {
+      "index": 41,
+      "museum": "Керченская картинная галерея имени Н. Я. Бута",
+      "set": {
+        "site": "https://www.kerchmuseum.ru/"
+      },
+      "evidence": "https://www.kerchmuseum.ru/ru/kartinnaja-galereja.html"
+    },
+    {
+      "index": 54,
+      "museum": "Музей А. А. Пластова",
+      "set": {
+        "site": "https://uohm.art/plastov/"
+      },
+      "evidence": "https://uohm.art/plastov/"
+    },
+    {
+      "index": 57,
+      "museum": "Музей органической культуры",
+      "set": {
+        "site": "https://museumart.ru/"
+      },
+      "evidence": "https://museumart.ru/"
+    },
+    {
+      "index": 58,
+      "museum": "Музей пейзажа",
+      "set": {
+        "site": "https://www.ples-museum.ru/"
+      },
+      "evidence": "https://www.ples-museum.ru/"
+    },
+    {
+      "index": 74,
+      "museum": "Мемориальная мастерская А. В. Пантелеева",
+      "set": {
+        "site": "https://vologda-gallery.ru/"
+      },
+      "evidence": "https://vologda-gallery.ru/exhibition/current-exhibitions/"
+    },
+    {
+      "index": 78,
+      "museum": "Сосновоборский художественный музей современного искусства",
+      "set": {
+        "site": "https://www.lenoblmus.ru/"
+      },
+      "evidence": "https://www.lenoblmus.ru/museums/sosnovoborskiy-khudozhestvennyy-muzey-sovremennogo-iskusstva"
+    },
+    {
+      "index": 86,
+      "museum": "Симферопольский художественный музей",
+      "set": {
+        "site": "https://simhm.ru/"
+      },
+      "evidence": "https://simhm.ru/"
+    },
+    {
+      "index": 87,
+      "museum": "Сочинский художественный музей имени Дмитрия Жилинского",
+      "set": {
+        "site": "https://www.sochiartmuseum.art/"
+      },
+      "evidence": "https://www.sochiartmuseum.art/"
+    },
+    {
+      "index": 89,
+      "museum": "Таганрогский художественный музей",
+      "set": {
+        "site": "https://artmuseumtgn.ru/"
+      },
+      "evidence": "https://artmuseumtgn.ru/",
+      "note": "Музей на реконструкции, требуется учитывать актуальный режим работы."
+    },
+    {
+      "index": 103,
+      "museum": "Ярославский художественный музей",
+      "set": {
+        "url": "https://yarartmuseum.ru/exhibitions/"
+      },
+      "evidence": "https://yarartmuseum.ru/exhibitions/",
+      "note": "Старый URL new.yarartmuseum.ru/exhibitions/ давал 502 при прямом обходе; альтернативный официальный доступен."
+    },
+    {
+      "index": 112,
+      "museum": "Музей Мимара",
+      "set": {
+        "site": "https://www.mimara.hr/"
+      },
+      "evidence": "https://www.mimara.hr/izlozbe/nadolazece"
+    },
+    {
+      "index": 123,
+      "museum": "Castellani House (Гайана)",
+      "set": {
+        "site": "https://ntg.gov.gy/monument/castellani-house-national-gallery-of-art/"
+      },
+      "evidence": "https://ntg.gov.gy/monument/castellani-house-national-gallery-of-art/",
+      "note": "Официальная государственная карточка учреждения, не афиша."
+    },
+    {
+      "index": 125,
+      "museum": "Государственная Третьяковская галерея",
+      "set": {
+        "site": "https://www.tretyakovgallery.ru/",
+        "url": "https://www.tretyakovgallery.ru/tickets/exhibitions/"
+      },
+      "evidence": "https://www.tretyakovgallery.ru/tickets/exhibitions/"
+    }
+  ],
+  "direct_url_failures": [
+    {
+      "index": 2,
+      "code": "redirect_no_catalog",
+      "details": "Редирект на tickets.fsv.ru без читаемого списка выставок"
+    },
+    {
+      "index": 15,
+      "code": "http_403",
+      "details": "403 Forbidden"
+    },
+    {
+      "index": 22,
+      "code": "http_502",
+      "details": "502 Bad Gateway; та же ссылка у источника 59"
+    },
+    {
+      "index": 23,
+      "code": "timeout",
+      "details": "Истёк срок ожидания"
+    },
+    {
+      "index": 32,
+      "code": "access_error",
+      "details": "Недоступен при прямой загрузке"
+    },
+    {
+      "index": 34,
+      "code": "timeout",
+      "details": "Истёк срок ожидания"
+    },
+    {
+      "index": 37,
+      "code": "timeout",
+      "details": "Истёк срок ожидания"
+    },
+    {
+      "index": 59,
+      "code": "http_502",
+      "details": "502 Bad Gateway; тот же адрес у источника 22"
+    },
+    {
+      "index": 63,
+      "code": "timeout",
+      "details": "Истёк срок ожидания"
+    },
+    {
+      "index": 66,
+      "code": "http_403",
+      "details": "403 Forbidden"
+    },
+    {
+      "index": 71,
+      "code": "empty_content",
+      "details": "Пустое/нечитаемое содержимое"
+    },
+    {
+      "index": 73,
+      "code": "timeout",
+      "details": "Истёк срок ожидания"
+    },
+    {
+      "index": 93,
+      "code": "empty_content",
+      "details": "Страница не возвращает читаемый текст"
+    },
+    {
+      "index": 103,
+      "code": "http_502",
+      "details": "Исходная ссылка /exhibitions/ вернула 502; найден рабочий официальный дубль"
+    },
+    {
+      "index": 108,
+      "code": "http_500",
+      "details": "500 Internal Server Error"
+    },
+    {
+      "index": 125,
+      "code": "timeout",
+      "details": "Исходная ссылка tretyakov.ru не открылась; найдена официальная альтернативная"
+    }
+  ],
+  "pending_source_sites": [
+    {
+      "index": 81,
+      "museum": "Сальский музей имени народного художника В. К. Нечитайло",
+      "candidate_site": "https://muzeysalsk.ru/",
+      "reason": "Поисковый результат; прямое открытие не удалось"
+    },
+    {
+      "index": 95,
+      "museum": "Ульяновский областной художественный музей",
+      "candidate_site": "https://uohm.art/",
+      "reason": "Официальная музейная сеть, но прямая загрузка завершилась тайм-аутом"
+    }
+  ],
+  "pending_exhibition_verification": [
+    {
+      "title": "Уловить стиль эпохи. Графика Николая Кузьмина",
+      "url": "https://www.tretyakovgallery.ru/tickets/exhibitions/",
+      "reason": "28.05—14.11.2026 подтверждены, но возраст экспонируемых работ не установлен"
+    },
+    {
+      "title": "Дороге быть!",
+      "url": "https://hermitagemuseum.org/what-s-on",
+      "reason": "Не найдена отдельная официальная страница с проверенными датами окончания"
+    },
+    {
+      "title": "Русский парижанин Константин Кузнецов",
+      "url": "https://hermitagemuseum.org/what-s-on",
+      "reason": "В JSON ссылка не на музей; официальная афиша подтверждает выставку, но прямой URL отдельной страницы пока не установлен"
+    }
+  ],
+  "exclusion_decisions": [
+    {
+      "title": "Артур Фонвизин. Маэстро акварели",
+      "url": "https://new.yarartmuseum.ru/exhibitions/artur-fonvizin-maestro-akvareli/",
+      "reason": "На официальной странице прямо сказано: представлены акварели 1940–1960-х годов, вне периода до 1940."
+    },
+    {
+      "title": "Абстракция в России. ХХ век",
+      "url": "https://rusmuseum.ru/exhibitions/traveling-expo/",
+      "reason": "Выставка охватывает весь ХХ век; объём релевантных произведений до 1940 года не подтверждён"
+    }
+  ]
+}

@@ -697,6 +697,13 @@
     "source": "wikidata:Q2983474",
     "precision": "exact",
     "query": "Финская национальная галерея",
-    "hint": "\n"
+    "hint": "\n",
+    "details": {
+      "lat": 60.17166667,
+      "lon": 24.93694444,
+      "address": "Mannerheiminaukio 2, Хельсинки",
+      "site": "https://www.kansallisgalleria.fi/",
+      "country": "Финляндия"
+    }
   }
 }
