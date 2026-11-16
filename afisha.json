@@ -1,6 +1,6 @@
 {
   "_как": "Афиша сайта: крупные выставки искусства до 1940 года в России и в мире. Страница afisha.html и блок на главной собираются отсюда. Закончившиеся выставки сайт прячет сам (по сегодняшней дате), сборка подсказывает, какие можно убрать и когда пора добавить новые. Поля: title — название по-русски, title_orig — оригинальное (по желанию), venue — музей, city, country (\"Россия\" — вкладка «Россия», остальное — «Мир»), start и end — ГГГГ-ММ-ДД, url — страница выставки на сайте музея, note — одна строка о том, что показывают, museum — как музей называется на карте собраний, если он там есть (тогда будет ссылка на его страницу), source — где проверены даты, если не на странице url. Подробнее — README, раздел «Афиша». Дополнительные музеи для мониторинга перечислены в поле sources этого файла; отдельный afisha_sources.json не нужен.",
-  "updated": "2026-10-31",
+  "updated": "2026-11-16",
   "exhibitions": [
     {
       "title": "Айвазовский",
@@ -40,26 +40,6 @@
       "address_source": "https://rusmuseum.ru"
     },
     {
-      "title": "Иван Шишкин. Русский лес",
-      "venue": "Русский музей, Корпус Бенуа",
-      "city": "Санкт-Петербург",
-      "country": "Россия",
-      "start": "2026-04-25",
-      "end": "2026-11-09",
-      "url": "https://rusmuseum.ru/exhibitions/current/ivan-shishkin-russkiy-les/",
-      "note": "Большая выставка Шишкина: от монументальных лесных пейзажей до этюдов",
-      "tags": [
-        "xix",
-        "russian"
-      ],
-      "museum": "Государственный Русский музей, Санкт-Петербург",
-      "address": "Набережная канала Грибоедова, 2, Санкт-Петербург",
-      "address_source": "https://rusmuseum.ru/museums/benois-wing/",
-      "lat": 59.9386397,
-      "lon": 30.3289174,
-      "coordinates_source": "https://www.openstreetmap.org/relation/2614477"
-    },
-    {
       "title": "Русский парижанин Константин Кузнецов",
       "venue": "Эрмитаж, Главный штаб",
       "city": "Санкт-Петербург",
@@ -79,43 +59,6 @@
       "lat": 59.937547,
       "lon": 30.3155873,
       "coordinates_source": "https://www.openstreetmap.org/relation/1453436"
-    },
-    {
-      "title": "Виктор Борисов-Мусатов. Гармония образа",
-      "venue": "Третьяковская галерея, корпус на Кадашёвской набережной",
-      "city": "Москва",
-      "country": "Россия",
-      "start": "2026-07-09",
-      "end": "2026-11-08",
-      "url": "https://www.tretyakovgallery.ru/exhibitions/o/viktor-borisov-musatov-garmoniya-obraza/",
-      "note": "Ретроспектива: 140+ живописных и графических работ из 20 музеев и частных собраний",
-      "tags": [
-        "russian",
-        "modern"
-      ],
-      "museum": "Корпус на Кадашёвской набережной",
-      "source": "https://www.tretyakovgallery.ru/tickets/exhibitions/",
-      "address": "Кадашёвская набережная, 12, Москва",
-      "address_source": "https://www.tretyakovgallery.ru"
-    },
-    {
-      "title": "Хрупкое искусство. Пастель из фондов графики XVIII — начала XX века",
-      "venue": "Третьяковская галерея, Лаврушинский переулок",
-      "city": "Москва",
-      "country": "Россия",
-      "start": "2026-03-27",
-      "end": "2026-11-01",
-      "url": "https://www.tretyakovgallery.ru/exhibitions/o/khrupkoe-iskusstvo-pastel-iz-fondov-grafiki-xviii-nachala-xx-veka/",
-      "note": "150+ пастелей: Левитан, Серов, Врубель, Бенуа, Сомов, Серебрякова, Гончарова",
-      "tags": [
-        "xix",
-        "russian",
-        "modern"
-      ],
-      "museum": "Государственная Третьяковская галерея, Москва",
-      "source": "https://www.tretyakovgallery.ru/tickets/exhibitions/",
-      "address": "Лаврушинский переулок, 10, Москва",
-      "address_source": "https://www.tretyakovgallery.ru"
     },
     {
       "title": "Павел Третьяков и Василий Поленов",
@@ -158,7 +101,7 @@
       "venue": "Третьяковская галерея, Лаврушинский переулок",
       "city": "Москва",
       "country": "Россия",
-      "start": "2026-11-06",
+      "start": "2026-11-12",
       "end": "2027-05-16",
       "url": "https://www.tretyakovgallery.ru/exhibitions/o/aleksandr-ivanov-bibleyskie-eskizy-chudesa-i-propovedi-khrista/",
       "note": "Новая часть цикла: библейские эскизы Александра Иванова (1806–1858) из собрания галереи",
@@ -249,26 +192,6 @@
       "coordinates_source": "https://www.openstreetmap.org/way/95408994"
     },
     {
-      "title": "Арзамасская академия",
-      "venue": "Нижегородский художественный музей, Русское искусство (Кремль, корп. 3)",
-      "city": "Нижний Новгород",
-      "country": "Россия",
-      "start": "2026-07-31",
-      "end": "2026-11-15",
-      "url": "https://artmuseumnn.ru/vystavki/4746/",
-      "note": "Около 100 работ: Александр Ступин и его школа, Брюллов, Егоров, «Охотники на привале» Перова",
-      "tags": [
-        "xix",
-        "russian"
-      ],
-      "museum": "Нижегородский государственный художественный музей",
-      "address": "Кремль, корпус 3, Нижний Новгород",
-      "address_source": "https://www.openstreetmap.org/relation/2917120",
-      "lat": 56.3295482,
-      "lon": 44.0064045,
-      "coordinates_source": "https://www.openstreetmap.org/relation/2917120"
-    },
-    {
       "title": "Илья Репин",
       "venue": "Ярославский художественный музей, Губернаторский дом",
       "city": "Ярославль",
@@ -295,7 +218,7 @@
       "country": "Россия",
       "start": "2026-08-26",
       "end": "2027-01-10",
-      "url": "https://rusmuseum.ru/exhibitions/traveling-expo/",
+      "url": "https://rusmuseum.ru/exhibitions/traveling-expo/russkiy-impressionizm/",
       "note": "Выездная выставка Русского музея: русский импрессионизм из собрания ГРМ",
       "tags": [
         "impr",
@@ -303,25 +226,6 @@
       ],
       "address": "Советский проспект, 48, Кемерово",
       "address_source": "https://kuzbassizo.ru/"
-    },
-    {
-      "title": "Искусство впечатления. Импрессионизм",
-      "venue": "Иркутский областной художественный музей им. В. П. Сукачёва",
-      "city": "Иркутск",
-      "lat": 52.2839508,
-      "lon": 104.2815229,
-      "country": "Россия",
-      "start": "2026-09-15",
-      "end": "2026-11-12",
-      "url": "https://pushkinmuseum.art/events/archive/2025/exhibitions/impressionists_in_siberia/index.php",
-      "note": "Гастроли ГМИИ: французская живопись XIX — начала XX века — Курбе, Писсарро, Раффаэлли, Сезанн",
-      "tags": [
-        "xix",
-        "impr"
-      ],
-      "address": "Улица Ленина, 5, Иркутск",
-      "address_source": "https://www.openstreetmap.org/relation/15966824",
-      "coordinates_source": "https://www.openstreetmap.org/relation/15966824"
     },
     {
       "title": "Западноевропейское искусство XVII–XIX веков из Тульского музейного объединения",
@@ -1228,42 +1132,6 @@
       "address_source": "https://www.tretyakovgallery.ru"
     },
     {
-      "title": "Детство. Отрочество. Святость",
-      "venue": "Музей имени Андрея Рублёва",
-      "city": "Москва",
-      "lat": 55.74927,
-      "lon": 37.6701,
-      "country": "Россия",
-      "start": "2026-09-03",
-      "end": "2026-11-15",
-      "url": "https://www.rublev-museum.ru/poster/exhibition/5502/",
-      "note": "100+ икон, картин и скульптур конца XV — начала XX века о святых детях; из ГИМ, ГМИИ, частных собраний",
-      "tags": [
-        "old",
-        "russian"
-      ],
-      "address": "Андроньевская площадь, 10, Москва",
-      "address_source": "https://www.rublev-museum.ru/poster/exhibition/5502/"
-    },
-    {
-      "title": "Елизаветинская Библия",
-      "venue": "Музей имени Андрея Рублёва",
-      "city": "Москва",
-      "lat": 55.74927,
-      "lon": 37.6701,
-      "country": "Россия",
-      "start": "2026-08-13",
-      "end": "2026-11-01",
-      "url": "https://www.rublev-museum.ru/poster/exhibition/5466/",
-      "note": "Библии 1756–1784 годов с гравюрами, иконы и западноевропейская графика XVII–XVIII веков",
-      "tags": [
-        "old",
-        "russian"
-      ],
-      "address": "Андроньевская площадь, 10, Москва",
-      "address_source": "https://www.rublev-museum.ru/poster/exhibition/5502/"
-    },
-    {
       "title": "Ковчег будущего",
       "venue": "Музей Востока, Музей Рерихов на ВДНХ (павильон № 13)",
       "city": "Москва",
@@ -1617,42 +1485,6 @@
       "coordinates_source": "https://www.openstreetmap.org/way/62364875"
     },
     {
-      "title": "Семь историй сотворения мира. К 50-летию реставрации Гатчинского дворца",
-      "venue": "Гатчинский дворец",
-      "city": "Гатчина",
-      "lat": 59.56394,
-      "lon": 30.10803,
-      "country": "Россия",
-      "start": "2026-06-06",
-      "end": "2026-11-08",
-      "url": "https://gatchinapalace.ru/events/exhibitions/4752/",
-      "note": "Сотни предметов из фондов, многие впервые: мебель, графика, скульптура, декоративное искусство",
-      "tags": [
-        "old",
-        "russian"
-      ],
-      "source": "https://gatchinapalace.ru/",
-      "address": "Красноармейский проспект, 1, Гатчина",
-      "address_source": "https://gatchinapalace.ru/events/exhibitions/4752/"
-    },
-    {
-      "title": "Авантюры талантов. Среда авангарда в Нижнем Новгороде",
-      "venue": "«Арсенал» — Волго-Вятский филиал ГМИИ им. А. С. Пушкина",
-      "city": "Нижний Новгород",
-      "country": "Россия",
-      "start": "2026-08-21",
-      "end": "2026-11-15",
-      "url": "https://www.pushkinmuseum.art/news/archive/2026/08_/adventure_of_talents/index.php?lang=ru",
-      "note": "Авангард в Нижнем конца XIX — 1920-х: Матюшин, Богородский, Хлебников, эскизы Малевича; ГМИИ, ГТГ и др.",
-      "tags": [
-        "russian",
-        "modern"
-      ],
-      "museum": "Волго-Вятский филиал ГМИИ им. А. С. Пушкина (Арсенал)",
-      "address": "Кремль, корпус 6, Нижний Новгород",
-      "address_source": "https://arsenal-museum.art"
-    },
-    {
       "title": "Классика французского искусства XVII–XX веков из собрания ГМИИ им. А. С. Пушкина",
       "venue": "Челябинский музей изобразительных искусств",
       "city": "Челябинск",
@@ -1707,25 +1539,6 @@
       "lat": 55.021978,
       "lon": 82.920816,
       "coordinates_source": "https://nsartmuseum.ru/events/exhibitions/detail/rafael-versii/"
-    },
-    {
-      "title": "Искусство впечатления. Импрессионизм",
-      "venue": "Музейный центр «Площадь Мира»",
-      "city": "Красноярск",
-      "lat": 56.0109493,
-      "lon": 92.8937198,
-      "country": "Россия",
-      "start": "2026-09-08",
-      "end": "2026-11-15",
-      "url": "https://pushkinmuseum.art/events/archive/2025/exhibitions/impressionists_in_siberia/index.php",
-      "note": "Гастроли ГМИИ: Коро, Сислей, Матисс рядом с Суриковым и Коровиным; есть раздел современных художников",
-      "tags": [
-        "impr",
-        "russian"
-      ],
-      "address": "Проспект Мира, 1, Красноярск",
-      "address_source": "https://www.openstreetmap.org/way/60219534",
-      "coordinates_source": "https://www.openstreetmap.org/way/60219534"
     },
     {
       "title": "Церковная живопись. Петербургская школа первой половины XIX века",
@@ -2149,23 +1962,6 @@
       "address_source": "https://www.ngv.vic.gov.au/plan-your-visit/"
     },
     {
-      "title": "Сказка рядом",
-      "venue": "Новгородский музей-заповедник",
-      "city": "Великий Новгород",
-      "country": "Россия",
-      "start": "2026-08-15",
-      "end": "2026-11-08",
-      "url": "https://novgorod.rusimp.su/",
-      "note": "Выставка Музея русского импрессионизма и Новгородского музея-заповедника",
-      "tags": [
-        "russian"
-      ],
-      "museum": "Новгородский музей-заповедник, Великий Новгород",
-      "source": "https://novgorodmuseum.ru/visit/sobytiya/skazka-ryadom",
-      "address": "Никольская улица, 1, Великий Новгород",
-      "address_source": "https://novgorod.rusimp.su/"
-    },
-    {
       "title": "Скорые помощники, тёплые заступники. Лики и пространства народной иконы",
       "venue": "Новгородский музей-заповедник, Присутственные места (Кремль)",
       "city": "Великий Новгород",
@@ -2184,24 +1980,6 @@
       "address": "Кремль, 4, Присутственные места, Великий Новгород",
       "address_source": "https://www.openstreetmap.org/way/27275134",
       "coordinates_source": "https://www.openstreetmap.org/way/27275134"
-    },
-    {
-      "title": "От Возрождения до Модерна. Шедевры художественного серебра из собрания Исторического музея",
-      "venue": "Ярославский художественный музей, Музей зарубежного искусства",
-      "city": "Ярославль",
-      "country": "Россия",
-      "start": "2026-07-10",
-      "end": "2026-11-08",
-      "url": "https://yarartmuseum.ru/exhibitions/ot-vozrozhdeniya-do-moderna/",
-      "note": "Европейское и русское художественное серебро от Ренессанса до модерна из собрания ГИМ",
-      "tags": [
-        "old",
-        "modern"
-      ],
-      "lat": 57.62704,
-      "lon": 39.89578,
-      "address": "Советская площадь, 2, Ярославль",
-      "address_source": "https://yarartmuseum.ru/exhibitions/ot-vozrozhdeniya-do-moderna/"
     },
     {
       "title": "Фарфор Московского Кремля. Неизвестная коллекция",
@@ -2409,40 +2187,6 @@
       "address_source": "https://dogadinka.ru/event/%d0%b2%d1%8b%d1%81%d1%82%d0%b0%d0%b2%d0%ba%d0%b0-%d0%ba%d1%83%d0%bf%d0%b5%d1%87%d0%b5%d1%81%d0%ba%d0%b8%d0%b9-%d0%bf%d0%be%d1%80%d1%82%d1%80%d0%b5%d1%82/"
     },
     {
-      "title": "Петербург в двадцать первом году",
-      "venue": "Дом-музей Б. М. Кустодиева (филиал Астраханской картинной галереи)",
-      "city": "Астрахань",
-      "country": "Россия",
-      "start": "2026-08-21",
-      "end": "2026-11-15",
-      "url": "https://dogadinka.ru/event/%d0%b2%d1%8b%d1%81%d1%82%d0%b0%d0%b2%d0%ba%d0%b0-%d0%bf%d0%b5%d1%82%d0%b5%d1%80%d0%b1%d1%83%d1%80%d0%b3-%d0%b2-%d0%b4%d0%b2%d0%b0%d0%b4%d1%86%d0%b0%d1%82%d1%8c-%d0%bf%d0%b5%d1%80%d0%b2%d0%be/",
-      "note": "Альбом литографий Мстислава Добужинского «Петербург в двадцать первом году» и его эскизы к «Борису Годунову»",
-      "tags": [
-        "russian",
-        "modern"
-      ],
-      "lat": 46.35031,
-      "lon": 48.0493,
-      "address": "Улица Калинина, 26 / улица Свердлова, 68, Астрахань",
-      "address_source": "https://dogadinka.ru/event/%d0%b2%d1%8b%d1%81%d1%82%d0%b0%d0%b2%d0%ba%d0%b0-%d0%bf%d0%b5%d1%82%d0%b5%d1%80%d0%b1%d1%83%d1%80%d0%b3-%d0%b2-%d0%b4%d0%b2%d0%b0%d0%b4%d1%86%d0%b0%d1%82%d1%8c-%d0%bf%d0%b5%d1%80%d0%b2%d0%be/"
-    },
-    {
-      "title": "Алмазная колесница. Буддийское искусство России",
-      "venue": "ГМИИ им. А. С. Пушкина, Главное здание",
-      "city": "Москва",
-      "country": "Россия",
-      "start": "2026-08-04",
-      "end": "2026-11-01",
-      "url": "https://pushkinmuseum.art/events/archive/2026/exhibitions/almaznaya_kolesnica._buddiyskoe_iskusstvo_rossii/index.php",
-      "note": "Более 700 предметов буддийского искусства Тибета, Монголии, Китая, Непала, Бурятии, Калмыкии и Тувы; вместе с Музеем Востока",
-      "tags": [
-        "east"
-      ],
-      "museum": "ГМИИ им. А.С. Пушкина, Москва",
-      "address": "улица Волхонка, 12, Москва",
-      "address_source": "https://pushkinmuseum.art"
-    },
-    {
       "title": "Дом наш напоминал музей… Нидерландская живопись из собрания музея-заповедника «Архангельское»",
       "venue": "Юсуповский дворец, выставочный зал (ул. Декабристов, 21)",
       "city": "Санкт-Петербург",
@@ -2466,7 +2210,7 @@
       "country": "Россия",
       "start": "2026-10-30",
       "end": "2027-01-31",
-      "url": "https://www.afisha.ru/exhibition/malevich-prostye-figury-1014798/",
+      "url": "https://zvenmuseum.ru/exhibition/malevich-prostyye-figury/",
       "note": "Триптих Малевича 1923 года из Русского музея — «Чёрный квадрат», «Чёрный крест», «Чёрный круг» — и реконструкция архитектона",
       "tags": [
         "modern",
@@ -2498,12 +2242,12 @@
     },
     {
       "title": "Путешествие Арканума. Немецкий фарфор XVIII века",
-      "venue": "Государственный Эрмитаж",
+      "venue": "Государственный Эрмитаж, Зимний дворец, Синяя спальня (зал № 307)",
       "city": "Санкт-Петербург",
       "country": "Россия",
       "start": "2026-10-31",
       "end": "2027-04-11",
-      "url": "https://www.afisha.ru/exhibition/puteshestvie-arkanuma-nemeckiy-farfor-xviii-veka-1014280/",
+      "url": "https://hermitagemuseum.org/what-s-on/arcanum",
       "note": "90 произведений немецкого фарфора XVIII века: Мейсен и выросшие из него мануфактуры",
       "tags": [
         "old"
@@ -2511,25 +2255,6 @@
       "museum": "Государственный Эрмитаж",
       "address": "Дворцовая набережная, 34, Санкт-Петербург",
       "address_source": "https://www.hermitagemuseum.org"
-    },
-    {
-      "title": "Екатерина II и век Просвещения: русский проект",
-      "venue": "Музей-заповедник «Коломенское», Дворец царя Алексея Михайловича",
-      "city": "Москва",
-      "country": "Россия",
-      "start": "2026-06-11",
-      "end": "2026-11-15",
-      "url": "https://www.afisha.ru/exhibition/ekaterina-ii-i-vek-prosveshcheniya-russkiy-proekt-1011385/",
-      "note": "256 экспонатов: портреты Рокотова и Левицкого, эгломизе и силуэты, орденский сервиз Екатерины II, издания эпохи",
-      "tags": [
-        "old",
-        "russian"
-      ],
-      "lat": 55.6558806,
-      "lon": 37.6570348,
-      "address": "Проспект Андропова, 39, строение 69, Москва",
-      "address_source": "https://www.openstreetmap.org/relation/14065287",
-      "coordinates_source": "https://www.openstreetmap.org/relation/14065287"
     },
     {
       "title": "КультНаук’ XVIII. Эпоха Просвещения в частных собраниях России",
@@ -2974,24 +2699,6 @@
       "address_source": "https://www.fundacionmapfre.org/arte-y-cultura/exposiciones/sala-recoletos/prerrafaelismo-itinerarios-femeninos/"
     },
     {
-      "title": "Я, Гюстав Курбе. Художник и бунтарь",
-      "title_orig": "Ich, Gustave Courbet. Maler und Rebell",
-      "venue": "Музей Фолькванг",
-      "city": "Эссен",
-      "lat": 51.44167,
-      "lon": 7.00417,
-      "country": "Германия",
-      "start": "2026-07-17",
-      "end": "2026-11-08",
-      "url": "https://www.museum-folkwang.de/en/exhibition/i-gustave-courbet",
-      "note": "Большая ретроспектива Курбе — от автопортретов до швейцарского изгнания; вместе с Музеем Леопольда",
-      "tags": [
-        "xix"
-      ],
-      "address": "Museumsplatz 1, Essen",
-      "address_source": "https://www.museum-folkwang.de/en/contact"
-    },
-    {
       "title": "Женни Монтиньи",
       "title_orig": "Jenny Montigny",
       "venue": "Музей изящных искусств (MSK)",
@@ -3044,25 +2751,6 @@
       ],
       "address": "2-6-2 Marunouchi, Chiyoda-ku, Tokyo",
       "address_source": "https://mimt.jp/access"
-    },
-    {
-      "title": "78-я выставка сокровищ Сёсоина",
-      "title_orig": "第78回 正倉院展",
-      "venue": "Национальный музей Нары",
-      "city": "Нара",
-      "lat": 34.6830955,
-      "lon": 135.8383105,
-      "country": "Япония",
-      "start": "2026-10-24",
-      "end": "2026-11-09",
-      "url": "https://shosoin-ten.jp/",
-      "note": "60 сокровищ VIII века из императорской сокровищницы Сёсоин, 11 впервые: фишки для го, лаковый кувшин, стекло, зеркало",
-      "tags": [
-        "east"
-      ],
-      "address": "Noborioji-chō, Nara National Museum, Nara",
-      "address_source": "https://www.openstreetmap.org/way/921353198",
-      "coordinates_source": "https://www.openstreetmap.org/way/921353198"
     },
     {
       "title": "Импрессионисты. Моне, Моризо, Ренуар и их круг",
@@ -3450,31 +3138,12 @@
       "museum_site": "https://kirov-artmuzeum.ru"
     },
     {
-      "title": "Николай Хохряков. Поэзия природы",
-      "venue": "Дом-музей художника Н. Н. Хохрякова",
-      "city": "Киров",
-      "country": "Россия",
-      "start": "2026-05-29",
-      "end": "2026-11-07",
-      "url": "https://kirov-artmuzeum.ru/museum/dom-muzej-xudozhnika-n-n-xoxryakova/events-dom-muzej-xoxryakova/2910-nikolaj-xoxryakov-poeziya-prirodyi",
-      "source": "https://kirov-artmuzeum.ru/museum/dom-muzej-xudozhnika-n-n-xoxryakova/events-dom-muzej-xoxryakova/2910-nikolaj-xoxryakov-poeziya-prirodyi",
-      "address": "Копанский переулок, 4, Киров",
-      "note": "Около 30 живописных работ вятского пейзажиста Николая Хохрякова (1857–1928) из фондов музея",
-      "tags": [
-        "russian",
-        "xix"
-      ],
-      "artists": [],
-      "query": "Киров, Копанский переулок, 4",
-      "museum_site": "https://kirov-artmuzeum.ru"
-    },
-    {
       "title": "Окрестности Санкт-Петербурга в гравюрах и литографиях XIX века",
       "venue": "Русский музей, Михайловский дворец",
       "city": "Санкт-Петербург",
       "country": "Россия",
       "start": "2026-08-05",
-      "end": "2026-11-02",
+      "end": "2026-11-30",
       "url": "https://rusmuseum.ru/museums/mikhailovsky-palace/",
       "source": "https://rusmuseum.ru/museums/mikhailovsky-palace/",
       "address": "Санкт-Петербург, Инженерная ул., 4",
@@ -3525,6 +3194,117 @@
       "artists": [],
       "query": "Ярославль, Волжская набережная, 1",
       "museum_site": "https://yarartmuseum.ru"
+    },
+    {
+      "title": "Императорский Китай. Династия Цин (1644–1911)",
+      "venue": "Государственный Эрмитаж, Зимний дворец, Гербовый зал (№ 195)",
+      "city": "Санкт-Петербург",
+      "country": "Россия",
+      "start": "2026-06-24",
+      "end": "2026-11-22",
+      "url": "https://www.hermitagemuseum.org/what-s-on/china26",
+      "note": "Около 60 произведений китайского дворцового искусства эпохи Цин из собрания Эрмитажа.",
+      "tags": [
+        "east",
+        "old"
+      ],
+      "museum": "Государственный Эрмитаж"
+    },
+    {
+      "title": "Полис — это люди, а не стены и пустые корабли",
+      "venue": "Екатеринбургский музей изобразительных искусств, центр «Эрмитаж-Урал»",
+      "city": "Екатеринбург",
+      "country": "Россия",
+      "start": "2026-10-23",
+      "end": "2027-03-08",
+      "url": "https://i-z-o.art/exhibitions/polis-eto-lyudi-a-ne-steny-i-pustye-korabli-event-3884.html",
+      "note": "Выставка одного античного произведения: мраморный бюст Афины из Эрмитажа, римская копия II века н. э.",
+      "tags": [
+        "old"
+      ],
+      "address": "улица Вайнера, 11, Екатеринбург"
+    },
+    {
+      "title": "Лев Бакст",
+      "venue": "Третьяковская галерея, Инженерный корпус",
+      "city": "Москва",
+      "country": "Россия",
+      "start": "2026-11-10",
+      "end": "2027-04-18",
+      "url": "https://www.tretyakovgallery.ru/exhibitions/o/vystavka-lev-bakst/",
+      "note": "Выставка к 160-летию художника Льва Бакста (1866–1924): графика, театр и живопись начала XX века.",
+      "tags": [
+        "russian",
+        "modern"
+      ],
+      "museum": "Государственная Третьяковская галерея, Москва",
+      "address": "Лаврушинский переулок, 12, Москва"
+    },
+    {
+      "title": "Стили и направления. От иконы до символизма",
+      "venue": "Третьяковская галерея, корпус на Кадашёвской набережной",
+      "city": "Москва",
+      "country": "Россия",
+      "start": "2026-11-18",
+      "end": "2027-05-16",
+      "url": "https://www.tretyakovgallery.ru/exhibitions/o/stili-i-napravleniya-ot-ikony-do-simvolizma/",
+      "note": "Русское изобразительное искусство XI — начала XX века: от древнерусской иконы до импрессионизма и символизма.",
+      "tags": [
+        "old",
+        "xix",
+        "russian",
+        "modern"
+      ],
+      "museum": "Государственная Третьяковская галерея, Москва",
+      "address": "Кадашёвская набережная, 12, Москва"
+    },
+    {
+      "title": "Царское Село. Шедевры императорской резиденции",
+      "venue": "Нижегородский государственный художественный музей, Зарубежное искусство",
+      "city": "Нижний Новгород",
+      "country": "Россия",
+      "start": "2026-11-11",
+      "end": "2027-02-14",
+      "url": "https://artmuseumnn.ru/vystavki/091120264914/",
+      "note": "Произведения декоративно-прикладного искусства XVIII–XIX веков из собрания музея-заповедника «Царское Село».",
+      "tags": [
+        "old",
+        "xix",
+        "russian"
+      ],
+      "address": "Верхневолжская набережная, 3, Нижний Новгород"
+    },
+    {
+      "title": "Голландская коллекция Ярославского художественного музея",
+      "venue": "Ярославский художественный музей, Музей зарубежного искусства",
+      "city": "Ярославль",
+      "country": "Россия",
+      "start": "2026-11-14",
+      "end": "2027-02-28",
+      "url": "https://www.yarartmuseum.ru/exhibitions/gollandskaya-kollektsiya-yaroslavskogo-khudozhestvennogo-muzeya/",
+      "note": "Живопись, графика и фаянс; в том числе оригинальные рисунки XVII века и гравюры по произведениям старых мастеров.",
+      "tags": [
+        "old",
+        "xix"
+      ],
+      "address": "Советская площадь, 2, Ярославль"
+    },
+    {
+      "title": "Франс Снейдерс. Бой петуха с индюком",
+      "venue": "Калужский музей изобразительных искусств",
+      "city": "Калуга",
+      "country": "Россия",
+      "start": "2026-10-23",
+      "end": "2027-02-14",
+      "url": "https://kmii.ru/events/vystavka-kartiny-fransa-sneydersa-boy-petukha-s-indyukom-iz-sobraniya-gosudarstvennogo-ermitazha",
+      "note": "Выставка одного произведения фламандской живописи XVII века из Государственного Эрмитажа.",
+      "tags": [
+        "old"
+      ],
+      "address": "улица Ленина, 104, Калуга",
+      "artists": [
+        "Франс Снейдерс"
+      ]
     }
   ],
   "sources": [
@@ -3648,7 +3428,7 @@
       "museum": "National Gallery of Art",
       "city": "Вашингтон",
       "country": "США",
-      "url": "https://www.nga.gov/exhibitions",
+      "url": "https://www.nga.gov/calendar?tab=exhibitions",
       "priority": "high",
       "site": "https://www.nga.gov/",
       "address": "6th Street and Constitution Avenue NW, Washington, DC 20565, USA (West Building)",
@@ -3715,7 +3495,8 @@
       "museum": "Вернисаж (Находка)",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%92%D0%B5%D1%80%D0%BD%D0%B8%D1%81%D0%B0%D0%B6_(%D0%9D%D0%B0%D1%85%D0%BE%D0%B4%D0%BA%D0%B0)",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "нужно проверить официальный сайт",
+      "site": "https://www.museum-nakhodka.ru/"
     },
     {
       "museum": "Волгоградский музей изобразительных искусств имени И. И. Машкова",
@@ -3748,7 +3529,8 @@
       "review_status": "официальные данные проверены 2026-10-31",
       "site": "https://mkram.ru/",
       "address": "Воронеж, пр. Революции, 18",
-      "address_source": "https://mkram.ru/ru/muzej/rekvizit/"
+      "address_source": "https://mkram.ru/ru/muzej/rekvizit/",
+      "url": "https://mkram.ru/ru/category/vystavki/tekushhie/"
     },
     {
       "museum": "Вятский художественный музей имени В. М. и А. М. Васнецовых",
@@ -3912,7 +3694,8 @@
       "museum": "Каргопольский государственный историко-архитектурный и художественный музей",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%80%D0%B3%D0%BE%D0%BF%D0%BE%D0%BB%D1%8C%D1%81%D0%BA%D0%B8%D0%B9_%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D0%BA%D0%BE-%D0%B0%D1%80%D1%85%D0%B8%D1%82%D0%B5%D0%BA%D1%82%D1%83%D1%80%D0%BD%D1%8B%D0%B9_%D0%B8_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "нужно проверить официальный сайт",
+      "site": "https://karmuseum.ru/"
     },
     {
       "museum": "Музей изобразительных искусств Республики Карелия",
@@ -3927,7 +3710,9 @@
       "museum": "Керченская картинная галерея имени Н. Я. Бута",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B5%D1%80%D1%87%D0%B5%D0%BD%D1%81%D0%BA%D0%B0%D1%8F_%D0%BA%D0%B0%D1%80%D1%82%D0%B8%D0%BD%D0%BD%D0%B0%D1%8F_%D0%B3%D0%B0%D0%BB%D0%B5%D1%80%D0%B5%D1%8F_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%9D._%D0%AF._%D0%91%D1%83%D1%82%D0%B0",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "нужно проверить официальный сайт",
+      "site": "https://www.kerchmuseum.ru/",
+      "url": "https://www.kerchmuseum.ru/ru/kartinnaja-galereja.html"
     },
     {
       "museum": "Киржачский районный историко-краеведческий и художественный музей",
@@ -3939,7 +3724,8 @@
       "museum": "Кологривский краеведческий музей имени Г. А. Ладыженского",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BB%D0%BE%D0%B3%D1%80%D0%B8%D0%B2%D1%81%D0%BA%D0%B8%D0%B9_%D0%BA%D1%80%D0%B0%D0%B5%D0%B2%D0%B5%D0%B4%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%93._%D0%90._%D0%9B%D0%B0%D0%B4%D1%8B%D0%B6%D0%B5%D0%BD%D1%81%D0%BA%D0%BE%D0%B3%D0%BE",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "нужно проверить официальный сайт",
+      "site": "https://www.kosmuseum.ru/locations/filials/kologriv"
     },
     {
       "museum": "Костромской государственный историко-архитектурный и художественный музей-заповедник",
@@ -4032,7 +3818,8 @@
       "museum": "Музей А. А. Пластова",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%90._%D0%90._%D0%9F%D0%BB%D0%B0%D1%81%D1%82%D0%BE%D0%B2%D0%B0",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "нужно проверить официальный сайт",
+      "site": "https://uohm.art/plastov/"
     },
     {
       "museum": "Музей Б. У. Кашкина",
@@ -4050,13 +3837,15 @@
       "museum": "Музей органической культуры",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%BE%D1%80%D0%B3%D0%B0%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B9_%D0%BA%D1%83%D0%BB%D1%8C%D1%82%D1%83%D1%80%D1%8B",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "нужно проверить официальный сайт",
+      "site": "https://museumart.ru/"
     },
     {
       "museum": "Музей пейзажа",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%BF%D0%B5%D0%B9%D0%B7%D0%B0%D0%B6%D0%B0",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "нужно проверить официальный сайт",
+      "site": "https://ples-museum.ru/museums/muzey-peyzazha/"
     },
     {
       "museum": "Музей-усадьба Н. Н. Хохрякова",
@@ -4200,7 +3989,8 @@
       "museum": "Мемориальная мастерская А. В. Пантелеева",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B5%D0%BC%D0%BE%D1%80%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F_%D0%BC%D0%B0%D1%81%D1%82%D0%B5%D1%80%D1%81%D0%BA%D0%B0%D1%8F_%D0%90._%D0%92._%D0%9F%D0%B0%D0%BD%D1%82%D0%B5%D0%BB%D0%B5%D0%B5%D0%B2%D0%B0",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "нужно проверить официальный сайт",
+      "site": "https://vologda-gallery.ru/kontakty/?hous=300"
     },
     {
       "museum": "Переславский музей-заповедник",
@@ -4233,7 +4023,8 @@
       "museum": "Сосновоборский художественный музей современного искусства",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%BE%D0%B1%D0%BE%D1%80%D1%81%D0%BA%D0%B8%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D1%81%D0%BE%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%BE%D0%B3%D0%BE_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B0",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "нужно проверить официальный сайт",
+      "site": "https://www.lenoblmus.ru/museums/sosnovoborskiy-khudozhestvennyy-muzey-sovremennogo-iskusstva"
     },
     {
       "museum": "Рыбинский музей-заповедник",
@@ -4305,13 +4096,15 @@
       "museum": "Симферопольский художественный музей",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%B8%D0%BC%D1%84%D0%B5%D1%80%D0%BE%D0%BF%D0%BE%D0%BB%D1%8C%D1%81%D0%BA%D0%B8%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "нужно проверить официальный сайт",
+      "site": "https://simhm.ru/"
     },
     {
       "museum": "Сочинский художественный музей имени Дмитрия Жилинского",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D1%87%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%94%D0%BC%D0%B8%D1%82%D1%80%D0%B8%D1%8F_%D0%96%D0%B8%D0%BB%D0%B8%D0%BD%D1%81%D0%BA%D0%BE%D0%B3%D0%BE",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "нужно проверить официальный сайт",
+      "site": "https://www.sochiartmuseum.art/"
     },
     {
       "museum": "Спасское (музей)",
@@ -4367,7 +4160,8 @@
       "museum": "Ульяновский областной художественный музей",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A3%D0%BB%D1%8C%D1%8F%D0%BD%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%BD%D0%BE%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "нужно проверить официальный сайт",
+      "site": "https://uohm.art/"
     },
     {
       "museum": "Художественно-исторический музей имени А. В. Григорьева",
@@ -4440,7 +4234,7 @@
       "city": "Ярославль",
       "country": "Россия",
       "website": "https://new.yarartmuseum.ru/",
-      "url": "https://new.yarartmuseum.ru/exhibitions/",
+      "url": "https://new.yarartmuseum.ru/exhibitions/index.php",
       "address": "Ярославль, Волжская набережная, 23 (Губернаторский дом)",
       "address_source": "https://new.yarartmuseum.ru/exhibitions/lichnaya-istoriya/",
       "notes": "Другие площадки: Митрополичьи палаты — Волжская набережная, 1; Музей зарубежного искусства — Советская площадь, 2",
@@ -4502,13 +4296,17 @@
       "museum": "Музей Баксы",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%91%D0%B0%D0%BA%D1%81%D1%8B",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "нужно проверить официальный сайт",
+      "site": "https://baksi.org/",
+      "url": "https://baksi.org/sergiler"
     },
     {
       "museum": "Музей Мимара",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%9C%D0%B8%D0%BC%D0%B0%D1%80%D0%B0",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "нужно проверить официальный сайт",
+      "site": "https://www.mimara.hr/",
+      "url": "https://www.mimara.hr/en/exhibitions/upcoming"
     },
     {
       "museum": "Музей Резы Аббаси",
@@ -4535,7 +4333,8 @@
       "museum": "Национальная художественная галерея (Исламабад)",
       "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9D%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F_%D0%B3%D0%B0%D0%BB%D0%B5%D1%80%D0%B5%D1%8F_(%D0%98%D1%81%D0%BB%D0%B0%D0%BC%D0%B0%D0%B1%D0%B0%D0%B4)",
       "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8",
-      "review_status": "нужно проверить официальный сайт"
+      "review_status": "нужно проверить официальный сайт",
+      "site": "https://pnca.gov.pk/visual-arts/"
     },
     {
       "museum": "Национальный музей изобразительного искусства Республики Молдова",
@@ -4597,12 +4396,12 @@
       "city": "Москва",
       "country": "Россия",
       "website": "https://tretyakov.ru/",
-      "url": "https://tretyakov.ru/",
+      "url": "https://www.tretyakovgallery.ru/tickets/exhibitions/",
       "address": "Москва, Лаврушинский переулок, 10 (историческое здание)",
       "address_source": "https://tretyakov.ru/for-visitors/museums/istoricheskoe-zdanie/",
       "notes": "Корпуса на Кадашёвской набережной и Крымском Валу имеют другие адреса",
       "priority": "medium",
-      "site": "https://tretyakov.ru/"
+      "site": "https://www.tretyakovgallery.ru/"
     },
     {
       "museum": "Государственный Русский музей",

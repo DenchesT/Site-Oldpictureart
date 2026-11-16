@@ -1,6 +1,6 @@
 {
   "_как": "Архив завершившихся выставок Old Picture Art. Записи сохраняются целиком и не публикуются в текущей афише.",
-  "updated": "2026-11-02",
+  "updated": "2026-11-16",
   "exhibitions": [
     {
       "title": "Хрупкое искусство. Пастель из фондов графики XVIII — начала XX века",
@@ -17,7 +17,9 @@
         "modern"
       ],
       "museum": "Государственная Третьяковская галерея, Москва",
-      "source": "https://www.tretyakovgallery.ru/tickets/exhibitions/"
+      "source": "https://www.tretyakovgallery.ru/tickets/exhibitions/",
+      "address": "Лаврушинский переулок, 10, Москва",
+      "address_source": "https://www.tretyakovgallery.ru"
     },
     {
       "title": "Елизаветинская Библия",
@@ -33,7 +35,9 @@
       "tags": [
         "old",
         "russian"
-      ]
+      ],
+      "address": "Андроньевская площадь, 10, Москва",
+      "address_source": "https://www.rublev-museum.ru/poster/exhibition/5502/"
     },
     {
       "title": "Алмазная колесница. Буддийское искусство России",
@@ -47,7 +51,287 @@
       "tags": [
         "east"
       ],
-      "museum": "ГМИИ им. А.С. Пушкина, Москва"
+      "museum": "ГМИИ им. А.С. Пушкина, Москва",
+      "address": "улица Волхонка, 12, Москва",
+      "address_source": "https://pushkinmuseum.art"
+    },
+    {
+      "title": "Иван Шишкин. Русский лес",
+      "venue": "Русский музей, Корпус Бенуа",
+      "city": "Санкт-Петербург",
+      "country": "Россия",
+      "start": "2026-04-25",
+      "end": "2026-11-09",
+      "url": "https://rusmuseum.ru/exhibitions/current/ivan-shishkin-russkiy-les/",
+      "note": "Большая выставка Шишкина: от монументальных лесных пейзажей до этюдов",
+      "tags": [
+        "xix",
+        "russian"
+      ],
+      "museum": "Государственный Русский музей, Санкт-Петербург",
+      "address": "Набережная канала Грибоедова, 2, Санкт-Петербург",
+      "address_source": "https://rusmuseum.ru/museums/benois-wing/",
+      "lat": 59.9386397,
+      "lon": 30.3289174,
+      "coordinates_source": "https://www.openstreetmap.org/relation/2614477"
+    },
+    {
+      "title": "Виктор Борисов-Мусатов. Гармония образа",
+      "venue": "Третьяковская галерея, корпус на Кадашёвской набережной",
+      "city": "Москва",
+      "country": "Россия",
+      "start": "2026-07-09",
+      "end": "2026-11-08",
+      "url": "https://www.tretyakovgallery.ru/exhibitions/o/viktor-borisov-musatov-garmoniya-obraza/",
+      "note": "Ретроспектива: 140+ живописных и графических работ из 20 музеев и частных собраний",
+      "tags": [
+        "russian",
+        "modern"
+      ],
+      "museum": "Корпус на Кадашёвской набережной",
+      "source": "https://www.tretyakovgallery.ru/tickets/exhibitions/",
+      "address": "Кадашёвская набережная, 12, Москва",
+      "address_source": "https://www.tretyakovgallery.ru"
+    },
+    {
+      "title": "Арзамасская академия",
+      "venue": "Нижегородский художественный музей, Русское искусство (Кремль, корп. 3)",
+      "city": "Нижний Новгород",
+      "country": "Россия",
+      "start": "2026-07-31",
+      "end": "2026-11-15",
+      "url": "https://artmuseumnn.ru/vystavki/4746/",
+      "note": "Около 100 работ: Александр Ступин и его школа, Брюллов, Егоров, «Охотники на привале» Перова",
+      "tags": [
+        "xix",
+        "russian"
+      ],
+      "museum": "Нижегородский государственный художественный музей",
+      "address": "Кремль, корпус 3, Нижний Новгород",
+      "address_source": "https://www.openstreetmap.org/relation/2917120",
+      "lat": 56.3295482,
+      "lon": 44.0064045,
+      "coordinates_source": "https://www.openstreetmap.org/relation/2917120"
+    },
+    {
+      "title": "Искусство впечатления. Импрессионизм",
+      "venue": "Иркутский областной художественный музей им. В. П. Сукачёва",
+      "city": "Иркутск",
+      "lat": 52.2839508,
+      "lon": 104.2815229,
+      "country": "Россия",
+      "start": "2026-09-15",
+      "end": "2026-11-12",
+      "url": "https://pushkinmuseum.art/events/archive/2025/exhibitions/impressionists_in_siberia/index.php",
+      "note": "Гастроли ГМИИ: французская живопись XIX — начала XX века — Курбе, Писсарро, Раффаэлли, Сезанн",
+      "tags": [
+        "xix",
+        "impr"
+      ],
+      "address": "Улица Ленина, 5, Иркутск",
+      "address_source": "https://www.openstreetmap.org/relation/15966824",
+      "coordinates_source": "https://www.openstreetmap.org/relation/15966824"
+    },
+    {
+      "title": "Детство. Отрочество. Святость",
+      "venue": "Музей имени Андрея Рублёва",
+      "city": "Москва",
+      "lat": 55.74927,
+      "lon": 37.6701,
+      "country": "Россия",
+      "start": "2026-09-03",
+      "end": "2026-11-15",
+      "url": "https://www.rublev-museum.ru/poster/exhibition/5502/",
+      "note": "100+ икон, картин и скульптур конца XV — начала XX века о святых детях; из ГИМ, ГМИИ, частных собраний",
+      "tags": [
+        "old",
+        "russian"
+      ],
+      "address": "Андроньевская площадь, 10, Москва",
+      "address_source": "https://www.rublev-museum.ru/poster/exhibition/5502/"
+    },
+    {
+      "title": "Семь историй сотворения мира. К 50-летию реставрации Гатчинского дворца",
+      "venue": "Гатчинский дворец",
+      "city": "Гатчина",
+      "lat": 59.56394,
+      "lon": 30.10803,
+      "country": "Россия",
+      "start": "2026-06-07",
+      "end": "2026-11-08",
+      "url": "https://gatchinapalace.ru/events/exhibitions/4752/",
+      "note": "Сотни предметов из фондов, многие впервые: мебель, графика, скульптура, декоративное искусство",
+      "tags": [
+        "old",
+        "russian"
+      ],
+      "source": "https://gatchinapalace.ru/",
+      "address": "Красноармейский проспект, 1, Гатчина",
+      "address_source": "https://gatchinapalace.ru/events/exhibitions/4752/"
+    },
+    {
+      "title": "Авантюры талантов. Среда авангарда в Нижнем Новгороде",
+      "venue": "«Арсенал» — Волго-Вятский филиал ГМИИ им. А. С. Пушкина",
+      "city": "Нижний Новгород",
+      "country": "Россия",
+      "start": "2026-08-21",
+      "end": "2026-11-15",
+      "url": "https://www.pushkinmuseum.art/news/archive/2026/08_/adventure_of_talents/index.php?lang=ru",
+      "note": "Авангард в Нижнем конца XIX — 1920-х: Матюшин, Богородский, Хлебников, эскизы Малевича; ГМИИ, ГТГ и др.",
+      "tags": [
+        "russian",
+        "modern"
+      ],
+      "museum": "Волго-Вятский филиал ГМИИ им. А. С. Пушкина (Арсенал)",
+      "address": "Кремль, корпус 6, Нижний Новгород",
+      "address_source": "https://arsenal-museum.art"
+    },
+    {
+      "title": "Искусство впечатления. Импрессионизм",
+      "venue": "Музейный центр «Площадь Мира»",
+      "city": "Красноярск",
+      "lat": 56.0109493,
+      "lon": 92.8937198,
+      "country": "Россия",
+      "start": "2026-09-08",
+      "end": "2026-11-15",
+      "url": "https://pushkinmuseum.art/events/archive/2025/exhibitions/impressionists_in_siberia/index.php",
+      "note": "Гастроли ГМИИ: Коро, Сислей, Матисс рядом с Суриковым и Коровиным; есть раздел современных художников",
+      "tags": [
+        "impr",
+        "russian"
+      ],
+      "address": "Проспект Мира, 1, Красноярск",
+      "address_source": "https://www.openstreetmap.org/way/60219534",
+      "coordinates_source": "https://www.openstreetmap.org/way/60219534"
+    },
+    {
+      "title": "Сказка рядом",
+      "venue": "Новгородский музей-заповедник",
+      "city": "Великий Новгород",
+      "country": "Россия",
+      "start": "2026-08-15",
+      "end": "2026-11-08",
+      "url": "https://novgorodmuseum.ru/visit/sobytiya/skazka-ryadom",
+      "note": "Выставка Музея русского импрессионизма и Новгородского музея-заповедника",
+      "tags": [
+        "russian"
+      ],
+      "museum": "Новгородский музей-заповедник, Великий Новгород",
+      "source": "https://novgorodmuseum.ru/visit/sobytiya/skazka-ryadom",
+      "address": "Никольская улица, 1, Великий Новгород",
+      "address_source": "https://novgorod.rusimp.su/"
+    },
+    {
+      "title": "От Возрождения до Модерна. Шедевры художественного серебра из собрания Исторического музея",
+      "venue": "Ярославский художественный музей, Музей зарубежного искусства",
+      "city": "Ярославль",
+      "country": "Россия",
+      "start": "2026-07-10",
+      "end": "2026-11-08",
+      "url": "https://yarartmuseum.ru/exhibitions/ot-vozrozhdeniya-do-moderna/",
+      "note": "Европейское и русское художественное серебро от Ренессанса до модерна из собрания ГИМ",
+      "tags": [
+        "old",
+        "modern"
+      ],
+      "lat": 57.62704,
+      "lon": 39.89578,
+      "address": "Советская площадь, 2, Ярославль",
+      "address_source": "https://yarartmuseum.ru/exhibitions/ot-vozrozhdeniya-do-moderna/"
+    },
+    {
+      "title": "Петербург в двадцать первом году",
+      "venue": "Дом-музей Б. М. Кустодиева (филиал Астраханской картинной галереи)",
+      "city": "Астрахань",
+      "country": "Россия",
+      "start": "2026-08-21",
+      "end": "2026-11-15",
+      "url": "https://dogadinka.ru/event/%d0%b2%d1%8b%d1%81%d1%82%d0%b0%d0%b2%d0%ba%d0%b0-%d0%bf%d0%b5%d1%82%d0%b5%d1%80%d0%b1%d1%83%d1%80%d0%b3-%d0%b2-%d0%b4%d0%b2%d0%b0%d0%b4%d1%86%d0%b0%d1%82%d1%8c-%d0%bf%d0%b5%d1%80%d0%b2%d0%be/",
+      "note": "Альбом литографий Мстислава Добужинского «Петербург в двадцать первом году» и его эскизы к «Борису Годунову»",
+      "tags": [
+        "russian",
+        "modern"
+      ],
+      "lat": 46.35031,
+      "lon": 48.0493,
+      "address": "Улица Калинина, 26 / улица Свердлова, 68, Астрахань",
+      "address_source": "https://dogadinka.ru/event/%d0%b2%d1%8b%d1%81%d1%82%d0%b0%d0%b2%d0%ba%d0%b0-%d0%bf%d0%b5%d1%82%d0%b5%d1%80%d0%b1%d1%83%d1%80%d0%b3-%d0%b2-%d0%b4%d0%b2%d0%b0%d0%b4%d1%86%d0%b0%d1%82%d1%8c-%d0%bf%d0%b5%d1%80%d0%b2%d0%be/"
+    },
+    {
+      "title": "Екатерина II и век Просвещения: русский проект",
+      "venue": "Музей-заповедник «Коломенское», Дворец царя Алексея Михайловича",
+      "city": "Москва",
+      "country": "Россия",
+      "start": "2026-06-11",
+      "end": "2026-11-15",
+      "url": "https://www.mgomz.ru/ru/exhibition/ekaterina-ii-i-vek-prosvescheniya",
+      "note": "256 экспонатов: портреты Рокотова и Левицкого, эгломизе и силуэты, орденский сервиз Екатерины II, издания эпохи",
+      "tags": [
+        "old",
+        "russian"
+      ],
+      "lat": 55.6558806,
+      "lon": 37.6570348,
+      "address": "Проспект Андропова, 39, строение 69, Москва",
+      "address_source": "https://www.openstreetmap.org/relation/14065287",
+      "coordinates_source": "https://www.openstreetmap.org/relation/14065287"
+    },
+    {
+      "title": "Я, Гюстав Курбе. Художник и бунтарь",
+      "title_orig": "Ich, Gustave Courbet. Maler und Rebell",
+      "venue": "Музей Фолькванг",
+      "city": "Эссен",
+      "lat": 51.44167,
+      "lon": 7.00417,
+      "country": "Германия",
+      "start": "2026-07-17",
+      "end": "2026-11-08",
+      "url": "https://www.museum-folkwang.de/en/exhibition/i-gustave-courbet",
+      "note": "Большая ретроспектива Курбе — от автопортретов до швейцарского изгнания; вместе с Музеем Леопольда",
+      "tags": [
+        "xix"
+      ],
+      "address": "Museumsplatz 1, Essen",
+      "address_source": "https://www.museum-folkwang.de/en/contact"
+    },
+    {
+      "title": "78-я выставка сокровищ Сёсоина",
+      "title_orig": "第78回 正倉院展",
+      "venue": "Национальный музей Нары",
+      "city": "Нара",
+      "lat": 34.6830955,
+      "lon": 135.8383105,
+      "country": "Япония",
+      "start": "2026-10-24",
+      "end": "2026-11-09",
+      "url": "https://shosoin-ten.jp/",
+      "note": "60 сокровищ VIII века из императорской сокровищницы Сёсоин, 11 впервые: фишки для го, лаковый кувшин, стекло, зеркало",
+      "tags": [
+        "east"
+      ],
+      "address": "Noborioji-chō, Nara National Museum, Nara",
+      "address_source": "https://www.openstreetmap.org/way/921353198",
+      "coordinates_source": "https://www.openstreetmap.org/way/921353198"
+    },
+    {
+      "title": "Николай Хохряков. Поэзия природы",
+      "venue": "Дом-музей художника Н. Н. Хохрякова",
+      "city": "Киров",
+      "country": "Россия",
+      "start": "2026-05-29",
+      "end": "2026-11-07",
+      "url": "https://kirov-artmuzeum.ru/news/2933-v-dome-muzee-n-n-xoxryakova-otkryilas-vyistavka-nikolaj-xoxryakov",
+      "source": "https://kirov-artmuzeum.ru/museum/dom-muzej-xudozhnika-n-n-xoxryakova/events-dom-muzej-xoxryakova/2910-nikolaj-xoxryakov-poeziya-prirodyi",
+      "address": "Копанский переулок, 4, Киров",
+      "note": "Около 30 живописных работ вятского пейзажиста Николая Хохрякова (1857–1928) из фондов музея",
+      "tags": [
+        "russian",
+        "xix"
+      ],
+      "artists": [],
+      "query": "Киров, Копанский переулок, 4",
+      "museum_site": "https://kirov-artmuzeum.ru"
     }
   ]
 }

@@ -44,7 +44,7 @@
       <h1><a href="https://novgorod.rusimp.su/" class="ext-link" target="_blank" rel="noopener" title="https://novgorod.rusimp.su/">Сказка рядом</a></h1>
       <h2>Музей русского импрессионизма, Новгородский музей-заповедник</h2>
       <p class="run-status" data-start="2026-08-15" data-end="2026-11-08" data-full hidden></p>
-      <p class="afisha-backlink" data-end="2026-11-08" hidden><a href="afisha.html#a-skazka-ryadom-velikii-novgorod">Сейчас в афише →</a></p>
+
     </header>
     <div class="shots"><a href="images/visit-2026-10-12-сказка-рядом-1.jpg" class="painting-link shot" target="_blank" rel="noopener" title="Рассмотреть" data-title="Сказка рядом" data-meta="Музей русского импрессионизма, Новгородский музей-заповедник, 09.10.2026" data-download="сказка-рядом-1.jpg"><img src="images/thumbs/visit-2026-10-12-сказка-рядом.jpg" alt="Сказка рядом, фотография 1 из 22" class="painting" width="600" height="400" fetchpriority="high" decoding="async"><span class="painting-hint" aria-hidden="true"><span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a>
 <a href="images/visit-2026-10-12-сказка-рядом-2.jpg" class="painting-link shot" target="_blank" rel="noopener" title="Рассмотреть" data-title="Сказка рядом" data-meta="Музей русского импрессионизма, Новгородский музей-заповедник, 09.10.2026" data-download="сказка-рядом-2.jpg"><img src="images/thumbs/visit-2026-10-12-сказка-рядом-2.jpg" alt="Сказка рядом, фотография 2 из 22" class="painting" width="464" height="600" loading="lazy" decoding="async"><span class="painting-hint" aria-hidden="true"><span class="icon-lupa" aria-hidden="true"></span> Рассмотреть</span></a>
@@ -755,12 +755,5 @@ function toast(text) {
   });
 })();
 </script>
-<script>
-(function () {
-  var p = document.querySelector('.afisha-backlink');
-  if (!p) return;
-  var e = (p.getAttribute('data-end') || '').split('-'), n = new Date();
-  p.hidden = e.length !== 3 || new Date(n.getFullYear(), n.getMonth(), n.getDate()) > new Date(+e[0], +e[1] - 1, +e[2]);
-})();
-</script>
+
 </body></html>
