@@ -5202,5 +5202,47 @@
       "images/views/turner-pyataya-kazn-egipetskaya-1880-1.jpg"
     ],
     "card": "images/cards/turner-pyataya-kazn-egipetskaya-1880.jpg"
+  },
+  {
+    "id": 642,
+    "date": "2026-11-18",
+    "filename": "perepletchikov-na-reke-1897.html",
+    "images": [
+      "images/perepletchikov-na-reke-1897-1.jpg"
+    ],
+    "hires": [
+      "images/perepletchikov-na-reke-1897-hires-1.jpg"
+    ],
+    "thumbs": [
+      "images/thumbs/perepletchikov-na-reke-1897.jpg"
+    ],
+    "links": [],
+    "artist": "Василий Васильевич Переплётчиков",
+    "title": "На реке, 1897",
+    "medium": "Холст, масло, 12 x 20 см",
+    "material": "Холст",
+    "techniques": [
+      "масло"
+    ],
+    "size": "12 x 20 см",
+    "museum": "Частная коллекция",
+    "history": [
+      "1) Коллекция художника Жака Милькина, перешла по наследству к нынешнему владельцу"
+    ],
+    "description": "",
+    "urls": [
+      "https://www.christies.com/en/lot/lot-5849205"
+    ],
+    "tags": [
+      "pc",
+      "картина",
+      "переплётчиков"
+    ],
+    "raw": "Василий Васильевич Переплётчиков\n⸻\nНа реке, 1897\n⸻\nХолст, масло, 12 x 20 см\n⸻\nЧастная коллекция\n⸻\n1) Коллекция художника Жака Милькина, перешла по наследству к нынешнему владельцу\n⸻\nhttps://www.christies.com/en/lot/lot-5849205\n⸻\n#переплётчиков@oldpictureart\n#pc@oldpictureart \n#картина@oldpictureart\n",
+    "creation_year": 1897,
+    "views": [
+      "images/views/perepletchikov-na-reke-1897-1.jpg"
+    ],
+    "card": "images/cards/perepletchikov-na-reke-1897.jpg"
   }
 ]

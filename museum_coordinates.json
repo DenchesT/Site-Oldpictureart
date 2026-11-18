@@ -713,6 +713,12 @@
     "source": "wikidata:Q1117704",
     "precision": "exact",
     "query": "Художественный музей Индианаполиса",
-    "hint": "\n"
+    "hint": "\n",
+    "details": {
+      "lat": 39.8259,
+      "lon": -86.1855,
+      "site": "https://discovernewfields.org/",
+      "country": "Соединённые Штаты Америки"
+    }
   }
 }
