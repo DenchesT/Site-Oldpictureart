@@ -18,8 +18,16 @@ def test_data():
     assert all(x['wikipedia_url'].startswith('https://ru.wikipedia.org/wiki/') for x in seed)
     reviewed=m.apply_reviewed(seed)
     assert len(reviewed)==115 # 113 direct + Tretyakov + Russian Museum
-    assert sum(bool(x.get('address')) for x in reviewed)==18
+    addressed = [x for x in reviewed if x.get('address')]
+    assert len(addressed) >= 18
     assert all(x['url'].startswith('https://') and x['address_source'].startswith('https://') for x in reviewed if x.get('address'))
+    by_name = {x['museum']: x for x in reviewed}
+    assert by_name['Спасское (музей)']['address'].startswith('Центральная улица, 4а')
+    assert by_name['Музей Баксы']['address'].startswith('Bayraktar Köyü')
+    assert by_name['The Zium Museum']['virtual'] and not by_name['The Zium Museum'].get('address')
+    assert by_name['The Zium Museum']['review_status'] == 'виртуальный музей; физического адреса нет'
+    assert by_name['Абхазская государственная картинная галерея']['address_status'] == 'unconfirmed'
+    assert not by_name['Абхазская государственная картинная галерея'].get('address')
     sources,a,u=m.merge_sources([{'museum':'Музей Академии художеств','url':'https://museum.example/','priority':'high'}],reviewed)
     assert a==114 and u==1 and len(sources)==115
     assert next(x for x in sources if x['museum']=='Музей Академии художеств')['url']=='https://museum.example/'
@@ -33,7 +41,7 @@ def test_data():
         assert date.fromisoformat(item['start'])<=date.fromisoformat(item['end'])
         assert set(['title','venue','city','country','start','end','url']).issubset(item)
         assert item['source'].startswith('https://')
-    print('OK: источник, 113 статей, 18 проверенных адресов, 5 выставок, отсутствие дублей')
+    print(f'OK: источник, 113 статей, {len(addressed)} адресов, исключения, 5 выставок, отсутствие дублей')
 
 
 def test_installer():

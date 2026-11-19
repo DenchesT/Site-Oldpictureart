@@ -99,6 +99,12 @@ try:
     got = ai.resolve({"Исаак Левитан": 1890}, today=today, quiz=quiz4, log=lambda *_: None)
     ok("вписанное руками главнее и не переспрашивается", got["Исаак Левитан"]["born"] == 1860 and not quiz4.calls)
 
+    saved['Коллектив художников'] = {'collective': True, 'born': None, 'died': None}
+    json.dump(saved, open(ai.INFO_FILE, 'w', encoding='utf-8'), ensure_ascii=False)
+    collective_quiz = FakeQuiz()
+    collective = ai.resolve({'Коллектив художников': 1860}, today=today, quiz=collective_quiz, log=lambda *_: None)
+    ok('коллектив не ищется как отдельный человек', collective['Коллектив художников']['collective'] and not collective_quiz.calls)
+
     quiz5 = FakeQuiz(fail=True)
     got = ai.resolve({"Новый Художник": 1900}, today=today, quiz=quiz5, log=lambda *_: None)
     saved = json.load(open(ai.INFO_FILE, encoding="utf-8"))
@@ -195,6 +201,20 @@ page = bs.render_artist_page("Клод Моне", [post], [post], {"monet-a.html
 ok("без сведений — строк нет, страница цела", "Годы жизни" not in page and "Википедия" not in page)
 idx = bs.render_ukazatel([post], {"Клод Моне": info})
 ok("в указателе — годы рядом с именем", '<span class="idx-years">1840–1926</span>' in idx)
+
+group = dict(post, artist='Коллектив художников')
+page = bs.render_artist_page(group['artist'], [group], [group], {'monet-a.html': 1}, 3, {'collective': True})
+ok('коллективное авторство объяснено без вымышленных годов', 'общие годы жизни неприменимы' in page and '<span>Годы жизни</span>' not in page)
+ok('коллектив не размечен как один человек', '"@type":"Person"' not in page and '"birthDate"' not in page)
+
+real_info = json.load(open(os.path.join(ROOT, 'artist_info.json'), encoding='utf-8'))
+real_posts = json.load(open(os.path.join(ROOT, 'posts_meta.json'), encoding='utf-8'))
+missing = [name for name in ai.artists_years(real_posts)
+           if not real_info.get(name, {}).get('collective')
+           and not (real_info.get(name, {}).get('born') and real_info.get(name, {}).get('died'))]
+ok('у всех индивидуальных художников каталога заполнены годы жизни', not missing, ', '.join(missing))
+brun = real_info['Александр Жан-Батист Брюн']
+ok('Брюн не перепутан с Кристеном Брюном', (brun['born'], brun['died']) == (1853, 1941) and brun.get('wikidata') != 'Q23938114')
 
 print("\n====== ГОДЫ ЖИЗНИ И ВИКИПЕДИЯ ======")
 for name, passed, extra in results:

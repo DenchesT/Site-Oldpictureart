@@ -192,7 +192,7 @@ def apply_reviewed(entries, reviewed=None):
             item={"museum": museum, "review_status":"официальные данные проверены вручную"}
             entries.append(item);byname[key]=item
         item.update({k:v for k,v in data.items() if k not in item or not item[k]})
-        item["review_status"]="официальные данные проверены вручную 2026-10-31"
+        item["review_status"]=data.get("review_status", "официальные данные проверены вручную 2026-10-31")
         item.setdefault("priority","medium")
     return entries
 

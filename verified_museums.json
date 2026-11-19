@@ -6,7 +6,12 @@
     "url": "https://ghmak.ru/",
     "address": "Барнаул, ул. Максима Горького, 16",
     "address_source": "https://ghmak.ru/o-muzee",
-    "notes": "Основное здание на реконструкции; действующие выставки на ул. Максима Горького, 16"
+    "notes": "Основное здание на реконструкции; действующие выставки на ул. Максима Горького, 16",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%93%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%90%D0%BB%D1%82%D0%B0%D0%B9%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D0%BA%D1%80%D0%B0%D1%8F",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://ghmak.ru/"
   },
   "Белгородский государственный художественный музей": {
     "city": "Белгород",
@@ -14,7 +19,12 @@
     "website": "https://belghm.ru/",
     "url": "https://belghm.ru/category/vystavki-i-sobytiya/vystavki/",
     "address": "Белгород, ул. Победы, 77",
-    "address_source": "https://belghm.ru/skhema-proezda/"
+    "address_source": "https://belghm.ru/skhema-proezda/",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%91%D0%B5%D0%BB%D0%B3%D0%BE%D1%80%D0%BE%D0%B4%D1%81%D0%BA%D0%B8%D0%B9_%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://belghm.ru/"
   },
   "Вятский художественный музей имени В. М. и А. М. Васнецовых": {
     "city": "Киров",
@@ -23,7 +33,12 @@
     "url": "https://kirov-artmuzeum.ru/museum/afisha/vyistavki/",
     "address": "Киров, ул. Владимирская, 70",
     "address_source": "https://kirov-artmuzeum.ru/museum/contacts/",
-    "notes": "Есть отдельные филиалы и выставочные площадки со своими адресами"
+    "notes": "Есть отдельные филиалы и выставочные площадки со своими адресами",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%92%D1%8F%D1%82%D1%81%D0%BA%D0%B8%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%92._%D0%9C._%D0%B8_%D0%90._%D0%9C._%D0%92%D0%B0%D1%81%D0%BD%D0%B5%D1%86%D0%BE%D0%B2%D1%8B%D1%85",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://kirov-artmuzeum.ru/"
   },
   "Чувашский государственный художественный музей": {
     "city": "Чебоксары",
@@ -32,7 +47,12 @@
     "url": "https://artmuseum.ru/afisha/",
     "address": "Чебоксары, ул. Калинина, 60",
     "address_source": "https://artmuseum.ru/contacts/",
-    "notes": "Филиалы имеют другие адреса"
+    "notes": "Филиалы имеют другие адреса",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A7%D1%83%D0%B2%D0%B0%D1%88%D1%81%D0%BA%D0%B8%D0%B9_%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://artmuseum.ru/"
   },
   "Красноярский государственный художественный музей имени В. И. Сурикова": {
     "city": "Красноярск",
@@ -41,7 +61,12 @@
     "url": "https://surikov-museum.ru/show",
     "address": "Красноярск, проспект Мира, 12 (одна из площадок)",
     "address_source": "https://surikov-museum.ru/visit-en",
-    "notes": "Другой действующий выставочный зал: пр. Красноярский рабочий, 68; здание на ул. Парижской Коммуны, 20 временно закрыто"
+    "notes": "Другой действующий выставочный зал: пр. Красноярский рабочий, 68; здание на ул. Парижской Коммуны, 20 временно закрыто",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9A%D1%80%D0%B0%D1%81%D0%BD%D0%BE%D1%8F%D1%80%D1%81%D0%BA%D0%B8%D0%B9_%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%92._%D0%98._%D0%A1%D1%83%D1%80%D0%B8%D0%BA%D0%BE%D0%B2%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://surikov-museum.ru/"
   },
   "Нижегородский государственный художественный музей": {
     "city": "Нижний Новгород",
@@ -50,7 +75,12 @@
     "url": "https://artmuseumnn.ru/",
     "address": "Нижний Новгород, Кремль, корпус 3",
     "address_source": "https://artmuseumnn.ru/kontakty",
-    "notes": "У музея несколько корпусов"
+    "notes": "У музея несколько корпусов",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9D%D0%B8%D0%B6%D0%B5%D0%B3%D0%BE%D1%80%D0%BE%D0%B4%D1%81%D0%BA%D0%B8%D0%B9_%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://artmuseumnn.ru/"
   },
   "Музей-усадьба Н. Н. Хохрякова": {
     "city": "Киров",
@@ -59,7 +89,12 @@
     "url": "https://kirov-artmuzeum.ru/museum/afisha/vyistavki/",
     "address": "Киров, Копанский переулок, 4",
     "address_source": "https://kirov-artmuzeum.ru/museum/afisha/vyistavki/",
-    "notes": "Филиал Вятского художественного музея"
+    "notes": "Филиал Вятского художественного музея",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9-%D1%83%D1%81%D0%B0%D0%B4%D1%8C%D0%B1%D0%B0_%D0%9D._%D0%9D._%D0%A5%D0%BE%D1%85%D1%80%D1%8F%D0%BA%D0%BE%D0%B2%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://kirov-artmuzeum.ru/"
   },
   "Государственная Третьяковская галерея": {
     "city": "Москва",
@@ -68,7 +103,10 @@
     "url": "https://tretyakov.ru/",
     "address": "Москва, Лаврушинский переулок, 10 (историческое здание)",
     "address_source": "https://tretyakov.ru/for-visitors/museums/istoricheskoe-zdanie/",
-    "notes": "Корпуса на Кадашёвской набережной и Крымском Валу имеют другие адреса"
+    "notes": "Корпуса на Кадашёвской набережной и Крымском Валу имеют другие адреса",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://www.tretyakovgallery.ru/"
   },
   "Государственный Русский музей": {
     "city": "Санкт-Петербург",
@@ -77,7 +115,10 @@
     "url": "https://rusmuseum.ru/exhibitions/current/",
     "address": "Санкт-Петербург, Инженерная ул., 4 (Михайловский дворец)",
     "address_source": "https://rusmuseum.ru/museums/mikhailovsky-palace/",
-    "notes": "Другие здания Русского музея имеют отдельные адреса"
+    "notes": "Другие здания Русского музея имеют отдельные адреса",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://rusmuseum.ru/"
   },
   "Екатеринбургский музей изобразительных искусств": {
     "city": "Екатеринбург",
@@ -86,7 +127,12 @@
     "url": "https://i-z-o.art/",
     "address": "Екатеринбург, ул. Воеводина, 5 (главное здание)",
     "address_source": "https://i-z-o.art/about/kontakty/",
-    "notes": "Эрмитаж-Урал: Вайнера, 11; музей наива: Розы Люксембург, 18"
+    "notes": "Эрмитаж-Урал: Вайнера, 11; музей наива: Розы Люксембург, 18",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%95%D0%BA%D0%B0%D1%82%D0%B5%D1%80%D0%B8%D0%BD%D0%B1%D1%83%D1%80%D0%B3%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://i-z-o.art/"
   },
   "Иркутский областной художественный музей": {
     "city": "Иркутск",
@@ -94,7 +140,12 @@
     "website": "https://museum.irk.ru/",
     "url": "https://museum.irk.ru/",
     "address": "Иркутск, ул. Ленина, 5 (главное здание)",
-    "address_source": "https://old.iokm.ru/map/"
+    "address_source": "https://old.iokm.ru/map/",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%98%D1%80%D0%BA%D1%83%D1%82%D1%81%D0%BA%D0%B8%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%BD%D0%BE%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://museum.irk.ru/"
   },
   "Омский областной музей изобразительных искусств имени М. А. Врубеля": {
     "city": "Омск",
@@ -103,7 +154,12 @@
     "url": "https://vrubel.ru/",
     "address": "Омск, ул. Ленина, 23 (Генерал-губернаторский дворец)",
     "address_source": "https://special.omskportal.ru/oiv/mkt/otrasl/mnogodetn/vrubel.html",
-    "notes": "Врубелевский корпус: ул. Ленина, 3"
+    "notes": "Врубелевский корпус: ул. Ленина, 3",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9E%D0%BC%D1%81%D0%BA%D0%B8%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%BD%D0%BE%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%9C._%D0%90._%D0%92%D1%80%D1%83%D0%B1%D0%B5%D0%BB%D1%8F",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://vrubel.ru/"
   },
   "Саратовский художественный музей имени А. Н. Радищева": {
     "city": "Саратов",
@@ -112,7 +168,12 @@
     "url": "https://radmuseumart.ru/",
     "address": "Саратов, ул. Радищева, 39 (главное здание)",
     "address_source": "https://radmuseumart.ru/",
-    "notes": "Другие корпуса: Радищева, 41; Первомайская, 75"
+    "notes": "Другие корпуса: Радищева, 41; Первомайская, 75",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%B0%D1%80%D0%B0%D1%82%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%90._%D0%9D._%D0%A0%D0%B0%D0%B4%D0%B8%D1%89%D0%B5%D0%B2%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://radmuseumart.ru/"
   },
   "Ярославский художественный музей": {
     "city": "Ярославль",
@@ -121,7 +182,12 @@
     "url": "https://new.yarartmuseum.ru/exhibitions/",
     "address": "Ярославль, Волжская набережная, 23 (Губернаторский дом)",
     "address_source": "https://new.yarartmuseum.ru/exhibitions/lichnaya-istoriya/",
-    "notes": "Другие площадки: Митрополичьи палаты — Волжская набережная, 1; Музей зарубежного искусства — Советская площадь, 2"
+    "notes": "Другие площадки: Митрополичьи палаты — Волжская набережная, 1; Музей зарубежного искусства — Советская площадь, 2",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%AF%D1%80%D0%BE%D1%81%D0%BB%D0%B0%D0%B2%D1%81%D0%BA%D0%B8%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://new.yarartmuseum.ru/"
   },
   "Рязанский государственный областной художественный музей имени И. П. Пожалостина": {
     "city": "Рязань",
@@ -130,7 +196,12 @@
     "url": "https://artmuseum62.ru/",
     "address": "Рязань, ул. Свободы, 57",
     "address_source": "https://www.ukrzn.ru/?id=11&institution=35&mod=institutions",
-    "notes": "Выставочный зал музея — ул. Есенина, 112 (другой адрес)"
+    "notes": "Выставочный зал музея — ул. Есенина, 112 (другой адрес)",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A0%D1%8F%D0%B7%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%BD%D0%BE%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%98._%D0%9F._%D0%9F%D0%BE%D0%B6%D0%B0%D0%BB%D0%BE%D1%81%D1%82%D0%B8%D0%BD%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://artmuseum62.ru/"
   },
   "Тульский областной художественный музей": {
     "city": "Тула",
@@ -138,7 +209,12 @@
     "website": "https://museum-tula.ru/",
     "url": "https://museum-tula.ru/muzei/tmii/",
     "address": "Тула, ул. Фридриха Энгельса, 64",
-    "address_source": "https://museum-tula.ru/muzei/tmii/fond-iskusstv/"
+    "address_source": "https://museum-tula.ru/muzei/tmii/fond-iskusstv/",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A2%D1%83%D0%BB%D1%8C%D1%81%D0%BA%D0%B8%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%BD%D0%BE%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://museum-tula.ru/"
   },
   "Ростовский областной музей изобразительных искусств": {
     "city": "Ростов-на-Дону",
@@ -147,7 +223,12 @@
     "url": "https://romii.ru/",
     "address": "Ростов-на-Дону, проспект Чехова, 60 (действующий корпус)",
     "address_source": "https://romii.ru/about/contacts.php",
-    "notes": "Корпус на ул. Пушкинской, 115 закрыт на реставрацию: не направлять туда посетителей"
+    "notes": "Корпус на ул. Пушкинской, 115 закрыт на реставрацию: не направлять туда посетителей",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A0%D0%BE%D1%81%D1%82%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%BD%D0%BE%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://romii.ru/"
   },
   "Ярославский музей-заповедник": {
     "city": "Ярославль",
@@ -156,6 +237,679 @@
     "url": "https://yarkremlin.ru/",
     "address": "Ярославль, Богоявленская площадь, 25",
     "address_source": "https://yarkremlin.ru/museum/contacts/",
-    "notes": "Историко-архитектурный музей-заповедник: в афишу только временные выставки подходящего искусства"
+    "notes": "Историко-архитектурный музей-заповедник: в афишу только временные выставки подходящего искусства",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%AF%D1%80%D0%BE%D1%81%D0%BB%D0%B0%D0%B2%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9-%D0%B7%D0%B0%D0%BF%D0%BE%D0%B2%D0%B5%D0%B4%D0%BD%D0%B8%D0%BA",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "review_status": "официальные данные проверены вручную 2026-10-31",
+    "priority": "medium",
+    "site": "https://yarkremlin.ru/"
+  },
+  "Велижский районный историко-краеведческий музей": {
+    "city": "Велиж",
+    "address": "Советская улица, 14/3, Велиж",
+    "website": "https://museum-velizhskij-r66.gosweb.gosuslugi.ru/",
+    "url": "https://museum-velizhskij-r66.gosweb.gosuslugi.ru/",
+    "address_source": "https://vmuzey.com/museum/mbuk-velizhskiy-rayonnyy-istoriko-kraevedcheskiy-muzey",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%92%D0%B5%D0%BB%D0%B8%D0%B6%D1%81%D0%BA%D0%B8%D0%B9_%D1%80%D0%B0%D0%B9%D0%BE%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D0%BA%D0%BE-%D0%BA%D1%80%D0%B0%D0%B5%D0%B2%D0%B5%D0%B4%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Вернисаж (Находка)": {
+    "city": "Находка",
+    "address": "Находкинский проспект, 22, Находка",
+    "website": "https://museum-nakhodka.ru/vernicaj",
+    "url": "https://museum-nakhodka.ru/vernicaj",
+    "address_source": "https://museum-nakhodka.ru/vernicaj",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%92%D0%B5%D1%80%D0%BD%D0%B8%D1%81%D0%B0%D0%B6_(%D0%9D%D0%B0%D1%85%D0%BE%D0%B4%D0%BA%D0%B0)",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "site": "https://www.museum-nakhodka.ru/"
+  },
+  "Вологодский музей-заповедник": {
+    "city": "Вологда",
+    "address": "улица Сергея Орлова, 15, Вологда",
+    "website": "https://www.vologdamuseum.ru/",
+    "url": "https://www.vologdamuseum.ru/",
+    "address_source": "https://www.semenkovo.ru/sites/default/files/page/2024/2024_Реквизиты_музея_заповедника_2.pdf",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%92%D0%BE%D0%BB%D0%BE%D0%B3%D0%BE%D0%B4%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9-%D0%B7%D0%B0%D0%BF%D0%BE%D0%B2%D0%B5%D0%B4%D0%BD%D0%B8%D0%BA",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Дагестанский музей изобразительных искусств имени П. С. Гамзатовой": {
+    "city": "Махачкала",
+    "address": "улица Максима Горького, 8, Махачкала",
+    "website": "https://dagmuzey.ru/",
+    "url": "https://dagmuzey.ru/",
+    "address_source": "https://dagmuzey.ru/media/docs/prikaz_o_besplatnom_poseshhenii_muzeya_копия.pdf",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%94%D0%B0%D0%B3%D0%B5%D1%81%D1%82%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%9F._%D0%A1._%D0%93%D0%B0%D0%BC%D0%B7%D0%B0%D1%82%D0%BE%D0%B2%D0%BE%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Дербентский музей-заповедник": {
+    "city": "Дербент",
+    "address": "улица М. Рзаева, 7, Дербент",
+    "website": "https://minkultrd.ru/structure/gbu-derbentskii-gosudarstvennyi-istoriko-arxitekturnyi-i-arxeologiceskii-muzei-zapovednik",
+    "url": "https://minkultrd.ru/structure/gbu-derbentskii-gosudarstvennyi-istoriko-arxitekturnyi-i-arxeologiceskii-muzei-zapovednik",
+    "address_source": "https://minkultrd.ru/structure/gbu-derbentskii-gosudarstvennyi-istoriko-arxitekturnyi-i-arxeologiceskii-muzei-zapovednik",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%94%D0%B5%D1%80%D0%B1%D0%B5%D0%BD%D1%82%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9-%D0%B7%D0%B0%D0%BF%D0%BE%D0%B2%D0%B5%D0%B4%D0%BD%D0%B8%D0%BA",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Зарайский кремль (музей)": {
+    "city": "Зарайск",
+    "address": "Музейная улица, 1а, Зарайск",
+    "website": "https://museumzaraysk.ru/",
+    "url": "https://museumzaraysk.ru/",
+    "address_source": "https://museum.cpm.moscow/museums/661",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D1%80%D0%B0%D0%B9%D1%81%D0%BA%D0%B8%D0%B9_%D0%BA%D1%80%D0%B5%D0%BC%D0%BB%D1%8C_(%D0%BC%D1%83%D0%B7%D0%B5%D0%B9)",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Искусство Омска (музей)": {
+    "city": "Омск",
+    "address": "Партизанская улица, 5а, литера М, Омск",
+    "website": "https://admomsk.ru/web/guest/government/divisions/55/museums",
+    "url": "https://admomsk.ru/web/guest/government/divisions/55/museums",
+    "address_source": "https://admomsk.ru/web/guest/government/divisions/55/museums",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%98%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%BE_%D0%9E%D0%BC%D1%81%D0%BA%D0%B0_(%D0%BC%D1%83%D0%B7%D0%B5%D0%B9)",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Каргопольский государственный историко-архитектурный и художественный музей": {
+    "city": "Каргополь",
+    "address": "улица Ленина, 40, Каргополь",
+    "website": "https://karmuseum.ru/",
+    "url": "https://karmuseum.ru/",
+    "address_source": "https://www.culture.ru/institutes/47336/muzeino-vystavochnyi-centr-g-kargopolya",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%80%D0%B3%D0%BE%D0%BF%D0%BE%D0%BB%D1%8C%D1%81%D0%BA%D0%B8%D0%B9_%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D0%BA%D0%BE-%D0%B0%D1%80%D1%85%D0%B8%D1%82%D0%B5%D0%BA%D1%82%D1%83%D1%80%D0%BD%D1%8B%D0%B9_%D0%B8_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "site": "https://karmuseum.ru/"
+  },
+  "Керченская картинная галерея имени Н. Я. Бута": {
+    "city": "Керчь",
+    "address": "Театральная улица, 36, Керчь",
+    "website": "https://www.kerchmuseum.ru/",
+    "url": "https://www.kerchmuseum.ru/",
+    "address_source": "https://www.kerchmuseum.ru/ru/kartinnaja-galereja.html",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B5%D1%80%D1%87%D0%B5%D0%BD%D1%81%D0%BA%D0%B0%D1%8F_%D0%BA%D0%B0%D1%80%D1%82%D0%B8%D0%BD%D0%BD%D0%B0%D1%8F_%D0%B3%D0%B0%D0%BB%D0%B5%D1%80%D0%B5%D1%8F_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%9D._%D0%AF._%D0%91%D1%83%D1%82%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "site": "https://www.kerchmuseum.ru/"
+  },
+  "Киржачский районный историко-краеведческий и художественный музей": {
+    "city": "Киржач",
+    "address": "улица Гагарина, 52, Киржач",
+    "website": "https://музей-киржач.рф/",
+    "url": "https://музей-киржач.рф/",
+    "address_source": "https://kirzhach.su/info/?base=25",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B8%D1%80%D0%B6%D0%B0%D1%87%D1%81%D0%BA%D0%B8%D0%B9_%D1%80%D0%B0%D0%B9%D0%BE%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D0%BA%D0%BE-%D0%BA%D1%80%D0%B0%D0%B5%D0%B2%D0%B5%D0%B4%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%B8_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Кологривский краеведческий музей имени Г. А. Ладыженского": {
+    "city": "Кологрив",
+    "address": "улица Некрасова, 44, Кологрив",
+    "website": "https://www.kosmuseum.ru/locations/filials/kologriv",
+    "url": "https://www.kosmuseum.ru/locations/filials/kologriv",
+    "address_source": "https://www.kosmuseum.ru/locations/filials/kologriv",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BB%D0%BE%D0%B3%D1%80%D0%B8%D0%B2%D1%81%D0%BA%D0%B8%D0%B9_%D0%BA%D1%80%D0%B0%D0%B5%D0%B2%D0%B5%D0%B4%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%93._%D0%90._%D0%9B%D0%B0%D0%B4%D1%8B%D0%B6%D0%B5%D0%BD%D1%81%D0%BA%D0%BE%D0%B3%D0%BE",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "site": "https://www.kosmuseum.ru/locations/filials/kologriv"
+  },
+  "Художественный музей (Кунгур)": {
+    "city": "Кунгур",
+    "address": "улица Степана Разина, 39, Кунгур",
+    "website": "https://kungurmuseum.ru/",
+    "url": "https://kungurmuseum.ru/",
+    "address_source": "https://www.culture.ru/institutes/1264/khudozhestvennyi-muzei-g-kungura",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_(%D0%9A%D1%83%D0%BD%D0%B3%D1%83%D1%80)",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Курганский областной художественный музей": {
+    "city": "Курган",
+    "address": "улица Максима Горького, 127/4, Курган",
+    "website": "https://komo45.ru/",
+    "url": "https://komo45.ru/",
+    "address_source": "https://komo45.ru/index.php/contacts",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9A%D1%83%D1%80%D0%B3%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%BD%D0%BE%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Моршанский историко-художественный музей": {
+    "city": "Моршанск",
+    "address": "Советская улица, 25, Моршанск",
+    "website": "https://tmbmuseum.ru/",
+    "url": "https://tmbmuseum.ru/",
+    "address_source": "https://tmbmuseum.ru/mainmenu/contacts",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D0%BE%D1%80%D1%88%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D0%BA%D0%BE-%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Музей А. А. Пластова": {
+    "city": "Ульяновск",
+    "address": "улица Гончарова, 16, Ульяновск",
+    "website": "https://uohm.art/plastov/",
+    "url": "https://uohm.art/plastov/",
+    "address_source": "https://uohm.art/plastov/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%90._%D0%90._%D0%9F%D0%BB%D0%B0%D1%81%D1%82%D0%BE%D0%B2%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "site": "https://uohm.art/plastov/"
+  },
+  "Музей Б. У. Кашкина": {
+    "city": "Екатеринбург",
+    "address": "проспект Ленина, 51, Екатеринбург",
+    "website": "https://art-urgi.urfu.ru/",
+    "url": "https://art-urgi.urfu.ru/",
+    "address_source": "https://www.culture.ru/institutes/39053/muzei-b-u-kashkina",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%91._%D0%A3._%D0%9A%D0%B0%D1%88%D0%BA%D0%B8%D0%BD%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Музей народного художника России А. И. Морозова": {
+    "city": "Иваново",
+    "address": "улица Багаева, 57, Иваново",
+    "website": "https://morozov-museum.narod.ru/",
+    "url": "https://morozov-museum.narod.ru/",
+    "address_source": "https://ru.wikipedia.org/wiki/Музей_народного_художника_России_А._И._Морозова",
+    "checked": "2026-11-19",
+    "review_status": "адрес по справочнику; перед добавлением выставки уточнить у музея",
+    "notes": "Адрес подтверждён справочником, а не текущей страницей контактов музея. Не считать подтверждением работы экспозиции.",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%BD%D0%B0%D1%80%D0%BE%D0%B4%D0%BD%D0%BE%D0%B3%D0%BE_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%BD%D0%B8%D0%BA%D0%B0_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8_%D0%90._%D0%98._%D0%9C%D0%BE%D1%80%D0%BE%D0%B7%D0%BE%D0%B2%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Музей органической культуры": {
+    "city": "Коломна",
+    "address": "улица Казакова, 10, Коломна",
+    "website": "https://museumart.ru/",
+    "url": "https://museumart.ru/",
+    "address_source": "https://museumart.ru/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%BE%D1%80%D0%B3%D0%B0%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B9_%D0%BA%D1%83%D0%BB%D1%8C%D1%82%D1%83%D1%80%D1%8B",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "site": "https://museumart.ru/"
+  },
+  "Музей пейзажа": {
+    "city": "Плёс",
+    "address": "улица Луначарского, 20, Плёс",
+    "website": "https://ples-museum.ru/museums/muzey-peyzazha/",
+    "url": "https://ples-museum.ru/museums/muzey-peyzazha/",
+    "address_source": "https://ples-museum.ru/museums/muzey-peyzazha/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%BF%D0%B5%D0%B9%D0%B7%D0%B0%D0%B6%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "site": "https://ples-museum.ru/museums/muzey-peyzazha/"
+  },
+  "Музей современного изобразительного искусства на Дмитровской": {
+    "city": "Ростов-на-Дону",
+    "address": "улица Шаумяна, 51, Ростов-на-Дону",
+    "website": "https://msiid.ru/",
+    "url": "https://msiid.ru/",
+    "address_source": "https://www.tourism.rostov-gorod.ru/attractions/237/5090/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D1%81%D0%BE%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%BE%D0%B3%D0%BE_%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D0%B3%D0%BE_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B0_%D0%BD%D0%B0_%D0%94%D0%BC%D0%B8%D1%82%D1%80%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Музейно-выставочный центр города Назарово": {
+    "city": "Назарово",
+    "address": "8-й микрорайон, 17, помещение 121, Назарово",
+    "website": "https://muzeinazarovo.ru/",
+    "url": "https://muzeinazarovo.ru/",
+    "address_source": "https://muzeinazarovo.ru/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9%D0%BD%D0%BE-%D0%B2%D1%8B%D1%81%D1%82%D0%B0%D0%B2%D0%BE%D1%87%D0%BD%D1%8B%D0%B9_%D1%86%D0%B5%D0%BD%D1%82%D1%80_%D0%B3%D0%BE%D1%80%D0%BE%D0%B4%D0%B0_%D0%9D%D0%B0%D0%B7%D0%B0%D1%80%D0%BE%D0%B2%D0%BE",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Новочебоксарский художественный музей": {
+    "city": "Новочебоксарск",
+    "address": "бульвар Гидростроителей, 4, Новочебоксарск",
+    "website": "https://vk.com/ihmk21",
+    "url": "https://vk.com/ihmk21",
+    "address_source": "https://ncheb-info.ru/ud/hudozhestvennyj-muzej-1.html",
+    "checked": "2026-11-19",
+    "review_status": "адрес по справочнику; перед добавлением выставки уточнить у музея",
+    "notes": "Адрес подтверждён справочником, а не текущей страницей контактов музея. Не считать подтверждением работы экспозиции.",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9D%D0%BE%D0%B2%D0%BE%D1%87%D0%B5%D0%B1%D0%BE%D0%BA%D1%81%D0%B0%D1%80%D1%81%D0%BA%D0%B8%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Музей истории города Обнинска": {
+    "city": "Обнинск",
+    "address": "проспект Ленина, 128, Обнинск",
+    "website": "https://muzey-obninsk.ru/",
+    "url": "https://muzey-obninsk.ru/",
+    "address_source": "https://muzey-obninsk.ru/o-muzee/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D0%B8_%D0%B3%D0%BE%D1%80%D0%BE%D0%B4%D0%B0_%D0%9E%D0%B1%D0%BD%D0%B8%D0%BD%D1%81%D0%BA%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Музей одной картины имени Г. В. Мясникова": {
+    "city": "Пенза",
+    "address": "улица Кирова, 11, Пенза",
+    "website": "https://mok.navse360.ru/",
+    "url": "https://mok.navse360.ru/",
+    "address_source": "https://mok.navse360.ru/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%BE%D0%B4%D0%BD%D0%BE%D0%B9_%D0%BA%D0%B0%D1%80%D1%82%D0%B8%D0%BD%D1%8B_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%93._%D0%92._%D0%9C%D1%8F%D1%81%D0%BD%D0%B8%D0%BA%D0%BE%D0%B2%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Мемориальная мастерская А. В. Пантелеева": {
+    "city": "Вологда",
+    "address": "Козлёнская улица, 4, Вологда",
+    "website": "https://www.vologda-gallery.ru/",
+    "url": "https://www.vologda-gallery.ru/",
+    "address_source": "https://turvologda.ru/museums-and-display-facilities/31/6719/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B5%D0%BC%D0%BE%D1%80%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F_%D0%BC%D0%B0%D1%81%D1%82%D0%B5%D1%80%D1%81%D0%BA%D0%B0%D1%8F_%D0%90._%D0%92._%D0%9F%D0%B0%D0%BD%D1%82%D0%B5%D0%BB%D0%B5%D0%B5%D0%B2%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "site": "https://vologda-gallery.ru/kontakty/?hous=300"
+  },
+  "Переславский музей-заповедник": {
+    "city": "Переславль-Залесский",
+    "address": "Музейный переулок, 4, Переславль-Залесский",
+    "website": "https://museumpereslavl.ru/",
+    "url": "https://museumpereslavl.ru/",
+    "address_source": "https://visityaroslavia.ru/places/757",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9F%D0%B5%D1%80%D0%B5%D1%81%D0%BB%D0%B0%D0%B2%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9-%D0%B7%D0%B0%D0%BF%D0%BE%D0%B2%D0%B5%D0%B4%D0%BD%D0%B8%D0%BA",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Республиканский музей изобразительных искусств": {
+    "city": "Йошкар-Ола",
+    "address": "улица Гоголя, 15, Йошкар-Ола",
+    "website": "https://rmii.ru/",
+    "url": "https://rmii.ru/",
+    "address_source": "https://rmii.ru/kontakty-i-rezhim-raboty",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D1%81%D0%BF%D1%83%D0%B1%D0%BB%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Сосновоборский художественный музей современного искусства": {
+    "city": "Сосновый Бор",
+    "address": "Ленинградская улица, 56а, Сосновый Бор",
+    "website": "https://www.lenoblmus.ru/",
+    "url": "https://www.lenoblmus.ru/",
+    "address_source": "https://www.lenoblmus.ru/museums/sosnovoborskiy-khudozhestvennyy-muzey-sovremennogo-iskusstva",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%BE%D0%B1%D0%BE%D1%80%D1%81%D0%BA%D0%B8%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D1%81%D0%BE%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%BE%D0%B3%D0%BE_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "site": "https://www.lenoblmus.ru/museums/sosnovoborskiy-khudozhestvennyy-muzey-sovremennogo-iskusstva"
+  },
+  "Сальский музей имени народного художника В. К. Нечитайло": {
+    "city": "Сальск",
+    "address": "улица Ленина, 11, Сальск",
+    "website": "https://muzeysalsk.ru/",
+    "url": "https://muzeysalsk.ru/",
+    "address_source": "https://muzeysalsk.ru/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%B0%D0%BB%D1%8C%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%BD%D0%B0%D1%80%D0%BE%D0%B4%D0%BD%D0%BE%D0%B3%D0%BE_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%BD%D0%B8%D0%BA%D0%B0_%D0%92._%D0%9A._%D0%9D%D0%B5%D1%87%D0%B8%D1%82%D0%B0%D0%B9%D0%BB%D0%BE",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Сахалинский областной государственный художественный музей": {
+    "city": "Южно-Сахалинск",
+    "address": "улица Ленина, 137, Южно-Сахалинск",
+    "website": "https://sakhartmuseum.ru/",
+    "url": "https://sakhartmuseum.ru/",
+    "address_source": "https://www.culture.ru/institutes/11636/sakhalinskii-oblastnoi-khudozhestvennyi-muzei",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%B0%D1%85%D0%B0%D0%BB%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%BD%D0%BE%D0%B9_%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Северо-Осетинский государственный художественный музей имени М. С. Туганова": {
+    "city": "Владикавказ",
+    "address": "проспект Мира, 12, Владикавказ",
+    "website": "https://hudmuz15.ru/",
+    "url": "https://hudmuz15.ru/",
+    "address_source": "https://nbcrs.org/regions/respublika-severnaya-osetiya-alaniya/muzei-muzei-zapovedniki-vystavochnye-zaly",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%B2%D0%B5%D1%80%D0%BE-%D0%9E%D1%81%D0%B5%D1%82%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%9C._%D0%A1._%D0%A2%D1%83%D0%B3%D0%B0%D0%BD%D0%BE%D0%B2%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Симферопольский художественный музей": {
+    "city": "Симферополь",
+    "address": "Одесская улица, 3а, Симферополь",
+    "website": "https://simhm.ru/",
+    "url": "https://simhm.ru/",
+    "address_source": "https://simhm.ru/contact",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%B8%D0%BC%D1%84%D0%B5%D1%80%D0%BE%D0%BF%D0%BE%D0%BB%D1%8C%D1%81%D0%BA%D0%B8%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "site": "https://simhm.ru/"
+  },
+  "Сочинский художественный музей имени Дмитрия Жилинского": {
+    "city": "Сочи",
+    "address": "Курортный проспект, 51, Сочи",
+    "website": "https://sochiartmuseum.art/",
+    "url": "https://sochiartmuseum.art/",
+    "address_source": "https://sochiartmuseum.art/contacts/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D1%87%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%94%D0%BC%D0%B8%D1%82%D1%80%D0%B8%D1%8F_%D0%96%D0%B8%D0%BB%D0%B8%D0%BD%D1%81%D0%BA%D0%BE%D0%B3%D0%BE",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "site": "https://www.sochiartmuseum.art/"
+  },
+  "Спасское (музей)": {
+    "city": "Спасское",
+    "address": "Центральная улица, 4а, село Спасское, городской округ Новомосковск, Тульская область",
+    "website": "https://museum-tula.ru/muzei/muzej-spasskoe/",
+    "url": "https://museum-tula.ru/muzei/muzej-spasskoe/",
+    "address_source": "https://museum-tula.ru/assets/documents/Ustav.pdf",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%BF%D0%B0%D1%81%D1%81%D0%BA%D0%BE%D0%B5_(%D0%BC%D1%83%D0%B7%D0%B5%D0%B9)",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Таганрогский художественный музей": {
+    "city": "Таганрог",
+    "address": "Александровская улица, 56, Таганрог",
+    "website": "https://artmuseumtgn.ru/",
+    "url": "https://artmuseumtgn.ru/",
+    "address_source": "https://artmuseumtgn.ru/услуги/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A2%D0%B0%D0%B3%D0%B0%D0%BD%D1%80%D0%BE%D0%B3%D1%81%D0%BA%D0%B8%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Тихвинский музей": {
+    "city": "Тихвин",
+    "address": "Тихвинская улица, 1, Тихвин",
+    "website": "https://www.lenoblmus.ru/",
+    "url": "https://www.lenoblmus.ru/",
+    "address_source": "https://www.lenoblmus.ru/museums/tikhvinskiy-istoriko-memorialnyy-i-arkhitekturno-khudozhestvennyy-muzey",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A2%D0%B8%D1%85%D0%B2%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Тольяттинский художественный музей": {
+    "city": "Тольятти",
+    "address": "бульвар Ленина, 22, Тольятти",
+    "website": "https://www.thm-museum.ru/",
+    "url": "https://www.thm-museum.ru/",
+    "address_source": "https://www.thm-museum.ru/index.php/chasto-zadavaemye-voprosy",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A2%D0%BE%D0%BB%D1%8C%D1%8F%D1%82%D1%82%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Томский областной художественный музей": {
+    "city": "Томск",
+    "address": "переулок Нахановича, 3, Томск",
+    "website": "https://artmuseumtomsk.ru/",
+    "url": "https://artmuseumtomsk.ru/",
+    "address_source": "https://artmuseumtomsk.ru/page/53",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A2%D0%BE%D0%BC%D1%81%D0%BA%D0%B8%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%BD%D0%BE%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Удмуртский республиканский музей изобразительных искусств": {
+    "city": "Ижевск",
+    "address": "улица Кирова, 128, Ижевск",
+    "website": "https://visitudmurtia.org/chto-posmotret/muzei-i-galerei/udmurtskiy-respublikanskiy-muzey-izobrazitelnykh-iskusstv/",
+    "url": "https://visitudmurtia.org/chto-posmotret/muzei-i-galerei/udmurtskiy-respublikanskiy-muzey-izobrazitelnykh-iskusstv/",
+    "address_source": "https://visitudmurtia.org/chto-posmotret/muzei-i-galerei/udmurtskiy-respublikanskiy-muzey-izobrazitelnykh-iskusstv/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A3%D0%B4%D0%BC%D1%83%D1%80%D1%82%D1%81%D0%BA%D0%B8%D0%B9_%D1%80%D0%B5%D1%81%D0%BF%D1%83%D0%B1%D0%BB%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Ульяновский областной художественный музей": {
+    "city": "Ульяновск",
+    "address": "бульвар Новый Венец, 3/4, Ульяновск",
+    "website": "https://uohm.art/",
+    "url": "https://uohm.art/",
+    "address_source": "https://uohm.art/branches/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A3%D0%BB%D1%8C%D1%8F%D0%BD%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%BD%D0%BE%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8",
+    "site": "https://uohm.art/"
+  },
+  "Художественно-исторический музей имени А. В. Григорьева": {
+    "city": "Козьмодемьянск",
+    "address": "улица Лихачёва, 10, Козьмодемьянск",
+    "website": "https://kmkmuzey.ru/",
+    "url": "https://kmkmuzey.ru/",
+    "address_source": "https://www.culture.ru/institutes/85897/khudozhestvenno-istoricheskii-muzei-im-a-v-grigoreva",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE-%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%90._%D0%92._%D0%93%D1%80%D0%B8%D0%B3%D0%BE%D1%80%D1%8C%D0%B5%D0%B2%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Художественный музей имени Ц. С. Сампилова": {
+    "city": "Улан-Удэ",
+    "address": "улица Куйбышева, 29, Улан-Удэ",
+    "website": "https://muzeyrb.ru/",
+    "url": "https://muzeyrb.ru/",
+    "address_source": "https://muzeyrb.ru/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%A6._%D0%A1._%D0%A1%D0%B0%D0%BC%D0%BF%D0%B8%D0%BB%D0%BE%D0%B2%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Художественный музей Эрнста Неизвестного": {
+    "city": "Екатеринбург",
+    "address": "улица Добролюбова, 14, Екатеринбург",
+    "website": "https://en-artmuseum.ru/",
+    "url": "https://en-artmuseum.ru/",
+    "address_source": "https://www.culture.ru/institutes/12292/khudozhestvennyi-muzei-ernsta-neizvestnogo",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%AD%D1%80%D0%BD%D1%81%D1%82%D0%B0_%D0%9D%D0%B5%D0%B8%D0%B7%D0%B2%D0%B5%D1%81%D1%82%D0%BD%D0%BE%D0%B3%D0%BE",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Шебекинский историко-художественный музей": {
+    "city": "Шебекино",
+    "address": "улица Ленина, 93, Шебекино",
+    "website": "https://museum-shebekino.bel.muzkult.ru/",
+    "url": "https://museum-shebekino.bel.muzkult.ru/",
+    "address_source": "https://www.culture.ru/institutes/891/shebekinskii-istoriko-khudozhestvennyi-muzei",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A8%D0%B5%D0%B1%D0%B5%D0%BA%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D0%BA%D0%BE-%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Ясногорский художественно-краеведческий музей": {
+    "city": "Ясногорск",
+    "address": "Комсомольская улица, 2, Ясногорск",
+    "website": "https://yarhmuseum.tls.muzkult.ru/",
+    "url": "https://yarhmuseum.tls.muzkult.ru/",
+    "address_source": "https://modey_m_m.a2b2.ru/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%AF%D1%81%D0%BD%D0%BE%D0%B3%D0%BE%D1%80%D1%81%D0%BA%D0%B8%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE-%D0%BA%D1%80%D0%B0%D0%B5%D0%B2%D0%B5%D0%B4%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8"
+  },
+  "Бардо (музей)": {
+    "city": "Тунис",
+    "address": "Avenue Mongi Slim, 2000 Le Bardo, Tunis, Tunisia",
+    "website": "https://www.bardomuseum.tn/",
+    "url": "https://www.bardomuseum.tn/",
+    "address_source": "https://www.patrimoinedetunisie.com.tn/tc/points-de-vente/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%91%D0%B0%D1%80%D0%B4%D0%BE_(%D0%BC%D1%83%D0%B7%D0%B5%D0%B9)",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8"
+  },
+  "Музей африканского искусства имени Теодора Моно": {
+    "city": "Дакар",
+    "address": "1 Place Soweto, Dakar, Senegal",
+    "website": "https://musee-monod.sn/",
+    "url": "https://musee-monod.sn/",
+    "address_source": "https://musee-monod.sn/venir-au-musee",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%B0%D1%84%D1%80%D0%B8%D0%BA%D0%B0%D0%BD%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B0_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%A2%D0%B5%D0%BE%D0%B4%D0%BE%D1%80%D0%B0_%D0%9C%D0%BE%D0%BD%D0%BE",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8"
+  },
+  "Музей Баксы": {
+    "city": "Байбурт",
+    "address": "Bayraktar Köyü, Çayırlar Mevkii, Bayburt, Türkiye",
+    "website": "https://baksi.org/",
+    "url": "https://baksi.org/",
+    "address_source": "https://baksi.org/iletisim",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%91%D0%B0%D0%BA%D1%81%D1%8B",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8",
+    "site": "https://baksi.org/"
+  },
+  "Музей Мимара": {
+    "city": "Загреб",
+    "address": "Rooseveltov trg 5, Zagreb, Croatia",
+    "website": "https://www.mimara.hr/",
+    "url": "https://www.mimara.hr/",
+    "address_source": "https://www.mimara.hr/muzej",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%9C%D0%B8%D0%BC%D0%B0%D1%80%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8",
+    "site": "https://www.mimara.hr/"
+  },
+  "Музей Резы Аббаси": {
+    "city": "Тегеран",
+    "address": "972 Shariati Street, Seyed Khandan, Tehran 15558, Iran",
+    "website": "https://www.rezaabbasimuseum.ir/",
+    "url": "https://www.rezaabbasimuseum.ir/",
+    "address_source": "https://www.islamicmanuscript.org/DirectoryOfMembers/inst.aspx?mid=116",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%A0%D0%B5%D0%B7%D1%8B_%D0%90%D0%B1%D0%B1%D0%B0%D1%81%D0%B8",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8"
+  },
+  "Национальная галерея искусств (Гондурас)": {
+    "city": "Тегусигальпа",
+    "address": "Calle Peatonal, Barrio Abajo, Tegucigalpa, Honduras",
+    "website": "https://galerianacionaldeartehonduras.wordpress.com/",
+    "url": "https://galerianacionaldeartehonduras.wordpress.com/",
+    "address_source": "https://directorioicc.sela.org/single-location/honduras/",
+    "checked": "2026-11-19",
+    "review_status": "адрес по справочнику; перед добавлением выставки уточнить у музея",
+    "notes": "Адрес подтверждён справочником, а не текущей страницей контактов музея. Не считать подтверждением работы экспозиции.",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9D%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F_%D0%B3%D0%B0%D0%BB%D0%B5%D1%80%D0%B5%D1%8F_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2_(%D0%93%D0%BE%D0%BD%D0%B4%D1%83%D1%80%D0%B0%D1%81)",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8"
+  },
+  "Национальная художественная галерея (Исламабад)": {
+    "city": "Исламабад",
+    "address": "PNCA, F-5/1, Islamabad, Pakistan",
+    "website": "https://pnca.org.pk/NAG.html",
+    "url": "https://pnca.org.pk/NAG.html",
+    "address_source": "https://pnca.org.pk/NAG.html",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9D%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F_%D0%B3%D0%B0%D0%BB%D0%B5%D1%80%D0%B5%D1%8F_(%D0%98%D1%81%D0%BB%D0%B0%D0%BC%D0%B0%D0%B1%D0%B0%D0%B4)",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8",
+    "site": "https://pnca.gov.pk/visual-arts/"
+  },
+  "Национальный музей изящных искусств (Гавана)": {
+    "city": "Гавана",
+    "address": "Trocadero 1, La Habana, Cuba",
+    "website": "https://www.bellasartes.co.cu/",
+    "url": "https://www.bellasartes.co.cu/",
+    "address_source": "https://directorioicc.sela.org/directory/museo-nacional-de-bellas-artes-3/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9D%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%B7%D1%8F%D1%89%D0%BD%D1%8B%D1%85_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2_(%D0%93%D0%B0%D0%B2%D0%B0%D0%BD%D0%B0)",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8"
+  },
+  "Национальный музей истории и искусства": {
+    "city": "Люксембург",
+    "address": "Marché-aux-Poissons, L-2345 Luxembourg",
+    "website": "https://www.mnaha.lu/",
+    "url": "https://www.mnaha.lu/",
+    "address_source": "https://mcult.gouvernement.lu/fr/annuaire.html?id=434",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%9D%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D0%B8_%D0%B8_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B0",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8"
+  },
+  "Художественный музей Национального университета Колумбии": {
+    "city": "Богота",
+    "address": "Carrera 30 No. 45-03, Edificio 317, Bogotá, Colombia",
+    "website": "https://patrimoniocultural.bogota.unal.edu.co/museo-de-arte/",
+    "url": "https://patrimoniocultural.bogota.unal.edu.co/museo-de-arte/",
+    "address_source": "https://patrimoniocultural.bogota.unal.edu.co/museo-de-arte/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%9D%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B3%D0%BE_%D1%83%D0%BD%D0%B8%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D1%82%D0%B5%D1%82%D0%B0_%D0%9A%D0%BE%D0%BB%D1%83%D0%BC%D0%B1%D0%B8%D0%B8",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8"
+  },
+  "Севастопольский художественный музей имени М. П. Крошицкого": {
+    "city": "Севастополь",
+    "address": "проспект Нахимова, 9, Севастополь",
+    "website": "https://www.sevartmuseum.info/",
+    "url": "https://www.sevartmuseum.info/",
+    "address_source": "https://sevzakon.ru/assets/files/otchety/pravitelstvo/2024/dks_2024_12_26.pdf",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%B2%D0%B0%D1%81%D1%82%D0%BE%D0%BF%D0%BE%D0%BB%D1%8C%D1%81%D0%BA%D0%B8%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%9C._%D0%9F._%D0%9A%D1%80%D0%BE%D1%88%D0%B8%D1%86%D0%BA%D0%BE%D0%B3%D0%BE",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8"
+  },
+  "Castellani House (Гайана)": {
+    "city": "Джорджтаун",
+    "address": "Vlissengen Road, Georgetown, Guyana",
+    "website": "https://ntg.gov.gy/monument/castellani-house-national-gallery-of-art/",
+    "url": "https://ntg.gov.gy/monument/castellani-house-national-gallery-of-art/",
+    "address_source": "https://ntg.gov.gy/monument/castellani-house-national-gallery-of-art/",
+    "checked": "2026-11-19",
+    "review_status": "адрес сверён с указанным источником 2026-11-19",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/Castellani_House_(%D0%93%D0%B0%D0%B9%D0%B0%D0%BD%D0%B0)",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8"
+  },
+  "The Zium Museum": {
+    "website": "https://theziumsociety.itch.io/the-zium-museum",
+    "url": "https://theziumsociety.itch.io/the-zium-museum",
+    "address_status": "not_applicable",
+    "virtual": true,
+    "checked": "2026-11-19",
+    "review_status": "виртуальный музей; физического адреса нет",
+    "notes": "Виртуальная галерея-игра. Не подставлять адрес другого музея Ziem.",
+    "source": "https://theziumsociety.itch.io/the-zium-museum",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/The_Zium_Museum",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8"
+  },
+  "Абхазская государственная картинная галерея": {
+    "city": "Сухум",
+    "address_status": "unconfirmed",
+    "historical_address": "улица Лакоба, 31, Сухум",
+    "checked": "2026-11-19",
+    "review_status": "действующий адрес экспозиции не подтверждён",
+    "notes": "Здание на ул. Лакоба, 31 пострадало при пожаре 21.01.2024. Не выдавать исторический адрес за действующий.",
+    "source": "https://www.abkhazinform.com/item/22303-zavershena-protsessualnaya-proverka-po-faktu-pozhara-v-natsionalnoj-kartinnoj-galeree",
+    "wikipedia_url": "https://ru.wikipedia.org/wiki/%D0%90%D0%B1%D1%85%D0%B0%D0%B7%D1%81%D0%BA%D0%B0%D1%8F_%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F_%D0%BA%D0%B0%D1%80%D1%82%D0%B8%D0%BD%D0%BD%D0%B0%D1%8F_%D0%B3%D0%B0%D0%BB%D0%B5%D1%80%D0%B5%D1%8F",
+    "wikipedia_category": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%A5%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5_%D0%BC%D1%83%D0%B7%D0%B5%D0%B8"
   }
 }

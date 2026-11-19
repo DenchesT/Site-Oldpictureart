@@ -48,6 +48,8 @@ def render_artist_page(artist, posts, all_posts, cat_no, cat_width, info=None):
     lived = life_years(info)
     wiki = info.get("wikipedia") or ""
     facts = []
+    if info.get("collective"):
+        facts.append(("Авторство", "Коллективное; общие годы жизни неприменимы"))
     if lived:
         facts.append(("Годы жизни", h(lived)))
     if span:
@@ -62,7 +64,7 @@ def render_artist_page(artist, posts, all_posts, cat_no, cat_width, info=None):
     facts_html = "".join(f'<div><span>{h(k)}</span><b>{v}</b></div>' for k, v in facts)
 
     # Разметка для поисковиков: человек, годы, ссылки на Википедию и Wikidata.
-    person = {"@context": "https://schema.org", "@type": "Person", "name": artist,
+    person = {"@context": "https://schema.org", "@type": "Thing" if info.get("collective") else "Person", "name": artist,
               "url": f"{BASE_URL}/{artist_slug(artist)}"}
     if info.get("born"):
         person["birthDate"] = str(info["born"])
