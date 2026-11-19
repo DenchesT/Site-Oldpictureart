@@ -106,7 +106,7 @@ def resolve(artists_years, offline=False, today=None, quiz=None, log=logger.info
 
     def pending(artist):
         entry = cache.get(artist) or {}
-        if entry.get("born") or entry.get("wikipedia"):
+        if entry.get("collective") or entry.get("born") or entry.get("wikipedia"):
             return False
         try:
             return (today - datetime.date.fromisoformat(entry["checked"])).days >= RETRY_DAYS
@@ -119,7 +119,7 @@ def resolve(artists_years, offline=False, today=None, quiz=None, log=logger.info
             f"(один раз; первый раз это пара минут)")
     for artist in sorted(artists_years):
         entry = cache.get(artist) or {}
-        if entry.get("born") or entry.get("wikipedia"):
+        if entry.get("collective") or entry.get("born") or entry.get("wikipedia"):
             out[artist] = entry
             continue
         checked = entry.get("checked")
