@@ -33,7 +33,9 @@
   "Государственный музей истории религии, Санкт-Петербург": {
     "query": "Государственный музей истории религии",
     "site": "https://gmir.ru",
-    "address": "Почтамтская улица, 14, Санкт-Петербург"
+    "address": "Почтамтская улица, 14/5, Санкт-Петербург",
+    "address_source": "https://old.gmir.ru/files/images/Buddhism_Conference.pdf",
+    "checked": "2026-11-19"
   },
   "Государственный художественный музей Платтсбурга, Галерея Рокуэлла Кента, Платтсбург": {
     "lat": 44.6935455,
@@ -381,7 +383,9 @@
     "lat": 35.711217,
     "lon": 51.3905,
     "site": "https://tmoca.com",
-    "address": "Парк Лале, Тегеран"
+    "address": "North Kargar Street, between Keshavarz Boulevard and Fatemi Street, next to Laleh Park, Tehran",
+    "address_source": "https://tmoca.com/contact.html",
+    "checked": "2026-11-19"
   },
   "Музей Виктории и Альберта, Лондон": {
     "lat": 51.496667,
@@ -433,12 +437,16 @@
     "same_as": "Новгородский музей-заповедник, Великий Новгород"
   },
   "Новгородский музей-заповедник, Великий Новгород": {
-    "lat": 58.518718,
-    "lon": 31.28372,
+    "lat": 58.521742,
+    "lon": 31.269552,
     "country": "Россия",
     "display_name": "Выставочные залы на Ярославовом дворище",
     "site": "https://novgorodmuseum.ru",
-    "address": "Ярославово дворище, Великий Новгород"
+    "address": "Победы-Софийская площадь, 2, Великий Новгород",
+    "address_source": "https://novgorodmuseum.ru/muzei/muzej-izobrazitelnyh-iskusstv",
+    "coordinates_source": "https://novgorodmuseum.ru/muzei/muzej-izobrazitelnyh-iskusstv",
+    "note": "Музей изобразительных искусств в бывшем Дворянском собрании; посещение в каталоге относится к этому корпусу, а не к Ярославову дворищу.",
+    "checked": "2026-11-19"
   },
   "Лондонская национальная галерея, Лондон": {
     "query": "The National Gallery, London",
@@ -487,5 +495,40 @@
     "site": "https://www.marunuma-artpark.co.jp/",
     "source_url": "https://www.marunuma-artpark.co.jp/information/",
     "note": "Город — Асака (朝霞市), не Асакуса. Ключ сохраняет название из исходного поста; координаты — карта на официальной странице."
+  },
+  "Художественный музей Индианаполиса, Индианаполис": {
+    "address": "4000 Michigan Road, Indianapolis, IN 46208-3326, USA",
+    "site": "https://discovernewfields.org/",
+    "address_source": "https://discovernewfields.org/contact-us",
+    "checked": "2026-11-19"
+  },
+  "Финская национальная галерея, Хельсинки": {
+    "address": "Kaivokatu 2, 00100 Helsinki, Finland",
+    "site": "https://ateneum.fi/en/",
+    "lat": 60.1700175,
+    "lon": 24.9440678,
+    "city": "Хельсинки",
+    "country": "Финляндия",
+    "query": "Ateneum, Helsinki",
+    "address_source": "https://ateneum.fi/en/contact-information/",
+    "coordinates_source": "https://www.openstreetmap.org/way/8033120",
+    "note": "Атенеум — корпус Финской национальной галереи с классическим финским искусством. Прежняя точка относилась к Киасме.",
+    "checked": "2026-11-19"
+  },
+  "Национальный музей Республики Бурятия, Улан-Удэ": {
+    "address": "улица Куйбышева, 29, Улан-Удэ",
+    "lat": 51.8254157,
+    "lon": 107.5896228,
+    "address_source": "https://muzeyrb.ru/",
+    "coordinates_source": "https://www.openstreetmap.org/way/104956137",
+    "note": "Художественный музей им. Ц. С. Сампилова в составе Национального музея. Профсоюзная, 29 — отдельный Музей истории Бурятии.",
+    "checked": "2026-11-19",
+    "site": "https://muzeyrb.ru/"
+  },
+  "Воронежский областной художественный музей им. И.Н. Крамского": {
+    "address": "проспект Революции, 18, Воронеж",
+    "address_source": "https://mkram.ru/ru/muzej/rekvizit/",
+    "checked": "2026-11-19",
+    "site": "https://mkram.ru/ru/"
   }
 }
