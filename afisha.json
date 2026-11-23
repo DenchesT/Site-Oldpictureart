@@ -1,6 +1,6 @@
 {
   "_как": "Афиша сайта: крупные выставки искусства до 1940 года в России и в мире. Страница afisha.html и блок на главной собираются отсюда. Закончившиеся выставки сайт прячет сам (по сегодняшней дате), сборка подсказывает, какие можно убрать и когда пора добавить новые. Поля: title — название по-русски, title_orig — оригинальное (по желанию), venue — музей, city, country (\"Россия\" — вкладка «Россия», остальное — «Мир»), start и end — ГГГГ-ММ-ДД, url — страница выставки на сайте музея, note — одна строка о том, что показывают, museum — как музей называется на карте собраний, если он там есть (тогда будет ссылка на его страницу), source — где проверены даты, если не на странице url. Подробнее — README, раздел «Афиша». Дополнительные музеи для мониторинга перечислены в поле sources этого файла; отдельный afisha_sources.json не нужен.",
-  "updated": "2026-11-16",
+  "updated": "2026-11-23",
   "exhibitions": [
     {
       "title": "Айвазовский",
@@ -116,11 +116,11 @@
     },
     {
       "title": "Гюстав Файе и русские коллекционеры",
-      "venue": "ГМИИ им. А. С. Пушкина, Галерея искусства стран Европы и Америки",
+      "venue": "ГМИИ им. А. С. Пушкина, Галерея нового искусства",
       "city": "Москва",
       "country": "Россия",
       "start": "2026-10-09",
-      "end": "2026-11-22",
+      "end": "2027-02-28",
       "url": "https://pushkinmuseum.art/events/archive/2026/exhibitions/gustave_fayet/index.php",
       "note": "Коллекция Файе рядом со Щукиным и Морозовым: Гоген, Редон, Матисс, Ван Гог из ГМИИ и Эрмитажа",
       "tags": [
@@ -1098,22 +1098,6 @@
       "address_source": "https://kreml.ru/contacts"
     },
     {
-      "title": "Вновь опознанная картина учеников Рембрандта: реставрация и атрибуция",
-      "venue": "ГМИИ им. А. С. Пушкина, Главное здание",
-      "city": "Москва",
-      "country": "Россия",
-      "start": "2026-10-06",
-      "end": "2026-11-22",
-      "url": "https://pushkinmuseum.art/events/archive/2026/exhibitions/identified_painting/index.php?lang=ru",
-      "note": "«Усекновение главы Иоанна Крестителя» школы Рембрандта после реставрации — с новой атрибуцией",
-      "tags": [
-        "old"
-      ],
-      "museum": "ГМИИ им. А.С. Пушкина, Москва",
-      "address": "улица Волхонка, 12, Москва",
-      "address_source": "https://pushkinmuseum.art"
-    },
-    {
       "title": "Выбор коллекционеров. К 170-летию Третьяковской галереи",
       "venue": "Третьяковская галерея, Лаврушинский переулок",
       "city": "Москва",
@@ -1427,26 +1411,6 @@
       "coordinates_source": "https://www.openstreetmap.org/relation/1028087"
     },
     {
-      "title": "Всеволод Воинов. Художник, музейщик, критик",
-      "venue": "Русский музей, Михайловский замок",
-      "city": "Санкт-Петербург",
-      "country": "Россия",
-      "start": "2026-09-25",
-      "end": "2026-11-16",
-      "url": "https://rusmuseum.ru/exhibitions/current/vsevolod-voinov-khudozhnik-muzeyshchik-kritik/",
-      "note": "Около 150 работ Всеволода Воинова (1880–1945): живопись, рисунок, гравюра 1910–1930-х",
-      "tags": [
-        "russian",
-        "modern"
-      ],
-      "museum": "Государственный Русский музей, Санкт-Петербург",
-      "address": "Садовая улица, 2, Санкт-Петербург",
-      "address_source": "https://rusmuseum.ru/museums/mikhailovsky-castle/",
-      "lat": 59.9403826,
-      "lon": 30.3385382,
-      "coordinates_source": "https://www.openstreetmap.org/relation/238571"
-    },
-    {
       "title": "Открывая имена авангарда: Савелий Шлейфер",
       "venue": "Музей истории Петербурга, Петропавловская крепость, Иоанновский равелин",
       "city": "Санкт-Петербург",
@@ -1502,24 +1466,6 @@
       "address": "Площадь Революции, 1, Челябинск",
       "address_source": "https://chelmusart.ru/node/18050?language=en",
       "coordinates_source": "https://www.openstreetmap.org/node/513562776"
-    },
-    {
-      "title": "Рафаэль. Эпоха Ренессанса",
-      "venue": "Краснодарский художественный музей им. Ф. А. Коваленко",
-      "city": "Краснодар",
-      "lat": 45.0183164,
-      "lon": 38.967954,
-      "country": "Россия",
-      "start": "2026-10-08",
-      "end": "2026-11-22",
-      "url": "https://kovalenkomuseum.ru/show-item/vystavka-rafael-epoha-renessansa/",
-      "note": "Более 90 гравюр и литографий XVI–XIX веков по Рафаэлю, в том числе серия «Амур и Психея»",
-      "tags": [
-        "old"
-      ],
-      "address": "Красная улица, 15, 2-й этаж, Краснодар",
-      "address_source": "https://kovalenkomuseum.ru/show-item/vystavka-rafael-epoha-renessansa/",
-      "coordinates_source": "https://www.openstreetmap.org/way/35476211"
     },
     {
       "title": "Рафаэль. Версии",
@@ -2113,24 +2059,6 @@
       "coordinates_source": "https://www.openstreetmap.org/way/671057880"
     },
     {
-      "title": "Укиё-э. Образы изменчивого мира. Японское искусство XVIII–XIX веков",
-      "venue": "Волгоградский музей изобразительных искусств им. Машкова, Выставочный зал",
-      "city": "Волгоград",
-      "country": "Россия",
-      "start": "2026-10-09",
-      "end": "2026-11-22",
-      "url": "https://mashkovmuseum.ru/vystavochnyy-zal",
-      "note": "Более 150 японских гравюр 1766–1930-х из собрания А. Новиченко: Хокусай, Кунисада, Куниёси",
-      "tags": [
-        "east"
-      ],
-      "lat": 48.7121555,
-      "lon": 44.530759,
-      "address": "Улица Маршала Чуйкова, 37, Волгоград",
-      "address_source": "https://mashkovmuseum.ru/vystavochnyy-zal",
-      "coordinates_source": "https://www.openstreetmap.org/node/11082655060"
-    },
-    {
       "title": "Отражение эпохи в классическом искусстве многонациональной России",
       "venue": "Ставропольский краевой музей изобразительных искусств",
       "city": "Ставрополь",
@@ -2499,25 +2427,6 @@
       "coordinates_source": "https://yarkremlin.ru/events/temporary/effekt-opery-zimina/"
     },
     {
-      "title": "Художник Ленинграда. Владимир Гринберг",
-      "venue": "Музей искусства Санкт-Петербурга XX–XXI веков",
-      "city": "Санкт-Петербург",
-      "lat": 59.9265,
-      "lon": 30.30004,
-      "country": "Россия",
-      "start": "2026-10-07",
-      "end": "2026-11-22",
-      "url": "https://mispxx-xxi.ru/exhibitions/khudozhnik-leningrada-vladimir-grinberg/",
-      "note": "Портреты и виды Ленинграда Владимира Гринберга (1896–1942), в основном 1930-х; из ГМИ СПб и частных собраний",
-      "tags": [
-        "russian",
-        "modern"
-      ],
-      "source": "https://mispxx-xxi.ru/",
-      "address": "Набережная канала Грибоедова, 101 и 103, Санкт-Петербург",
-      "address_source": "https://mispxx-xxi.ru/for-visitors/getting-here/"
-    },
-    {
       "title": "Звери земные и птицы небесные. Образы животных в христианском искусстве",
       "venue": "Ростовский кремль",
       "city": "Ростов Великий",
@@ -2588,24 +2497,6 @@
       ],
       "address": "Инженерная улица, 4/1, Санкт-Петербург",
       "address_source": "https://ethnomuseum.ru/about/contacts/"
-    },
-    {
-      "title": "Роден глазами Рильке",
-      "title_orig": "Rodin selon Rilke",
-      "venue": "Фонд Пьера Джанадды",
-      "city": "Мартиньи",
-      "lat": 46.095,
-      "lon": 7.07111,
-      "country": "Швейцария",
-      "start": "2026-06-26",
-      "end": "2026-11-22",
-      "url": "https://www.gianadda.ch/?view=article&id=1010:rodin-selon-rilke&catid=79",
-      "note": "Скульптура Родена в главах по книге Рильке о мастере (1903); выставку подготовил Музей Родена в Париже",
-      "tags": [
-        "xix"
-      ],
-      "address": "Rue du Forum 59, Martigny",
-      "address_source": "https://www.gianadda.ch/?view=article&id=1010:rodin-selon-rilke&catid=79"
     },
     {
       "title": "Ваять цвет. Шедевры Национального музея скульптуры в Вальядолиде",
@@ -3198,25 +3089,6 @@
       "museum_site": "https://yarartmuseum.ru"
     },
     {
-      "title": "Императорский Китай. Династия Цин (1644–1911)",
-      "venue": "Государственный Эрмитаж, Зимний дворец, Гербовый зал (№ 195)",
-      "city": "Санкт-Петербург",
-      "country": "Россия",
-      "start": "2026-06-24",
-      "end": "2026-11-22",
-      "url": "https://www.hermitagemuseum.org/what-s-on/china26",
-      "note": "Около 60 произведений китайского дворцового искусства эпохи Цин из собрания Эрмитажа.",
-      "tags": [
-        "east",
-        "old"
-      ],
-      "museum": "Государственный Эрмитаж",
-      "address": "Дворцовая площадь, 2, Санкт-Петербург (вход в музейный комплекс)",
-      "address_source": "https://www.hermitagemuseum.org/news/visitus2020/visitus2020_item/route_mc/",
-      "lat": 59.941384,
-      "lon": 30.3160857
-    },
-    {
       "title": "Полис — это люди, а не стены и пустые корабли",
       "venue": "Екатеринбургский музей изобразительных искусств, центр «Эрмитаж-Урал»",
       "city": "Екатеринбург",
@@ -3311,6 +3183,43 @@
       "artists": [
         "Франс Снейдерс"
       ]
+    },
+    {
+      "title": "Приглашение к обеду",
+      "venue": "Волгоградский музей изобразительных искусств им. И. И. Машкова, Выставочный зал",
+      "city": "Волгоград",
+      "country": "Россия",
+      "start": "2026-11-26",
+      "end": "2027-04-18",
+      "url": "https://mashkovmuseum.ru/vystavochnyy-zal",
+      "note": "44 подлинных произведения из Русского музея и собрания музея Машкова: натюрморты и жанровая живопись XIX — первой трети XX века (И. Хруцкий, А. Рябушкин, В. Шварц, З. Серебрякова и другие), скульптура и декоративно-прикладное искусство.",
+      "tags": [
+        "xix",
+        "russian",
+        "modern"
+      ],
+      "museum": "Волгоградский музей изобразительных искусств имени И. И. Машкова",
+      "source": "https://mashkovmuseum.ru/vystavochnyy-zal",
+      "address": "Улица им. маршала Чуйкова, 37, Волгоград",
+      "address_source": "https://mashkovmuseum.ru/vystavochnyy-zal"
+    },
+    {
+      "title": "Море не волнуется",
+      "venue": "Центральный выставочный зал Союза художников Республики Абхазия",
+      "city": "Сухум",
+      "country": "Абхазия",
+      "start": "2026-10-01",
+      "end": "2026-12-13",
+      "url": "https://minkult.apsny.land/afisha/vystavka-more-ne-volnuetsya",
+      "note": "35 подлинных произведений русской живописи из трёх музеев, в том числе полотна Ивана Айвазовского, Валентина Серова и Константина Богаевского.",
+      "tags": [
+        "xix",
+        "russian"
+      ],
+      "museum": "Центральный выставочный зал Союза художников Республики Абхазия",
+      "source": "https://minkult.apsny.land/afisha/vystavka-more-ne-volnuetsya",
+      "address": "Сухум, ул. Лакоба, 31",
+      "address_source": "https://minkult.apsny.land/afisha/vystavka-more-ne-volnuetsya"
     }
   ],
   "sources": [

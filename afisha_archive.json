@@ -1,6 +1,6 @@
 {
   "_как": "Архив завершившихся выставок Old Picture Art. Записи сохраняются целиком и не публикуются в текущей афише.",
-  "updated": "2026-11-16",
+  "updated": "2026-11-23",
   "exhibitions": [
     {
       "title": "Хрупкое искусство. Пастель из фондов графики XVIII — начала XX века",
@@ -332,6 +332,134 @@
       "artists": [],
       "query": "Киров, Копанский переулок, 4",
       "museum_site": "https://kirov-artmuzeum.ru"
+    },
+    {
+      "title": "Вновь опознанная картина учеников Рембрандта: реставрация и атрибуция",
+      "venue": "ГМИИ им. А. С. Пушкина, Главное здание",
+      "city": "Москва",
+      "country": "Россия",
+      "start": "2026-10-06",
+      "end": "2026-11-22",
+      "url": "https://pushkinmuseum.art/events/archive/2026/exhibitions/identified_painting/index.php?lang=ru",
+      "note": "«Усекновение главы Иоанна Крестителя» школы Рембрандта после реставрации — с новой атрибуцией",
+      "tags": [
+        "old"
+      ],
+      "museum": "ГМИИ им. А.С. Пушкина, Москва",
+      "address": "улица Волхонка, 12, Москва",
+      "address_source": "https://pushkinmuseum.art"
+    },
+    {
+      "title": "Всеволод Воинов. Художник, музейщик, критик",
+      "venue": "Русский музей, Михайловский замок",
+      "city": "Санкт-Петербург",
+      "country": "Россия",
+      "start": "2026-09-25",
+      "end": "2026-11-16",
+      "url": "https://rusmuseum.ru/exhibitions/current/vsevolod-voinov-khudozhnik-muzeyshchik-kritik/",
+      "note": "Около 150 работ Всеволода Воинова (1880–1945): живопись, рисунок, гравюра 1910–1930-х",
+      "tags": [
+        "russian",
+        "modern"
+      ],
+      "museum": "Государственный Русский музей, Санкт-Петербург",
+      "address": "Садовая улица, 2, Санкт-Петербург",
+      "address_source": "https://rusmuseum.ru/museums/mikhailovsky-castle/",
+      "lat": 59.9403826,
+      "lon": 30.3385382,
+      "coordinates_source": "https://www.openstreetmap.org/relation/238571"
+    },
+    {
+      "title": "Рафаэль. Эпоха Ренессанса",
+      "venue": "Краснодарский художественный музей им. Ф. А. Коваленко",
+      "city": "Краснодар",
+      "lat": 45.0183164,
+      "lon": 38.967954,
+      "country": "Россия",
+      "start": "2026-10-08",
+      "end": "2026-11-22",
+      "url": "https://kovalenkomuseum.ru/show-item/vystavka-rafael-epoha-renessansa/",
+      "note": "Более 90 гравюр и литографий XVI–XIX веков по Рафаэлю, в том числе серия «Амур и Психея»",
+      "tags": [
+        "old"
+      ],
+      "address": "Красная улица, 15, 2-й этаж, Краснодар",
+      "address_source": "https://kovalenkomuseum.ru/show-item/vystavka-rafael-epoha-renessansa/",
+      "coordinates_source": "https://www.openstreetmap.org/way/35476211"
+    },
+    {
+      "title": "Укиё-э. Образы изменчивого мира. Японское искусство XVIII–XIX веков",
+      "venue": "Волгоградский музей изобразительных искусств им. Машкова, Выставочный зал",
+      "city": "Волгоград",
+      "country": "Россия",
+      "start": "2026-10-09",
+      "end": "2026-11-22",
+      "url": "https://mashkovmuseum.ru/vystavochnyy-zal",
+      "note": "Более 150 японских гравюр 1766–1930-х из собрания А. Новиченко: Хокусай, Кунисада, Куниёси",
+      "tags": [
+        "east"
+      ],
+      "lat": 48.7121555,
+      "lon": 44.530759,
+      "address": "Улица Маршала Чуйкова, 37, Волгоград",
+      "address_source": "https://mashkovmuseum.ru/vystavochnyy-zal",
+      "coordinates_source": "https://www.openstreetmap.org/node/11082655060"
+    },
+    {
+      "title": "Художник Ленинграда. Владимир Гринберг",
+      "venue": "Музей искусства Санкт-Петербурга XX–XXI веков",
+      "city": "Санкт-Петербург",
+      "lat": 59.9265,
+      "lon": 30.30004,
+      "country": "Россия",
+      "start": "2026-10-07",
+      "end": "2026-11-22",
+      "url": "https://mispxx-xxi.ru/exhibitions/khudozhnik-leningrada-vladimir-grinberg/",
+      "note": "Портреты и виды Ленинграда Владимира Гринберга (1896–1942), в основном 1930-х; из ГМИ СПб и частных собраний",
+      "tags": [
+        "russian",
+        "modern"
+      ],
+      "source": "https://mispxx-xxi.ru/",
+      "address": "Набережная канала Грибоедова, 101 и 103, Санкт-Петербург",
+      "address_source": "https://mispxx-xxi.ru/for-visitors/getting-here/"
+    },
+    {
+      "title": "Роден глазами Рильке",
+      "title_orig": "Rodin selon Rilke",
+      "venue": "Фонд Пьера Джанадды",
+      "city": "Мартиньи",
+      "lat": 46.095,
+      "lon": 7.07111,
+      "country": "Швейцария",
+      "start": "2026-06-26",
+      "end": "2026-11-22",
+      "url": "https://www.gianadda.ch/?view=article&id=1010:rodin-selon-rilke&catid=79",
+      "note": "Скульптура Родена в главах по книге Рильке о мастере (1903); выставку подготовил Музей Родена в Париже",
+      "tags": [
+        "xix"
+      ],
+      "address": "Rue du Forum 59, Martigny",
+      "address_source": "https://www.gianadda.ch/?view=article&id=1010:rodin-selon-rilke&catid=79"
+    },
+    {
+      "title": "Императорский Китай. Династия Цин (1644–1911)",
+      "venue": "Государственный Эрмитаж, Зимний дворец, Гербовый зал (№ 195)",
+      "city": "Санкт-Петербург",
+      "country": "Россия",
+      "start": "2026-06-24",
+      "end": "2026-11-22",
+      "url": "https://www.hermitagemuseum.org/what-s-on/china26",
+      "note": "Около 60 произведений китайского дворцового искусства эпохи Цин из собрания Эрмитажа.",
+      "tags": [
+        "east",
+        "old"
+      ],
+      "museum": "Государственный Эрмитаж",
+      "address": "Дворцовая площадь, 2, Санкт-Петербург (вход в музейный комплекс)",
+      "address_source": "https://www.hermitagemuseum.org/news/visitus2020/visitus2020_item/route_mc/",
+      "lat": 59.941384,
+      "lon": 30.3160857
     }
   ]
 }
