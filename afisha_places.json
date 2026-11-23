@@ -218,21 +218,19 @@
     "hint": ""
   },
   "Волгоградский музей изобразительных искусств им. И. И. Машкова, Выставочный зал, Волгоград": {
-    "lat": 48.711615,
-    "lon": 44.523404,
-    "display_name": "Волгоградский музей изобразительных искусств имени И. И. Машкова",
-    "source": "wikidata:Q16631343",
+    "lat": 48.711947,
+    "lon": 44.530478,
+    "display_name": "Улица им. маршала Чуйкова, 37, Волгоград",
+    "source": "https://yandex.com/maps/org/volgogradskiy_muzey_izobrazitelnykh_iskusstv_imeni_i_i_mashkova/1011762068/reviews/",
     "precision": "exact",
-    "query": "Волгоградский музей изобразительных искусств им. И. И. Машкова",
     "hint": ""
   },
   "Центральный выставочный зал Союза художников Республики Абхазия, Сухум": {
-    "lat": 43.00361111111111,
-    "lon": 41.01916666666666,
-    "display_name": "Сухум",
-    "source": "wikidata:Q40811",
-    "precision": "approx",
-    "query": "Центральный выставочный зал Союза художников Республики Абхазия, Сухум",
+    "lat": 43.000539,
+    "lon": 41.024835,
+    "display_name": "Сухум, ул. Лакоба, 31",
+    "source": "https://yandex.com/maps/org/tsentralny_vystavochny_zal_soyuza_khudozhnikov_respubliki_abkhaziya/1753494584/panorama/",
+    "precision": "exact",
     "hint": ""
   }
 }

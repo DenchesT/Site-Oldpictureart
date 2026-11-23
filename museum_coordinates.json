@@ -717,12 +717,10 @@
     "hint": "4000 Michigan Road, Indianapolis, IN 46208-3326, USA\n"
   },
   "Richard Green Fine Paintings, Лондон": {
-    "lat": 51.507222222222,
-    "lon": -0.1275,
-    "display_name": "Лондон",
-    "source": "wikidata:Q84",
-    "precision": "approx",
-    "query": "Richard Green Fine Paintings, Лондон",
-    "hint": "\n"
+    "lat": 51.5113207,
+    "lon": -0.1438818,
+    "display_name": "Richard Green Fine Paintings, Лондон",
+    "source": "override",
+    "precision": "exact"
   }
 }

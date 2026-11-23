@@ -532,5 +532,15 @@
     "address_source": "https://mkram.ru/ru/muzej/rekvizit/",
     "checked": "2026-11-19",
     "site": "https://mkram.ru/ru/"
+  },
+  "Richard Green Fine Paintings, Лондон": {
+    "lat": 51.5113207,
+    "lon": -0.1438818,
+    "city": "Лондон",
+    "country": "Великобритания",
+    "site": "https://www.richardgreen.com/",
+    "address": "147 New Bond Street, London W1S 2TS",
+    "address_source": "https://www.richardgreen.com/contact",
+    "coordinates_source": "https://www.openstreetmap.org/way/605458715"
   }
 }

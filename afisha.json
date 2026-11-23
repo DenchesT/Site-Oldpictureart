@@ -3192,16 +3192,18 @@
       "start": "2026-11-26",
       "end": "2027-04-18",
       "url": "https://mashkovmuseum.ru/vystavochnyy-zal",
-      "note": "44 подлинных произведения из Русского музея и собрания музея Машкова: натюрморты и жанровая живопись XIX — первой трети XX века (И. Хруцкий, А. Рябушкин, В. Шварц, З. Серебрякова и другие), скульптура и декоративно-прикладное искусство.",
+      "note": "44 работы из Русского музея и музея Машкова: натюрморты, жанровая живопись и скульптура XIX — первой трети XX века.",
       "tags": [
         "xix",
         "russian",
         "modern"
       ],
-      "museum": "Волгоградский музей изобразительных искусств имени И. И. Машкова",
       "source": "https://mashkovmuseum.ru/vystavochnyy-zal",
       "address": "Улица им. маршала Чуйкова, 37, Волгоград",
-      "address_source": "https://mashkovmuseum.ru/vystavochnyy-zal"
+      "address_source": "https://mashkovmuseum.ru/vystavochnyy-zal",
+      "lat": 48.711947,
+      "lon": 44.530478,
+      "coordinates_source": "https://yandex.com/maps/org/volgogradskiy_muzey_izobrazitelnykh_iskusstv_imeni_i_i_mashkova/1011762068/reviews/"
     },
     {
       "title": "Море не волнуется",
@@ -3211,15 +3213,17 @@
       "start": "2026-10-01",
       "end": "2026-12-13",
       "url": "https://minkult.apsny.land/afisha/vystavka-more-ne-volnuetsya",
-      "note": "35 подлинных произведений русской живописи из трёх музеев, в том числе полотна Ивана Айвазовского, Валентина Серова и Константина Богаевского.",
+      "note": "35 работ из трёх музеев, включая полотна Ивана Айвазовского, Валентина Серова и Константина Богаевского.",
       "tags": [
         "xix",
         "russian"
       ],
-      "museum": "Центральный выставочный зал Союза художников Республики Абхазия",
       "source": "https://minkult.apsny.land/afisha/vystavka-more-ne-volnuetsya",
       "address": "Сухум, ул. Лакоба, 31",
-      "address_source": "https://minkult.apsny.land/afisha/vystavka-more-ne-volnuetsya"
+      "address_source": "https://minkult.apsny.land/afisha/vystavka-more-ne-volnuetsya",
+      "lat": 43.000539,
+      "lon": 41.024835,
+      "coordinates_source": "https://yandex.com/maps/org/tsentralny_vystavochny_zal_soyuza_khudozhnikov_respubliki_abkhaziya/1753494584/panorama/"
     }
   ],
   "sources": [
