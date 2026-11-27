@@ -1,7 +1,12 @@
 @echo off
 chcp 65001 >nul
-echo Запуск парсинга...
-python build_site.py
-echo.
+cd /d "%~dp0" || exit /b 1
+git pull --ff-only || goto :failed
+python build_site.py %* || goto :failed
 echo Готово!
 pause
+exit /b 0
+:failed
+echo Обновление остановлено. Подробности выше.
+pause
+exit /b 1

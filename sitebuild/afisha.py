@@ -1471,7 +1471,7 @@ def afisha_report(items, errors, updated, today, log=logger):
         n = len(parts[key]["running"])
         if n < MIN_RUNNING[key]:
             log.warning(f"Афиша: {label} идёт всего {n} {plural_ru(n, 'выставка', 'выставки', 'выставок')} — "
-                        f"пора добавить новые в {AFISHA_FILE} (README, «Афиша»)")
+                        f"пора добавить новые в {AFISHA_FILE}")
     upd = _iso(updated)
     if upd and (today - upd).days > 60:
         log.info(f"Афиша: список не обновлялся с {ru_date(upd)} — стоит проверить, что открылось нового")

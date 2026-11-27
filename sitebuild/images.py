@@ -236,7 +236,7 @@ def build_cards(posts):
         return 0
     if not font_file("regular") or not font_file("bold"):
         logger.info("Карточки ссылок пропущены: не нашёлся шрифт "
-                    "(положите ttf в папку fonts/ — см. README)")
+                    "(положите ttf в папку fonts/)")
         return 0
     made = 0
     for post in posts:

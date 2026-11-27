@@ -32,7 +32,7 @@ site_common.py). Поэтому сбой посреди выгрузки нич�
 
 Потом — python rebuild_pages.py и push (удаления из docs/images тоже).
 Новые посты build_site.py выгружает сам, если хранилище настроено.
-Как завести бакет и ключ — STORAGE_SETUP.md.
+Настройки хранилища берутся из окружения.
 
 Оригиналы не пережимаются и не уменьшаются: в хранилище уезжает ровно тот
 файл, что пришёл из канала.
@@ -365,7 +365,7 @@ def main():
         print("\nХранилище не настроено, не хватает:")
         for m in missing:
             print(f"  • {m}")
-        print("Как настроить — STORAGE_SETUP.md")
+        print("Укажите перечисленные параметры хранилища в .env.")
         return 1
     if "--stats" in sys.argv:
         bucket, prefix = bucket_of(base)
@@ -401,8 +401,7 @@ def main():
         good, why = public_ok(url)
         if not good:
             print(f"\n⚠ Файл не открывается без ключа ({why}): {url}\n"
-                  "  В настройках бакета поставьте «Чтение объектов — Для всех»\n"
-                  "  (STORAGE_SETUP.md, шаг 1).")
+                  "  В настройках бакета поставьте «Чтение объектов — Для всех».")
     print("\nДальше: python rebuild_pages.py — и push, вместе с удалениями из docs/images.")
     return 1 if stats["failed"] else 0
 

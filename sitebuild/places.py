@@ -39,7 +39,7 @@ def visit_map_names(visits, all_posts):
 # статистика, — и таскать множество через все вызовы было бы хуже.
 _MUSEUM_PAGES = set()
 
-# Свои копии Leaflet в docs/vendor (README, «Свои копии библиотек»): карта не
+# Свои копии Leaflet в docs/vendor: карта не
 # зависит от unpkg.com, который бывает недоступен.
 LEAFLET_CSS = '<link rel="stylesheet" href="vendor/leaflet/leaflet.css">'
 LEAFLET_JS = '<script src="vendor/leaflet/leaflet.js"></script>'
@@ -115,7 +115,7 @@ def map_reminder(all_posts, visits):
             logger.warning(f"   • {museum}: {why}")
         logger.warning('   Поправить: впишите в museum_overrides.json адрес — '
                        '"Название": {"address": "улица дом, город"} — или готовые "lat" и "lon", '
-                       'затем python rebuild_pages.py. Подробнее — README, «Если метка стоит не там».')
+                       'затем python rebuild_pages.py.')
     # Страницы без адреса. Адрес, сайт и страну сборка ищет сама, но
     # находит не всегда — тогда на странице музея остаётся один город.
     try:

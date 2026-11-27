@@ -191,7 +191,7 @@ def sync_hires(records):
         return None
     if missing:
         logger.warning(f"Оригиналов в docs/images: {len(todo)}, а выгрузить их нельзя — "
-                       f"не хватает: {', '.join(missing)} (см. STORAGE_SETUP.md)")
+                       f"не хватает: {', '.join(missing)}")
         return None
     logger.info(f"Оригиналы в хранилище: {len(todo)}")
     bucket, prefix = hires_store.bucket_of(base)

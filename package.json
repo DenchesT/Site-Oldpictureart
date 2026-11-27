@@ -1,7 +1,7 @@
 {
   "name": "oldpictureart-tests",
   "private": true,
-  "description": "Проверки сайта: npm ci, затем node tests/run.js (подробно — tests/README.md)",
+  "description": "Проверки сайта: npm ci, затем node tests/run.js",
   "scripts": {
     "test": "node tests/run.js"
   },
